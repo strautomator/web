@@ -1,0 +1,9 @@
+{
+    "app": {
+        "port": 8090,
+        "title": "Strautomator",
+        "url": "https://strautomator.com/",
+        "publicPath": "./public/",
+        "viewPath": "./public/"
+    }
+}

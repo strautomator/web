@@ -1,0 +1,37 @@
+{
+    "name": "strautomator-web",
+    "version": "20.9.420",
+    "description": "Strautomator is coming soon!",
+    "author": "Igor Ramadas <igor@devv.com>",
+    "homepage": "https://strautomator.com",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/strautomator/web.git"
+    },
+    "engines": {
+        "node": ">= 10.0.0"
+    },
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "expresser": "^4.2.0"
+    },
+    "prettier": {
+        "trailingComma": "none",
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": false,
+        "arrowParens": "always",
+        "bracketSpacing": false,
+        "printWidth": 250
+    },
+    "domains": [
+        "strautomator.com"
+    ],
+    "keywords": [
+        "strautomator"
+    ]
+}
