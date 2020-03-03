@@ -10,5 +10,5 @@ ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
 COPY --from=strautomator-dependencies ./app/node_modules ./node_modules
-EXPOSE 8090
+EXPOSE 8080
 CMD ["npm", "start"]
