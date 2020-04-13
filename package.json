@@ -1,23 +1,56 @@
 {
     "name": "strautomator-web",
-    "version": "1.0.3",
-    "description": "Strautomator is coming soon!",
-    "author": "Igor Ramadas <igor@devv.com>",
-    "homepage": "https://strautomator.com",
-    "license": "MIT",
+    "version": "20.16.118",
+    "description": "Strautomator.com website",
+    "author": "Igor Ramadas",
+    "private": true,
     "main": "lib/index.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/strautomator/web.git"
-    },
-    "engines": {
-        "node": ">= 10.0.0"
-    },
+    "types": "lib/index.d.ts",
     "scripts": {
-        "start": "node index.js"
+        "build": "tsc && nuxt build",
+        "generate": "nuxt generate",
+        "start": "cross-env NODE_ENV=production node server/index.js",
+        "start:ts": "cross-env NODE_ENV=development node --preserve-symlinks -r ts-node/register ./src/index.ts",
+        "start:dev": "nodemon"
     },
     "dependencies": {
-        "expresser": "^4.2.0"
+        "@nuxtjs/axios": "^5.9.7",
+        "anyhow": "^1.5.2",
+        "client-sessions": "^0.8.0",
+        "cookie-universal-nuxt": "^2.1.3",
+        "cross-env": "^7.0.2",
+        "express": "^4.17.1",
+        "moment": "^2.24.0",
+        "nuxt": "^2.12.2",
+        "qs": "^6.9.3",
+        "setmeup": "^1.4.1"
+    },
+    "devDependencies": {
+        "@nuxt/types": "^0.7.4",
+        "@nuxtjs/vuetify": "^1.11.0",
+        "@types/express": "^4.17.6",
+        "@types/node": "^13.11.1",
+        "axios-debug-log": "^0.7.0",
+        "chalk": "^4.0.0",
+        "nodemon": "^2.0.3",
+        "ts-node": "^8.8.2",
+        "typedoc": "^0.17.4",
+        "typescript": "^3.8.3",
+        "strautomator-core": "file:../core/"
+    },
+    "nodemonConfig": {
+        "ignore": [
+            "**/*.test.ts",
+            "**/*.spec.ts",
+            ".git",
+            "node_modules"
+        ],
+        "watch": [
+            "src"
+        ],
+        "exec": "npm run start:ts",
+        "ext": "ts",
+        "delay": "5000"
     },
     "prettier": {
         "trailingComma": "none",
@@ -27,11 +60,5 @@
         "arrowParens": "always",
         "bracketSpacing": false,
         "printWidth": 250
-    },
-    "domains": [
-        "strautomator.com"
-    ],
-    "keywords": [
-        "strautomator"
-    ]
+    }
 }

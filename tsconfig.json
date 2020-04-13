@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "baseUrl": "",
+        "rootDir": "src",
+        "outDir": "server",
+        "target": "es2018",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "declaration": true,
+        "paths": {
+            "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
+        }
+    },
+    "typedocOptions": {
+        "excludeExternals": true,
+        "excludePrivate": true,
+        "mode": "modules",
+        "name": "Strautomator Web",
+        "out": "docs"
+    }
+}

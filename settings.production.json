@@ -1,0 +1,11 @@
+// STRAUTOMATOR WEB SETTINGS (PRODUCTION)
+
+{
+    "api": {
+        "url": "https://api.strautomator.com/"
+    },
+    "app": {
+        "url": "https://strautomator.com/",
+        "title": "Strautomator"
+    }
+}

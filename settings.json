@@ -1,9 +1,10 @@
+// STRAUTOMATOR WEB SETTINGS
+
 {
-    "app": {
-        "port": 8080,
-        "title": "Strautomator",
-        "url": "https://strautomator.com/",
-        "publicPath": "./public/",
-        "viewPath": "./public/"
+    "general": {
+        "envPrefix": "STA_WEB_"
+    },
+    "routes": {
+        "afterLogin": "/"
     }
 }

@@ -1,2 +1,12 @@
-.history
-node_modules
+.DS_Store
+.prettierignore
+.github/
+.history/
+.nuxt/
+.vscode/
+coverage/
+docs/
+node_modules/
+Makefile
+settings.private.json
+*.log

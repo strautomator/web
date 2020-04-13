@@ -1,0 +1,26 @@
+h1 {
+    margin-bottom: 15px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.width-wrapper {
+    margin: auto;
+    max-width: 960px !important;
+    text-align: left;
+}
+
+.v-toolbar__title a {
+    color: rgb(255, 255, 255);
+}
+
+.v-toolbar__content {
+    margin: auto;
+    max-width: 960px !important;
+}
+
+.v-dialog .headline {
+    margin-bottom: 16px;
+}
