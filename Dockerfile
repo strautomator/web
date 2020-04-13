@@ -17,7 +17,7 @@ FROM node:alpine AS strautomator-web-final
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
-COPY --from=strautomator-web-builder ./app/lib ./lib
+COPY --from=strautomator-web-builder ./app/server ./server
 COPY --from=strautomator-web-dependencies ./app/node_modules ./node_modules
 EXPOSE 8080
 CMD ["npm", "start"]
