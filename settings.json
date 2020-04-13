@@ -7,7 +7,7 @@
     "general": {
         // Settings defined on environment variables specific to the Web frontend are prefixed with STA_WEB_,
         // in adition to the settings prefixed with only STA_.
-        "envPrefix": "STA_WEB_"
+        "envPrefix": "STA_WEB"
     },
     "routes": {
         "afterLogin": "/"
