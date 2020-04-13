@@ -1,13 +1,13 @@
 {
     "name": "strautomator-web",
-    "version": "20.162.14050",
+    "version": "20.162.140122",
     "description": "Strautomator.com website",
     "author": "Igor Ramadas",
     "private": true,
     "main": "server/index.js",
     "types": "server/index.d.ts",
     "scripts": {
-        "build": "tsc && nuxt build",
+        "build": "nuxt build",
         "generate": "nuxt generate",
         "start": "cross-env NODE_ENV=production node server/index.js",
         "start:ts": "cross-env NODE_ENV=development node --preserve-symlinks -r ts-node/register ./src/index.ts",
