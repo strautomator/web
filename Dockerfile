@@ -2,7 +2,7 @@
 FROM node:alpine AS strautomator-web-builder
 WORKDIR /app
 COPY . .
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && npm run build
 RUN node_modules/.bin/tsc
 
 # DEPENDENCIES
@@ -15,9 +15,11 @@ RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make
 # FINAL IMAGE
 FROM node:alpine AS strautomator-web-final
 ENV NODE_ENV=production
+ENV HOST 0.0.0.0
 WORKDIR /app
 COPY . .
 COPY --from=strautomator-web-builder ./app/server ./server
+COPY --from=strautomator-web-builder ./app/.nuxt ./.nuxt
 COPY --from=strautomator-web-dependencies ./app/node_modules ./node_modules
 EXPOSE 8080
 CMD ["npm", "start"]
