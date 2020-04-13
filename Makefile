@@ -9,6 +9,7 @@ clean:
 	rm -rf ./server
 	rm -rf ./node_modules
 	rm -f package-lock.json
+	git tag | xargs git tag -d
 
 docs:
 	rm -rf ./docs/assets
