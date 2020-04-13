@@ -26,11 +26,11 @@ run:
 
 update:
 	-ncu -u
-	npm version $(shell date '+%y.%-V%u.%-d%-H%-M') --force --allow-same-version --no-git-tag-version
+	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version --no-git-tag-version
 	npm install
 
 publish:
-	npm version $(shell date '+%y.%-V%u.%-d%-H%-M') --force --allow-same-version
+	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version
 	git push --tags
 
 .PHONY: docs
