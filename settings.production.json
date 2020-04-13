@@ -2,10 +2,14 @@
 
 {
     "api": {
+        // The URL to the production API.
         "url": "https://api.strautomator.com/"
     },
     "app": {
-        "url": "https://strautomator.com/",
-        "title": "Strautomator"
+        "port": 8080,
+        "title": "Strautomator",
+        // You can set the app URL on your settings.private.json file or
+        // via the $STA_WEB_app_url environment variable.
+        "url": "https://strautomator.com/"
     }
 }

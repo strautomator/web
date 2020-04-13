@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.16.119",
+    "version": "20.161.2015",
     "description": "Strautomator.com website",
     "author": "Igor Ramadas",
     "private": true,
@@ -23,7 +23,8 @@
         "moment": "^2.24.0",
         "nuxt": "^2.12.2",
         "qs": "^6.9.3",
-        "setmeup": "^1.4.1"
+        "setmeup": "^1.4.1",
+        "strautomator-core": "strautomator/core"
     },
     "devDependencies": {
         "@nuxt/types": "^0.7.4",
