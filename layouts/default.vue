@@ -34,7 +34,7 @@
                     Found a bug? Have suggestions?
                 </div>
                 <div class="d-md-inline">
-                    <a href="mailto:contact@strautomator.com" title="Send us your feedback!">contact@strautomator.com</a>
+                    <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a>
                 </div>
                 <div class="mt-1 mb-8">&copy; {{ new Date().getFullYear() }} Strautomator - Made in Berlin</div>
             </div>

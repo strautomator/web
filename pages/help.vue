@@ -87,7 +87,7 @@
                         <p>
                             We use Dark Sky, Weatherbit and OpenWeatherMap for weather data. These works wonderfully well most of the times, but on certain regions on certain days a data source might miscalculate weather. If you're always getting
                             wrong data, please
-                            <a href="mailto:contact@strautomator.com">contact us</a> and we'll troubleshoot.
+                            <a href="mailto:info@strautomator.com">contact us</a> and we'll troubleshoot.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
