@@ -13,7 +13,11 @@
                     </div>
                 </div>
                 <div class="to-the-right" v-else>
-                    <div class="conditions">When {{ recipe.conditions.map((c) => conditionSummary(c).toLowerCase()).join(" and ") }}</div>
+                    <div class="conditions">
+                        <div v-for="condition in recipe.conditions">
+                            {{ conditionSummary(condition) }}
+                        </div>
+                    </div>
                     <div class="actions">{{ recipe.actions.map((a) => actionSummary(a)).join(" || ") }}</div>
                 </div>
                 <v-divider class="mt-2 mb-2"></v-divider>
@@ -43,10 +47,12 @@ export default {
     },
     computed: {
         recipes() {
-            return Object.values(this.$store.state.oauth.user.recipes)
+            return Object.values(this.user.recipes)
         }
     },
-    mounted() {
+    async mounted() {
+        this.$axios.setToken(this.$store.state.oauth.accessToken)
+        this.user = await this.$axios.$get(`${this.$store.state.apiUrl}users/${this.$store.state.oauth.user.id}`)
         this.isMounted = true
     }
 }
