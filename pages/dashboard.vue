@@ -37,7 +37,6 @@ export default {
         try {
             $axios.setToken(store.state.oauth.accessToken)
             const user = await $axios.$get(`${store.state.apiUrl}users/${store.state.oauth.user.id}`)
-            store.commit("oauth/updateRecipes", user.recipes, {root: true})
 
             return {
                 user: user
