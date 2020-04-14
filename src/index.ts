@@ -31,8 +31,8 @@ async function start() {
         // Init Nuxt.js.
         const nuxt = new Nuxt(config)
 
-        // Override nuxt
-        nuxt.options.server.host = "0.0.0.0"
+        // Override nuxt defaults.
+        nuxt.options.server.host = settings.app.ipHost || "0.0.0.0"
         nuxt.options.server.port = settings.app.port
         nuxt.options.env.appUrl = settings.app.url
         nuxt.options.env.apiUrl = settings.api.url
@@ -41,20 +41,25 @@ async function start() {
 
         await nuxt.ready()
 
-        // Build only in dev mode
+        // Force build only in dev mode.
         if (config.dev) {
             const builder = new Builder(nuxt)
             await builder.build()
         }
 
-        // Give nuxt middleware to express
+        // Give nuxt middleware to express.
         app.use(nuxt.render)
 
-        // Listen the server
+        // Listen the server.
         app.listen(port, host)
         consola.ready({
             message: `Server ready on ${host}, port ${port}`,
             badge: true
+        })
+
+        // Gracefully shutdown.
+        process.on("SIGTERM", async () => {
+            await core.shutdown()
         })
     } catch (ex) {
         console.error("Strautomator Web", ex)

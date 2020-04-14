@@ -127,7 +127,7 @@ Handler.prototype.updateToken = async function updateToken() {
             token.refreshToken = refreshToken
             token.expiresAt = expiresAt
         }
-    } catch (e) {
+    } catch (ex) {
         logger.error("OAuth.updateToken", ex)
         token = null
     }
