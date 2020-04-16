@@ -35,6 +35,8 @@ publish:
 	git push --tags
 
 deploy:
+	$(TSC)
+	npm run build
 	gcloud app deploy app.yaml
 
 .PHONY: docs
