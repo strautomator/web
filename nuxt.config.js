@@ -19,7 +19,12 @@ module.exports = {
     },
 
     // Additional axios config.
-    axios: {},
+    axios: {
+        baseURL: "https://strautomator.com/",
+        retry: {
+            retries: 1
+        }
+    },
 
     // Additional build config.
     build: {
@@ -32,9 +37,9 @@ module.exports = {
     // APpend global styesl.
     css: ["@/assets/styles.scss"],
 
+    // Please change the GA ID to your own, or simply disable the module if not needed.
     googleAnalytics: {
-        // The Google Analytics ID is set on settings.app.ga.id.
-        id: null
+        id: "UA-9331973-6"
     },
 
     // Loading is white by default.

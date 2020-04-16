@@ -36,10 +36,12 @@ async function start() {
         const nuxt = new Nuxt(config)
 
         // Override nuxt configuration.
+        const baseUrl = settings.app.url
         nuxt.options.server.host = settings.app.ip || "0.0.0.0"
         nuxt.options.server.port = settings.app.port
-        nuxt.options.axios.baseURL = settings.app.url
-        nuxt.options.googleAnalytics.id = settings.app.ga.id
+        nuxt.options.env.baseUrl = baseUrl
+        nuxt.options.axios.baseURL = baseUrl
+        nuxt.options.axios.browserBaseURL = baseUrl
 
         // Nuxt host and port.
         const {host, port} = nuxt.options.server
