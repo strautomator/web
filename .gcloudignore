@@ -10,6 +10,8 @@
 coverage/
 docs/
 node_modules/
+Dockerfile
 Makefile
+README.md
 settings.private.json
 app.yaml

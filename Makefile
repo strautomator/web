@@ -34,4 +34,7 @@ publish:
 	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version
 	git push --tags
 
+deploy:
+	gcloud app deploy app.yaml
+
 .PHONY: docs
