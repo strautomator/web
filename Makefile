@@ -3,6 +3,7 @@ TSC:= ./node_modules/.bin/tsc
 
 build:
 	-cd ../core && make build
+	-cd ./node_modules/strautomator-core && tsc
 	$(TSC)
 
 clean:

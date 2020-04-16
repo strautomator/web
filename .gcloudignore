@@ -1,8 +1,11 @@
+
+.gcloudignore
+.git
+.gitignore
 .DS_Store
 .prettierignore
 .github/
 .history/
-.nuxt/
 .vscode/
 coverage/
 docs/
@@ -10,4 +13,3 @@ node_modules/
 Makefile
 settings.private.json
 app.yaml
-*.log

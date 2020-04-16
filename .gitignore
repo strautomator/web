@@ -8,6 +8,7 @@
 .nyc_output
 .serverless
 .vuepress/dist
+app.yaml
 
 bower_components/
 coverage/

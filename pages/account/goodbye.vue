@@ -56,7 +56,7 @@ export default {
                 const userId = this.$store.state.oauth.user.id
 
                 this.$axios.setToken(this.$store.state.oauth.accessToken)
-                this.$axios.$delete(`${this.$store.state.apiUrl}users/${userId}`)
+                this.$axios.$delete(`/api/users/${userId}`)
                 this.accountDeleted = true
 
                 const logout = () => {

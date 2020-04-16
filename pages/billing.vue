@@ -10,7 +10,6 @@
                 <ul class="mb-8">
                     <li>Unlimited automations</li>
                     <li>Unlimited rules per automation</li>
-                    <li>Weather data on your activities</li>
                     <li>No automatic links added to activity description</li>
                     <li>More features to some soon!</li>
                 </ul>
@@ -45,7 +44,7 @@ export default {
             return {
                 now: now,
                 user: store.state.oauth.user,
-                isPro: store.state.oauth.user.dateBilling && store.state.oauth.user.dateBilling > now,
+                isPro: false,
                 price: 10
             }
         } catch (ex) {

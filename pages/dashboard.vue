@@ -36,7 +36,7 @@ export default {
     async asyncData({error, res, store, $axios}) {
         try {
             $axios.setToken(store.state.oauth.accessToken)
-            const user = await $axios.$get(`${store.state.apiUrl}users/${store.state.oauth.user.id}`)
+            const user = await $axios.$get(`/api/users/${store.state.oauth.user.id}`)
 
             return {
                 user: user

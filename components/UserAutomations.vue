@@ -52,7 +52,7 @@ export default {
     },
     async mounted() {
         this.$axios.setToken(this.$store.state.oauth.accessToken)
-        this.user = await this.$axios.$get(`${this.$store.state.apiUrl}users/${this.$store.state.oauth.user.id}`)
+        this.user = await this.$axios.$get(`/api/users/${this.$store.state.oauth.user.id}`)
         this.isMounted = true
     }
 }

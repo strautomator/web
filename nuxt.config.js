@@ -18,11 +18,27 @@ module.exports = {
         link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}]
     },
 
-    loading: {color: "#FFF"},
+    // Additional axios config.
+    axios: {},
 
+    // Additional build config.
+    build: {
+        extend(config, ctx) {}
+    },
+
+    // Additional builders.
+    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/google-analytics"],
+
+    // APpend global styesl.
     css: ["@/assets/styles.scss"],
 
-    buildModules: ["@nuxtjs/vuetify"],
+    googleAnalytics: {
+        // The Google Analytics ID is set on settings.app.ga.id.
+        id: null
+    },
+
+    // Loading is white by default.
+    loading: {color: "#FFF"},
 
     // Use axios, cookies and the custom Strava OAuth2 module.
     modules: ["@nuxtjs/axios", "cookie-universal-nuxt", "~/modules/oauth"],
@@ -33,6 +49,9 @@ module.exports = {
         sessionName: "strautsession",
         oauthHost: "https://www.strava.com/oauth/"
     },
+
+    // Additional plugins.
+    plugins: [],
 
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}],
@@ -54,12 +73,5 @@ module.exports = {
                 }
             }
         }
-    },
-
-    plugins: [],
-    axios: {},
-
-    build: {
-        extend(config, ctx) {}
     }
 }

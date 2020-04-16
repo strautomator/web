@@ -1,13 +1,9 @@
 export const state = () => ({
-    apiUrl: null,
     recipeProperties: null,
     recipeActions: null
 })
 
 export const mutations = {
-    setApiUrl(state, data) {
-        state.apiUrl = data
-    },
     setRecipeOptions(state, data) {
         state.recipeProperties = data.recipeProperties
         state.recipeActions = data.recipeActions
@@ -27,7 +23,6 @@ export const actions = {
                 recipeMaxLength: settings.recipes.maxLength
             }
 
-            commit("setApiUrl", settings.api.url)
             commit("setRecipeOptions", recipeOptions)
         }
     }

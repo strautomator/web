@@ -66,7 +66,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         await core.users.upsert(athlete, tokens)
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
 
-        return this.redirect(settings.routes.afterLogin)
+        return this.redirect("/dashboard")
     } catch (ex) {
         logger.error("OAuth.authenticateCallbackToken", ex)
         return this.redirectToOAuth()
@@ -104,7 +104,7 @@ Handler.prototype.saveData = async function saveData(token) {
     if (!user) {
         return false
     } else {
-        logger.info("OAuth.saveData", `User ${user.id} - ${user.profile.username}`)
+        logger.info("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
     }
 
     this.req[this.opts.sessionName].user = user

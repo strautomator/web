@@ -129,7 +129,7 @@ export default {
             try {
                 if (this.$refs.form.validate()) {
                     const user = this.$store.state.oauth.user
-                    const url = `${this.$store.state.apiUrl}users/${user.id}/recipes`
+                    const url = `/api/users/${user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
                     this.$router.push({
@@ -193,7 +193,7 @@ export default {
         async deleteRecipe() {
             try {
                 const userId = this.$store.state.oauth.user.id
-                this.$axios.$delete(`${this.$store.state.apiUrl}users/${userId}/recipes/${this.recipe.id}`)
+                this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
             } catch (ex) {
                 console.error(ex)
             }

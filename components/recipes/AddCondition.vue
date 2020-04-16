@@ -79,7 +79,7 @@ export default {
                 zoom = 14
             }
 
-            return `${this.$store.state.apiUrl}maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
+            return `/api/maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
         }
     },
     methods: {
@@ -128,7 +128,7 @@ export default {
                 this.loading = true
                 this.locationInput = null
 
-                const url = `${this.$store.state.apiUrl}maps/geocode?address=${value}`
+                const url = `/api/maps/geocode?address=${value}`
                 const data = await this.$axios.$get(url)
 
                 for (let loc of data) {
