@@ -2,7 +2,6 @@ const core = require("strautomator-core")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {parse} = require("qs")
-const settings = require("setmeup").settings
 
 function Handler(opts) {
     this.init(opts)

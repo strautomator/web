@@ -2,17 +2,14 @@
 FROM node:alpine AS strautomator-web-builder
 WORKDIR /app
 COPY . .
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && npm install typescript -g && npm run build
-RUN cd ./node_modules/strautomator-core && tsc
-RUN tsc
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && tsc && npm run build
 
 # DEPENDENCIES
 FROM node:alpine AS strautomator-web-dependencies
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install --production
-RUN rm -rf ./node_modules/typescript
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install --production && rm -rf ./node_modules/typescript
 
 # FINAL IMAGE
 FROM node:alpine AS strautomator-web-final

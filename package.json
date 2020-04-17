@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.165.171527",
+    "version": "20.165.172241",
     "description": "Strautomator.com website",
     "author": "Igor Ramadas",
     "private": true,
@@ -11,8 +11,7 @@
         "generate": "nuxt generate",
         "start": "cross-env NODE_ENV=production node server/index.js",
         "start:ts": "cross-env NODE_ENV=development node --preserve-symlinks -r ts-node/register ./src/index.ts",
-        "start:dev": "nodemon",
-        "gcp-build": "tsc && nuxt build"
+        "start:dev": "nodemon"
     },
     "dependencies": {
         "@nuxtjs/axios": "^5.9.7",

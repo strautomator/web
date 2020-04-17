@@ -46,7 +46,7 @@ module.exports = {
     loading: {color: "#FFF"},
 
     // Use axios, cookies and the custom Strava OAuth2 module.
-    modules: ["@nuxtjs/axios", "cookie-universal-nuxt", "~/modules/oauth"],
+    modules: ["@nuxtjs/axios", "cookie-universal-nuxt", "~/modules/oauth/index.js"],
 
     // Most of the OAuth2 related settings will be copied from the settings.json
     // and settings.ENV.json files on startup!

@@ -39,6 +39,8 @@ update:
 
 # Deploy to Google App Engine
 deploy-app-engine:
+	$(TSC)
+	npm run build
 	gcloud app deploy app.yaml
 
 # Deploy to GIT (by creating a new tag)
