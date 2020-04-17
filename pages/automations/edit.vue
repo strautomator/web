@@ -193,6 +193,7 @@ export default {
         async deleteRecipe() {
             try {
                 const userId = this.$store.state.oauth.user.id
+                this.$axios.setToken(this.$store.state.oauth.accessToken)
                 this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
             } catch (ex) {
                 console.error(ex)
