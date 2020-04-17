@@ -8,8 +8,6 @@
 .nyc_output
 .serverless
 .vuepress/dist
-app.yaml
-
 bower_components/
 coverage/
 dist/
@@ -18,9 +16,8 @@ lib-cov/
 node_modules/
 pids/
 server/
-
+app.yaml
 settings.private.json
-
 *.log
 *.pid
 *.seed

@@ -9,5 +9,8 @@ docs/
 node_modules/
 Makefile
 settings.private.json
+settings.private.json.sample
 app.yaml
+app.yaml.sample
+docker-compose.yml.sample
 *.log

@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.165.170126",
+    "version": "20.165.171508",
     "description": "Strautomator.com website",
     "author": "Igor Ramadas",
     "private": true,
@@ -11,7 +11,8 @@
         "generate": "nuxt generate",
         "start": "cross-env NODE_ENV=production node server/index.js",
         "start:ts": "cross-env NODE_ENV=development node --preserve-symlinks -r ts-node/register ./src/index.ts",
-        "start:dev": "nodemon"
+        "start:dev": "nodemon",
+        "gcp-build": "tsc && nuxt build"
     },
     "dependencies": {
         "@nuxtjs/axios": "^5.9.7",
@@ -28,7 +29,8 @@
         "nuxt": "^2.12.2",
         "qs": "^6.9.3",
         "setmeup": "^1.4.1",
-        "strautomator-core": "strautomator/core"
+        "strautomator-core": "strautomator/core",
+        "typescript": "^3.8.3"
     },
     "devDependencies": {
         "@nuxt/types": "^0.7.4",
@@ -38,8 +40,7 @@
         "chalk": "^4.0.0",
         "nodemon": "^2.0.3",
         "ts-node": "^8.8.2",
-        "typedoc": "^0.17.4",
-        "typescript": "^3.8.3"
+        "typedoc": "^0.17.4"
     },
     "nodemonConfig": {
         "ignore": [
