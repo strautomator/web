@@ -3,8 +3,8 @@
         <v-app-bar fixed app>
             <v-toolbar-title class="mr-10 ml-1">
                 <n-link to="/dashboard" nuxt router>
-                    <v-icon color="amber" class="mr-2" large>mdi-bike-fast</v-icon>
-                    Strautomator
+                    <img src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
+                    <span class="d-inline-block ml-2 mt-2">Strautomator</span>
                 </n-link>
             </v-toolbar-title>
 
@@ -28,7 +28,7 @@
             </v-container>
 
             <div class="mt-4 mt-md-8 text-center">
-                <v-divider class="mb-6 width-wrapper"></v-divider>
+                <v-divider class="mb-7 width-wrapper"></v-divider>
                 <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">WE'RE STILL IN BETA</v-chip>
                 <div class="d-md-inline">
                     Found a bug? Have suggestions?
@@ -36,7 +36,10 @@
                 <div class="d-md-inline">
                     <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a>
                 </div>
-                <div class="mt-1 mb-8">&copy; {{ new Date().getFullYear() }} Strautomator - Made in Berlin</div>
+                <div class="copyright">
+                    <img src="/images/logo-round.svg" width="24" height="24" class="strautologo" />
+                    <span>{{ new Date().getFullYear() }} Strautomator - Made in Berlin</span>
+                </div>
             </div>
         </v-content>
         <v-bottom-navigation class="hidden-md-and-up" app grow>
