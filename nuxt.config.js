@@ -59,7 +59,10 @@ module.exports = {
     plugins: [],
 
     // Root route to redirect to /home or /dashboard.
-    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}],
+    serverMiddleware: [
+        {path: "/", handler: "~/server/routes/index.js"},
+        "~/server/routes/global.js"
+    ],
 
     // Vuetify general options.
     vuetify: {
