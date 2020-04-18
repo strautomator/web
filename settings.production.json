@@ -8,8 +8,11 @@
         "adminToken": null
     },
     "app": {
-        "port": 8080,
         "title": "Strautomator",
+        // Please note that the server expects the files strautomator.cert and strautomator.key
+        // on the app root to start a HTTPS server. If these files are not there, server will
+        // listen on HTTP instead (but still using port 8443).
+        "port": 8443,
         // You can set the app URL on your settings.private.json file or
         // via the $STA_app_url environment variable.
         "url": "https://strautomator.com/"
