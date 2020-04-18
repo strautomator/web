@@ -61,8 +61,9 @@ async function start() {
             await core.shutdown()
         })
     } catch (ex) {
-        console.error("Strautomator Web", ex)
-        process.exit()
+        console.error(ex)
+        console.error("Strautomator failed to startup")
+        process.exit(1)
     }
 }
 

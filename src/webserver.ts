@@ -37,51 +37,56 @@ class WebServer {
      * present, listen on HTTPS, otherwise regular HTTP.
      */
     init = async (nuxtRender): Promise<void> => {
-        this.app = express()
+        try {
+            this.app = express()
 
-        let protocol: string
+            let protocol: string
 
-        // Check if certificate files are present.
-        if (fs.existsSync(`./strautomator.cert`) && fs.existsSync(`./strautomator.key`)) {
-            const cert = fs.readFileSync("./strautomator.cert")
-            const key = fs.readFileSync(`./strautomator.key`)
-            const options = {
-                cert: cert,
-                key: key
+            // Check if certificate files are present.
+            if (fs.existsSync(`./strautomator.cert`) && fs.existsSync(`./strautomator.key`)) {
+                const cert = fs.readFileSync("./strautomator.cert")
+                const key = fs.readFileSync(`./strautomator.key`)
+                const options = {
+                    cert: cert,
+                    key: key
+                }
+
+                this.server = https.createServer(options, this.app)
+                protocol = "HTTPS"
+            } else {
+                this.server = http.createServer(this.app)
+                protocol = "HTTP"
             }
 
-            this.server = https.createServer(options, this.app)
-            protocol = "HTTPS"
-        } else {
-            this.server = http.createServer(this.app)
-            protocol = "HTTP"
-        }
+            // When running behind a proxy / LB.
+            this.app.set("trust proxy", settings.api.trustProxy)
 
-        // When running behind a proxy / LB.
-        this.app.set("trust proxy", settings.api.trustProxy)
-
-        // Set rate limiting.
-        const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
-        rateLimit.onLimitReached = (req) => {
-            logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
-        }
-        this.app.use("/api/*", rateLimit)
-
-        // Load routes.
-        const routers = fs.readdirSync(`${__dirname}/routes/api`)
-        for (let r of routers) {
-            if (r.indexOf(".d.ts") < 0) {
-                const basename = path.basename(r).split(".")[0]
-                this.app.use(`/api/${basename}`, require(`./routes/api/${r}`))
+            // Set rate limiting.
+            const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
+            rateLimit.onLimitReached = (req) => {
+                logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
             }
+            this.app.use("/api/*", rateLimit)
+
+            // Load routes.
+            const routers = fs.readdirSync(`${__dirname}/routes/api`)
+            for (let r of routers) {
+                if (r.indexOf(".d.ts") < 0) {
+                    const basename = path.basename(r).split(".")[0]
+                    this.app.use(`/api/${basename}`, require(`./routes/api/${r}`))
+                }
+            }
+
+            this.app.use(nuxtRender)
+
+            // Listen the server.
+            this.server.listen(settings.app.port)
+            logger.info("WebServer.init", protocol, `Server ready on port ${settings.app.port}`)
+            logger.info("WebServer.init", `Global rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
+        } catch (ex) {
+            logger.error("WebServer.init", ex)
+            process.exit(1)
         }
-
-        this.app.use(nuxtRender)
-
-        // Listen the server.
-        this.app.listen(settings.app.port, settings.app.ip)
-        logger.info("Strautomator.WebServer", protocol, `Server ready on ${settings.app.ip}: ${settings.app.port}`)
-        logger.info("Strautomator.WebServer", `Global rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
     }
 
     // HELPER METHODS
