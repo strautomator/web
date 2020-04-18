@@ -2,7 +2,7 @@
 FROM node:alpine AS strautomator-web-builder
 WORKDIR /app
 COPY . .
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && tsc && npm run build
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && ./node_modules/.bin/tsc && npm run build
 
 # DEPENDENCIES
 FROM node:alpine AS strautomator-web-dependencies
@@ -22,5 +22,5 @@ COPY --from=strautomator-web-builder ./app/node_modules/strautomator-core/lib ./
 COPY --from=strautomator-web-builder ./app/server ./server
 COPY --from=strautomator-web-builder ./app/.nuxt ./.nuxt
 
-EXPOSE 8443
+EXPOSE 8080
 CMD ["npm", "start"]
