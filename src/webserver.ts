@@ -2,7 +2,11 @@
 
 import express = require("express")
 import _ = require("lodash")
+import fs = require("fs")
+import http = require("http")
+import https = require("https")
 import logger = require("anyhow")
+import path = require("path")
 const settings = require("setmeup").settings
 
 /**
@@ -16,9 +20,72 @@ class WebServer {
     }
 
     /**
-     * Timer to check and reset subscriptions (webhooks) on Strava.
+     * The Express app.
      */
-    app = express()
+    app: express.Express
+
+    /**
+     * The underlying HTTP(S) server.
+     */
+    server: http.Server
+
+    // INIT
+    // --------------------------------------------------------------------------
+
+    /**
+     * Init the web server. If the strautomator.key and strautomator.cert files are
+     * present, listen on HTTPS, otherwise regular HTTP.
+     */
+    init = async (nuxtRender): Promise<void> => {
+        this.app = express()
+
+        let protocol: string
+
+        // Check if certificate files are present.
+        if (fs.existsSync(`./strautomator.cert`) && fs.existsSync(`./strautomator.key`)) {
+            const cert = fs.readFileSync("./strautomator.cert")
+            const key = fs.readFileSync(`./strautomator.key`)
+            const options = {
+                cert: cert,
+                key: key
+            }
+
+            this.server = https.createServer(options, this.app)
+            protocol = "HTTPS"
+        } else {
+            this.server = http.createServer(this.app)
+            protocol = "HTTP"
+        }
+
+        // When running behind a proxy / LB.
+        this.app.set("trust proxy", settings.api.trustProxy)
+
+        // Set rate limiting.
+        const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
+        rateLimit.onLimitReached = (req) => {
+            logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
+        }
+        this.app.use("/api/*", rateLimit)
+
+        // Load routes.
+        const routers = fs.readdirSync(`${__dirname}/routes/api`)
+        for (let r of routers) {
+            if (r.indexOf(".d.ts") < 0) {
+                const basename = path.basename(r).split(".")[0]
+                this.app.use(`/api/${basename}`, require(`./routes/api/${r}`))
+            }
+        }
+
+        this.app.use(nuxtRender)
+
+        // Listen the server.
+        this.app.listen(settings.app.port, settings.app.ip)
+        logger.info("Strautomator.WebServer", protocol, `Server ready on ${settings.app.ip}: ${settings.app.port}`)
+        logger.info("Strautomator.WebServer", `Global rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
+    }
+
+    // HELPER METHODS
+    // --------------------------------------------------------------------------
 
     /**
      * Render response as JSON data and send to the client.

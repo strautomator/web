@@ -103,7 +103,7 @@ Handler.prototype.saveData = async function saveData(token) {
     if (!user) {
         return false
     } else {
-        logger.info("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
+        logger.debug("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
     }
 
     this.req[this.opts.sessionName].user = user

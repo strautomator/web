@@ -8,7 +8,7 @@ export default function(req, res, next) {
     const settings = require("setmeup").settings
 
     // Force remove the www.
-    if (req.hostname.toLowerCase().substring(0, 3) == "www") {
+    if (req.hostname.toLowerCase().substring(0, 4) == "www.") {
         return res.redirect(settings.app.url)
     }
 
