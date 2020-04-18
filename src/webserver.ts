@@ -44,8 +44,8 @@ class WebServer {
 
             // Check if certificate files are present.
             if (fs.existsSync(`./strautomator.cert`) && fs.existsSync(`./strautomator.key`)) {
-                const cert = fs.readFileSync("./strautomator.cert")
-                const key = fs.readFileSync(`./strautomator.key`)
+                const cert = fs.readFileSync("./strautomator.cert", "utf8")
+                const key = fs.readFileSync("./strautomator.key", "utf8")
                 const options = {
                     cert: cert,
                     key: key
