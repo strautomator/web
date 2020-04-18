@@ -18,6 +18,8 @@ pids/
 server/
 app.yaml
 settings.private.json
+strautomator.cert
+strautomator.key
 *.log
 *.pid
 *.seed
