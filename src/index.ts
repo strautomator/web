@@ -1,12 +1,13 @@
 // Strautomator Index / startup
 
+import logger = require("anyhow")
+
 async function start() {
     try {
         const core = require("strautomator-core")
         await core.startup()
 
         // Load settings.
-        const logger = require("anyhow")
         const setmeup = require("setmeup")
         const settings = setmeup.settings
 
@@ -29,6 +30,12 @@ async function start() {
         // Init Nuxt.js.
         const {Nuxt, Builder} = require("nuxt")
         const nuxt = new Nuxt(config)
+
+        // Port set via the PORN eenvironment variable?
+        if (process.env.PORT) {
+            logger.info("Strautomator.startup", `Port ${process.env.PORT} set via envionment variable`)
+            settings.app.port = process.env.PORT
+        }
 
         // Override nuxt configuration.
         const baseUrl = settings.app.url
@@ -61,8 +68,7 @@ async function start() {
             await core.shutdown()
         })
     } catch (ex) {
-        console.error(ex)
-        console.error("Strautomator failed to startup")
+        logger.error("Strautomator.startup", "Failed to start", ex)
         process.exit(1)
     }
 }

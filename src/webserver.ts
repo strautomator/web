@@ -53,9 +53,19 @@ class WebServer {
 
                 this.server = https.createServer(options, this.app)
                 protocol = "HTTPS"
+
+                // HTTPS defaults to port 8443.
+                if (!settings.app.port) {
+                    settings.app.port = 8443
+                }
             } else {
                 this.server = http.createServer(this.app)
                 protocol = "HTTP"
+
+                // HTTP defaults to port 8080.
+                if (!settings.app.port) {
+                    settings.app.port = 8080
+                }
             }
 
             // When running behind a proxy / LB.
