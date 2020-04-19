@@ -4,17 +4,17 @@
     "api": {
         // Secure token that should be passed as a "Strautomator-Key" header
         // on API requests marked for administrators only. This MUST be set
-        // via private settings or via the $STA_API_api_adminToken environment variable.
+        // via secret settings or via the $SMU_API_api_adminToken environment variable.
         "adminToken": null
     },
     "app": {
         "title": "Strautomator",
-        // Please note that the server expects the files strautomator.cert and strautomator.key
-        // on the app root to start a HTTPS server. If these files are not there, server will
-        // listen on HTTP instead (but still using port 8443).
-        "port": 8443,
-        // You can set the app URL on your settings.private.json file or
-        // via the $STA_app_url environment variable.
+        // The server will look for the files strautomator.cert and strautomator.key on the
+        // app root to start a HTTPS server on port 8443. If these files are not there,
+        // the server will listen on HTTP port 8080 instead.
+        "port": null,
+        // You can set the app URL on your settings.secret.json file or
+        // via the $SMU_app_url environment variable.
         "url": "https://strautomator.com/"
     }
 }

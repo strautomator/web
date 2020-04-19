@@ -1,7 +1,7 @@
 // STRAUTOMATOR WEB SETTINGS
 // These are the general settings for the Strautomator Web frontend. There's also a settings.development.json
-// and a settings.production.json, each one containing environment-specific settings. Private settings are
-// defined on the settings.private.json or via environment variables.
+// and a settings.production.json, each one containing environment-specific settings. Secret settings are
+// defined on the settings.secret.json or via environment variables.
 
 {
     "api": {

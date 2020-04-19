@@ -23,7 +23,6 @@ generate:
 
 # Compile and build resources
 build:
-	-cd ../core && make build
 	$(TSC)
 
 # Run the app locally
@@ -35,7 +34,6 @@ update:
 	-ncu -u
 	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version --no-git-tag-version
 	npm install
-	-npm link strautomator-core
 
 # Deploy to Google App Engine
 deploy-app-engine:
