@@ -22,5 +22,5 @@ COPY --from=strautomator-web-builder ./app/node_modules/strautomator-core/lib ./
 COPY --from=strautomator-web-builder ./app/server ./server
 COPY --from=strautomator-web-builder ./app/.nuxt ./.nuxt
 
-EXPOSE 8080
+EXPOSE 8443
 CMD ["npm", "start"]
