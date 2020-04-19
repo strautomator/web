@@ -1,0 +1,32 @@
+# STRAUTOMATOR DOCKER COMPOSE SAMPLE
+# Using caddy-gen as a SSL proxy. Please note that you must change the image
+# name and have the correct credentials and secrets set on a settings.env file.
+
+version: "2"
+
+services:
+    caddy-gen:
+        container_name: caddy-gen
+        image: wemakeservices/caddy-gen:latest
+        restart: on-failure
+        privileged: true
+        ports:
+            - "443:443"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+            - ./certs/acme:/etc/caddy/acme
+            - ./certs/ocsp:/etc/caddy/ocsp
+        depends_on:
+            - strautomator
+
+    strautomator:
+        container_name: strautomator
+        image: location.to.your.strautomator
+        restart: on-failure
+        env_file:
+            - ./settings.env
+        labels:
+            - "virtual.host=strautomator.com"
+            - "virtual.alias=www.strautomator.com"
+            - "virtual.port=8080"
+            - "virtual.tls-email=your@email.com"
