@@ -1,7 +1,7 @@
 // Strautomator API: Heartbeat
 
-import cache = require("bitecache")
 import express = require("express")
+import jaul = require("jaul")
 import logger = require("anyhow")
 const router = express.Router()
 const packageVersion = require("../../../package.json").version
@@ -11,18 +11,18 @@ const packageVersion = require("../../../package.json").version
  */
 router.get("/", async (req, res) => {
     try {
+        const systemInfo = jaul.system.getInfo({labels: false})
         const result = {
             version: packageVersion,
-            bitecache: {
-                size: cache.totalSize,
-                misses: cache.totalMemSize
-            }
+            memory: systemInfo.process.memoryUsed,
+            uptime: systemInfo.uptime
         }
 
+        logger.error("Routes", req.method, req.originalUrl, "Heartbeat sent")
         res.json(result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        res.json({error: ex.toString()})
+        res.status(500).json({error: ex.toString()})
     }
 })
 
