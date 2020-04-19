@@ -7,10 +7,9 @@
 coverage/
 docs/
 node_modules/
+samples/
 Makefile
-settings.private.json
-settings.private.json.sample
+settings.secret.json
 app.yaml
 app.yaml.sample
-docker-compose.yml.sample
 *.log

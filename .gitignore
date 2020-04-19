@@ -16,10 +16,12 @@ lib-cov/
 node_modules/
 pids/
 server/
-app.yaml
-settings.private.json
-strautomator.cert
-strautomator.key
+/app.yaml
+/settings.secret.json
+/settings.secret.gcs.json
+/settings.env
+/strautomator.cert
+/strautomator.key
 *.log
 *.pid
 *.seed

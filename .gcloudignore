@@ -11,15 +11,14 @@
 coverage/
 docs/
 node_modules/
+samples/
 src/
 Dockerfile
 Makefile
 README.md
-settings.private.json
-settings.private.json.sample
+settings.secret.json
 strautomator.cert
 strautomator.key
 app.yaml
 app.yaml.sample
-docker-compose.yml.sample
 *.log
