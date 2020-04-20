@@ -37,7 +37,6 @@ update:
 
 # Deploy to Google App Engine
 deploy-app-engine:
-	npm install
 	$(TSC)
 	npm run build
 	gcloud app deploy app.yaml
