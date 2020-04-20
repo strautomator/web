@@ -2,6 +2,8 @@
 
 This is Strautomator's web frontend, built with Nuxt + Vuetify. It depends on the [Strautomator Core](https://github.com/strautomator/core) to run.
 
+**Please note that Strautomator is still in beta! Its internals, API specs and general settings will likely change a lot before we hit a stable release.**
+
 ## Local setup
 
 Download and install dependencies:
