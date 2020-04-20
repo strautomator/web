@@ -18,7 +18,10 @@
                             <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
                             <div v-if="selectedProperty.value">
                                 <v-select label="Operator..." v-model="selectedOperator" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
-                                <div v-if="!isLocation">
+                                <div v-if="isWeekday">
+                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="!isLocation">
                                     <v-text-field v-model="valueInput" :rules="[recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedProperty.suffix" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
@@ -53,6 +56,9 @@ export default {
         return this.initialData()
     },
     computed: {
+        isWeekday() {
+            return this.selectedProperty.value && this.selectedProperty.value == "weekday"
+        },
         isLocation() {
             return this.selectedProperty.value && this.selectedProperty.value.indexOf("location") >= 0
         },
@@ -85,14 +91,25 @@ export default {
     methods: {
         initialData() {
             const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+            const weekdays = [
+                {value: 0, text: "Sunday"},
+                {value: 1, text: "Monday"},
+                {value: 2, text: "Tuesday"},
+                {value: 3, text: "Wednesday"},
+                {value: 4, text: "Thursday"},
+                {value: 5, text: "Friday"},
+                {value: 6, text: "Saturday"}
+            ]
 
             return {
                 condition: {},
                 loading: false,
                 valid: true,
                 recipeProperties: recipeProperties,
+                weekdays: weekdays,
                 selectedProperty: {},
                 selectedOperator: {},
+                selectedWeekday: {},
                 valueInput: "",
                 locationInput: null,
                 searchLocations: null,
@@ -111,7 +128,11 @@ export default {
                     value: this.valueInput
                 }
 
-                if (this.isLocation) {
+                // Get correct condition values for weekdays and conditions.
+                if (this.isWeekday) {
+                    result.value = this.selectedWeekday.value
+                    result.friendlyValue = this.selectedWeekday.text
+                } else if (this.isLocation) {
                     result.value = this.locationInput.value
                     result.friendlyValue = this.locationInput.address
                 }
@@ -121,7 +142,11 @@ export default {
             }
         },
         propertyChanged() {
-            this.selectedOperator = {}
+            if (this.selectedProperty.operators.length == 1) {
+                this.selectedOperator = this.selectedProperty.operators[0]
+            } else {
+                this.selectedOperator = {}
+            }
         },
         async fetchLocations(value) {
             try {
