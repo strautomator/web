@@ -16,7 +16,7 @@ router.get("/geocode", async (req, res) => {
         if (!validated) return
 
         const region: string = req.headers["cf-ipcountry"] as string
-        const results = await maps.getGetcode(req.query.address as string, region || "")
+        const results = await maps.getGeocode(req.query.address as string, region || "")
 
         webserver.renderJson(req, res, results)
     } catch (ex) {
