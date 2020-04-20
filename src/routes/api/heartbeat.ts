@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
             version: packageVersion
         }
 
-        logger.error("Routes", req.method, req.originalUrl, "Heartbeat sent")
+        logger.info("Routes", req.method, req.originalUrl, "Heartbeat sent")
         res.json(result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
