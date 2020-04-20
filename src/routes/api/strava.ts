@@ -1,7 +1,6 @@
 // Strautomator API: Strava routes
 
-import {users} from "strautomator-core"
-import scheduler from "../../scheduler"
+import {strava, users} from "strautomator-core"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
@@ -85,9 +84,9 @@ router.post("/:urlToken/:userId", async (req, res) => {
                 return logger.error("Routes", req.method, req.originalUrl, `User ${obj.owner_id} not found`)
             }
 
-            await scheduler.processActivity(user, obj.object_id)
+            await strava.activities.processActivity(user, obj.object_id)
 
-            // Set last activity date and save.
+            // Set last activity date on user, and save.
             user.dateLastActivity = new Date()
             await users.update(user)
         }

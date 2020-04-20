@@ -58,13 +58,8 @@ async function start() {
         const webserver = require("./webserver")
         await webserver.init(nuxt.render)
 
-        // Load scheduler.
-        const scheduler = require("./scheduler")
-        await scheduler.init()
-
         // Gracefully shutdown.
         process.on("SIGTERM", async () => {
-            await scheduler.shutdown()
             await core.shutdown()
         })
     } catch (ex) {

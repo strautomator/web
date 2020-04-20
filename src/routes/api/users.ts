@@ -69,7 +69,7 @@ router.delete("/:userId", async (req, res) => {
 
         // First, try cancelling current subscription.
         try {
-            await strava.cancelSubscription(user)
+            await strava.webhooks.cancelSubscription(user)
         } catch (ex) {
             logger.debug("Routes", req.method, req.originalUrl, ex)
         }
@@ -161,7 +161,7 @@ const routeUserRecipe = async (req: any, res: any) => {
         // If user has no subscription yet, create one now.
         if (!user.stravaSubscription && Object.keys(user.recipes).length > 0) {
             try {
-                await strava.setSubscription(user)
+                await strava.webhooks.setSubscription(user)
             } catch (ex) {
                 logger.error("Routes", req.method, req.originalUrl, `Could not create a Strava subscription (webhook) for ${user.displayName}`)
             }

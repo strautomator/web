@@ -70,7 +70,7 @@ export class Auth {
 
             // User not found? Maybe has a new token?
             if (!user) {
-                const athlete = await strava.getAthlete({accessToken: token})
+                const athlete = await strava.athletes.getAthlete({accessToken: token})
 
                 // User found on Strava? Update token saved on the database.
                 if (athlete) {
