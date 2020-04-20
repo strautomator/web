@@ -45,7 +45,7 @@ export class Auth {
                 const referer = req.headers["referer"] || "unknown"
 
                 if (referer.indexOf(settings.app.url) < 0) {
-                    logger.error("Auth.requestValidator", req.originalUrl, `Invalid referer: ${referer}`)
+                    logger.error("Auth.requestValidator", req.originalUrl, `Invalid referer: ${referer}`, `From ${req.ip}`)
 
                     const result = fs.readFileSync(`${__dirname}/../static/access-denied.png`)
                     res.setHeader("cache-control", "no-cache")
@@ -59,7 +59,7 @@ export class Auth {
 
             // Auth bearer header is mandatory.
             if (!bearer) {
-                logger.error("Auth.requestValidator", req.originalUrl, "Missing token")
+                logger.error("Auth.requestValidator", req.originalUrl, "Missing token", `From ${req.ip}`)
                 webserver.renderError(req, res, "Missing token", 401)
                 return false
             }
@@ -83,14 +83,14 @@ export class Auth {
 
             // User really not found?
             if (!user) {
-                logger.error("Auth.requestValidator", req.originalUrl, "User not found")
+                logger.error("Auth.requestValidator", req.originalUrl, "User not found", `From ${req.ip}`)
                 webserver.renderError(req, res, "Access denied", 401)
                 return false
             }
 
             // Requires admin permissions?
             if (options.admin && req.headers["x-strautomator-admin"] != settings.api.adminToken) {
-                logger.error("Auth.requestValidator", req.originalUrl, "Invalid admin token")
+                logger.error("Auth.requestValidator", req.originalUrl, "Invalid admin token"), `From ${req.ip}`
                 webserver.renderError(req, res, "Access denied", 401)
                 return false
             }
@@ -98,7 +98,7 @@ export class Auth {
             // All good!
             return true
         } catch (ex) {
-            logger.error("Auth.requestValidator", ex)
+            logger.error("Auth.requestValidator", ex, `From ${req.ip}`)
             webserver.renderError(req, res, ex, 401)
         }
     }
