@@ -31,4 +31,16 @@ If anything's missing you'll see an alert on the console.
 
 ## Deplopyment
 
-Strautomator is targeting GCP and can be easily deployed as a standalone VM instance, as a Cloud Run service, or to App Engine. There are samples for [app.yaml](https://github.com/strautomator/web/blob/master/samples/app.yaml) (App Engine) and a [docker-compose.yml](https://github.com/strautomator/web/blob/master/samples/docker-compose.yml) (standalone VM, using Docker Compose), that you can use as a template for your own deployment.
+Strautomator is targeting GCP and can be easily deployed as a standalone VM instance, as a Cloud Run service, or to App Engine. Although you could also run it on other providers (AWS for instance), please keep in mind that the database (Firestore) runs on Google, unless you create your own version for other data stores.
+
+### Deploying to GCE VM
+
+Sample: [docker-compose.yml](https://github.com/strautomator/web/blob/master/samples/docker-compose.yml)
+
+### Deploying to App Engine
+
+Sample: [app.yaml](https://github.com/strautomator/web/blob/master/samples/app.yaml)
+
+### Deploying to Cloud Run
+
+Deploying to Cloud Run is as simple as creating a Cloud Build trigger to update your services whenever there's a new version pushed to GIT.
