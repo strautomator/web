@@ -17,12 +17,5 @@
     "app": {
         // Listen to all incoming connections by default.
         "ip": "0.0.0.0"
-    },
-    "scheduler": {
-        // How many times should Strautomator retry failed jobs, for instance
-        // when updating user activities on Strava?
-        "maxRetry": 2,
-        // Retry failed jobs after some minutes. Value set in seconds.
-        "retryAfter": 300
     }
 }
