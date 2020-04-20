@@ -59,7 +59,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         const {accessToken, refreshToken, expiresAt} = tokens
         await this.saveData({accessToken, refreshToken, expiresAt})
 
-        const athlete = await core.strava.getAthlete(tokens)
+        const athlete = await core.strava.athletes.getAthlete(tokens)
 
         // Check for existing user, and create a new one if necessary.
         await core.users.upsert(athlete, tokens)
@@ -137,7 +137,7 @@ Handler.prototype.updateToken = async function updateToken() {
 }
 
 Handler.prototype.redirectToOAuth = async function redirectToOAuth() {
-    return this.redirect(core.strava.api.authUrl)
+    return this.redirect(core.strava.authUrl)
 }
 
 Handler.prototype.logout = async function logout() {

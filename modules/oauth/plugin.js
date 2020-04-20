@@ -14,11 +14,6 @@ const initStore = async (context) => {
         state: {
             accessToken: context.req && context.req.accessToken,
             user: context.req && context.req.user
-        },
-        mutations: {
-            updateRecipes(state, recipes) {
-                state.user.recipes = recipes
-            }
         }
     })
 }
