@@ -28,13 +28,13 @@ module.exports = {
 
     // Additional build config.
     build: {
-        extend(config, ctx) {}
+        extend() {}
     },
 
     // Additional builders.
     buildModules: ["@nuxtjs/vuetify", "@nuxtjs/google-analytics"],
 
-    // APpend global styesl.
+    // Append global styles.
     css: ["@/assets/styles.scss"],
 
     // Please change the GA ID to your own, or simply disable the module if not needed.
@@ -59,10 +59,7 @@ module.exports = {
     plugins: [],
 
     // Root route to redirect to /home or /dashboard.
-    serverMiddleware: [
-        {path: "/", handler: "~/server/routes/index.js"},
-        "~/server/routes/global.js"
-    ],
+    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],
 
     // Vuetify general options.
     vuetify: {

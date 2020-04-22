@@ -71,6 +71,10 @@ class WebServer {
             // When running behind a proxy / LB.
             this.app.set("trust proxy", settings.api.trustProxy)
 
+            // Add body parser.
+            const bodyParser = require("body-parser")
+            this.app.use(bodyParser.json())
+
             // Set API rate limiting (if defined on the settings).
             if (settings.api.rateLimit && settings.api.rateLimit.max) {
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
