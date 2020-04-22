@@ -41,7 +41,6 @@ export default {
     },
     computed: {
         errorDetails() {
-            this.error.statusCode = 401
             if (this.error.statusCode == 401 || this.error.statusCode == 403) {
                 return {
                     title: "Access denied",
