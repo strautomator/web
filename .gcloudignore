@@ -17,8 +17,8 @@ Dockerfile
 Makefile
 README.md
 settings.secret.json
+settings.from-gcp.json
 strautomator.cert
 strautomator.key
 app.yaml
-app.yaml.sample
 *.log

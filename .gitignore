@@ -18,7 +18,7 @@ pids/
 server/
 /app.yaml
 /settings.secret.json
-/settings.secret.gcs.json
+/settings.from-gcp.json
 /settings.env
 /strautomator.cert
 /strautomator.key

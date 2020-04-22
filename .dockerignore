@@ -10,6 +10,6 @@ node_modules/
 samples/
 Makefile
 settings.secret.json
+settings.from-gcp.json
 app.yaml
-app.yaml.sample
 *.log

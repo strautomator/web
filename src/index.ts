@@ -11,11 +11,6 @@ async function start() {
         const setmeup = require("setmeup")
         const settings = setmeup.settings
 
-        // Make sure all required settings are there.
-        if (settings.api.adminKey) {
-            logger.error("Strautomator.startup", "Missing settings.api.adminKey, please set it to a valid secret string")
-        }
-
         // Import and Set Nuxt.js options.
         const config = require("../nuxt.config.js")
         config.dev = process.env.NODE_ENV !== "production"
