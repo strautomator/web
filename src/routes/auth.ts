@@ -88,13 +88,6 @@ export class Auth {
                 return false
             }
 
-            // Requires admin permissions?
-            if (options.admin && req.headers["x-strautomator-admin"] != settings.api.adminToken) {
-                logger.error("Auth.requestValidator", req.originalUrl, "Invalid admin token"), `From ${req.ip}`
-                webserver.renderError(req, res, "Access denied", 401)
-                return false
-            }
-
             // All good!
             return true
         } catch (ex) {
