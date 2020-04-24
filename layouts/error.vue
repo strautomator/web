@@ -53,8 +53,8 @@ export default {
                 }
             } else {
                 return {
-                    title: "500 - Crashed while sprinting",
-                    message: "damn"
+                    title: "Crashed while sprinting",
+                    message: "There was a massive pile up, and our servers got error 500, sorry..."
                 }
             }
         }
