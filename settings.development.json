@@ -2,10 +2,8 @@
 
 {
     "api": {
-        // Secure token that should be passed as a "Strautomator-Key" header
-        // on API requests marked for administrators only.
-        "adminToken": "Dev",
         // You can set this to true on development to skip OAuth2 header checks.
+        // This feature CANNOT be enabled in production.
         "skipAuthValidation": false
     },
     "app": {

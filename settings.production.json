@@ -1,12 +1,6 @@
 // STRAUTOMATOR WEB SETTINGS (PRODUCTION)
 
 {
-    "api": {
-        // Secure token that should be passed as a "Strautomator-Key" header
-        // on API requests marked for administrators only. This MUST be set
-        // via secret settings or via the $SMU_API_api_adminToken environment variable.
-        "adminToken": null
-    },
     "app": {
         "title": "Strautomator",
         // The server will look for the files strautomator.cert and strautomator.key on the

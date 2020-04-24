@@ -23,7 +23,6 @@ handlers:
 env_variables:
     NODE_ENV: "production"
     HOST: "0.0.0.0"
-    SMU_api_adminToken: "xxx"
     SMU_cookie_secret: "xxx"
     SMU_database_crypto_key: "xxx"
     SMU_database_crypto_iv: "xxx"
