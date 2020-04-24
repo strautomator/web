@@ -158,8 +158,11 @@ const routeUserRecipe = async (req: any, res: any) => {
             }
         }
 
+        // Update recipe count on user data.
+        user.recipeCount = Object.keys(user.recipes).length
+
         // If user has no subscription yet, create one now.
-        if (!user.stravaSubscription && Object.keys(user.recipes).length > 0) {
+        if (!user.stravaSubscription && user.recipeCount > 0) {
             try {
                 await strava.webhooks.setSubscription(user)
             } catch (ex) {
