@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.176.250021",
+    "version": "20.177.262158",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "private": true,
@@ -16,7 +16,7 @@
     "dependencies": {
         "@nuxtjs/axios": "^5.10.1",
         "@nuxtjs/google-analytics": "^2.2.3",
-        "@nuxtjs/vuetify": "^1.11.0",
+        "@nuxtjs/vuetify": "^1.11.2",
         "anyhow": "^1.5.2",
         "body-parser": "^1.19.0",
         "client-sessions": "^0.8.0",
@@ -33,14 +33,14 @@
         "strautomator-core": "strautomator/core"
     },
     "devDependencies": {
-        "@nuxt/types": "^0.7.4",
+        "@nuxt/types": "^0.7.5",
         "@types/express": "^4.17.6",
-        "@types/node": "^13.13.2",
+        "@types/node": "^13.13.4",
         "axios-debug-log": "^0.7.0",
         "chalk": "^4.0.0",
         "nodemon": "^2.0.3",
-        "ts-node": "^8.9.0",
-        "typedoc": "^0.17.4"
+        "ts-node": "^8.9.1",
+        "typedoc": "^0.17.5"
     },
     "nodemonConfig": {
         "ignore": [
