@@ -14,12 +14,8 @@ Handler.prototype.init = function init({req, res, next, options = {sessionName: 
     this.opts = options
 }
 
-const errorLog = (e) => process.env.NODE_ENV === "development" && console.error(e)
-
 /**
- * TODO Handle some max retry logic to stop the spam when a token is not valid
- * * x-Retries - could be passed as a simple header
- * * npm library (requestretry)[https://www.npmjs.com/package/requestretry] might also be helpful
+ * TODO Handle some max retry logic to stop the spam when a token is not valid.
  */
 Handler.prototype.redirect = function redirect(path) {
     this.res.writeHead(302, {location: path})
@@ -28,12 +24,19 @@ Handler.prototype.redirect = function redirect(path) {
 
 Handler.prototype.createSession = function createSession() {
     if (this.req[this.opts.sessionName]) return Promise.resolve()
-    const session = sessions({
-        cookieName: this.opts.sessionName,
-        secret: this.opts.secretKey,
-        duration: 24 * 60 * 60 * 1000
-    })
-    return new Promise((resolve) => session(this.req, this.res, resolve))
+
+    try {
+        const session = sessions({
+            cookieName: this.opts.sessionName,
+            secret: this.opts.secretKey,
+            duration: 24 * 60 * 60 * 1000
+        })
+
+        return new Promise((resolve) => session(this.req, this.res, resolve))
+    } catch (ex) {
+        logger.error("OAuth.createSession", ex)
+        throw ex
+    }
 }
 
 Handler.prototype.checkRequestAuthorization = async function checkRequestAuthorization() {
