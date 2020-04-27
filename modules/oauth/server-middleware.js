@@ -1,7 +1,5 @@
 const {parse} = require("qs")
-
 const Handler = require("./handler")
-const {INVALID_SESSION} = require("./constants")
 
 const setCustomValues = (options, req) => async (key) => {
     if (typeof options[key] !== "function") return
@@ -27,7 +25,7 @@ module.exports = (options) => async (req, res, next) => {
             return res.end(body)
         }
 
-        const body = JSON.stringify({error: INVALID_SESSION})
+        const body = JSON.stringify({error: "Invalid session"})
         return res.end(body)
     }
 

@@ -5,6 +5,7 @@ const moduleName = "<%= options.moduleName %>"
 
 const initStore = async (context) => {
     if (process.client) return
+
     if (!context.store) {
         throw new Error("The OAuth module requires a Vuex store!")
     }

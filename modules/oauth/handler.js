@@ -88,8 +88,10 @@ Handler.prototype.saveData = async function saveData(token) {
 
     const fetchUser = async () => {
         try {
-            return await this.opts.fetchUser(accessToken, this.req, this.opts)
+            const user = await core.users.getByToken(accessToken)
+            return user
         } catch (ex) {
+            logger.error("OAuth.fetchUser", ex)
             return null
         }
     }
@@ -145,17 +147,13 @@ Handler.prototype.redirectToOAuth = async function redirectToOAuth() {
 
 Handler.prototype.logout = async function logout() {
     await this.createSession()
+
     this.req[this.opts.sessionName].reset()
     this.req[this.opts.sessionName].setDuration(0)
 
-    const redirectUrl = parse(this.req.url.split("?")[1])["redirect-url"] || "/"
-    try {
-        await this.opts.onLogout(this.req, this.res, redirectUrl)
-    } catch (ex) {
-        logger.error("OAuth.logout", ex)
-    }
-
     if (this.res.headersSent) return
+
+    const redirectUrl = parse(this.req.url.split("?")[1])["redirect-url"] || "/"
     this.redirect(redirectUrl)
 }
 
