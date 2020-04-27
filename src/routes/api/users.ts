@@ -67,14 +67,7 @@ router.delete("/:userId", async (req, res) => {
             return webserver.renderError(req, res, "User not found", 404)
         }
 
-        // First, try cancelling current subscription.
-        try {
-            await strava.webhooks.cancelSubscription(user)
-        } catch (ex) {
-            logger.debug("Routes", req.method, req.originalUrl, ex)
-        }
-
-        // Finally delete the user from the database.
+        // Delete the user from the database.
         await users.delete(user)
         logger.info("Routes", req.method, req.originalUrl, `User ${user.displayName} deleted`)
 
