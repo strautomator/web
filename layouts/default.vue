@@ -14,12 +14,12 @@
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
             <v-spacer></v-spacer>
-            <v-avatar v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$vuetify.breakpoint.mdAndUp ? 48 : 32">
+            <v-avatar v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
                 <img :src="$store.state.user.profile.urlAvatar" />
             </v-avatar>
             <v-btn color="amber lighten-4" class="ml-1" to="/logout" title="Logout" @click="logout" text router nuxt>
                 <v-icon>mdi-logout</v-icon>
-                <span v-if="!$vuetify.breakpoint.smAndDown" class="hidden-sm-and-down">Logout</span>
+                <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down">Logout</span>
             </v-btn>
         </v-app-bar>
         <v-content>

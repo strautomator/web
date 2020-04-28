@@ -7,7 +7,7 @@
                         <v-container fill-height>
                             <v-row align="center" class="white--text mx-auto" justify="center">
                                 <v-col class="white--text text-center" cols="12" tag="h1">
-                                    <span class="font-weight-light" :class="[$vuetify.breakpoint.smAndDown ? 'display-2' : 'display-2']">
+                                    <span class="font-weight-light" :class="[$breakpoint.smAndDown ? 'display-2' : 'display-2']">
                                         Automate your Strava activities!
                                     </span>
                                 </v-col>

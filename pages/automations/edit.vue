@@ -23,7 +23,7 @@
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
                     </div>
-                    <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$vuetify.breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
                     </v-dialog>
                 </v-card-text>
@@ -46,7 +46,7 @@
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showActionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new action</v-btn>
                     </div>
-                    <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$vuetify.breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-action :disabled-actions="usedActions" @closed="setAction" />
                     </v-dialog>
                 </v-card-text>

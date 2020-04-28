@@ -7,7 +7,7 @@
         <v-card-text>
             <div class="mt-4" v-for="recipe in recipes" :key="recipe.id">
                 <n-link class="headline" :to="'/automations/edit?id=' + recipe.id" :title="recipe.title"><v-icon color="primary" class="mt-n1" small>mdi-file-tree</v-icon> {{ recipe.title }}</n-link>
-                <div class="to-the-right" v-if="$vuetify.breakpoint.smAndDown">
+                <div class="to-the-right" v-if="$breakpoint.smAndDown">
                     <div class="conditions">Conditions: {{ recipe.conditions.map((c) => conditionPropertyText(c).toLowerCase()).join(", ") }}</div>
                     <div class="actions">
                         <div v-for="action in recipe.actions">
