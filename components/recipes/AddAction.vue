@@ -62,10 +62,11 @@
 
 <script>
 import _ from "lodash"
+import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
-    mixins: [recipeMixin],
+    mixins: [userMixin, recipeMixin],
     props: ["disabled-actions"],
     data() {
         return this.initialData()

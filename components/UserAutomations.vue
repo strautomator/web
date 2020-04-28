@@ -34,15 +34,15 @@
 <script>
 import _ from "lodash"
 import moment from "moment"
+import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
     authenticated: true,
-    mixins: [recipeMixin],
+    mixins: [userMixin, recipeMixin],
     data() {
         return {
-            isMounted: false,
-            user: this.$store.state.oauth.user
+            isMounted: false
         }
     },
     computed: {
