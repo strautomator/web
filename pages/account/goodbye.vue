@@ -53,9 +53,8 @@ export default {
     methods: {
         async cancelAccount() {
             try {
-                const userId = this.$store.state.oauth.user.id
+                const userId = this.$store.state.user.id
 
-                this.$axios.setToken(this.$store.state.oauth.accessToken)
                 this.$axios.$delete(`/api/users/${userId}`)
                 this.accountDeleted = true
 

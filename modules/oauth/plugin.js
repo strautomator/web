@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved, import/no-extraneous-dependencies, prefer-template */
 import middleware from "@@/.nuxt/middleware"
 
-const moduleName = "<%= options.moduleName %>"
+const moduleName = "oauth"
 
 const initStore = async (context) => {
     if (process.client) return
@@ -14,15 +14,7 @@ const initStore = async (context) => {
         namespaced: true,
         state: {
             accessToken: context.req && context.req.accessToken,
-            user: context.req && context.req.user
-        },
-        mutations: {
-            addRecipe(state, recipe) {
-                state.user.recipes[recipe.id] = recipe
-            },
-            deleteRecipe(state, recipe) {
-                delete state.user.recipes[recipe.id]
-            }
+            userId: context.req && context.req.userId
         }
     })
 }

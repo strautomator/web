@@ -34,12 +34,6 @@ export class Auth {
                 options = {}
             }
 
-            // Set to skip validation altogether? This works on development only.
-            if (settings.api.skipAuthValidation && process.env.NODE_ENV == "development") {
-                logger.debug("Auth.requestValidator", req.originalUrl, `skipValidation = true`)
-                return true
-            }
-
             // Check for referer instead of token? Will use same URL set for CORS.
             if (options.image) {
                 const referer = req.headers["referer"] || "unknown"

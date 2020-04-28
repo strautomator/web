@@ -2,33 +2,31 @@ import _ from "lodash"
 
 export default {
     // Share recipe rules used to validate conditions.
-    data() {
-        const rules = {
-            required: (value) => {
-                if (!value || value.trim().length < 1) return `Field is required`
-                return true
-            },
-            number: (value) => {
-                if (isNaN(value)) return "Invalid number"
-                const num = parseFloat(value)
-                if (num <= 0) return "Must be higher than zero"
-                return true
-            },
-            time: (value) => {
-                if (!value) return "Invalid time"
-                value = value.replace(":", "")
-                if (isNaN(value)) return "Invalid time"
-                const num = parseFloat(value)
-                if (num < 0 || num > 2359) return "Invalid time"
-                return true
-            },
-            text: (value) => {
-                return value.length > 0
+    computed: {
+        recipeRules() {
+            return {
+                required: (value) => {
+                    if (!value || value.trim().length < 1) return `Field is required`
+                    return true
+                },
+                number: (value) => {
+                    if (isNaN(value)) return "Invalid number"
+                    const num = parseFloat(value)
+                    if (num <= 0) return "Must be higher than zero"
+                    return true
+                },
+                time: (value) => {
+                    if (!value) return "Invalid time"
+                    value = value.replace(":", "")
+                    if (isNaN(value)) return "Invalid time"
+                    const num = parseFloat(value)
+                    if (num < 0 || num > 2359) return "Invalid time"
+                    return true
+                },
+                text: (value) => {
+                    return value.length > 0
+                }
             }
-        }
-
-        return {
-            recipeRules: rules
         }
     },
     methods: {

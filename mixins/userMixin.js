@@ -1,7 +1,7 @@
 export default {
     data() {
         return {
-            user: this.$store.state.oauth ? this.$store.state.oauth.user : null
+            user: this.$store.state.user
         }
     },
     mounted() {

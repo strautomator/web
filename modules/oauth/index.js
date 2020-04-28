@@ -2,7 +2,6 @@ const {resolve} = require("path")
 const base = require("./server-middleware")
 
 const defaultOptions = {
-    moduleName: "oauth",
     scopes: []
 }
 
@@ -17,7 +16,7 @@ module.exports = function NuxtOAuth(moduleOptions) {
         src: resolve(__dirname, "plugin.js"),
         fileName: "nuxt-oauth.plugin.js",
         options: {
-            moduleName: options.moduleName
+            moduleName: "oauth"
         }
     })
 

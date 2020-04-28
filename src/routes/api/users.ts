@@ -163,7 +163,7 @@ const routeUserRecipe = async (req: any, res: any) => {
             }
         }
 
-        await users.update(user)
+        await users.update(user, true)
         webserver.renderJson(req, res, recipe)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

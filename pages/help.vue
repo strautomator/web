@@ -127,7 +127,7 @@ import moment from "moment"
 export default {
     authenticated: false,
     layout({store}) {
-        if (!store.state.oauth || !store.state.oauth.user) {
+        if (!store.state.oauth || !store.state.user) {
             return "landing"
         } else {
             return "default"
@@ -140,7 +140,7 @@ export default {
     },
     data() {
         return {
-            loggedIn: this.$store.state.oauth && this.$store.state.oauth.user
+            loggedIn: this.$store.state.user
         }
     }
 }

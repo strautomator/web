@@ -77,11 +77,11 @@ export default {
             _.remove(recipeActions, (a) => this.disabledActions.indexOf(a.value) >= 0)
 
             // Get bikes and shoes and create gears list.
-            const bikes = _.cloneDeep(this.$store.state.oauth.user.profile.bikes)
+            const bikes = _.cloneDeep(this.$store.state.user.profile.bikes)
             for (let bike of bikes) {
                 bike.name = `${bike.name} (bike)`
             }
-            const shoes = _.cloneDeep(this.$store.state.oauth.user.profile.shoes)
+            const shoes = _.cloneDeep(this.$store.state.user.profile.shoes)
             for (let shoe of shoes) {
                 shoe.name = `${shoe.name} (shoes)`
             }

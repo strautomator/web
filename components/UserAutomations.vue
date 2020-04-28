@@ -1,10 +1,13 @@
 <template>
     <v-card class="m-3" outlined>
-        <v-card-title class="accent"> Your automations <v-spacer /> ({{ recipes.length }}) </v-card-title>
+        <v-card-title class="accent">
+            Your automations
+            <v-badge v-if="recipes.length > 0" color="primary" offset-x="-9" offset-y="11" :content="recipes.length"></v-badge>
+        </v-card-title>
         <v-card-text>
             <div class="mt-4" v-for="recipe in recipes" :key="recipe.id">
                 <n-link class="headline" :to="'/automations/edit?id=' + recipe.id" :title="recipe.title"><v-icon color="primary" class="mt-n1" small>mdi-file-tree</v-icon> {{ recipe.title }}</n-link>
-                <div class="to-the-right" v-if="$vuetify.breakpoint.smAndDown || !isMounted">
+                <div class="to-the-right" v-if="$vuetify.breakpoint.smAndDown">
                     <div class="conditions">Conditions: {{ recipe.conditions.map((c) => conditionPropertyText(c).toLowerCase()).join(", ") }}</div>
                     <div class="actions">
                         <div v-for="action in recipe.actions">
@@ -40,20 +43,10 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 export default {
     authenticated: true,
     mixins: [userMixin, recipeMixin],
-    data() {
-        return {
-            isMounted: false
-        }
-    },
     computed: {
         recipes() {
             return Object.values(this.user.recipes)
         }
-    },
-    async mounted() {
-        this.$axios.setToken(this.$store.state.oauth.accessToken)
-        this.user = await this.$axios.$get(`/api/users/${this.$store.state.oauth.user.id}`)
-        this.isMounted = true
     }
 }
 </script>

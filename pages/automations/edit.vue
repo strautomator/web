@@ -106,7 +106,7 @@ export default {
         let recipe, valid
 
         if (this.$route.query && this.$route.query.id) {
-            recipe = this.$store.state.oauth.user.recipes[this.$route.query.id]
+            recipe = this.$store.state.user.recipes[this.$route.query.id]
             valid = true
         } else {
             recipe = {conditions: [], actions: []}
@@ -127,11 +127,11 @@ export default {
         async save() {
             try {
                 if (this.$refs.form.validate()) {
-                    const user = this.$store.state.oauth.user
+                    const user = this.$store.state.user
                     const url = `/api/users/${user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
-                    this.$store.commit("oauth/addRecipe", recipeData)
+                    this.$store.commit("addUserRecipe", recipeData)
                     this.$router.push({
                         path: `/automations?new=${recipeData.id}`
                     })
@@ -192,8 +192,7 @@ export default {
         },
         async deleteRecipe() {
             try {
-                const userId = this.$store.state.oauth.user.id
-                this.$axios.setToken(this.$store.state.oauth.accessToken)
+                const userId = this.$store.state.user.id
                 this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
             } catch (ex) {
                 console.error(ex)
@@ -201,7 +200,7 @@ export default {
 
             this.deleteDialog = false
 
-            this.$store.commit("oauth/deleteRecipe", recipeData)
+            this.$store.commit("deleteUserRecipe", this.recipe)
             this.$router.push({
                 path: "/automations"
             })

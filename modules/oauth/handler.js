@@ -86,10 +86,10 @@ Handler.prototype.saveData = async function saveData(token) {
     this.req[this.opts.sessionName].token = {accessToken, refreshToken, expiresAt}
     this.req.accessToken = accessToken
 
-    const fetchUser = async () => {
+    const fetchUserId = async () => {
         try {
-            const user = await core.users.getByToken(accessToken)
-            return user
+            const userFromToken = await core.users.getByToken(accessToken)
+            return userFromToken ? userFromToken.id : null
         } catch (ex) {
             logger.error("OAuth.fetchUser", ex)
             return null
@@ -97,22 +97,23 @@ Handler.prototype.saveData = async function saveData(token) {
     }
 
     const now = new Date().getTime() / 1000
-    let user
+    let userId
 
     if (now < expiresAt) {
-        user = this.req[this.opts.sessionName].user
+        userId = this.req[this.opts.sessionName].userId
     }
-    if (!user) {
-        user = await fetchUser()
+    if (!userId) {
+        userId = await fetchUserId()
     }
-    if (!user) {
+    if (!userId) {
         return false
     } else {
-        logger.debug("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
+        logger.debug("OAuth.saveData", `User ${userId}`)
     }
 
-    this.req[this.opts.sessionName].user = user
-    this.req.user = user
+    this.req[this.opts.sessionName].userId = userId
+    this.req.userId = userId
+
     return true
 }
 
@@ -153,7 +154,7 @@ Handler.prototype.logout = async function logout() {
 
     if (this.res.headersSent) return
 
-    const redirectUrl = parse(this.req.url.split("?")[1])["redirect-url"] || "/"
+    const redirectUrl = "/home"
     this.redirect(redirectUrl)
 }
 

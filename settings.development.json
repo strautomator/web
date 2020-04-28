@@ -1,11 +1,6 @@
 // STRAUTOMATOR WEB SETTINGS (DEVELOPMENT)
 
 {
-    "api": {
-        // You can set this to true on development to skip OAuth2 header checks.
-        // This feature CANNOT be enabled in production.
-        "skipAuthValidation": false
-    },
     "app": {
         "title": "Strautomator (Dev)",
         // Default Web port for web on development is 3000.

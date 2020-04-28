@@ -154,7 +154,6 @@ export default {
                 this.loading = true
                 this.locationInput = null
 
-                this.$axios.setToken(this.$store.state.oauth.accessToken)
                 const data = await this.$axios.$get(`/api/maps/geocode?address=${value}`)
 
                 for (let loc of data) {

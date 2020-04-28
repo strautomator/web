@@ -54,7 +54,7 @@ export default {
             } else {
                 return {
                     title: "Crashed while sprinting",
-                    message: "There was a massive pile up, and our servers got error 500, sorry..."
+                    message: "There was a massive pile up, sorry..."
                 }
             }
         }
