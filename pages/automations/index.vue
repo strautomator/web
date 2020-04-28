@@ -1,7 +1,10 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Automations</h1>
+            <h1>
+                Automations
+                <v-badge v-if="recipes.length > 0" color="primary" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
+            </h1>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
             </div>

@@ -17,9 +17,9 @@
             <v-avatar v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
                 <img :src="$store.state.user.profile.urlAvatar" />
             </v-avatar>
-            <v-btn color="amber lighten-4" class="ml-1" to="/logout" title="Logout" @click="logout" text router nuxt>
+            <v-btn color="amber lighten-4" class="ml-1" :class="{'mr-n2': $breakpoint.smAndDown}" to="/logout" title="Logout" @click="logout" text router nuxt>
                 <v-icon>mdi-logout</v-icon>
-                <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down">Logout</span>
+                <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down caption">Logout</span>
             </v-btn>
         </v-app-bar>
         <v-content>
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </v-content>
-        <v-bottom-navigation class="hidden-md-and-up" app grow>
+        <v-bottom-navigation class="hidden-md-and-up" color="primary" v-model="activeNavBtn" app grow>
             <v-btn to="/automations" router nuxt>
                 <span>Automations</span>
                 <v-icon>mdi-file-tree</v-icon>
@@ -62,6 +62,11 @@
 <script>
 export default {
     authenticated: true,
+    data() {
+        return {
+            activeNavBtn: 0
+        }
+    },
     methods: {
         logout() {
             this.$logout()

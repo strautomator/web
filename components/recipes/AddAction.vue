@@ -69,12 +69,20 @@ export default {
     mixins: [userMixin, recipeMixin],
     props: ["disabled-actions"],
     data() {
-        return this.initialData()
+        return this.initialData(true)
+    },
+    watch: {
+        disabledActions(arr) {
+            this.filterActions(arr)
+        }
     },
     methods: {
-        initialData() {
+        initialData(filter) {
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
-            _.remove(recipeActions, (a) => this.disabledActions.indexOf(a.value) >= 0)
+
+            if (filter) {
+                this.filterActions(this.disabledActions)
+            }
 
             // Get bikes and shoes and create gears list.
             const bikes = _.cloneDeep(this.$store.state.user.profile.bikes)
@@ -97,6 +105,11 @@ export default {
                 selectedGear: {},
                 valueInput: ""
             }
+        },
+        filterActions(arr) {
+            const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
+            _.remove(recipeActions, (a) => arr.indexOf(a.value) >= 0)
+            this.recipeActions = recipeActions
         },
         cancel() {
             this.$emit("closed", false)
