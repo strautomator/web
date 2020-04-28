@@ -61,20 +61,7 @@
 
 <script>
 export default {
-    async asyncData({error, store}) {
-        try {
-            const user = store.state.oauth.user
-
-            return {
-                user: user
-            }
-        } catch (ex) {
-            error({
-                statusCode: 500,
-                message: ex.toString()
-            })
-        }
-    },
+    authenticated: true,
     methods: {
         logout() {
             this.$logout()

@@ -16,11 +16,12 @@
 import moment from "moment"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import UserAutomations from "~/components/UserAutomations.vue"
+import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
     authenticated: true,
-    mixins: [recipeMixin],
+    mixins: [userMixin, recipeMixin],
     components: {
         CreateFirst,
         UserAutomations
@@ -28,23 +29,6 @@ export default {
     head() {
         return {
             title: "Automations"
-        }
-    },
-    async asyncData({error, store, $axios}) {
-        try {
-            $axios.setToken(store.state.oauth.accessToken)
-            const user = await $axios.$get(`/api/users/${store.state.oauth.user.id}`)
-
-            return {
-                user: user
-            }
-        } catch (ex) {
-            const status = ex.response && ex.response.status ? ex.response.status : 500
-
-            error({
-                statusCode: status,
-                message: ex.toString()
-            })
         }
     },
     computed: {

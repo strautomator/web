@@ -87,6 +87,7 @@
 import _ from "lodash"
 import AddCondition from "~/components/recipes/AddCondition.vue"
 import AddAction from "~/components/recipes/AddAction.vue"
+import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
@@ -95,15 +96,13 @@ export default {
         AddCondition,
         AddAction
     },
-    mixins: [recipeMixin],
+    mixins: [userMixin, recipeMixin],
     head() {
         return {
             title: "Automation"
         }
     },
     data() {
-        this.$axios.setToken(this.$store.state.oauth.accessToken)
-
         let recipe, valid
 
         if (this.$route.query && this.$route.query.id) {
@@ -132,6 +131,7 @@ export default {
                     const url = `/api/users/${user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
+                    this.$store.commit("oauth/addRecipe", recipeData)
                     this.$router.push({
                         path: `/automations?new=${recipeData.id}`
                     })
@@ -200,7 +200,11 @@ export default {
             }
 
             this.deleteDialog = false
-            window.location.href = "/automations"
+
+            this.$store.commit("oauth/deleteRecipe", recipeData)
+            this.$router.push({
+                path: "/automations"
+            })
         }
     }
 }

@@ -15,6 +15,14 @@ const initStore = async (context) => {
         state: {
             accessToken: context.req && context.req.accessToken,
             user: context.req && context.req.user
+        },
+        mutations: {
+            addRecipe(state, recipe) {
+                state.user.recipes[recipe.id] = recipe
+            },
+            deleteRecipe(state, recipe) {
+                delete state.user.recipes[recipe.id]
+            }
         }
     })
 }

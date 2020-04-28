@@ -76,30 +76,20 @@
 
 <script>
 import moment from "moment"
+import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
+    mixins: [userMixin],
     head() {
         return {
             title: "Account"
         }
     },
-    async asyncData({error, store}) {
-        try {
-            const user = store.state.oauth.user
-
-            return {
-                user: user,
-                dateRegistered: moment(user.dateRegistered).format("LL")
-            }
-        } catch (ex) {
-            error({
-                statusCode: 500,
-                message: ex.toString()
-            })
-        }
-    },
     computed: {
+        dateRegistered() {
+            return moment(this.user.dateRegistered).format("LL")
+        },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
         }

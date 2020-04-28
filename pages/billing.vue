@@ -30,28 +30,23 @@
 <style></style>
 
 <script>
+import userMixin from "~/mixins/userMixin.js"
+
 export default {
     authenticated: true,
+    mixins: [userMixin],
     head() {
         return {
             title: "Billing"
         }
     },
-    async asyncData({$axios, env, error, params, store}) {
-        try {
-            const now = new Date().getTime() / 1000
+    data() {
+        const now = new Date().getTime() / 1000
 
-            return {
-                now: now,
-                user: store.state.oauth.user,
-                isPro: false,
-                price: 10
-            }
-        } catch (ex) {
-            error({
-                statusCode: 500,
-                message: ex.toString()
-            })
+        return {
+            now: now,
+            isPro: false,
+            price: 10
         }
     }
 }

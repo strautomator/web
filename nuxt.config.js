@@ -43,7 +43,7 @@ module.exports = {
     },
 
     // Loading is white by default.
-    loading: {color: "#FFF"},
+    loading: {color: "#FFECB3"},
 
     // Use axios, cookies and the custom Strava OAuth2 module.
     modules: ["@nuxtjs/axios", "cookie-universal-nuxt", "~/modules/oauth/index.js"],
