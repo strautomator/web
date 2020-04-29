@@ -42,7 +42,7 @@ module.exports = {
         id: "UA-9331973-6"
     },
 
-    // Loading is white by default.
+    // Loading specs.
     loading: {color: "#FFECB3"},
 
     // Use axios, cookies and the custom Strava OAuth2 module.
@@ -69,9 +69,10 @@ module.exports = {
             themes: {
                 dark: {
                     primary: colors.amber.darken3,
-                    secondary: colors.amber.darken4,
+                    secondary: colors.amber.lighten4,
                     accent: colors.grey.darken3,
-                    info: colors.teal.lighten1,
+                    toolbar: colors.grey.darken4,
+                    info: colors.grey.lighten1,
                     warning: colors.amber.base,
                     error: colors.deepOrange.accent4,
                     success: colors.green.accent3

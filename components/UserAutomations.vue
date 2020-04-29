@@ -4,24 +4,20 @@
             <v-hover v-slot:default="{hover}">
                 <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                     <v-card-title class="accent">
-                        <span>{{ recipe.title }}</span>
+                        <span class="primary--text">{{ recipe.title }}</span>
                         <v-spacer />
                         <v-icon v-show="hover" small>mdi-pencil-outline</v-icon>
                     </v-card-title>
                 </n-link>
             </v-hover>
             <v-card-text>
-                <div class="conditions">
-                    <div class="pl-4 font-weight-medium">When...</div>
-                    <ul class=" mt-0 pl-4">
-                        <li v-for="condition in recipe.conditions">
-                            {{ conditionSummary(condition) }}
-                        </li>
-                    </ul>
-                </div>
-                <div class="pl-4 font-weight-medium mt-2">Then...</div>
-                <ul class=" mt-0 pl-4">
-                    <li v-for="action in recipe.actions">
+                <ul class="mt-0 pl-4">
+                    <li v-for="condition in recipe.conditions">
+                        {{ conditionSummary(condition) }}
+                    </li>
+                </ul>
+                <ul class="mt-0 pl-4">
+                    <li class="font-weight-medium white--text" v-for="action in recipe.actions">
                         {{ actionSummary(action) }}
                     </li>
                 </ul>

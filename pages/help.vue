@@ -117,7 +117,6 @@
 }
 .v-expansion-panel-header--active {
     font-weight: bold;
-    color: #ffd180;
 }
 </style>
 

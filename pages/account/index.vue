@@ -58,7 +58,7 @@
                 <li class="beta">Free accounts will have a link to Strautomator on the description of 20% of processed activities.</li>
             </ul>
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="amber lighten-4"  title="Logout from your account" @click="logout" outlined rounded>Logout</v-btn>
+                <v-btn color="info"  title="Logout from your account" @click="logout" outlined rounded>Logout</v-btn>
                 <v-btn color="red" class="ml-2" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>
             </div>
         </v-container>
