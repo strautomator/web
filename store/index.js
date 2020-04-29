@@ -29,12 +29,10 @@ export const mutations = {
 }
 
 export const actions = {
-    async nuxtServerInit({commit, dispatch, state}, {$axios}) {
+    async nuxtServerInit({commit, dispatch, state}) {
         if (process.server) {
             const core = require("strautomator-core")
             const settings = require("setmeup").settings
-
-            $axios.setBaseURL(settings.app.url)
 
             const recipeOptions = {
                 recipeProperties: core.recipes.propertyList,
@@ -56,6 +54,12 @@ export const actions = {
         let oauth = state.oauth
 
         try {
+            // TODO! Hacky checking for the correct base URL on production.
+            // Some troubleshooting still needed.
+            if (!this.$axios.defaults.baseURL || this.$axios.defaults.baseURL.indexOf("strautomator") < 0) {
+                this.$axios.setBaseURL("https://strautomator.com/")
+            }
+
             this.$axios.setToken(oauth.accessToken)
 
             const user = await this.$axios.$get(`api/users/${oauth.userId}`)
