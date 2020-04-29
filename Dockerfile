@@ -1,5 +1,6 @@
 # BUILDER
 FROM node:alpine AS strautomator-web-builder
+ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++ && npm install && ./node_modules/.bin/tsc && npm run build
