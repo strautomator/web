@@ -1,4 +1,11 @@
 const colors = require("vuetify/es5/util/colors").default
+const setmeup = require("setmeup")
+const settings = setmeup.settings
+
+// Make sure settings are loaded.
+if (!settings.app || !settings.app.url) {
+    setmeup.load()
+}
 
 module.exports = {
     mode: "universal",
@@ -20,7 +27,7 @@ module.exports = {
 
     // Additional axios config.
     axios: {
-        baseURL: "https://strautomator.com/",
+        baseUrl: settings.app.url,
         retry: {
             retries: 1
         }
@@ -52,11 +59,21 @@ module.exports = {
     // and settings.ENV.json files on startup!
     oauth: {
         sessionName: "strautsession",
-        oauthHost: "https://www.strava.com/oauth/"
+        secretKey: settings.cookie.secret,
+        oauthClientID: settings.strava.api.clientId,
+        oauthClientSecret: settings.strava.api.clientSecret,
+        oauthHost: "https://www.strava.com/oauth/",
+        scopes:[settings.strava.api.scopes]
     },
 
     // Additional plugins.
     plugins: ["~/plugins/breakpoint"],
+
+    // Server options.
+    server: {
+        host: settings.app.ip,
+        port: settings.app.port
+    },
 
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],
