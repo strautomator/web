@@ -57,6 +57,7 @@ export const actions = {
             // TODO! Hacky checking for the correct base URL on production.
             // Some troubleshooting still needed.
             if (!this.$axios.defaults.baseURL || this.$axios.defaults.baseURL.indexOf("strautomator") < 0) {
+                console.warn(`Force setting axios baseURL to https://strautomator.com/`)
                 this.$axios.setBaseURL("https://strautomator.com/")
             }
 

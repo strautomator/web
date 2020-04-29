@@ -15,6 +15,13 @@ async function start() {
         const config = require("../nuxt.config.js")
         config.dev = process.env.NODE_ENV !== "production"
 
+        // Copy SetMeUp settings to nuxt.
+        const oauthConfig = config.oauth
+        oauthConfig.secretKey = settings.cookie.secret
+        oauthConfig.oauthClientID = settings.strava.api.clientId
+        oauthConfig.oauthClientSecret = settings.strava.api.clientSecret
+        oauthConfig.scopes = [settings.strava.api.scopes]
+
         // Init Nuxt.js.
         const {Nuxt, Builder} = require("nuxt")
         const nuxt = new Nuxt(config)
@@ -23,8 +30,15 @@ async function start() {
         if (process.env.PORT) {
             logger.info("Strautomator.startup", `Port ${process.env.PORT} set via envionment variable`)
             settings.app.port = process.env.PORT
-            nuxt.options.server.port = settings.app.port
         }
+
+        // Override nuxt configuration.
+        const baseUrl = settings.app.url
+        nuxt.options.server.host = settings.app.ip
+        nuxt.options.server.port = settings.app.port
+        nuxt.options.env.baseUrl = baseUrl
+        nuxt.options.axios.baseURL = baseUrl
+        nuxt.options.axios.browserBaseURL = baseUrl
 
         // Nuxt setup.
         await nuxt.ready()

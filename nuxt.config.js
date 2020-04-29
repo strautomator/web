@@ -1,12 +1,7 @@
 const colors = require("vuetify/es5/util/colors").default
-const setmeup = require("setmeup")
-const settings = setmeup.settings
 
-// Make sure settings are loaded.
-if (!settings.app || !settings.app.url) {
-    setmeup.load()
-}
-
+// Please note that some of the settings here are hard coded for production but can be
+// overwritten during startup on ~/src/index.ts, specially when running in development.
 module.exports = {
     mode: "universal",
 
@@ -27,7 +22,7 @@ module.exports = {
 
     // Additional axios config.
     axios: {
-        baseUrl: settings.app.url,
+        baseURL: "https://strautomator.com/",
         retry: {
             retries: 1
         }
@@ -44,6 +39,11 @@ module.exports = {
     // Append global styles.
     css: ["@/assets/styles.scss"],
 
+    // Forced environment variables.
+    env: {
+        baseUrl: "https://strautomator.com/"
+    },
+
     // Please change the GA ID to your own, or simply disable the module if not needed.
     googleAnalytics: {
         id: "UA-9331973-6"
@@ -59,21 +59,11 @@ module.exports = {
     // and settings.ENV.json files on startup!
     oauth: {
         sessionName: "strautsession",
-        secretKey: settings.cookie.secret,
-        oauthClientID: settings.strava.api.clientId,
-        oauthClientSecret: settings.strava.api.clientSecret,
-        oauthHost: "https://www.strava.com/oauth/",
-        scopes:[settings.strava.api.scopes]
+        oauthHost: "https://www.strava.com/oauth/"
     },
 
     // Additional plugins.
     plugins: ["~/plugins/breakpoint"],
-
-    // Server options.
-    server: {
-        host: settings.app.ip,
-        port: settings.app.port
-    },
 
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],
