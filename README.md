@@ -35,6 +35,8 @@ If anything's missing you'll see an alert on the console.
 
 Strautomator is targeting GCP and can be easily deployed as a standalone VM instance, as a Cloud Run service, or to App Engine. Although you could also run it on other providers (AWS for instance), please keep in mind that the database (Firestore) runs on Google, unless you create your own version for other data stores.
 
+Also bear in mind that even thou this project is open source, you might need to adapt some settings if you want to run it in production on your own cloud environment. This includes changing target URL (https://strautomator.com/), server IP and ports, etc...
+
 ### Deploying to GCE VM
 
 Sample: [docker-compose.yml](https://github.com/strautomator/web/blob/master/samples/docker-compose.yml)
