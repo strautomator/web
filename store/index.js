@@ -2,7 +2,7 @@ export const state = () => ({
     user: null,
     recipeProperties: null,
     recipeActions: null,
-    recipeMaxLength: 100
+    recipeMaxLength: null
 })
 
 export const getters = {
@@ -29,10 +29,12 @@ export const mutations = {
 }
 
 export const actions = {
-    async nuxtServerInit({commit, dispatch, state}) {
+    async nuxtServerInit({commit, dispatch, state}, {$axios}) {
         if (process.server) {
             const core = require("strautomator-core")
             const settings = require("setmeup").settings
+
+            $axios.setBaseURL(settings.app.url)
 
             const recipeOptions = {
                 recipeProperties: core.recipes.propertyList,
@@ -56,7 +58,7 @@ export const actions = {
         try {
             this.$axios.setToken(oauth.accessToken)
 
-            const user = await this.$axios.$get(`/api/users/${oauth.userId}`)
+            const user = await this.$axios.$get(`api/users/${oauth.userId}`)
             commit("setUser", user)
         } catch (ex) {
             if (process.server) {
