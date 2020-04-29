@@ -14,7 +14,7 @@ const initStore = async (context) => {
         namespaced: true,
         state: {
             accessToken: context.req && context.req.accessToken,
-            userId: context.req && context.req.userId
+            user: context.req && context.req.user
         }
     })
 }

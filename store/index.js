@@ -47,29 +47,11 @@ export const actions = {
         let oauth = state.oauth
 
         if (!user && oauth && oauth.accessToken) {
-            await dispatch("fetchUser")
+            await dispatch("assignUser")
         }
     },
-    async fetchUser({commit, state}) {
-        let oauth = state.oauth
-
-        try {
-            // TODO! Hacky checking for the correct base URL on production.
-            // Some troubleshooting still needed.
-            if (!this.$axios.defaults.baseURL || this.$axios.defaults.baseURL.indexOf("strautomator") < 0) {
-                console.warn(`Force setting axios baseURL to https://strautomator.com/`)
-                this.$axios.setBaseURL("https://strautomator.com/")
-            }
-
-            this.$axios.setToken(oauth.accessToken)
-
-            const user = await this.$axios.$get(`api/users/${oauth.userId}`)
-            commit("setUser", user)
-        } catch (ex) {
-            if (process.server) {
-                const logger = require("anyhow")
-                logger.error("Store.fetchUser", `User ${oauth.userId}`, ex)
-            }
-        }
+    async assignUser({commit, state}) {
+        let user = state.oauth.user
+        commit("setUser", user)
     }
 }

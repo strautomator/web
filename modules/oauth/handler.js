@@ -86,10 +86,10 @@ Handler.prototype.saveData = async function saveData(token) {
     this.req[this.opts.sessionName].token = {accessToken, refreshToken, expiresAt}
     this.req.accessToken = accessToken
 
-    const fetchUserId = async () => {
+    const fetchUser = async () => {
         try {
             const userFromToken = await core.users.getByToken(accessToken)
-            return userFromToken ? userFromToken.id : null
+            return userFromToken
         } catch (ex) {
             logger.error("OAuth.fetchUser", ex)
             return null
@@ -97,22 +97,25 @@ Handler.prototype.saveData = async function saveData(token) {
     }
 
     const now = new Date().getTime() / 1000
-    let userId
+    let user
 
     if (now < expiresAt) {
-        userId = this.req[this.opts.sessionName].userId
+        user = this.req[this.opts.sessionName].user
     }
-    if (!userId) {
-        userId = await fetchUserId()
+    if (!user) {
+        user = await fetchUser()
     }
-    if (!userId) {
+    if (!user) {
         return false
     } else {
-        logger.debug("OAuth.saveData", `User ${userId}`)
+        logger.debug("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
     }
 
-    this.req[this.opts.sessionName].userId = userId
-    this.req.userId = userId
+    // No need to expose the tokens under the user object.
+    delete user.stravaTokens
+
+    this.req[this.opts.sessionName].user = user
+    this.req.user = user
 
     return true
 }
