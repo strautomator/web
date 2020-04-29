@@ -52,9 +52,17 @@ export const actions = {
     },
     async fetchUser({commit, state}) {
         let oauth = state.oauth
-        this.$axios.setToken(oauth.accessToken)
 
-        const user = await this.$axios.$get(`/api/users/${oauth.userId}`)
-        commit("setUser", user)
+        try {
+            this.$axios.setToken(oauth.accessToken)
+
+            const user = await this.$axios.$get(`/api/users/${oauth.userId}`)
+            commit("setUser", user)
+        } catch (ex) {
+            if (process.server) {
+                const logger = require("anyhow")
+                logger.error("Store.fetchUser", `User ${oauth.userId}`, ex)
+            }
+        }
     }
 }
