@@ -69,7 +69,7 @@ class WebServer {
             }
 
             // When running behind a proxy / LB.
-            this.app.set("trust proxy", settings.api.trustProxy)
+            this.app.set("trust proxy", settings.app.trustProxy)
 
             // Add body parser.
             const bodyParser = require("body-parser")
@@ -97,6 +97,7 @@ class WebServer {
                 }
             }
 
+            // Use Nuxt render.
             this.app.use(nuxtRender)
 
             // Listen the server.

@@ -2,6 +2,9 @@
 // These are the general settings for the Strautomator Web frontend. There's also a settings.development.json
 // and a settings.production.json, each one containing environment-specific settings. Secret settings are
 // defined on the settings.secret.json or via environment variables.
+//
+// Please note that the vast majority of the Strautomator's settings are defined and described on the Core
+// project, at https://raw.githubusercontent.com/strautomator/core/master/settings.json
 
 {
     "api": {
@@ -10,12 +13,12 @@
         "rateLimit": {
             "max": 100,
             "windowMs": 60000
-        },
-        // Express trust proxy settings.
-        "trustProxy": 1
+        }
     },
     "app": {
         // Listen to all incoming connections by default.
-        "ip": "0.0.0.0"
+        "ip": "0.0.0.0",
+        // Express trust proxy settings.
+        "trustProxy": 1
     }
 }

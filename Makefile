@@ -7,6 +7,9 @@ clean:
 	rm -rf ./server
 	rm -rf ./node_modules
 	rm -f package-lock.json
+
+# Clean GIT tags.
+clean-tags:
 	git tag | xargs git tag -d
 
 # Generate TypeScript docs
@@ -16,10 +19,6 @@ docs:
 	rm -rf ./docs/interfaces
 	rm -rf ./docs/modules
 	$(TYPEDOC) --disableOutputCheck
-
-# Generate resources (Nuxt.js)
-generate:
-	npm run generate
 
 # Compile and build resources
 build:
