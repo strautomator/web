@@ -16,7 +16,7 @@
                         {{ conditionSummary(condition) }}
                     </li>
                 </ul>
-                <ul class="mt-0 pl-4">
+                <ul class="mt-1 pl-4">
                     <li class="font-weight-medium white--text" v-for="action in recipe.actions">
                         {{ actionSummary(action) }}
                     </li>
