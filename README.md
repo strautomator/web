@@ -11,7 +11,7 @@ Download and install dependencies:
     $ git clone git@github.com:strautomator/web.git
     $ make update
 
-Before you run on your local machine, you'll have to set your custom 3rd party credentials and secrets either on a `settings.secret.json` file, or via environment variables. A sample for both are available in the repo, on the [/samples](https://github.com/strautomator/web/blob/master/samples) folder.
+Before you run on your local machine, you'll have to set your custom 3rd party credentials and secrets either on a `settings.secret.json` file, or via environment variables. A sample for both are available on this repo's root folder.
 
 You'll have to get the credentials for the Strava API, weather providers, Google Cloud Firestore etc... by yourself. *In the future we might add detailed docs for each here, if there's enough demand.*
 
@@ -39,11 +39,11 @@ Also bear in mind that even thou this project is open source, you might need to 
 
 ### Deploying to GCE VM
 
-Sample: [docker-compose.yml](https://github.com/strautomator/web/blob/master/samples/docker-compose.yml)
+Sample: [docker-compose.yml](https://github.com/strautomator/web/blob/master/docker-compose.yml.sample)
 
 ### Deploying to App Engine
 
-Sample: [app.yaml](https://github.com/strautomator/web/blob/master/samples/app.yaml)
+Sample: [app.yaml](https://github.com/strautomator/web/blob/master/app.yaml.sample)
 
 ### Deploying to Cloud Run
 
