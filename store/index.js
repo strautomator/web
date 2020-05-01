@@ -1,5 +1,6 @@
 export const state = () => ({
     user: null,
+    lastUserFetch: null,
     recipeProperties: null,
     recipeActions: null,
     recipeMaxLength: null
@@ -8,6 +9,9 @@ export const state = () => ({
 export const getters = {
     user(state) {
         return state.user
+    },
+    lastUserFetch(state) {
+        return state.lastUserFetch
     }
 }
 
@@ -19,6 +23,9 @@ export const mutations = {
     },
     setUser(state, data) {
         state.user = data
+    },
+    setLastUserFetch(state, data) {
+        state.lastUserFetch = data
     },
     addUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe

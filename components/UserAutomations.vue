@@ -44,6 +44,20 @@ export default {
         recipes() {
             return Object.values(this.user.recipes)
         }
+    },
+    async fetch() {
+        try {
+            const timestamp = new Date().valueOf()
+
+            // Only fetch new user data once every minute.
+            if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 60000) {
+                this.$axios.setToken(this.$store.state.oauth.accessToken)
+                const user = await this.$axios.$get(`/api/users/${this.user.id}`)
+                this.$store.commit("setUser", user)
+            }
+        } catch (ex) {
+            console.error("UserAutomations.fetch", ex)
+        }
     }
 }
 </script>
