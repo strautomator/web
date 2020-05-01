@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.184.302259",
+    "version": "20.186.20039",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "private": true,
@@ -25,7 +25,6 @@
         "express": "^4.17.1",
         "express-rate-limit": "^5.1.3",
         "lodash": "^4.17.15",
-        "moment": "^2.24.0",
         "nuxt": "^2.12.2",
         "qs": "^6.9.3",
         "setmeup": "^1.5.4",

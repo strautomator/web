@@ -124,7 +124,7 @@ const routeUserRecipe = async (req: any, res: any) => {
 
             // Add to user's recipe list.
             user.recipes[recipe.id] = recipe
-            logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Added new recipe ${recipe.id}: ${recipe.title}`)
+            logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `New recipe ${recipe.id}: ${recipe.title}`)
         } else {
             const existingRecipe = user.recipes[recipeId]
 

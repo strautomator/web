@@ -74,6 +74,12 @@ class WebServer {
             // Add body parser.
             const bodyParser = require("body-parser")
             this.app.use(bodyParser.json())
+            this.app.use((err, req, res, next) => {
+                if (err) {
+                    return this.renderError(req, res, err.toString(), 400)
+                }
+                next()
+            })
 
             // Set API rate limiting (if defined on the settings).
             if (settings.api.rateLimit && settings.api.rateLimit.max) {
