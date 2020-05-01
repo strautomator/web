@@ -53,6 +53,7 @@ export default {
             if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 60000) {
                 this.$axios.setToken(this.$store.state.oauth.accessToken)
                 const user = await this.$axios.$get(`/api/users/${this.user.id}`)
+                this.$store.commit("setLastUserFetch", new Date().valueOf())
                 this.$store.commit("setUser", user)
             }
         } catch (ex) {

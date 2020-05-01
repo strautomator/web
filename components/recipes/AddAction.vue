@@ -28,7 +28,7 @@
                             <div v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
                                 <h3 class="mb-2">Activity tags</h3>
                                 <v-chip @click="addTag('distance')" small>Distance</v-chip>
-                                <v-chip @click="addTag('elevation')" small>Elevation</v-chip>
+                                <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
                                 <v-chip @click="addTag('dateStart')" small>Start time</v-chip>
                                 <v-chip @click="addTag('dateEnd')" small>End time</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>

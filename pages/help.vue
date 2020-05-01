@@ -87,7 +87,7 @@
                     <v-expansion-panel-header>When are activities are processed?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            Activities are processed usually within a few seconds after they're created or uploaded to Strava.
+                            Activities are processed usually within a few minutes after being created or uploaded to Strava, but depending on the Strava API's load it can take some minutes.
                         </p>
                         <p>
                             Only new activities are processed, so if you make manual updates to an activity on Strava, these will not trigger your automations on Strautomator.
