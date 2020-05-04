@@ -11,22 +11,6 @@ const router = express.Router()
 // --------------------------------------------------------------------------
 
 /**
- * Search users.
- */
-router.get("/", async (req, res) => {
-    try {
-        const validated = await auth.requestValidator(req, res, {admin: true})
-        if (!validated) return
-
-        const result = await users.getAll()
-        webserver.renderJson(req, res, result)
-    } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
-    }
-})
-
-/**
  * Get user by ID.
  */
 router.get("/:userId", async (req, res) => {
@@ -155,7 +139,7 @@ const routeUserRecipe = async (req: any, res: any) => {
         user.recipeCount = Object.keys(user.recipes).length
 
         // If user has no subscription yet, create one now.
-        if (!user.stravaSubscription && user.recipeCount > 0) {
+        if (!user.stravaWebhook && user.recipeCount > 0) {
             try {
                 await strava.webhooks.setSubscription(user)
             } catch (ex) {
