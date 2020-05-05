@@ -59,6 +59,11 @@ Handler.prototype.checkRequestAuthorization = async function checkRequestAuthori
 Handler.prototype.authenticateCallbackToken = async function authenticateCallbackToken() {
     try {
         const tokens = await core.strava.getToken(this.req.query.code)
+
+        if (!tokens || !tokens.accessToken) {
+            return this.redirectToOAuth()
+        }
+
         const {accessToken, refreshToken, expiresAt} = tokens
         await this.saveData({accessToken, refreshToken, expiresAt})
 
@@ -130,10 +135,16 @@ Handler.prototype.updateToken = async function updateToken() {
         const epoch = Math.round(now.getTime() / 1000)
 
         if (token.expiresAt * 0.9 < epoch) {
-            const {accessToken, refreshToken, expiresAt} = await core.strava.refreshToken(token.refreshToken, token.accessToken)
-            token.accessToken = accessToken
-            token.refreshToken = refreshToken
-            token.expiresAt = expiresAt
+            const stravaTokens = await core.strava.refreshToken(token.refreshToken, token.accessToken)
+
+            if (stravaTokens) {
+                const {accessToken, refreshToken, expiresAt} = stravaTokens
+                token.accessToken = accessToken
+                token.refreshToken = refreshToken
+                token.expiresAt = expiresAt
+            } else {
+                token = null
+            }
         }
     } catch (ex) {
         logger.error("OAuth.updateToken", ex)

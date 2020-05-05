@@ -63,7 +63,7 @@ module.exports = {
     },
 
     // Additional plugins.
-    plugins: ["~/plugins/breakpoint"],
+    plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler"],
 
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],

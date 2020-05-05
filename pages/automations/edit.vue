@@ -137,7 +137,7 @@ export default {
                     })
                 }
             } catch (ex) {
-                console.error(ex)
+                this.$webError("AutomationEdit.save", ex)
             }
         },
         checkValid() {
@@ -195,7 +195,7 @@ export default {
                 const userId = this.$store.state.user.id
                 this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
             } catch (ex) {
-                console.error(ex)
+                this.$webError("AutomationEdit.deleteRecipe", ex)
             }
 
             this.deleteDialog = false

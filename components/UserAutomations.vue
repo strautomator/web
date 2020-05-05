@@ -57,7 +57,7 @@ export default {
                 this.$store.commit("setUser", user)
             }
         } catch (ex) {
-            console.error("UserAutomations.fetch", ex)
+            this.$webError("UserAutomations.fetch", ex)
         }
     }
 }

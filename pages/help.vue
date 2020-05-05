@@ -1,14 +1,19 @@
 <template>
     <v-layout column>
-        <v-container fluid>
+        <v-container :class="{'help-wrapper': !loggedIn}" fluid>
             <h1>{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
+            <p>
+                "I" on the questions = you, the user.<br />
+                "I" on the answers = me, Igor.
+            </p>
+
             <h2 class="mb-1">About</h2>
-            <v-expansion-panels class="mb-5">
+            <v-expansion-panels v-model="panel" class="mb-5" hover>
                 <v-expansion-panel>
                     <v-expansion-panel-header>Who's behind Strautomator?</v-expansion-panel-header>
                     <v-expansion-panel-content>
-                        <p>Igor Ramadas. You can find more about him at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>.</p>
+                        <p>Igor Ramadas. Pleased to meet you. You can find more about me at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>.</p>
                         <p>Strautomator is powered by Strava, but it is <strong>not made by</strong> them.</p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -16,48 +21,83 @@
                     <v-expansion-panel-header>Do I need Strava Summit to use it?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            No. Strautomator also works with free Strava accounts, although some specific activity details might be available to Summit users only.
+                            Not at all! Strautomator also works with free Strava accounts, although some specific activity details might be available to Summit users only.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <v-expansion-panel>
-                    <v-expansion-panel-header>Free vs Pro account, what's the deal?</v-expansion-panel-header>
+                    <v-expansion-panel-header>Free vs PRO account, what's the deal?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            The free account is restricted to only 2 automations, containing a maximum of 2 conditions each.
+                            Feature-wise, they're basically the same. The free account is restricted to only 3 automations, containing a maximum of 3 conditions each. Additionally, free accounts will have a link to strautomator.com added to the
+                            description of 20% of processed activites, so 1 out of 5.
                         </p>
-                        <p>
-                            Additionally, free accounts will have a link to strautomator.com added to the description of 20% of processed activites, so 1 out of 5.
-                        </p>
+                        <p>Supportes who <n-link to="/billing" title="Donate now!">donate</n-link> will get these limitations lifted. Supportes = PRO.</p>
                         <p class="font-italic">
-                            While we're in beta, everyone gets to try all Pro features for free.
+                            While in beta, everyone gets to be a PRO regardless of any donations.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <v-expansion-panel>
-                    <v-expansion-panel-header>How much will it cost?</v-expansion-panel-header>
+                    <v-expansion-panel-header>How can I donate?</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <p>I have integrated with PayPal to make donations possible via recurring subscriptions: {{ billingPlanSummaries.join(" or ") }}. If you prefer you can also support via GitHub sponsors, or directly via bunq.</p>
+                        <p>
+                            <span class="font-weight-bold">Why donate, you might ask?</span> Suppose you earn 18 EUR per hour, and have on average 1 activity per day. We'll round to 350 activities / year. By using Strautomator you save that 1 minute
+                            hassle of opening Strava to update these activities manually. So it can potentially save you 30 cents per activity. In 1 year that's around 105 EUR.
+                        </p>
+                        <p>
+                            The calculation above is obviously a bit silly, but you get the point. There are running costs (domain, servers, weather APIs...) and I hope to at least cover these costs with some of your donations.
+                        </p>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+                <v-expansion-panel>
+                    <v-expansion-panel-header>Can I get a PRO account without a donation?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            Price not defined yet. Should be around 1 EUR / month or 10 EUR / year. Think that is expensive? Let's do some math...
+                            If you have a good reason... and as long as the that reason can help me maintain or improve the service... then yeah, sure, just
+                            <a href="mailto:info@strautomator.com?subject=Strautomator PRO" title="Wanna be a PRO?">drop me an email</a> and I'll think about it.
+                        </p>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+
+            <h2 class="mb-1">Automations</h2>
+            <v-expansion-panels class="mb-5" hover>
+                <v-expansion-panel>
+                    <v-expansion-panel-header>When are activities are processed?</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <p>
+                            Usually less than 5 minutes after being created or uploaded to Strava, but depending on the Strava API's load it can take longer.
                         </p>
                         <p>
-                            Suppose you earn 20 EUR per hour, and have on average 10 activities per week. Let's round this to 500 activities / year. By using Strautomator you save the 1 minute hassle of opening Strava to update these activities
-                            manually. So Strautomator "saves" you 33 cents per activity. In 1 year that's 165 EUR.
+                            Only new activities are processed, so if you make manual updates to an activity on Strava, these will not trigger your automations on Strautomator.
+                            <span class="font-italic">In the future I might add support for automations on updated activities as well.</span>
                         </p>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+                <v-expansion-panel>
+                    <v-expansion-panel-header>Why are some weather details about my activities wrong?</v-expansion-panel-header>
+                    <v-expansion-panel-content>
                         <p>
-                            The calculation above is obviously for fun, but you get the point. We have running costs (domain, servers, weather subscription...) and we hope to cover these by having a few Pro subscriptions running.
+                            Strautomator is using Dark Sky, Weatherbit and OpenWeatherMap for weather data. These works wonderfully well most of the times, but on certain regions on certain days they might miscalculate the weather. If you're always
+                            getting wrong data, please
+                            <a href="mailto:info@strautomator.com" title="Bad weather, eh?">contact me</a> and I'll sort it out.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
             </v-expansion-panels>
 
             <h2 class="mb-1">Security and privacy</h2>
-            <v-expansion-panels class="mb-5">
+            <v-expansion-panels hover>
                 <v-expansion-panel>
                     <v-expansion-panel-header>Can Strautomator mess up with my Strava account?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            Right now we need only 2 set of permissions: read your activities, and write to your activities. We can't delete existing activities, nor create new ones.
+                            If you connect with your Strava account, Strautomator will have permissions to read and update your activities. The service can't delete existing activities, nor create new ones.
+                        </p>
+                        <p>
+                            But of course you have to be reasonable with your automations. If you create a recipe with a single condition to update rides longer than 1km, for instance, it will very likely update all your future rides.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -65,45 +105,17 @@
                     <v-expansion-panel-header>Will my data be shared with 3rd parties?</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
-                            No. Not now, not ever.
+                            No. Not now, not tomorrow, not ever.
                         </p>
                         <p>
-                            When you connect your Strava account to Strautomator, we get some of your basic info (user ID, name and gear) and save it in our own database.
+                            When you connect your Strava account to Strautomator, it gets some of your basic info about your Strava account (user ID, name and gear). This information is used solely to enable the automation features.
                         </p>
                         <p>
-                            When Strava sends us your new activities, we'll store and parse some of its information to run your automations and create your dashboard.
+                            When Strava sends your new activities to Strautomator, it will store and parse some of the information to run your automations and create your online dashboard.
                         </p>
                         <p>
-                            If you want more technical details, please note that Strautomator fully
-                            <a href="https://github.com/strautomator" title="Strautomator on GitHub">open source</a>.
-                        </p>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-            </v-expansion-panels>
-
-            <h2 class="mb-1">Automations</h2>
-            <v-expansion-panels>
-                <v-expansion-panel>
-                    <v-expansion-panel-header>When are activities are processed?</v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                        <p>
-                            Activities are processed usually within a few minutes after being created or uploaded to Strava, but depending on the Strava API's load it can take some minutes.
-                        </p>
-                        <p>
-                            Only new activities are processed, so if you make manual updates to an activity on Strava, these will not trigger your automations on Strautomator.
-                        </p>
-                        <p>
-                            In the future we might add support for automations on updated activities as well.
-                        </p>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-                <v-expansion-panel>
-                    <v-expansion-panel-header>The weather details for my activity are wrong.</v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                        <p>
-                            We use Dark Sky, Weatherbit and OpenWeatherMap for weather data. These works wonderfully well most of the times, but on certain regions on certain days a data source might miscalculate the weather. If you're always getting
-                            wrong data, please
-                            <a href="mailto:info@strautomator.com" title="Bad weather, eh?">contact us</a> and we'll troubleshoot.
+                            If you want more technical details, please note that Strautomator
+                            <a href="https://github.com/strautomator" title="Strautomator on GitHub">open source</a>. Feel free to do some bug hunting or suggest things to be done differently.
                         </p>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -121,11 +133,11 @@
 </template>
 
 <style>
-.landing .v-content {
+.help-wrapper {
     margin: auto;
-    max-width: 600px;
+    max-width: 960px !important;
 }
-.landing .v-content h1 {
+.help-wrapper h1 {
     margin-top: 40px;
 }
 .v-expansion-panel-header {
@@ -155,12 +167,28 @@ export default {
     },
     data() {
         return {
-            loggedIn: this.$store.state.user
+            loggedIn: this.$store.state.user,
+            billingPlanSummaries: [],
+            panel: 0
+        }
+    },
+    async fetch() {
+        try {
+            const billingPlans = Object.values(await this.$axios.$get("/api/paypal/billingplans"))
+            this.billingPlanSummaries = []
+            for (let plan of billingPlans) {
+                this.billingPlanSummaries.push(`${plan.price} / ${plan.frequency}`)
+            }
+        } catch (ex) {
+            this.$webError("Help.fetch", ex)
         }
     },
     methods: {
         backHome() {
             document.location.href = "/home"
+        },
+        login() {
+            this.$login()
         }
     }
 }

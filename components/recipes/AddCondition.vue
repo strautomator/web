@@ -163,7 +163,7 @@ export default {
                 this.loading = false
                 this.locations = data
             } catch (ex) {
-                console.error(ex)
+                this.$webError("AddCondition.fetchLocations", ex)
             }
         },
         async fetchLocationsDebounced(value) {

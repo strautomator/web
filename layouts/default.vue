@@ -28,17 +28,20 @@
             </v-container>
 
             <div class="mt-4 mt-md-8 text-center">
-                <v-divider class="mb-7 width-wrapper"></v-divider>
-                <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">WE'RE STILL IN BETA</v-chip>
+                <v-divider class="mb-8 width-wrapper"></v-divider>
+                <div class="mb-6">
+                    <img src="/images/strava-powered.svg" width="130" />
+                </div>
+                <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">STILL IN BETA</v-chip>
                 <div class="d-md-inline">
                     Found a bug? Have suggestions?
                 </div>
                 <div class="d-md-inline">
-                    <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a>
+                    <a href="mailto:info@strautomator.com" title="Send your feedback!">info@strautomator.com</a>
                 </div>
                 <div class="copyright">
                     <img src="/images/logo-round.svg" width="24" height="24" class="strautologo" />
-                    <span>{{ new Date().getFullYear() }} Strautomator - Made in Berlin</span>
+                    <span>Strautomator - Made in Berlin</span>
                 </div>
             </div>
         </v-content>

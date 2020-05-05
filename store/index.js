@@ -24,6 +24,9 @@ export const mutations = {
     setUser(state, data) {
         state.user = data
     },
+    setUserSubscription(state, data) {
+        state.user.subscription = data
+    },
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
     },

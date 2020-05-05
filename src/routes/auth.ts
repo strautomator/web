@@ -1,6 +1,6 @@
 // Strautomator: Auth
 
-import {strava, users} from "strautomator-core"
+import {strava, users, UserData} from "strautomator-core"
 import fs = require("fs")
 import logger = require("anyhow")
 import webserver = require("../webserver")
@@ -20,12 +20,13 @@ export class Auth {
     tokens: []
 
     /**
-     * Validate request according to the passed options.
+     * Validate request according to the passed options. Returns false if not authorized,
+     * otherwise the user object (if identified), or just true (if not user identified).
      * @param req The Express Request object.
      * @param res The Express Response object.
      * @param options Additional validaton options.
      */
-    requestValidator = async (req: any, res: any, options?: RequestOptions): Promise<boolean> => {
+    requestValidator = async (req: any, res: any, options?: RequestOptions): Promise<UserData | boolean> => {
         try {
             const bearer = req.headers["authorization"]
 
@@ -83,7 +84,7 @@ export class Auth {
             }
 
             // All good!
-            return true
+            return user
         } catch (ex) {
             logger.error("Auth.requestValidator", ex, `From ${req.ip}`)
             webserver.renderError(req, res, ex, 401)

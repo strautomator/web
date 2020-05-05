@@ -9,8 +9,8 @@
                 </div>
                 <div class="mt-8">
                     <p>
-                        If you are just sneeking around, then we wish you happy exploring. Now if you found something strange, or thing that this shouldn't have happened at all, then please contact us on
-                        <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a>.
+                        If you are just sneeking around, then we wish you happy exploring. Otherwise please contact us on
+                        <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> if the problem persists.
                     </p>
                 </div>
                 <div class="mt-6">
@@ -43,18 +43,18 @@ export default {
         errorDetails() {
             if (this.error.statusCode == 401 || this.error.statusCode == 403) {
                 return {
-                    title: "Access denied",
-                    message: "We're not entirely sure if you should be here..."
+                    title: this.error.title || "Access denied",
+                    message: this.error.message || "We're not entirely sure if you should be here..."
                 }
             } else if (this.error.statusCode == 404) {
                 return {
-                    title: "Lost GPS signal",
-                    message: "This is the infamous error 404. We can't find this route..."
+                    title: this.error.title || "Lost GPS signal",
+                    message: this.error.message || "This is the infamous error 404. We can't find this route..."
                 }
             } else {
                 return {
-                    title: "Crashed while sprinting",
-                    message: "There was a massive pile up, sorry..."
+                    title: this.error.title || "Crashed while sprinting",
+                    message: this.error.message
                 }
             }
         }

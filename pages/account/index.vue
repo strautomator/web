@@ -11,7 +11,7 @@
                 </p>
             </div>
 
-            <h3 class="mt-5 mb-3">Current subscription: Pro (beta) account</h3>
+            <h3 class="mt-5 mb-3">Account status: PRO (beta) account</h3>
 
             <v-simple-table>
                 <thead>
@@ -29,7 +29,7 @@
                     </tr>
                     <tr>
                         <td>Conditions</td>
-                        <td class="text-center">2</td>
+                        <td class="text-center">{{ }}</td>
                         <td class="text-center">Unlimited</td>
                     </tr>
                     <tr>
@@ -43,18 +43,18 @@
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                     </tr>
                     <tr>
-                        <td>Cost / year</td>
+                        <td>How much?</td>
                         <td class="text-center">Free</td>
-                        <td class="text-center">-</td>
+                        <td class="text-center">Donation</td>
                     </tr>
                 </tbody>
             </v-simple-table>
             <div class="mt-5 text-center text-md-left">
-                <v-btn color="primary" to="/billing" title="Become a Pro!" disabled large rounded nuxt>PRO COMING SOON</v-btn>
+                <v-btn color="primary" to="/billing" title="Donate and become a Pro!" disabled large rounded nuxt>PRO COMING SOON</v-btn>
             </div>
             <ul class="caption mt-5 pl-4">
-                <li>While we're in beta, everyone is Pro <v-icon x-small>mdi-emoticon-outline</v-icon></li>
-                <li class="beta">Free accounts can have only 2 conditions per automation.</li>
+                <li>While in beta, everyone gets PRO <v-icon x-small>mdi-emoticon-outline</v-icon></li>
+                <li class="beta">Free accounts are limited to only 2 conditions per automation.</li>
                 <li class="beta">Free accounts will have a link to Strautomator on the description of 20% of processed activities.</li>
             </ul>
             <div class="mt-4 text-center text-md-left">
