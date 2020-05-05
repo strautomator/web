@@ -50,7 +50,7 @@
                 </tbody>
             </v-simple-table>
             <div class="mt-5 text-center text-md-left">
-                <v-btn color="primary" to="/billing" title="Donate and become a Pro!" disabled large rounded nuxt>PRO COMING SOON</v-btn>
+                <v-btn color="primary" to="/donate" title="Donate and become a Pro!" disabled large rounded nuxt>PRO COMING SOON</v-btn>
             </div>
             <ul class="caption mt-5 pl-4">
                 <li>While in beta, everyone gets PRO <v-icon x-small>mdi-emoticon-outline</v-icon></li>

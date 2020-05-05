@@ -6,7 +6,7 @@
             <p>Hi {{ user.profile.firstName }}!</p>
             <div v-if="canDonate">
                 <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon>, but keeping it online isn't. I don't expect to make any money out of this service, but I hope I could get enough support to keep the servers, systems and
+                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of this service, but I hope I could get enough support to keep the servers, systems and
                     domain running smoothly.
                 </p>
                 <p>
@@ -28,7 +28,7 @@
                                 <v-radio :label="plan.price + ' EUR / ' + plan.frequency" :value="plan.id"></v-radio>
                             </template>
                         </v-radio-group>
-                        <v-img src="/images/paypal-checkout.png" class="mb-3" width="230" @click="prepareSubscription" style="cursor:pointer" />
+                        <v-img src="/images/paypal-donate.png" class="mb-3 ml-n3" width="200" @click="prepareSubscription" style="cursor:pointer" />
                         <div class="caption">
                             Putting it into perspective: this is less than 1 espresso per month, or 1 nice meal per year.
                         </div>
