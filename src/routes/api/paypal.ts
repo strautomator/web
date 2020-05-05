@@ -79,7 +79,7 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
             }
 
             // User has a valid subscription? Throw an error then.
-            if (existingSub.status != "EXPIRED" && existingSub.status != "CANCELLED") {
+            if (existingSub.status == "ACTIVE") {
                 throw new Error(`Already subscribed, subscription ID ${existingSub.id}`)
             }
         }

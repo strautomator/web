@@ -28,8 +28,8 @@
                                 <v-radio :label="plan.price + ' EUR / ' + plan.frequency" :value="plan.id"></v-radio>
                             </template>
                         </v-radio-group>
-                        <v-img src="/images/paypal-donate.png" class="mb-3 ml-n3" width="200" @click="prepareSubscription" style="cursor:pointer" />
-                        <div class="caption">
+                        <v-btn color="primary" title="Donate via PayPal now!" @click="prepareSubscription" x-large rounded nuxt>Donate via PayPal</v-btn>
+                        <div class="caption mt-4">
                             Putting it into perspective: this is less than 1 espresso per month, or 1 nice meal per year.
                         </div>
                     </v-card-text>
@@ -115,16 +115,24 @@ export default {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
             const billingPlans = await this.$axios.$get("/api/paypal/billingplans")
             this.billingPlans = Object.values(billingPlans)
+            this.billingPlanId = this.billingPlans[0]
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }
     },
     methods: {
         async prepareSubscription() {
-            const subscription = await this.$axios.$post(`/api/paypal/subscribe/${this.billingPlanId}`)
+            try {
+                const subscription = await this.$axios.$post(`/api/paypal/subscribe/${this.billingPlanId}`)
 
-            if (subscription) {
-                document.location.href = subscription.approvalUrl
+                if (subscription && subscription.approvalUrl) {
+                    document.location.href = subscription.approvalUrl
+                } else {
+                    this.$webError("Donate.prepareSubscription", "Could not setup a donation with PayPal")
+                }
+            } catch (ex) {
+                ex.title = "Could not setup a donation with PayPal"
+                this.$webError("Donate.prepareSubscription", ex)
             }
         },
         showUnsubDialog() {
