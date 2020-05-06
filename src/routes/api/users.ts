@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {strava, recipes, users, RecipeData, UserData} from "strautomator-core"
+import {recipes, users, RecipeData, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
@@ -137,16 +137,6 @@ const routeUserRecipe = async (req: any, res: any) => {
 
         // Update recipe count on user data.
         user.recipeCount = Object.keys(user.recipes).length
-
-        // If user has no subscription yet, create one now.
-        if (!user.stravaWebhook && user.recipeCount > 0) {
-            try {
-                await strava.webhooks.setSubscription(user)
-            } catch (ex) {
-                logger.error("Routes", req.method, req.originalUrl, `Could not create a Strava subscription (webhook) for ${user.displayName}`)
-            }
-        }
-
         await users.update(user, true)
         webserver.renderJson(req, res, recipe)
     } catch (ex) {

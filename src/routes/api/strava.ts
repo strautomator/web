@@ -30,20 +30,10 @@ const webhookValidator = (req, res): boolean => {
             return false
         }
 
-        // Force user (owner) ID as string.
-        obj.owner_id = obj.owner_id.toString()
-
-        // Make sure the event owner's ID is the same as the user ID.
-        if (req.params.userId != obj.owner_id) {
-            logger.error("Routes", req.method, req.originalUrl, `Invalid user: ${req.params.userId} / ${obj.owner_id}`, obj)
-            webserver.renderError(req, res, "Invalid user", 400)
-            return false
-        }
-
         // Finally, we only want to process new activities, so skip the rest.
         if (obj.aspect_type != "create" || obj.object_type != "activity") {
             logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Skipped")
-            webserver.renderJson(req, res, {processed: false})
+            webserver.renderJson(req, res, {ok: false})
             return false
         }
     } catch (ex) {
@@ -59,7 +49,7 @@ const webhookValidator = (req, res): boolean => {
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the verification token is invalid.
  */
-router.get("/:urlToken/:userId", async (req, res) => {
+router.get("/:urlToken", async (req, res) => {
     try {
         const challenge = req.query["hub.challenge"] as string
         const verifyToken = req.query["hub.verify_token"] as string
@@ -94,7 +84,7 @@ router.get("/:urlToken/:userId", async (req, res) => {
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the URL token or POST data is invalid.
  */
-router.post("/:urlToken/:userId", async (req, res) => {
+router.post("/:urlToken", async (req, res) => {
     try {
         if (!webhookValidator(req, res)) return
         const obj = req.body
@@ -106,7 +96,7 @@ router.post("/:urlToken/:userId", async (req, res) => {
         const options = {
             method: "POST",
             baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/${req.params.urlToken}/${req.params.userId}/${obj.object_id}`,
+            url: `/strava/${req.params.urlToken}/${obj.object_id}`,
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`},
             data: obj
         }
@@ -114,7 +104,7 @@ router.post("/:urlToken/:userId", async (req, res) => {
             logger.error("Routes", req.method, req.originalUrl, "Callback failed", err.toString())
         })
 
-        webserver.renderJson(req, res, {processed: true})
+        webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderJson(req, res, {error: ex.toString()})
@@ -124,7 +114,7 @@ router.post("/:urlToken/:userId", async (req, res) => {
 /**
  * Called by the route above, this will effectively process the activity sent by Strava.
  */
-router.post("/:urlToken/:userId/:activityId", async (req, res) => {
+router.post("/:urlToken/:activityId", async (req, res) => {
     try {
         if (!webhookValidator(req, res)) return
         const obj = req.body
@@ -144,7 +134,7 @@ router.post("/:urlToken/:userId/:activityId", async (req, res) => {
         user.dateLastActivity = new Date()
         await users.update(user)
 
-        webserver.renderJson(req, res, {processed: true})
+        webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderJson(req, res, {error: ex.toString()})

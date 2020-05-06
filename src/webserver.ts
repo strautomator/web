@@ -1,5 +1,6 @@
 // Strautomator: WebServer
 
+import {strava, paypal} from "strautomator-core"
 import express = require("express")
 import _ = require("lodash")
 import fs = require("fs")
@@ -109,9 +110,40 @@ class WebServer {
             // Listen the server.
             this.server.listen(settings.app.port)
             logger.info("WebServer.init", protocol, `Server ready on port ${settings.app.port}`)
+
+            // Setup webhooks.
+            await this.setupWebhooks()
         } catch (ex) {
             logger.error("WebServer.init", ex)
             process.exit(1)
+        }
+    }
+
+    /**
+     * Prepare webhooks with Strava and PayPal.
+     */
+    setupWebhooks = async () => {
+        try {
+            if (!strava.webhooks.current || strava.webhooks.current.callbackUrl != strava.webhooks.callbackUrl) {
+                await strava.webhooks.cancelWebhook()
+                await strava.webhooks.createWebhook()
+            }
+        } catch (ex) {
+            logger.error("WebServer.setupWebhooks", "Could not setup the Strava webhook")
+        }
+
+        try {
+            const webhooks = await paypal.webhooks.getWebhooks()
+            const existingWebhook = _.find(webhooks, {url: paypal.webhookUrl})
+
+            // No webhooks on PayPal yet? Register one now.
+            if (!existingWebhook) {
+                logger.warn("PayPal.setupWebhook", "No matching webhook (URL) found on PayPal, will register one now")
+                await paypal.webhooks.createWebhook()
+            }
+        } catch (ex) {
+            logger.error("WebServer.setupWebhooks", "Could not setup the PayPal webhook")
+            throw ex
         }
     }
 

@@ -52,11 +52,6 @@ async function start() {
         // Start the web server.
         const webserver = require("./webserver")
         await webserver.init(nuxt.render)
-
-        // Gracefully shutdown.
-        process.on("SIGTERM", async () => {
-            await core.shutdown()
-        })
     } catch (ex) {
         logger.error("Strautomator.startup", "Failed to start", ex)
         process.exit(1)
