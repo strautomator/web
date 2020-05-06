@@ -94,11 +94,10 @@ router.post("/:urlToken", async (req, res) => {
         // Make a call back to the API to do the actual activity processing, so we can return
         // the response right now to Strava (within the 2 seconds max).
         const options = {
-            method: "POST",
+            method: "GET",
             baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/${req.params.urlToken}/${obj.object_id}`,
-            headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`},
-            data: obj
+            url: `/strava/${req.params.urlToken}/${obj.owner_id}/${obj.object_id}`,
+            headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
         axios(options).catch((err) => {
             logger.error("Routes", req.method, req.originalUrl, "Callback failed", err.toString())
@@ -114,21 +113,18 @@ router.post("/:urlToken", async (req, res) => {
 /**
  * Called by the route above, this will effectively process the activity sent by Strava.
  */
-router.post("/:urlToken/:activityId", async (req, res) => {
+router.get("/:urlToken/:userId/:activityId", async (req, res) => {
     try {
         if (!webhookValidator(req, res)) return
-        const obj = req.body
+        const user = await users.getById(req.params.userId)
 
-        const user = await users.getById(obj.owner_id)
-
-        // If user not found, still return a 200 response as we do not want Strava to
-        // stop sending valid webhooks.
+        // User not found? Stop here.
         if (!user) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${obj.owner_id} not found`)
+            logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} not found`)
             return webserver.renderError(req, res, "User not found", 404)
         }
 
-        await strava.activities.processActivity(user, obj.object_id)
+        await strava.activities.processActivity(user, parseInt(req.params.activityId))
 
         // Set last activity date on user, and save.
         user.dateLastActivity = new Date()
