@@ -28,7 +28,12 @@
                             <div v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
                                 <h3 class="mb-2">Activity tags</h3>
                                 <v-chip @click="addTag('distance')" small>Distance</v-chip>
+                                <v-chip @click="addTag('speedAvg')" small>Avg. speed</v-chip>
+                                <v-chip @click="addTag('speedMax')" small>Max speed</v-chip>
+                                <v-chip @click="addTag('cadenceAvg')" small>Avg. cadence</v-chip>
+                                <v-chip @click="addTag('wattsAvg')" small>Avg. watts</v-chip>
                                 <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
+                                <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
                                 <v-chip @click="addTag('dateStart')" small>Start time</v-chip>
                                 <v-chip @click="addTag('dateEnd')" small>End time</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
