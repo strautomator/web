@@ -32,7 +32,7 @@
                 <div class="mb-6">
                     <img src="/images/strava-powered.svg" width="130" />
                 </div>
-                <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">STILL IN BETA</v-chip>
+                <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">BETA</v-chip>
                 <div class="d-md-inline">
                     Found a bug? Have suggestions?
                 </div>
@@ -46,6 +46,10 @@
             </div>
         </v-content>
         <v-bottom-navigation class="hidden-md-and-up" color="primary" v-model="activeNavBtn" app grow>
+            <v-btn to="/dashboard" router nuxt>
+                <span>Dashboard</span>
+                <v-icon>mdi-home</v-icon>
+            </v-btn>
             <v-btn to="/automations" router nuxt>
                 <span>Automations</span>
                 <v-icon>mdi-file-tree</v-icon>

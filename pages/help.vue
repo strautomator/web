@@ -1,8 +1,8 @@
 <template>
     <v-layout column>
         <v-container class="text-center" fluid>
-            <div :class="{'width-wrapper': !loggedIn}">
-                <h1 class="text-center" :class="{'mt-10': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
+            <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
+                <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
                 <p>
                     "I" on the questions = you, the user.<br />
