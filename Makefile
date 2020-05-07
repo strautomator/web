@@ -11,6 +11,7 @@ clean:
 # Clean GIT tags.
 clean-tags:
 	git tag | xargs git tag -d
+	git fetch -t
 
 # Generate TypeScript docs
 docs:
@@ -32,7 +33,7 @@ run: build
 update:
 	-rm -rf ./node_modules/strautomator-core
 	-ncu -u
-	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version --no-git-tag-version
+	npm version $(shell date '+%y.%-V%u.1%-H%M') --force --allow-same-version --no-git-tag-version
 	npm install
 
 # Deploy to Google App Engine
@@ -43,7 +44,7 @@ deploy-app-engine:
 
 # Deploy to GIT (by creating a new tag)
 deploy-git:
-	npm version $(shell date '+%y.%-V%u.%-d%H%M') --force --allow-same-version
+	npm version $(shell date '+%y.%-V%u.1%-H%M') --force --allow-same-version
 	git push
 	git push --tags
 

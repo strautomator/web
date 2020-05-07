@@ -38,6 +38,8 @@
                 </div>
                 <div class="d-md-inline">
                     <a href="mailto:info@strautomator.com" title="Send your feedback!">info@strautomator.com</a>
+                    or
+                    <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter">@strautomator</a>
                 </div>
                 <div class="copyright">
                     <img src="/images/logo-round.svg" width="24" height="24" class="strautologo" />
