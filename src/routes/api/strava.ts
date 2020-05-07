@@ -15,6 +15,7 @@ const packageVersion = require("../../../package.json").version
 const webhookValidator = (req, res): boolean => {
     try {
         const obj = req.body
+        const method = req.method.toUpperCase()
 
         // First we check the URL token.
         if (req.params.urlToken != settings.strava.api.urlToken) {
@@ -24,17 +25,19 @@ const webhookValidator = (req, res): boolean => {
         }
 
         // Then we check if any data is missing.
-        if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
-            logger.error("Routes", req.method, req.originalUrl, "Missing event data", obj)
-            webserver.renderError(req, res, "Missing event data", 400)
-            return false
-        }
+        if (method == "POST") {
+            if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
+                logger.error("Routes", req.method, req.originalUrl, "Missing event data", obj)
+                webserver.renderError(req, res, "Missing event data", 400)
+                return false
+            }
 
-        // Finally, we only want to process new activities, so skip the rest.
-        if (obj.aspect_type != "create" || obj.object_type != "activity") {
-            logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Skipped")
-            webserver.renderJson(req, res, {ok: false})
-            return false
+            // Only want to process new activities, so skip the rest.
+            if (obj.aspect_type != "create" || obj.object_type != "activity") {
+                logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Skipped")
+                webserver.renderJson(req, res, {ok: false})
+                return false
+            }
         }
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
