@@ -3,7 +3,7 @@
         <div class="py-2"></div>
 
         <v-container class="text-center" fluid>
-            <h1 class=" font-weight-light display-2 mt-10 mb-10 pb-10 pt-10">
+            <h1 class=" font-weight-light display-2 mt-8 pt-8 mb-10 pb-10">
                 Automate your Strava activities!
             </h1>
 

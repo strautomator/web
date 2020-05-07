@@ -61,10 +61,30 @@
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Why this instead of Commute Marker, Klimat and other tools?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part my inspiration to develop Strautomator. So thumbs up to their devs for their amazing work.
+                            </p>
+                            <p>
+                                Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to the activity description. Then there's IFTTT to integrate
+                                with other services. Strautomator is a all-in-one.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
 
                 <h2 class="mb-1">Automations</h2>
                 <v-expansion-panels class="mb-5" hover>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Can I use Imperial units?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Not at the moment. Strava's API is metric-based. I am planning to add imperial / fahrenheit support sometime in June 2020.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                     <v-expansion-panel>
                         <v-expansion-panel-header>When are activities are processed?</v-expansion-panel-header>
                         <v-expansion-panel-content>
@@ -106,17 +126,27 @@
                         <v-expansion-panel-header>Will my data be shared with 3rd parties?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                No. Not now, not tomorrow, not ever.
+                                No. Not today, not tomorrow, not ever.
                             </p>
                             <p>
                                 When you connect your Strava account to Strautomator, it gets some of your basic info about your Strava account (user ID, name and gear). This information is used solely to enable the automation features.
                             </p>
                             <p>
-                                When Strava sends your new activities to Strautomator, it will store and parse some of the information to run your automations and create your online dashboard.
+                                When Strava sends your new activities to Strautomator, it will store and parse some of the information to run your automations and create your online dashboard. If you want more technical details, please note that
+                                Strautomator
+                                <a href="https://github.com/strautomator" title="Strautomator on GitHub">open source</a>. Feel free to do some bug hunting or suggest things to be done differently.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>What happens when I close my account?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                If you decide to cancel your Strautomator account, there's no way to restore any of the data that the system had previously processed. All your recipes will vanish into thin air. The connection we have will be killed
+                                and Strautomator will be deauthorized from your Strava account. If you have a running donation on PayPal, this will also be cancelled.
                             </p>
                             <p>
-                                If you want more technical details, please note that Strautomator
-                                <a href="https://github.com/strautomator" title="Strautomator on GitHub">open source</a>. Feel free to do some bug hunting or suggest things to be done differently.
+                                And if there's any feedback you might want to share, I'm all ears.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -134,7 +164,7 @@
     </v-layout>
 </template>
 
-<style>
+<style scoped>
 .v-expansion-panel-header {
     line-height: 22px;
 }
