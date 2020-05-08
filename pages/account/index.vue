@@ -6,13 +6,12 @@
                 <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
+                <div>Units: {{ user.profile.units }}</div>
                 <p class="mt-3 caption">
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile... </a>
                 </p>
             </div>
-
             <h3 class="mt-5 mb-3">Account status: PRO (beta) account</h3>
-
             <v-simple-table>
                 <thead>
                     <tr>
@@ -31,11 +30,6 @@
                         <td>Conditions</td>
                         <td class="text-center">3</td>
                         <td class="text-center">Unlimited</td>
-                    </tr>
-                    <tr>
-                        <td>All features</td>
-                        <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
-                        <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                     </tr>
                     <tr>
                         <td>No Links</td>
