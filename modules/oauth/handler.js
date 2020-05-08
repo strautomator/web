@@ -93,7 +93,7 @@ Handler.prototype.saveData = async function saveData(token) {
 
     const fetchUser = async () => {
         try {
-            const userFromToken = await core.users.getByToken(accessToken)
+            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken})
             return userFromToken
         } catch (ex) {
             logger.error("OAuth.fetchUser", ex)

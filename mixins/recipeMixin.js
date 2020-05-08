@@ -58,8 +58,9 @@ export default {
             const operatorText = _.find(property.operators, {value: condition.operator}).text
             let valueText = condition.friendlyValue || condition.value
 
-            if (property.suffix) {
-                valueText += ` ${property.suffix}`
+            const suffix = this.$store.state.user.profile.units == "imperial" ? property.impSuffix || property.suffix : property.suffix
+            if (suffix) {
+                valueText += ` ${suffix}`
             }
 
             return `${fieldText} ${operatorText} ${valueText}`

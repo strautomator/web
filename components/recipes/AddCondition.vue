@@ -22,7 +22,7 @@
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="[recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedProperty.suffix" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="[recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
@@ -57,6 +57,13 @@ export default {
         return this.initialData()
     },
     computed: {
+        selectedSuffix() {
+            if (this.user.profile.units == "imperial" && this.selectedProperty.impSuffix) {
+                return this.selectedProperty.impSuffix
+            }
+
+            return this.selectedProperty.suffix
+        },
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },

@@ -78,10 +78,10 @@
                 <h2 class="mb-1">Automations</h2>
                 <v-expansion-panels class="mb-5" hover>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Can I use Imperial units?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Metric or imperial system?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Not at the moment. Strava's API is metric-based. I am planning to add imperial / fahrenheit support sometime in June 2020.
+                                Kilometers or miles? Strautomator will get the preferences you have set on your Strava account. So if you're using Strava with imperial units, your automations should also use them.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>

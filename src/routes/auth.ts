@@ -60,8 +60,8 @@ export class Auth {
             }
 
             // Find user by token.
-            let token = bearer.substring(1, 6) == "earer" ? bearer.substring(6).trim() : bearer.trim()
-            let user = await users.getByToken(token)
+            let token: string = bearer.substring(1, 6) == "earer" ? bearer.substring(6).trim() : bearer.trim()
+            let user = await users.getByToken({accessToken: token})
 
             // User not found? Maybe has a new token?
             if (!user) {

@@ -17,10 +17,9 @@
                         </div>
                     </div>
                     <div v-else>
-                        <p class="font-weight-bold">
+                        <p class="title mb-2">
                             Sad to see you go &#x1F615;
                         </p>
-                        <p>To fully deauthorize the Strautomator app from future connections, please revoke access on the <a href="https://www.strava.com/settings/apps" title="Strava apps">Strava Apps</a> settings page.</p>
                         <p>
                             If you change your mind in the future you can always come back and connect Strautomator to your Strava account again.
                         </p>
