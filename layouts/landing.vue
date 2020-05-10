@@ -15,3 +15,11 @@
         </v-footer>
     </v-app>
 </template>
+
+<script>
+export default {
+    head: {
+        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
+    }
+}
+</script>

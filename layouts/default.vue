@@ -71,6 +71,9 @@
 <script>
 export default {
     authenticated: true,
+    head: {
+        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
+    },
     data() {
         return {
             activeNavBtn: null
