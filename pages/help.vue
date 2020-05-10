@@ -78,6 +78,14 @@
                 <h2 class="mb-1">Automations</h2>
                 <v-expansion-panels class="mb-5" hover>
                     <v-expansion-panel>
+                        <v-expansion-panel-header>Which sports are supported?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                At the moment Strautomator is mostly focused on cycling and running, but in theory it should support all activity types. If you have issues (or suggestions) with a specific sport, please let me know.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
                         <v-expansion-panel-header>Metric or imperial system?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
