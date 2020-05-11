@@ -69,7 +69,7 @@
                         <v-expansion-panel-header>Why this instead of Commute Marker, Klimat and other tools?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part my inspiration to develop Strautomator. So thumbs up to their devs for their amazing work.
+                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to their devs for their amazing work.
                             </p>
                             <p>
                                 Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to the activity description. Then there's IFTTT to integrate
@@ -94,6 +94,10 @@
                         <v-expansion-panel-content>
                             <p>
                                 Kilometers or miles? Strautomator will get the preferences you have set on your Strava account. So if you're using Strava with imperial units, your automations should also use them.
+                            </p>
+                            <p>
+                                Please be aware that if you change your preferences on Strava, you'll have to update your automations to reflect the new unit. Example: an automation that has "distance > 10 miles" will need to be manually updated to
+                                use "distance > 16km".
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
