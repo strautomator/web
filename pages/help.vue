@@ -59,6 +59,10 @@
                                 If you have a good reason... and as long as the that reason can help me maintain or improve the service... then yeah, sure, just
                                 <a href="mailto:info@strautomator.com?subject=Strautomator PRO" title="Wanna be a PRO?">drop me an email</a> and I'll think about it.
                             </p>
+                            <p>
+                                Or you can simply grab the
+                                <a href="https://github.com/strautomator" title="Strautomator @ GitHub">source code</a> and deploy your own version. It's free.
+                            </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>

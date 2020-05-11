@@ -16,17 +16,21 @@
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
-                            <div v-if="selectedProperty.value">
+                            <div v-if="selectedProperty.value && !defaultFor">
                                 <v-select label="Operator..." v-model="selectedOperator" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
                                 <div v-if="isWeekday">
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="[recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="defaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
                                 </div>
+                            </div>
+                            <div class="text-center mb-6 " v-if="defaultFor">
+                                <v-icon color="grey" small>mdi-information-outline</v-icon>
+                                <span>This automation will run on <strong>all</strong> future "{{ defaultFor }}" activities!</span>
                             </div>
                         </v-col>
                         <v-col cols="12" :sm="12" :md="5" v-if="isLocationImg">
@@ -64,6 +68,13 @@ export default {
 
             return this.selectedProperty.suffix
         },
+        defaultFor() {
+            if (this.selectedProperty.value && this.selectedProperty.value.indexOf("defaultFor-") == 0) {
+                return this.selectedProperty.value.split("-")[1]
+            }
+
+            return false
+        },
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
@@ -99,6 +110,12 @@ export default {
     methods: {
         initialData() {
             const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+
+            // Add "defaults" to the top of the condition dropdown.
+            recipeProperties.unshift({value: "defaultFor-Ride", text: "Default automation for all cycling activities"})
+            recipeProperties.unshift({value: "defaultFor-Run", text: "Default automation for all running activities"})
+
+            // Weekdays mapping.
             const weekdays = [
                 {value: 0, text: "Sunday"},
                 {value: 1, text: "Monday"},
@@ -130,19 +147,26 @@ export default {
         },
         save() {
             if (this.$refs.form.validate()) {
-                const result = {
-                    property: this.selectedProperty.value,
-                    operator: this.selectedOperator.value,
-                    value: this.valueInput
-                }
+                let result
 
-                // Get correct condition values for weekdays and conditions.
-                if (this.isWeekday) {
-                    result.value = this.selectedWeekday.value
-                    result.friendlyValue = this.selectedWeekday.text
-                } else if (this.isLocation) {
-                    result.value = this.locationInput.value
-                    result.friendlyValue = this.locationInput.address
+                // Condition is default for an activity type?
+                if (this.defaultFor) {
+                    result = {defaultFor: this.defaultFor}
+                } else {
+                    result = {
+                        property: this.selectedProperty.value,
+                        operator: this.selectedOperator.value,
+                        value: this.valueInput
+                    }
+
+                    // Get correct condition values for weekdays and conditions.
+                    if (this.isWeekday) {
+                        result.value = this.selectedWeekday.value
+                        result.friendlyValue = this.selectedWeekday.text
+                    } else if (this.isLocation) {
+                        result.value = this.locationInput.value
+                        result.friendlyValue = this.locationInput.address
+                    }
                 }
 
                 this.$emit("closed", result)
@@ -150,7 +174,9 @@ export default {
             }
         },
         propertyChanged() {
-            if (this.selectedProperty.operators.length == 1) {
+            if (this.defaultFor) {
+                this.selectedOperator = {value: true}
+            } else if (this.selectedProperty.operators.length == 1) {
                 this.selectedOperator = this.selectedProperty.operators[0]
             } else {
                 this.selectedOperator = {}

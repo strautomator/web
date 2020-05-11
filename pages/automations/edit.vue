@@ -20,8 +20,20 @@
                             </div>
                         </v-container>
                     </div>
+                    <div class="mb-3" v-if="recipe.defaultFor">
+                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                            <div class="mr-2">
+                                <v-icon color="red lighten-1" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
+                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="red" @click="deleteCondition({defaultFor: recipe.defaultFor})">mdi-minus-circle</v-icon>
+                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                            </div>
+                            <div>
+                                <span class="font-weight-bold">This is the default automation for all "{{ recipe.defaultFor }}" activities</span>
+                            </div>
+                        </v-container>
+                    </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
+                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="recipe.defaultFor" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
                     </div>
                     <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
@@ -47,7 +59,7 @@
                         <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showActionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new action</v-btn>
                     </div>
                     <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
-                        <add-action :disabled-actions="usedActions" @closed="setAction" />
+                        <add-action :disabled-actions="disabledActions" @closed="setAction" />
                     </v-dialog>
                 </v-card-text>
             </v-card>
@@ -116,7 +128,7 @@ export default {
         return {
             recipe: _.cloneDeep(recipe),
             valid: valid,
-            usedActions: [],
+            disabledActions: [],
             actionDialog: false,
             conditionDialog: false,
             deleteItemSelected: false,
@@ -141,10 +153,10 @@ export default {
             }
         },
         checkValid() {
-            this.valid = this.recipe.conditions.length > 0 && this.recipe.actions.length > 0
+            this.valid = (this.recipe.defaultFor || this.recipe.conditions.length > 0) && this.recipe.actions.length > 0
         },
         showActionDialog() {
-            this.usedActions = _.map(this.recipe.actions, "type")
+            this.disabledActions = _.map(this.recipe.actions, "type")
             this.conditionDialog = false
             this.actionDialog = true
         },
@@ -162,7 +174,11 @@ export default {
         },
         setCondition(value) {
             if (value) {
-                this.recipe.conditions.push(value)
+                if (value.defaultFor) {
+                    this.recipe.defaultFor = value.defaultFor
+                } else {
+                    this.recipe.conditions.push(value)
+                }
             }
 
             this.checkValid()
@@ -174,7 +190,12 @@ export default {
             this.deleteItemSelected = false
         },
         deleteCondition(condition) {
-            _.remove(this.recipe.conditions, condition)
+            if (condition.defaultFor) {
+                this.recipe.defaultFor = null
+            } else {
+                _.remove(this.recipe.conditions, condition)
+            }
+
             this.checkValid()
             this.deleteItemSelected = false
         },

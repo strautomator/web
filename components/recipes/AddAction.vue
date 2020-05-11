@@ -100,6 +100,11 @@ export default {
             }
             const gears = _.concat(bikes, shoes)
 
+            // User has no gears? Force disable the "Set gear" action.
+            if (gears.length == 0) {
+                _.remove(recipeActions, {value: "gear"})
+            }
+
             return {
                 action: {},
                 loading: false,
@@ -114,6 +119,12 @@ export default {
         filterActions(arr) {
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
             _.remove(recipeActions, (a) => arr.indexOf(a.value) >= 0)
+
+            // User has no gears? Force disable the "Set gear" action.
+            if (this.gears && this.gears.length == 0) {
+                _.remove(recipeActions, {value: "gear"})
+            }
+
             this.recipeActions = recipeActions
         },
         cancel() {
