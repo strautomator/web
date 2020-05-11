@@ -1,6 +1,6 @@
 export const state = () => ({
+    lastUserFetch: new Date().valueOf(),
     user: null,
-    lastUserFetch: null,
     recipeProperties: null,
     recipeActions: null,
     recipeMaxLength: null
@@ -61,7 +61,8 @@ export const actions = {
         }
     },
     async assignUser({commit, state}) {
-        let user = state.oauth.user
+        this.$axios.setToken(state.oauth.accessToken)
+        const user = await this.$axios.$get(`/api/users/${state.oauth.user.id}`)
         commit("setUser", user)
     }
 }
