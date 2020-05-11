@@ -4,6 +4,8 @@
             <v-hover v-slot:default="{hover}">
                 <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                     <v-card-title class="accent">
+                        <v-icon class="ml-n1 mr-2" v-if="recipe.defaultFor == 'Ride'" color="primary">mdi-bike</v-icon>
+                        <v-icon class="ml-n1 mr-2" v-if="recipe.defaultFor == 'Run'" color="primary">mdi-run</v-icon>
                         <span class="primary--text">{{ recipe.title }}</span>
                         <v-spacer />
                         <v-icon v-show="hover" small>mdi-pencil-outline</v-icon>
@@ -12,6 +14,7 @@
             </v-hover>
             <v-card-text>
                 <ul class="mt-0 pl-4">
+                    <li v-if="recipe.defaultFor">This is a default automation for all your {{ recipe.defaultFor }} activities</li>
                     <li v-for="condition in recipe.conditions">
                         {{ conditionSummary(condition) }}
                     </li>
@@ -42,15 +45,16 @@ export default {
     mixins: [userMixin, recipeMixin],
     computed: {
         recipes() {
-            return Object.values(this.user.recipes)
+            const recipes = _.sortBy(Object.values(this.user.recipes), ["defaultFor"])
+            return recipes
         }
     },
     async fetch() {
         try {
             const timestamp = new Date().valueOf()
 
-            // Only fetch new user data once every 30 seconds..
-            if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 30000) {
+            // Fetch new user data once every 60 seconds...
+            if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 60000) {
                 this.$axios.setToken(this.$store.state.oauth.accessToken)
                 const user = await this.$axios.$get(`/api/users/${this.user.id}`)
                 this.$store.commit("setLastUserFetch", new Date().valueOf())

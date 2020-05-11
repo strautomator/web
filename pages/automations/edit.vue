@@ -1,6 +1,6 @@
 <template>
     <v-layout column>
-        <v-container fluid>
+        <v-container v-if="recipe" fluid>
             <h1>{{ recipe.id ? "Edit" : "New" }} automation</h1>
             <v-form v-model="valid" ref="form">
                 <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" outlined rounded></v-text-field>
@@ -8,18 +8,20 @@
             <v-card outlined>
                 <v-card-title>Conditions</v-card-title>
                 <v-card-text>
-                    <div class="mb-3" v-for="condition in recipe.conditions">
-                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                            <div class="mr-2">
-                                <v-icon color="red lighten-1" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == condition" color="red" @click="deleteCondition(condition)">mdi-minus-circle</v-icon>
-                                <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
-                            </div>
-                            <div>
-                                <span>{{ conditionSummary(condition) }}</span>
-                            </div>
-                        </v-container>
-                    </div>
+                    <template v-if="recipe.conditions && recipe.conditions.length > 0">
+                        <div class="mb-3" v-for="condition in recipe.conditions">
+                            <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                <div class="mr-2">
+                                    <v-icon color="red lighten-1" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
+                                    <v-icon v-if="deleteItemSelected == condition" color="red" @click="deleteCondition(condition)">mdi-minus-circle</v-icon>
+                                    <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                </div>
+                                <div>
+                                    <span>{{ conditionSummary(condition) }}</span>
+                                </div>
+                            </v-container>
+                        </div>
+                    </template>
                     <div class="mb-3" v-if="recipe.defaultFor">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                             <div class="mr-2">
@@ -33,7 +35,7 @@
                         </v-container>
                     </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="recipe.defaultFor" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
+                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
                     </div>
                     <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
@@ -67,31 +69,31 @@
                 <v-btn color="primary" :disabled="!valid" @click="save" rounded>Save automation</v-btn>
                 <v-btn class="ml-1" color="red" v-if="recipe.id" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>Delete</v-btn>
             </div>
-        </v-container>
-        <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
-            <v-card>
-                <v-toolbar color="red darken-4">
-                    <v-toolbar-title>Delete automation</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon @click.stop="hideDeleteDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
-                <v-card-text>
-                    <h3 class="mt-4">{{ recipe.title }}</h3>
-                    <p class="mt-2">
-                        Are you sure you want to delete this automation?
-                    </p>
-                    <div class="text-right">
+            <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
+                <v-card>
+                    <v-toolbar color="red darken-4">
+                        <v-toolbar-title>Delete automation</v-toolbar-title>
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Confirm and delete recipe" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
-                        <v-btn color="red" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
-                    </div>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
+                        <v-toolbar-items>
+                            <v-btn icon @click.stop="hideDeleteDialog">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </v-toolbar-items>
+                    </v-toolbar>
+                    <v-card-text>
+                        <h3 class="mt-4">{{ recipe.title }}</h3>
+                        <p class="mt-2">
+                            Are you sure you want to delete this automation?
+                        </p>
+                        <div class="text-right">
+                            <v-spacer></v-spacer>
+                            <v-btn class="mr-1" color="grey" title="Confirm and delete recipe" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
+                            <v-btn color="red" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </v-container>
     </v-layout>
 </template>
 
@@ -125,6 +127,11 @@ export default {
             valid = false
         }
 
+        // Invalid recipe?
+        if (!recipe) {
+            return this.$webError("UserAutomations.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
+        }
+
         return {
             recipe: _.cloneDeep(recipe),
             valid: valid,
@@ -153,7 +160,8 @@ export default {
             }
         },
         checkValid() {
-            this.valid = (this.recipe.defaultFor || this.recipe.conditions.length > 0) && this.recipe.actions.length > 0
+            const hasConditions = this.recipe.defaultFor || this.recipe.conditions.length > 0
+            this.valid = hasConditions && this.recipe.actions.length > 0
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")

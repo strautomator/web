@@ -9,7 +9,7 @@
                 </div>
                 <div class="mt-8">
                     <p>
-                        If you are just sneeking around, then we wish you happy exploring. Otherwise please contact us on
+                        If you are just sneaking around, then we wish you happy exploring. Otherwise please contact us on
                         <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> if the problem persists.
                     </p>
                 </div>

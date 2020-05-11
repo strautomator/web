@@ -12,48 +12,10 @@
                 </p>
             </div>
             <h3 class="mt-5 mb-3">Account status: PRO (beta) account</h3>
-            <v-simple-table>
-                <thead>
-                    <tr>
-                        <th>Features</th>
-                        <th class="text-center">FREE</ht>
-                        <th class="text-center">PRO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Automations</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center">Unlimited</td>
-                    </tr>
-                    <tr>
-                        <td>Conditions</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center">Unlimited</td>
-                    </tr>
-                    <tr>
-                        <td>No Links</td>
-                        <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
-                        <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
-                    </tr>
-                    <tr>
-                        <td>How much?</td>
-                        <td class="text-center">Free</td>
-                        <td class="text-center">Donation</td>
-                    </tr>
-                </tbody>
-            </v-simple-table>
-            <div class="mt-5 text-center text-md-left">
-                <v-btn color="primary" to="/donate" title="Donate and become a PRO!"  large rounded nuxt>Donate now</v-btn>
-            </div>
-            <ul class="caption mt-5 pl-4">
-                <li>While in beta, everyone gets PRO <v-icon x-small>mdi-emoticon-outline</v-icon></li>
-                <li class="beta">Free accounts are limited to only 2 conditions per automation.</li>
-                <li class="beta">Free accounts will have a link to Strautomator on the description of 20% of processed activities.</li>
-            </ul>
+            <free-pro-table />
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="info"  title="Logout from your account" @click="logout" outlined rounded>Logout</v-btn>
-                <v-btn color="red" class="ml-2" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>
+                <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>
+                <v-btn color="primary" class="ml-2" to="/donate" title="Donate and become a PRO!" rounded nuxt>Donate now</v-btn>
             </div>
         </v-container>
     </v-layout>
@@ -70,10 +32,14 @@
 
 <script>
 import moment from "moment"
+import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
+    components: {
+        FreeProTable
+    },
     mixins: [userMixin],
     head() {
         return {
@@ -86,11 +52,6 @@ export default {
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
-        }
-    },
-    methods: {
-        logout() {
-            this.$logout()
         }
     }
 }

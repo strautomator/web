@@ -7,21 +7,14 @@
             <div v-if="canDonate">
                 <p>
                     Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of this service, but I hope I could get enough support to keep the servers, systems and
-                    domain running smoothly.
+                    domain running smoothly. Any extra will be spent back on development time and donations to climate projects.
                 </p>
-                <p>
-                    Users who donate will be elevated to PRO status with the following benefits:
-                </p>
-                <ul class="mb-5 mt-0 pl-5">
-                    <li>Unlimited automations</li>
-                    <li>Unlimited rules per automation</li>
-                    <li>No backlinks added to activities</li>
-                </ul>
+                <free-pro-table />
                 <v-card outlined>
-                    <v-card-title class="accent">Recurring donations</v-card-title>
+                    <v-card-title class="accent primary--text">Recurring donations</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
-                            Want to show your appreciation? The easiest way is setting up a monthly or yearly payment on PayPal.
+                            Want to support Strautomator? The easiest way is setting up a monthly or yearly donation on PayPal.
                         </div>
                         <v-radio-group v-model="billingPlanId" :mandatory="true">
                             <template class="text-center" v-for="plan in billingPlans">
@@ -87,10 +80,14 @@
 
 <script>
 import _ from "lodash"
+import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
+    components: {
+        FreeProTable
+    },
     mixins: [userMixin],
     head() {
         return {

@@ -110,10 +110,15 @@ export default {
     methods: {
         initialData() {
             const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+            const recipes = Object.values(this.$store.state.user.recipes)
 
             // Add "defaults" to the top of the condition dropdown.
-            recipeProperties.unshift({value: "defaultFor-Ride", text: "Default automation for all cycling activities"})
-            recipeProperties.unshift({value: "defaultFor-Run", text: "Default automation for all running activities"})
+            if (!_.find(recipes, {defaultFor: "Ride"})) {
+                recipeProperties.unshift({value: "defaultFor-Ride", text: "Default automation for all cycling activities"})
+            }
+            if (!_.find(recipes, {defaultFor: "Run"})) {
+                recipeProperties.unshift({value: "defaultFor-Run", text: "Default automation for all running activities"})
+            }
 
             // Weekdays mapping.
             const weekdays = [

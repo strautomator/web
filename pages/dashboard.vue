@@ -11,6 +11,10 @@
                     Use the bottom bar to navigate on the app.
                 </p>
             </div>
+            <div v-if="!user.isPro">
+                Feeling generous? Want to support this service? Then consider
+                <n-link to="/donate" title="Donate now!" nuxt>donating</n-link>!
+            </div>
         </v-container>
     </v-layout>
 </template>
