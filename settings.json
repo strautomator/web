@@ -20,5 +20,9 @@
         "ip": "0.0.0.0",
         // Express trust proxy settings.
         "trustProxy": 1
+    },
+    "webhooks": {
+        // Retry the webhooks setup every 2 minutes (if failed). Value in milliseconds.
+        "retryInterval": 120000
     }
 }

@@ -123,6 +123,8 @@ class WebServer {
      * Prepare webhooks with Strava and PayPal.
      */
     setupWebhooks = async () => {
+        let err = null
+
         try {
             if (!strava.webhooks.current || strava.webhooks.current.callbackUrl != strava.webhooks.callbackUrl) {
                 await strava.webhooks.cancelWebhook()
@@ -130,6 +132,7 @@ class WebServer {
             }
         } catch (ex) {
             logger.error("WebServer.setupWebhooks", "Could not setup the Strava webhook")
+            err = ex
         }
 
         try {
@@ -143,7 +146,16 @@ class WebServer {
             }
         } catch (ex) {
             logger.error("WebServer.setupWebhooks", "Could not setup the PayPal webhook")
-            throw ex
+            err = ex
+        }
+
+        if (err) {
+            logger.error("WebServer.init", `Will retry the webhook setup later`)
+
+            const callback = async () => {
+                await this.setupWebhooks()
+            }
+            setTimeout(callback, settings.webhooks.retryInterval)
         }
     }
 
