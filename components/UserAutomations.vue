@@ -14,7 +14,7 @@
             </v-hover>
             <v-card-text>
                 <ul class="mt-0 pl-4">
-                    <li v-if="recipe.defaultFor">This is a default automation for all your {{ recipe.defaultFor }} activities</li>
+                    <li v-if="recipe.defaultFor">This is a catch-all automation for your "{{ recipe.defaultFor }}" activities</li>
                     <li v-for="condition in recipe.conditions">
                         {{ conditionSummary(condition) }}
                     </li>

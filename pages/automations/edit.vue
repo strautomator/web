@@ -30,7 +30,7 @@
                                 <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                             </div>
                             <div>
-                                <span class="font-weight-bold">This is the default automation for all "{{ recipe.defaultFor }}" activities</span>
+                                <span class="font-weight-bold">This is a catch-all automation for your "{{ recipe.defaultFor }}" activities</span>
                             </div>
                         </v-container>
                     </div>
