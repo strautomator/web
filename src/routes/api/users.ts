@@ -1,7 +1,8 @@
 // Strautomator API: User routes
 
-import {recipes, users, RecipeData, UserData} from "strautomator-core"
+import {recipes, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
+import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
@@ -16,18 +17,11 @@ const router = express.Router()
 router.get("/:userId", async (req, res) => {
     try {
         const userId = req.params.userId
-        const validated = await auth.requestValidator(req, res, {userId: userId})
-        if (!validated) return
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
 
-        const userData = await users.getById(userId)
-
-        if (userData) {
-            logger.info("Routes", req.method, req.originalUrl, userData.displayName)
-            webserver.renderJson(req, res, userData)
-        } else {
-            logger.error("Routes", req.method, req.originalUrl, `User ${userId} not found`)
-            webserver.renderError(req, res, "User not found", 404)
-        }
+        logger.info("Routes", req.method, req.originalUrl, user.displayName)
+        webserver.renderJson(req, res, user)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)
@@ -40,22 +34,54 @@ router.get("/:userId", async (req, res) => {
 router.delete("/:userId", async (req, res) => {
     try {
         const userId = req.params.userId
-        const validated = await auth.requestValidator(req, res, {userId: userId})
-        if (!validated) return
-
-        const user = await users.getById(userId)
-
-        // User not found?
-        if (!user) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${userId} not found`)
-            return webserver.renderError(req, res, "User not found", 404)
-        }
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
 
         // Delete the user from the database.
         await users.delete(user)
         logger.info("Routes", req.method, req.originalUrl, `User ${user.displayName} deleted`)
 
         webserver.renderJson(req, res, {deleted: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+// USER PREFERENCES
+// --------------------------------------------------------------------------
+
+/**
+ * Updated user preferences.
+ */
+router.post("/:userId/preferences", async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const activityHashtag = req.body.activityHashtag ? true : false
+        const weatherProvider = req.body.weatherProvider
+
+        // Make sure weather provider is valid.
+        if (req.body.weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
+            logger.error("Routes", req.method, req.originalUrl, `Invalid weatherProvider: ${weatherProvider}`)
+            return webserver.renderError(req, res, "Invalid weather provider", 400)
+        }
+
+        // Set and save preferences on the database.
+        const preferences: UserPreferences = {
+            activityHashtag: activityHashtag,
+            weatherProvider: weatherProvider
+        }
+        const data: Partial<UserData> = {
+            id: userId,
+            preferences: preferences
+        }
+        await users.update(data)
+
+        logger.info("Routes", req.method, req.originalUrl, `User ${user.displayName} preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
+        webserver.renderJson(req, res, preferences)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

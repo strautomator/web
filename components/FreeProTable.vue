@@ -11,12 +11,12 @@
             <tbody>
                 <tr>
                     <td>Automations</td>
-                    <td class="text-center">3</td>
+                    <td class="text-center"><span class="beta">-3-</span></td>
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
                     <td>Conditions</td>
-                    <td class="text-center">3</td>
+                    <td class="text-center"><span class="beta">-3-</span></td>
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
@@ -32,9 +32,8 @@
             </tbody>
         </v-simple-table>
         <ul class="caption mt-2 mb-5 pl-4">
-            <li>While in beta, everyone is a PRO <v-icon x-small>mdi-emoticon-outline</v-icon></li>
             <li class="beta">Free accounts are limited to only 3 conditions per automation.</li>
-            <li class="beta">Free accounts will have a link to Strautomator on the description of 20% of processed activities.</li>
+            <li>Free accounts will have a link to Strautomator on the description of {{ $store.state.linksOnPercent }}% of processed activities.</li>
         </ul>
     </div>
 </template>

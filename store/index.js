@@ -3,7 +3,9 @@ export const state = () => ({
     user: null,
     recipeProperties: null,
     recipeActions: null,
-    recipeMaxLength: null
+    recipeMaxLength: null,
+    weatherProviders: null,
+    linksOnPercent: null
 })
 
 export const getters = {
@@ -21,8 +23,17 @@ export const mutations = {
         state.recipeActions = data.recipeActions
         state.recipeMaxLength = data.recipeMaxLength
     },
+    setWeatherProviders(state, data) {
+        state.weatherProviders = data
+    },
+    linksOnPercent(state, data) {
+        state.linksOnPercent = data
+    },
     setUser(state, data) {
         state.user = data
+    },
+    setUserPreferences(state, data) {
+        state.user.preferences = data
     },
     setUserSubscription(state, data) {
         state.user.subscription = data
@@ -44,13 +55,24 @@ export const actions = {
             const core = require("strautomator-core")
             const settings = require("setmeup").settings
 
+            // Set recipe properties, actions and rules.
             const recipeOptions = {
                 recipeProperties: core.recipes.propertyList,
                 recipeActions: core.recipes.actionList,
                 recipeMaxLength: settings.recipes.maxLength
             }
-
             commit("setRecipeOptions", recipeOptions)
+
+            // Set weather providers.
+            const weatherProviders = core.weather.providers.map((p) => {
+                return {value: p.name, text: p.title}
+            })
+            weatherProviders.unshift({value: null, text: "Default weather provider"})
+            commit("setWeatherProviders", weatherProviders)
+
+            // Set links on percentage.
+            const percent = Math.round(100 / settings.plans.free.linksOn)
+            commit("linksOnPercent", percent)
         }
 
         let user = state.user

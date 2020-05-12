@@ -5,13 +5,29 @@
             <div class="text-center text-md-left">
                 <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
                 <div>Account ID {{ user.id }}</div>
-                <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
+                <div>Registered on {{ dateRegistered }}</div>
                 <p class="mt-3 caption">
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile... </a>
                 </p>
             </div>
-            <h3 class="mt-5 mb-3">Account status: PRO (beta) account</h3>
+            <h3 class="mt-5 mb-3">My preferences</h3>
+            <v-card>
+                <v-card-text>
+                    <v-select width label="Select your preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" outlined rounded></v-select>
+
+                    <div class="mt-n2">
+                        <h3 class="mb-2">Hashtag preference</h3>
+                        <div class="body-2">
+                            A link back to Strautomator will be added to {{ $store.state.linksOnPercent }}% of processed activities.
+                            <br />
+                            Do you prefer using hashtags on activity names instead of an URL on activity descriptions?
+                        </div>
+                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, use a hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                    </div>
+                </v-card-text>
+            </v-card>
+            <h3 class="mt-5 mb-3">Status: Free (beta) account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
                 <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>
@@ -21,16 +37,8 @@
     </v-layout>
 </template>
 
-<style>
-.v-data-table tr {
-    background: Transparent !important;
-}
-.beta {
-    text-decoration: line-through;
-}
-</style>
-
 <script>
+import _ from "lodash"
 import moment from "moment"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
@@ -46,12 +54,62 @@ export default {
             title: "Account"
         }
     },
+    created() {
+        this.delaySavePreferences = _.debounce(this.savePreferences, 3000)
+    },
+    data() {
+        const user = this.$store.state.user
+        const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
+        const weather = user && user.preferences ? user.preferences.weatherProvider : null
+
+        return {
+            savePending: false,
+            activityHashtag: hashtag,
+            weatherProvider: weather,
+            listWeatherProviders: _.cloneDeep(this.$store.state.weatherProviders)
+        }
+    },
     computed: {
         dateRegistered() {
             return moment(this.user.dateRegistered).format("LL")
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
+        }
+    },
+    watch: {
+        activityHashtag(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        weatherProvider(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        }
+    },
+    beforeDestroy() {
+        this.delaySavePreferences.cancel()
+
+        if (this.savePending) {
+            this.savePreferences()
+        }
+    },
+    methods: {
+        async savePreferences() {
+            this.savePending = false
+
+            try {
+                const data = {weatherProvider: this.weatherProvider, activityHashtag: this.activityHashtag}
+                this.$store.commit("setUserPreferences", data)
+
+                await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)
+            } catch (ex) {
+                this.$webError("Account.savePreferences", ex)
+            }
         }
     }
 }
