@@ -46,3 +46,81 @@ a {
 .strautologo {
     vertical-align: middle;
 }
+
+.strava-powered {
+    position: relative;
+    z-index: 99;
+}
+
+.stripe {
+    position: fixed;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.stripe::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% + 120px);
+    height: 100%;
+    background: repeating-linear-gradient(45deg, #131313 25%, #131313 50%, #000000 50%, #000000 75%);
+    background-size: 120px 120px;
+    -webkit-animation: stripeTransform 12s linear infinite;
+    animation: stripeTransform 12s linear infinite;
+}
+
+.stripe::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(27, 39, 53, 0) 0%, #090a0f 100%);
+}
+
+@-webkit-keyframes stripeTransform {
+    0% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+    100% {
+        -webkit-transform: translateX(calc(120px * -1));
+        transform: translateX(calc(120px * -1));
+    }
+}
+
+@keyframes stripeTransform {
+    0% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+    100% {
+        -webkit-transform: translateX(calc(120px * -1));
+        transform: translateX(calc(120px * -1));
+    }
+}
+
+@-webkit-keyframes stripeBackgroundPosition {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: calc(120px * -1) 0;
+    }
+}
+
+@keyframes stripeBackgroundPosition {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: calc(120px * -1) 0;
+    }
+}

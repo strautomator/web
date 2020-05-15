@@ -32,17 +32,13 @@
                 <div class="mb-6">
                     <img src="/images/strava-powered.svg" width="130" />
                 </div>
-                <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">BETA</v-chip>
-                <div class="d-md-inline">
-                    Found a bug? Have suggestions?
-                </div>
-                <div class="d-md-inline">
-                    <a href="mailto:info@strautomator.com" title="Send your feedback!">info@strautomator.com</a>
-                    or
-                    <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter">@strautomator</a>
+                <div>
+                    <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon>mdi-github</v-icon></a>
+                    <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2">mdi-twitter</v-icon></a>
+                    <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
                 </div>
                 <div class="copyright">
-                    <img src="/images/logo-round.svg" width="24" height="24" class="strautologo" />
+                    <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">BETA</v-chip>
                     <span>Strautomator - Made in Berlin</span>
                 </div>
             </div>

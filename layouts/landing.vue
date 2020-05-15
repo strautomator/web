@@ -4,12 +4,17 @@
             <nuxt />
         </v-content>
 
-        <div class="mb-6 text-center">
+        <div class="mb-6 text-center strava-powered">
             <img src="/images/strava-powered.svg" width="130" />
+        </div>
+        <div class="mb-6 text-center">
+            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon>mdi-github</v-icon></a>
+            <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2">mdi-twitter</v-icon></a>
+            <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
         </div>
         <v-footer class="justify-center" color="#292929" height="100">
             <div class="title font-weight-light grey--text text--lighten-1 text-center">
-                <img src="/images/logo-round.svg" width="24" height="24" class="strautologo" />
+                <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
                 Strautomator - Made in Berlin
             </div>
         </v-footer>
