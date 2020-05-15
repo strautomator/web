@@ -1,6 +1,7 @@
 <template>
     <v-layout column>
-        <v-container class="text-center" fluid>
+        <div class="stripe" v-if="!loggedIn"></div>
+        <v-container class="text-center help-wrapper" fluid>
             <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
                 <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
@@ -110,10 +111,8 @@
                         <v-expansion-panel-header>Why are some weather details on my activities wrong?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Strautomator is using Dark Sky, Weatherbit and OpenWeatherMap for weather data. These works wonderfully well most of the time, but on certain regions on certain days they might miscalculate the weather.
-                            </p>
-                            <p>
-                                You can set your preferred weather provider on your Account page.
+                                Strautomator is using ClimaCell, Dark Sky, Weatherbit, OpenWeatherMap and WeatherAPI.com to get weather data. You can set your preferred weather provider on your Account page in case the default (random) is not working
+                                well for you.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -237,6 +236,10 @@
 </template>
 
 <style scoped>
+.help-wrapper {
+    position: relative;
+    z-index: 99;
+}
 .v-expansion-panel-header {
     line-height: 22px;
 }
