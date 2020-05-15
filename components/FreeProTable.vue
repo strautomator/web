@@ -27,7 +27,10 @@
                 <tr>
                     <td>How much?</td>
                     <td class="text-center">Free</td>
-                    <td class="text-center">Donation</td>
+                    <td class="text-center">
+                        <n-link to="/donate" v-if="$nuxt.$route.path.indexOf('donate') < 0">Donation</n-link>
+                        <span v-else>Donation</span>
+                    </td>
                 </tr>
             </tbody>
         </v-simple-table>

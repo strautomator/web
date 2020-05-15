@@ -224,7 +224,7 @@
                 </v-expansion-panels>
 
                 <div class="mt-10 text-center" v-if="!loggedIn">
-                    <a title="Connect with Strava..." @click="login()"><img src="/images/strava-connect.svg"/></a>
+                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                 </div>
 
                 <div class="mt-10 mb-4 text-center" title="Back to Strautomator home..." v-if="!loggedIn">

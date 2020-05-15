@@ -11,7 +11,7 @@
                 </p>
                 <free-pro-table />
                 <v-card outlined>
-                    <v-card-title class="accent primary--text">Recurring donations</v-card-title>
+                    <v-card-title class="accent primary--text">Setup your donation</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             Want to support Strautomator? The easiest way is setting up a monthly or yearly donation on PayPal.

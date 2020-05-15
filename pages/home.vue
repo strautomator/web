@@ -5,43 +5,43 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="display-1 font-weight-light mt-2 mb-2">
+                <h1 class="font-weight-light mt-2 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
                     Automate your Strava activities
                 </h1>
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
-                <v-card color="black" class="mb-5">
+                <v-card color="black" class="mb-5 home-panel">
                     <v-card-text>
                         <div class="home-faq mt-6 px-1 text-left">
-                            <h3>How does it work?</h3>
+                            <h2>How does it work?</h2>
                             <div>
                                 <p>
                                     Once you authorize and connect Strautomator to your Strava account, it will start processing your uploaded activities. You can then create automations to update your activity details based on a bunch of conditions.
                                 </p>
                                 <p>
-                                    Think of IFTTT, but for Strava.
+                                    It's like IFTTT, but focused on Strava.
                                 </p>
                             </div>
-                            <h3>Is it free?</h3>
+                            <h2>Is it free?</h2>
                             <div>
                                 <p>
-                                    Yes, for up to 3 automations. If you donate, you'll be upgraded to a PRO account with unlimited usage.
+                                    Yes! And while still in beta, you can have as many automations as you want.
                                 </p>
                             </div>
-                            <h3>Want to know more?</h3>
+                            <h2>Ready?</h2>
                             <div>
                                 <p>
-                                    <n-link to="/help" title="Strautomator's Help">Check the help page...</n-link>
+                                    Start by connecting your Strava account...
                                 </p>
                             </div>
                         </div>
 
-                        <div class="mt-4">
-                            <a title="Connect with Strava..." @click="login()"><img src="/images/strava-connect.svg"/></a>
+                        <div class="mt-6 mb-8">
+                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                         </div>
 
-                        <h2 class="display-1 font-weight-light mt-10 mb-4">Automation ideas</h2>
+                        <h2 class="display-1 font-weight-light mt-8 mb-4">Automation ideas</h2>
 
                         <v-responsive>
                             <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
@@ -54,6 +54,13 @@
                                 </div>
                             </div>
                         </v-responsive>
+
+                        <h3 class="mt-10">Want to know more?</h3>
+                        <div>
+                            <p>
+                                <n-link to="/help" title="Strautomator's Help">Check the help section</n-link>
+                            </p>
+                        </div>
                     </v-card-text>
                 </v-card>
             </div>
@@ -67,6 +74,10 @@
     margin: auto;
     position: relative;
     z-index: 99;
+}
+
+.home-panel {
+    box-shadow: 0 0 1px 0 #ffa000;
 }
 
 .home-chip {
@@ -85,8 +96,9 @@
     font-weight: bold;
 }
 
-.home-faq h3 {
-    margin-bottom: 2px;
+.home-faq h2 {
+    margin-left: -1px;
+    margin-bottom: 5px;
 }
 
 .home-faq div {
@@ -119,8 +131,8 @@ export default {
                 action: "name the activity 'Suffer test'"
             },
             {
-                condition: "average speed is higher than 35kph on Tuesdays",
-                action: "set bike to 'Aero' and activity name to 'Fast Tuesdays'"
+                condition: "average speed is higher than 35kph on Monday",
+                action: "set bike to 'Aero' and activity name to 'Fast Mondays'"
             },
             {
                 condition: "activity starts before 6AM",
