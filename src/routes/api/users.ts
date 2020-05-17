@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {recipes, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
+import {recipes, strava, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -20,7 +20,7 @@ router.get("/:userId", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
-        logger.info("Routes", req.method, req.originalUrl, user.displayName)
+        logger.info("Routes", req.method, req.originalUrl, user.id)
         webserver.renderJson(req, res, user)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -39,7 +39,7 @@ router.delete("/:userId", async (req, res) => {
 
         // Delete the user from the database.
         await users.delete(user)
-        logger.info("Routes", req.method, req.originalUrl, `User ${user.displayName} deleted`)
+        logger.info("Routes", req.method, req.originalUrl, `User ${user.id} deleted`)
 
         webserver.renderJson(req, res, {deleted: true})
     } catch (ex) {
@@ -80,8 +80,30 @@ router.post("/:userId/preferences", async (req, res) => {
         }
         await users.update(data)
 
-        logger.info("Routes", req.method, req.originalUrl, `User ${user.displayName} preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
+        logger.info("Routes", req.method, req.originalUrl, `User ${user.id} preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
         webserver.renderJson(req, res, preferences)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+// USER PROCESSED ACTIVITIES
+// --------------------------------------------------------------------------
+
+/**
+ * Get processed activities for the user.
+ */
+router.get("/:userId/activities", async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const activities = await strava.activities.getProcessedActivites(user, 10)
+
+        logger.info("Routes", req.method, req.originalUrl, `User ${user.id}`)
+        webserver.renderJson(req, res, activities)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

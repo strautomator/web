@@ -4,8 +4,7 @@
             <v-hover v-slot:default="{hover}">
                 <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                     <v-card-title class="accent">
-                        <v-icon class="ml-n1 mr-2" v-if="recipe.defaultFor == 'Ride'" color="primary">mdi-bike</v-icon>
-                        <v-icon class="ml-n1 mr-2" v-if="recipe.defaultFor == 'Run'" color="primary">mdi-run</v-icon>
+                        <v-icon class="ml-n1 mr-2" color="primary">{{ recipe.defaultFor == "Ride" ? "mdi-bike" : "mdi-run" }}</v-icon>
                         <span class="primary--text">{{ recipe.title }}</span>
                         <v-spacer />
                         <v-icon v-show="hover" small>mdi-pencil-outline</v-icon>
