@@ -35,8 +35,11 @@ const validateWebhook = (req, res): boolean => {
         if (body.action) details.push(`Action: ${body.action}`)
         if (body.sender) details.push(`Sender: ${body.sender.login}`)
         if (body.hook) details.push(`Hook: ${body.hook.type}`)
-        if (body.sponsorship && body.sponsorship.sponsor) details.push(`Sponsor: ${body.sponsorship.sponsor.login}`)
-        if (body.sponsorship && body.sponsorship.tier) details.push(`Tier: ${body.sponsorship.tier.name}`)
+        if (body.sponsorship) {
+            details.push(`Sponsor: ${body.sponsorship.sponsor.login}`)
+            details.push(`Tier: ${body.sponsorship.tier.name}`)
+            details.push(`Amount: ${body.sponsorship.tier.monthly_price_in_dollars} USD`)
+        }
 
         if (checksum.length != digest.length || !crypto.timingSafeEqual(digest, checksum)) {
             throw new Error(`Request checksum invalid, got ${checksum}, expected ${digest}`)
