@@ -61,6 +61,7 @@ router.post("/:userId/preferences", async (req, res) => {
         if (!user) return
 
         let activityHashtag = req.body.activityHashtag ? true : false
+        let twitterShare = req.body.twitterShare ? true : false
         let weatherProvider = req.body.weatherProvider
         let weatherUnit = req.body.weatherUnit
 
@@ -78,6 +79,7 @@ router.post("/:userId/preferences", async (req, res) => {
         // Set and save preferences on the database.
         const preferences: UserPreferences = {
             activityHashtag: activityHashtag,
+            twitterShare: twitterShare,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit
         }

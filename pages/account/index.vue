@@ -16,10 +16,10 @@
                 <v-card-text>
                     <v-row no-gutters>
                         <v-col>
-                            <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" outlined rounded></v-select>
+                            <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </v-col>
                         <v-col>
-                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" outlined rounded></v-select>
+                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </v-col>
                     </v-row>
                     <div class="mt-n2">
@@ -30,6 +30,13 @@
                             Do you prefer using hashtags on activity names instead of an URL on activity descriptions?
                         </div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, use a hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="mb-2">Twitter sharing</h3>
+                        <div class="body-2">
+                            Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.
+                        </div>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share any of my activities'"></v-switch>
                     </div>
                 </v-card-text>
             </v-card>
@@ -66,12 +73,14 @@ export default {
     data() {
         const user = this.$store.state.user
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
+        const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const weatherProvider = user && user.preferences ? user.preferences.weatherProvider : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
 
         return {
             savePending: false,
             activityHashtag: hashtag,
+            twitterShare: twitterShare,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             listWeatherProviders: _.cloneDeep(this.$store.state.weatherProviders),
@@ -116,9 +125,10 @@ export default {
 
             try {
                 const data = {
+                    activityHashtag: this.activityHashtag,
+                    twitterShare: this.twitterShare,
                     weatherProvider: this.weatherProvider,
-                    weatherUnit: this.weatherUnit,
-                    activityHashtag: this.activityHashtag
+                    weatherUnit: this.weatherUnit
                 }
 
                 this.$store.commit("setUserPreferences", data)
