@@ -27,7 +27,7 @@
                                 <n-link to="/automations" title="Automations" nuxt router>automations</n-link>?
                             </p>
                         </div>
-                        <v-simple-table :class="{'mt-2': !$breakpoint.mdAndUp}">
+                        <v-simple-table :class="{'mt-2': !$breakpoint.mdAndUp}" v-else>
                             <thead v-if="$breakpoint.mdAndUp">
                                 <tr>
                                     <th></th>
