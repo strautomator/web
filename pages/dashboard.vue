@@ -11,8 +11,24 @@
                         Processed activities
                     </v-card-title>
                     <v-card-text>
-                        <v-simple-table>
-                            <thead>
+                        <div class="mt-4" v-if="!activities">
+                            <p>
+                                <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                                Loading statistics...
+                            </p>
+                        </div>
+                        <div class="mt-4" v-else-if="activities.length == 0">
+                            <p>
+                                <v-icon color="secondary" class="mr-1">mdi-alert-circle-outline</v-icon>
+                                None of your activities were processed by Strautomator yet.
+                            </p>
+                            <p>
+                                Maybe you want to double check your
+                                <n-link to="/automations" title="Automations" nuxt router>automations</n-link>?
+                            </p>
+                        </div>
+                        <v-simple-table :class="{'mt-2': !$breakpoint.mdAndUp}">
+                            <thead v-if="$breakpoint.mdAndUp">
                                 <tr>
                                     <th></th>
                                     <th>Activity</th>
@@ -23,23 +39,36 @@
                             </thead>
                             <tbody>
                                 <tr v-for="activity in activities" :key="activity.id">
-                                    <td>
-                                        <v-icon class="mt-n1 mt-1" small>{{ activity.type == "Ride" ? "mdi-bike" : activity.type == "Run" ? "mdi-run" : "mdi-dumbbell" }}</v-icon>
+                                    <td v-if="$breakpoint.mdAndUp">
+                                        <v-icon>{{ activity.type == "Ride" ? "mdi-bike" : activity.type == "Run" ? "mdi-run" : "mdi-dumbbell" }}</v-icon>
                                     </td>
-                                    <td>
-                                        {{ activity.name }}<br />
-                                        {{ getDate(activity.dateStart) }}
+                                    <td :class="{'pl-0 pr-0 pt-2 pb-2': !$breakpoint.mdAndUp}">
+                                        <template v-if="!$breakpoint.mdAndUp">
+                                            <v-icon class="mt-n1 mr-1" small>{{ activity.type == "Ride" ? "mdi-bike" : activity.type == "Run" ? "mdi-run" : "mdi-dumbbell" }}</v-icon>
+                                            <span class="float-right ml-2">{{ getDate(activity.dateStart).format("L") }}</span>
+                                            <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
+                                            <ul>
+                                                <li v-for="(recipe, index) in Object.values(activity.recipes)" :key="`${activity.id}-recipe${index}`">
+                                                    {{ recipe.title }}
+                                                </li>
+                                            </ul>
+                                        </template>
+                                        <template v-else>
+                                            {{ activity.name }}
+                                            <br />
+                                            {{ getDate(activity.dateStart).format("lll") }}
+                                        </template>
                                     </td>
-                                    <td>
+                                    <td v-if="$breakpoint.mdAndUp">
                                         <div v-for="(recipe, index) in Object.values(activity.recipes)" :key="`${activity.id}-recipe${index}`">
                                             {{ recipe.title }}
                                         </div>
                                     </td>
-                                    <td>
+                                    <td v-if="$breakpoint.mdAndUp">
                                         {{ getUpdatedFields(activity.updatedFields) }}
                                     </td>
-                                    <td>
-                                        <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`"><v-icon color="primary" class="mt-n1" small>mdi-open-in-new</v-icon></a>
+                                    <td v-if="$breakpoint.mdAndUp">
+                                        <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava"><v-icon color="primary" class="mt-n1">mdi-open-in-new</v-icon></a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -70,7 +99,7 @@ export default {
     },
     data() {
         return {
-            activities: []
+            activities: null
         }
     },
     computed: {
@@ -88,7 +117,7 @@ export default {
     },
     methods: {
         getDate(date) {
-            return moment(date).format("lll")
+            return moment(date)
         },
         getUpdatedFields(fields) {
             const arr = Object.keys(fields)
