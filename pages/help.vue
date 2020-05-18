@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <div class="stripe" v-if="!loggedIn"></div>
-        <v-container class="text-center help-wrapper" fluid>
+        <v-container class="text-center" :class="{'help-wrapper': !loggedIn}" fluid>
             <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
                 <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
@@ -38,7 +38,7 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>How does the connection with Strava work?</v-expansion-panel-header>
+                        <v-expansion-panel-header>How does it connect to Strava?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
                                 Once you click or tap the <a title="Connect with Strava" @click="login">"Connect with Strava"</a> button, you'll be redirected to Strava to give Strautomator the necessary permissions to read and update activities on
@@ -159,15 +159,11 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Can I get a PRO account without a donation?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Can I get PRO without donating?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                If you have a good reason... and as long as the that reason can help me maintain or improve the service... then yeah, sure, just
-                                <a href="mailto:info@strautomator.com?subject=Strautomator PRO" title="Wanna be a PRO?">drop me an email</a> and I'll think about it.
-                            </p>
-                            <p>
-                                Or you can simply grab the
-                                <a href="https://github.com/strautomator" title="Strautomator @ GitHub">source code</a> and deploy your own version. It's free.
+                                You can grab the
+                                <a href="https://github.com/strautomator" title="Strautomator @ GitHub">source code</a> and deploy your own instance of Strautomator. I will be glad to help if you want to get it running on your own server.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -176,7 +172,7 @@
                 <h2 class="mb-1">Security and privacy</h2>
                 <v-expansion-panels hover>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Can Strautomator mess up with my Strava account?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Can Strautomator mess up my Strava?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
                                 If you connect with your Strava account, Strautomator will have permissions to read and update your activities. The service can't delete existing activities, nor create new ones.
@@ -246,6 +242,9 @@
 .v-expansion-panel-header--active {
     font-weight: bold;
 }
+.v-expansion-panel-content {
+    padding-top: 8px;
+}
 </style>
 
 <script>
@@ -267,7 +266,7 @@ export default {
         return {
             loggedIn: this.$store.state.oauth && this.$store.state.user,
             billingPlanSummaries: [],
-            panel: 0
+            panel: null
         }
     },
     async fetch() {
