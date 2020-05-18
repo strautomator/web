@@ -15,6 +15,10 @@ export default {
                     if (num <= 0) return "Must be higher than zero"
                     return true
                 },
+                anyNumber: (value) => {
+                    if (isNaN(value)) return "Invalid number"
+                    return /^-?\d*\.?\d*$/.test(value)
+                },
                 time: (value) => {
                     if (!value) return "Invalid time"
                     value = value.replace(":", "")
