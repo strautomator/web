@@ -14,8 +14,14 @@
             <h3 class="mt-5 mb-3">My preferences</h3>
             <v-card>
                 <v-card-text>
-                    <v-select width label="Select your preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" outlined rounded></v-select>
-
+                    <v-row no-gutters>
+                        <v-col>
+                            <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" outlined rounded></v-select>
+                        </v-col>
+                        <v-col>
+                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" outlined rounded></v-select>
+                        </v-col>
+                    </v-row>
                     <div class="mt-n2">
                         <h3 class="mb-2">Hashtag preference</h3>
                         <div class="body-2">
@@ -60,13 +66,19 @@ export default {
     data() {
         const user = this.$store.state.user
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
-        const weather = user && user.preferences ? user.preferences.weatherProvider : null
+        const weatherProvider = user && user.preferences ? user.preferences.weatherProvider : null
+        const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
 
         return {
             savePending: false,
             activityHashtag: hashtag,
-            weatherProvider: weather,
-            listWeatherProviders: _.cloneDeep(this.$store.state.weatherProviders)
+            weatherProvider: weatherProvider,
+            weatherUnit: weatherUnit,
+            listWeatherProviders: _.cloneDeep(this.$store.state.weatherProviders),
+            listWeatherUnits: [
+                {value: "c", text: "Celsius"},
+                {value: "f", text: "Fahrenheit"}
+            ]
         }
     },
     computed: {
@@ -103,7 +115,12 @@ export default {
             this.savePending = false
 
             try {
-                const data = {weatherProvider: this.weatherProvider, activityHashtag: this.activityHashtag}
+                const data = {
+                    weatherProvider: this.weatherProvider,
+                    weatherUnit: this.weatherUnit,
+                    activityHashtag: this.activityHashtag
+                }
+
                 this.$store.commit("setUserPreferences", data)
 
                 await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)

@@ -38,7 +38,7 @@
                     <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
                 </div>
                 <div class="copyright">
-                    <v-chip color="accent" class="caption mb-3 mb-md-1 mr-md-2">BETA</v-chip>
+                    <v-chip color="accent" class="caption mb-1 mr-1">BETA</v-chip>
                     <span>Strautomator - Made in Berlin</span>
                 </div>
             </div>

@@ -62,6 +62,9 @@ export default {
     },
     computed: {
         selectedSuffix() {
+            if (this.user.preferences && this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
+                return this.selectedProperty.fSuffix
+            }
             if (this.user.profile.units == "imperial" && this.selectedProperty.impSuffix) {
                 return this.selectedProperty.impSuffix
             }
