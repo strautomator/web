@@ -20,7 +20,7 @@ router.get("/:userId", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
-        logger.info("Routes", req.method, req.originalUrl, user.id)
+        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, user)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -39,8 +39,8 @@ router.delete("/:userId", async (req, res) => {
 
         // Delete the user from the database.
         await users.delete(user)
-        logger.info("Routes", req.method, req.originalUrl, `User ${user.id} deleted`)
 
+        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {deleted: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -60,19 +60,26 @@ router.post("/:userId/preferences", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
-        const activityHashtag = req.body.activityHashtag ? true : false
-        const weatherProvider = req.body.weatherProvider
+        let activityHashtag = req.body.activityHashtag ? true : false
+        let weatherProvider = req.body.weatherProvider
+        let weatherUnit = req.body.weatherUnit
 
         // Make sure weather provider is valid.
-        if (req.body.weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
+        if (weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
             logger.error("Routes", req.method, req.originalUrl, `Invalid weatherProvider: ${weatherProvider}`)
             return webserver.renderError(req, res, "Invalid weather provider", 400)
+        }
+
+        // Make sure weather unit is "c" or "f".
+        if (weatherUnit != "c") {
+            weatherUnit = "f"
         }
 
         // Set and save preferences on the database.
         const preferences: UserPreferences = {
             activityHashtag: activityHashtag,
-            weatherProvider: weatherProvider
+            weatherProvider: weatherProvider,
+            weatherUnit: weatherUnit
         }
         const data: Partial<UserData> = {
             id: userId,
@@ -80,7 +87,7 @@ router.post("/:userId/preferences", async (req, res) => {
         }
         await users.update(data)
 
-        logger.info("Routes", req.method, req.originalUrl, `User ${user.id} preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
+        logger.info("Routes", req.method, req.originalUrl, `User preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
         webserver.renderJson(req, res, preferences)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -102,7 +109,7 @@ router.get("/:userId/activities", async (req, res) => {
 
         const activities = await strava.activities.getProcessedActivites(user, 10)
 
-        logger.info("Routes", req.method, req.originalUrl, `User ${user.id}`)
+        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
