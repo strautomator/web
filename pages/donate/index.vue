@@ -14,28 +14,28 @@
                     <v-card-title class="accent primary--text">Setup your donation</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
-                            Want to support Strautomator? The easiest way is setting up a monthly or yearly donation on PayPal.
+                            Want to support Strautomator? The easiest way is setting up your donation on PayPal or a sponsorship via GitHub.
                         </div>
-                        <v-radio-group v-model="billingPlanId" :mandatory="true">
-                            <template class="text-center" v-for="plan in billingPlans">
-                                <v-radio :label="plan.price + ' EUR / ' + plan.frequency" :value="plan.id"></v-radio>
-                            </template>
-                        </v-radio-group>
-                        <v-btn color="primary" title="Donate via PayPal now!" @click="prepareSubscription" x-large rounded nuxt>Donate via PayPal</v-btn>
-                        <div class="caption mt-4">
-                            Putting it into perspective: this is less than 1 espresso per month, or 1 nice meal per year.
-                        </div>
+                        <v-row no-gutters>
+                            <v-col>
+                                <v-radio-group v-model="billingPlanId" :mandatory="true">
+                                    <template class="text-center" v-for="plan in billingPlans">
+                                        <v-radio :label="plan.price + ' EUR / ' + plan.frequency" :value="plan.id"></v-radio>
+                                    </template>
+                                </v-radio-group>
+                                <v-btn color="primary" title="Donate via PayPal" @click="prepareSubscription" x-large rounded nuxt>Donate via PayPal</v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-radio-group value="github1">
+                                    <template class="text-center">
+                                        <v-radio label="$1.00 / month" value="github1"></v-radio>
+                                    </template>
+                                </v-radio-group>
+                                <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!"><v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>Sponsor me on GitHub</v-btn></a>
+                            </v-col>
+                        </v-row>
                     </v-card-text>
                 </v-card>
-                <h3 class="mt-6 mb-1">Other ways to support</h3>
-                <ul class="mt-0 mb-3 pl-5">
-                    <li><a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">Sponsor me on GitHub</a></li>
-                    <li><a href="https://bunq.me/strautomator" title="Donate via bunq">Donate via bunq</a></li>
-                </ul>
-                <p>
-                    If you donate via GutHub or bunq, please let me know via <a title="Contact us" :href="'mailto:info@strautomator.com?subject=Donation from user ' + this.user.id">info@strautomator.com</a>
-                    so I can enable your PRO account manually.
-                </p>
             </div>
             <div v-else>
                 <p>Thanks for donating and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
