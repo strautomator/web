@@ -5,7 +5,8 @@ export const state = () => ({
     recipeActions: null,
     recipeMaxLength: null,
     weatherProviders: null,
-    linksOnPercent: null
+    linksOnPercent: null,
+    freePlanDetails: {}
 })
 
 export const getters = {
@@ -26,8 +27,11 @@ export const mutations = {
     setWeatherProviders(state, data) {
         state.weatherProviders = data
     },
-    linksOnPercent(state, data) {
+    setLinksOnPercent(state, data) {
         state.linksOnPercent = data
+    },
+    setFreePlanDetails(state, data) {
+        state.freePlanDetails = data
     },
     setUser(state, data) {
         state.user = data
@@ -72,7 +76,10 @@ export const actions = {
 
             // Set links on percentage.
             const percent = Math.round(100 / settings.plans.free.linksOn)
-            commit("linksOnPercent", percent)
+            commit("setLinksOnPercent", percent)
+
+            // Set free plan details.
+            commit("setFreePlanDetails", settings.plans.free)
         }
 
         let user = state.user
