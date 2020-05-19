@@ -220,6 +220,9 @@ export default {
             this.deleteDialog = false
         },
         async deleteRecipe() {
+            const recipeId = this.recipe.id
+            const recipeTitle = this.recipe.title
+
             try {
                 const userId = this.$store.state.user.id
                 this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
@@ -231,7 +234,7 @@ export default {
 
             this.$store.commit("deleteUserRecipe", this.recipe)
             this.$router.push({
-                path: "/automations"
+                path: `/automations?deleted=${recipeId}&title=${recipeTitle}`
             })
         }
     }
