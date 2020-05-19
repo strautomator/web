@@ -40,7 +40,7 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <h3 class="mt-5 mb-3">Status: Free (beta) account</h3>
+            <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
                 <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>

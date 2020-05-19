@@ -11,12 +11,12 @@
             <tbody>
                 <tr>
                     <td>Automations</td>
-                    <td class="text-center"><span class="beta">-3-</span></td>
+                    <td class="text-center">{{ $store.state.freePlanDetails.maxRecipes }}</td>
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
                     <td>Conditions</td>
-                    <td class="text-center"><span class="beta">-3-</span></td>
+                    <td class="text-center">{{ $store.state.freePlanDetails.maxConditions }}</td>
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
@@ -35,7 +35,7 @@
             </tbody>
         </v-simple-table>
         <ul class="caption mt-2 mb-5 pl-4">
-            <li class="beta">Free accounts are limited to only 3 conditions per automation.</li>
+            <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
             <li>Free accounts will have a link to Strautomator on the description of {{ $store.state.linksOnPercent }}% of processed activities.</li>
         </ul>
     </div>

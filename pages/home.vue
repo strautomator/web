@@ -25,9 +25,7 @@
                             </div>
                             <h2>Is it free?</h2>
                             <div>
-                                <p>
-                                    Yes! And while still in beta, you can have as many automations as you want.
-                                </p>
+                                <p>Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automations. But if you donate, you get unlimited use!</p>
                             </div>
                             <h2>Ready?</h2>
                             <div>

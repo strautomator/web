@@ -5,11 +5,11 @@
                 Automations
                 <v-badge v-if="recipes.length > 0" color="primary" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
             </h1>
-            <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" timeout="3000" bottom>
+            <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="3000" bottom>
                 New automation "{{ this.user.recipes[$route.query.new].title }}" created!
                 <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </v-snackbar>
-            <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" timeout="3000" bottom>
+            <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="3000" bottom>
                 Automation "{{ $route.query.title }}" deleted!
                 <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </v-snackbar>
