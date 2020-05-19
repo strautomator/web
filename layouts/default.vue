@@ -39,7 +39,7 @@
                 </div>
                 <div class="copyright">
                     <v-chip color="accent" class="caption mb-1 mr-1">BETA</v-chip>
-                    <span>Strautomator - Made in Berlin</span>
+                    <span>Strautomator.com</span>
                 </div>
             </div>
         </v-content>
