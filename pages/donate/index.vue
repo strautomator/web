@@ -6,36 +6,39 @@
             <p>Hi {{ user.profile.firstName }}!</p>
             <div v-if="canDonate">
                 <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of this service, but I hope I could get enough support to keep the servers, systems and
-                    domain running smoothly. Any extra will be spent back on development time and donations to climate projects.
+                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of the service, but I hope I could get support to at least keep the servers, systems and
+                    domain running smoothly.
                 </p>
-                <free-pro-table />
-                <v-card outlined>
+                <div class="mt-4 mb-6">
+                    You can donate via PayPal or GitHub.
+                </div>
+                <v-card class="mb-8" outlined>
                     <v-card-title class="accent primary--text">Setup your donation</v-card-title>
                     <v-card-text>
-                        <div class="mt-4">
-                            Want to support Strautomator? The easiest way is setting up your donation on PayPal or a sponsorship via GitHub.
-                        </div>
-                        <v-row no-gutters>
-                            <v-col>
-                                <v-radio-group v-model="billingPlanId" :mandatory="true">
-                                    <template class="text-center" v-for="plan in billingPlans">
-                                        <v-radio :label="plan.price + ' EUR / ' + plan.frequency" :value="plan.id"></v-radio>
-                                    </template>
-                                </v-radio-group>
-                                <v-btn color="primary" title="Donate via PayPal" @click="prepareSubscription" x-large rounded nuxt>Donate via PayPal</v-btn>
+                        <v-row class="mt-6" no-gutters>
+                            <v-col class="text-center mb-6">
+                                <template v-for="plan in billingPlans">
+                                    <v-btn color="primary" title="Donate via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
+                                        <v-icon left>mdi-credit-card-outline</v-icon>
+                                        {{ plan.price + " EUR / " + plan.frequency }} via PayPal
+                                    </v-btn>
+                                </template>
                             </v-col>
-                            <v-col>
-                                <v-radio-group value="github1">
-                                    <template class="text-center">
-                                        <v-radio label="$1.00 / month" value="github1"></v-radio>
-                                    </template>
-                                </v-radio-group>
-                                <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!"><v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>Sponsor me on GitHub</v-btn></a>
+                            <v-col class="text-center mb-2">
+                                <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
+                                    <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
+                                        <v-icon left>mdi-github</v-icon>
+                                        $1.00 / month via GitHub
+                                    </v-btn>
+                                </a>
                             </v-col>
                         </v-row>
                     </v-card-text>
                 </v-card>
+                <p>
+                    How do the free and the PRO accounts compare?
+                </p>
+                <free-pro-table />
             </div>
             <div v-else>
                 <p>Thanks for donating and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
@@ -97,7 +100,6 @@ export default {
     data() {
         return {
             billingPlans: [],
-            billingPlanId: null,
             unsubDialog: false,
             unsubReason: ""
         }
@@ -112,15 +114,14 @@ export default {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
             const billingPlans = await this.$axios.$get("/api/paypal/billingplans")
             this.billingPlans = Object.values(billingPlans)
-            this.billingPlanId = this.billingPlans[0]
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }
     },
     methods: {
-        async prepareSubscription() {
+        async prepareSubscription(planId) {
             try {
-                const subscription = await this.$axios.$post(`/api/paypal/subscribe/${this.billingPlanId}`)
+                const subscription = await this.$axios.$post(`/api/paypal/subscribe/${planId}`)
 
                 if (subscription && subscription.approvalUrl) {
                     document.location.href = subscription.approvalUrl

@@ -110,7 +110,7 @@ export default {
     async fetch() {
         try {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
-            this.activities = await this.$axios.$get(`/api/users/${this.user.id}/activities`)
+            this.activities = await this.$axios.$get(`/api/users/${this.user.id}/processed-activities`)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }

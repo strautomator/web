@@ -14,14 +14,20 @@
             <h3 class="mt-5 mb-3">My preferences</h3>
             <v-card>
                 <v-card-text>
-                    <v-row no-gutters>
-                        <v-col>
+                    <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                        <div class="flex-grow-1">
                             <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
-                        </v-col>
-                        <v-col>
+                        </div>
+                        <div class="flex-grow-1">
                             <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
-                        </v-col>
-                    </v-row>
+                        </div>
+                    </div>
+                    <div class="mb-8 mt-n2 text-center text-md-left">
+                        <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
+                            <v-icon color="primary" small>mdi-information-outline</v-icon>
+                            Need help choosing a help provider?
+                        </n-link>
+                    </div>
                     <div class="mt-n2">
                         <h3 class="mb-2">Hashtag preference</h3>
                         <div class="body-2">
@@ -43,8 +49,16 @@
             <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" outlined rounded nuxt>Close my account</v-btn>
-                <v-btn color="primary" class="ml-2" to="/donate" title="Donate and become a PRO!" rounded nuxt>Donate now</v-btn>
+                <v-btn color="primary" to="/donate" title="Donate and become a PRO!" rounded nuxt>
+                    <v-icon left>mdi-credit-card-outline</v-icon>
+                    Donate now
+                </v-btn>
+            </div>
+            <div class="mt-6 text-center text-md-left">
+                <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                    <v-icon left>mdi-cancel</v-icon>
+                    Close my account
+                </v-btn>
             </div>
         </v-container>
     </v-layout>
@@ -106,6 +120,18 @@ export default {
             }
         },
         weatherProvider(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        weatherUnit(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        twitterShare(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()

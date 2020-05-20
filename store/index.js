@@ -37,7 +37,7 @@ export const mutations = {
         state.user = data
     },
     setUserPreferences(state, data) {
-        state.user.preferences = data
+        state.user.preferences = Object.assign(state.user.preferences, data)
     },
     setUserSubscription(state, data) {
         state.user.subscription = data

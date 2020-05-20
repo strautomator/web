@@ -149,6 +149,14 @@ export default {
                 action: "set the activity name to 'Beach time!'"
             },
             {
+                condition: "temperature is under 0°C and average speed under 20kph",
+                action: "set the activity name to 'Frosty commute'"
+            },
+            {
+                condition: "wind speed higher than 20 m/s",
+                action: "set the description to 'Windy as hell'"
+            },
+            {
                 action: "add weather data to activity descriptions"
             },
             {

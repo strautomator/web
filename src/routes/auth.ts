@@ -83,6 +83,13 @@ export class Auth {
                 return false
             }
 
+            // User ID does not match the one passed with the options?
+            if (options.userId && user.id != options.userId) {
+                logger.error("Auth.requestValidator", req.originalUrl, "User not authorized", `From ${req.ip}`)
+                webserver.renderError(req, res, "User not authorized", 401)
+                return false
+            }
+
             // All good!
             return user
         } catch (ex) {

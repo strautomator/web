@@ -44,19 +44,19 @@
             </div>
         </v-content>
         <v-bottom-navigation class="hidden-md-and-up" color="primary" v-model="activeNavBtn" app grow>
-            <v-btn to="/dashboard" router nuxt>
+            <v-btn value="/dashboard" to="/dashboard" router nuxt>
                 <span>Dashboard</span>
                 <v-icon>mdi-home</v-icon>
             </v-btn>
-            <v-btn to="/automations" router nuxt>
+            <v-btn value="/automations" to="/automations" router nuxt>
                 <span>Automations</span>
                 <v-icon>mdi-file-tree</v-icon>
             </v-btn>
-            <v-btn to="/account" router nuxt>
+            <v-btn value="/account" to="/account" router nuxt>
                 <span>Account</span>
                 <v-icon>mdi-account</v-icon>
             </v-btn>
-            <v-btn to="/help" router nuxt>
+            <v-btn value="/help" to="/help" router nuxt>
                 <span>Help</span>
                 <v-icon>mdi-help</v-icon>
             </v-btn>
@@ -72,7 +72,7 @@ export default {
     },
     data() {
         return {
-            activeNavBtn: null
+            activeNavBtn: this.$route.path || null
         }
     },
     methods: {

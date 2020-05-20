@@ -26,7 +26,10 @@
             </v-card-text>
         </v-card>
         <div class="mt-5 text-center text-md-left">
-            <v-btn color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>Create new automation</v-btn>
+            <v-btn color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
+                <v-icon left>mdi-plus-circle</v-icon>
+                Create new automation
+            </v-btn>
         </div>
     </div>
 </template>

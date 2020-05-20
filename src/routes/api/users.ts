@@ -60,36 +60,43 @@ router.post("/:userId/preferences", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
-        let activityHashtag = req.body.activityHashtag ? true : false
-        let twitterShare = req.body.twitterShare ? true : false
-        let weatherProvider = req.body.weatherProvider
-        let weatherUnit = req.body.weatherUnit
+        const preferences: UserPreferences = {}
 
         // Make sure weather provider is valid.
-        if (weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
-            logger.error("Routes", req.method, req.originalUrl, `Invalid weatherProvider: ${weatherProvider}`)
-            return webserver.renderError(req, res, "Invalid weather provider", 400)
+        if (!_.isNil(req.body.weatherProvider)) {
+            const weatherProvider = req.body.weatherProvider
+
+            if (weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
+                logger.error("Routes", req.method, req.originalUrl, `Invalid weatherProvider: ${weatherProvider}`)
+                return webserver.renderError(req, res, "Invalid weather provider", 400)
+            }
+
+            preferences.weatherProvider = weatherProvider
         }
 
-        // Make sure weather unit is "c" or "f".
-        if (weatherUnit != "c") {
-            weatherUnit = "f"
+        // Make sure weather unit is valid.
+        if (!_.isNil(req.body.weatherUnit)) {
+            preferences.weatherUnit = req.body.weatherUnit != "c" ? "f" : "c"
         }
 
-        // Set and save preferences on the database.
-        const preferences: UserPreferences = {
-            activityHashtag: activityHashtag,
-            twitterShare: twitterShare,
-            weatherProvider: weatherProvider,
-            weatherUnit: weatherUnit
+        // Set activity hashtag preference?
+        if (!_.isNil(req.body.activityHashtag)) {
+            preferences.activityHashtag = req.body.activityHashtag ? true : false
         }
+
+        // Set twitter share preference?
+        if (!_.isNil(req.body.twitterShare)) {
+            preferences.twitterShare = req.body.twitterShare ? true : false
+        }
+
+        // Set user data and save to the database.
         const data: Partial<UserData> = {
             id: userId,
             preferences: preferences
         }
         await users.update(data)
 
-        logger.info("Routes", req.method, req.originalUrl, `User preferences: activityHashtag ${preferences.activityHashtag}, weatherProvider ${preferences.weatherProvider || "default"}`)
+        logger.info("Routes", req.method, req.originalUrl, _.toPairs(preferences))
         webserver.renderJson(req, res, preferences)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -97,13 +104,13 @@ router.post("/:userId/preferences", async (req, res) => {
     }
 })
 
-// USER PROCESSED ACTIVITIES
+// USER ACTIVITIES
 // --------------------------------------------------------------------------
 
 /**
- * Get processed activities for the user.
+ * Get user's activities that were processed by Strautomator.
  */
-router.get("/:userId/activities", async (req, res) => {
+router.get("/:userId/processed-activities", async (req, res) => {
     try {
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData

@@ -66,7 +66,10 @@
                 </v-card-text>
             </v-card>
             <div class="text-center text-md-left mt-4">
-                <v-btn color="primary" :disabled="!valid" @click="save" rounded>Save automation</v-btn>
+                <v-btn color="primary" :disabled="!valid" @click="save" rounded>
+                    <v-icon left>mdi-content-save</v-icon>
+                    Save automation
+                </v-btn>
                 <v-btn class="ml-1" color="red" v-if="recipe.id" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>Delete</v-btn>
             </div>
             <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
