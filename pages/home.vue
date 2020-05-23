@@ -25,7 +25,7 @@
                             </div>
                             <h2>Is it free?</h2>
                             <div>
-                                <p>Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automations. But if you donate, you get unlimited use!</p>
+                                <p>Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automations. For unlimited automations and extra features, you can subscribe to a PRO account.</p>
                             </div>
                             <h2>Ready?</h2>
                             <div>

@@ -20,17 +20,19 @@
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
-                    <td>No Links</td>
+                    <td>Weather Providers</td>
+                    <td class="text-center">1</td>
+                    <td class="text-center">5</td>
+                </tr>
+                <tr>
+                    <td>No Linkbacks</td>
                     <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                     <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                 </tr>
                 <tr>
                     <td>How much?</td>
                     <td class="text-center">Free</td>
-                    <td class="text-center">
-                        <n-link to="/donate" v-if="$nuxt.$route.path.indexOf('donate') < 0">Donation</n-link>
-                        <span v-else>Donation</span>
-                    </td>
+                    <td class="text-center">${{ $store.state.proPlanDetails.price.year }} / year</td>
                 </tr>
             </tbody>
         </v-simple-table>

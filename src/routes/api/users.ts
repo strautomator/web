@@ -7,6 +7,7 @@ import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router = express.Router()
+const settings = require("setmeup").settings
 
 // USER DATA
 // --------------------------------------------------------------------------
@@ -63,7 +64,7 @@ router.post("/:userId/preferences", async (req, res) => {
         const preferences: UserPreferences = {}
 
         // Make sure weather provider is valid.
-        if (!_.isNil(req.body.weatherProvider)) {
+        if (user.isPro && !_.isNil(req.body.weatherProvider)) {
             const weatherProvider = req.body.weatherProvider
 
             if (weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
@@ -166,6 +167,10 @@ const routeUserRecipe = async (req: any, res: any) => {
 
         // Creating a new recipe?
         if (!recipe.id && method == "POST") {
+            if (!user.isPro && user.recipes.length >= settings.plans.free.maxRecipes) {
+                throw new Error(`User ${user.id} is not PRO and has reached the free acccount limit`)
+            }
+
             const now = new Date()
             const hex = Math.round(now.getTime() / 1000).toString(16)
             recipe.id = "r" + hex.toLowerCase()

@@ -6,7 +6,7 @@
                 <v-card-text>
                     <p>Hi {{ user.profile.firstName }}!</p>
                     <p>
-                        We truly appreciate your donation! Your support gives me not only the financial help to keep Strautomator running, but also the recognition and the motivation I need to keep it running and adding requested features!
+                        We truly appreciate your support! It gives me not only the financial help to keep Strautomator running, but also the recognition and the motivation I need to keep bringing all the cool features you might want :-)
                     </p>
                     <p>
                         Your account will be switched to PRO automatically within the next few minutes.

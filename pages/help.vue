@@ -25,6 +25,7 @@
                             <ul>
                                 <li>Mark rides as commute if going from point A to point B</li>
                                 <li>Mark runs as commute if recorded with a specific GPS device</li>
+                                <li>Set activity names with distance, power, weather and other data</li>
                                 <li>Set the correct bike based on ride speed</li>
                                 <li>Add weather details to the activity name</li>
                             </ul>
@@ -50,10 +51,10 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Do I need Strava Summit to use it?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Do I need Strava Premium to use it?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Not at all! Strautomator also works with free Strava accounts.
+                                Not at all! It also works with free accounts. Strava has recently made some users unhappy by making some of their features available to Premium only, but that doesn't affect Strautomator.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -65,10 +66,10 @@
                             </p>
                             <p>
                                 Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to the activity description. Then there's IFTTT to integrate
-                                with other services. Strautomator is a all-in-one.
+                                with other services. Strautomator is a all-in-one. A jack of all trades.
                             </p>
                             <p>
-                                And finally: Strautomator is
+                                And last but not least: it's
                                 <a href="https://github.com/strautomator" title="Strautomator on GitHub">open source</a>.
                             </p>
                         </v-expansion-panel-content>
@@ -81,7 +82,7 @@
                         <v-expansion-panel-header>Which sports are supported?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                At the moment Strautomator is mostly focused on cycling and running, but in theory it should support all activity types. If you have issues (or suggestions) with a specific sport, please let me know.
+                                Any activity type that is supported by Strava. But please keep in mind that Strava is mostly focused on cycling and running, so some of the features might make sense only with these 2 sports.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -89,7 +90,7 @@
                         <v-expansion-panel-header>Metric or imperial system?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Kilometers or miles? Strautomator will get the preferences you have set on your Strava account. So if you're using Strava with imperial units, your automations should also use them.
+                                Kilometers or miles? Strautomator will get the preferences you have set on your Strava account. So if you're using Strava with imperial units, so will your automations.
                             </p>
                             <p>
                                 Please be aware that if you change your preferences on Strava, you'll have to update your automations to reflect the new unit. Example: an automation that has "distance > 10 miles" will need to be manually updated to
@@ -102,7 +103,7 @@
                         <v-expansion-panel-content>
                             <p>
                                 Usually less than 5 minutes after being created or uploaded to Strava, but depending on their API's load it can take a bit longer. Please note that only new activities are processed. If you manually update an activity
-                                on Strava, it will not trigger your automations on Strautomator.
+                                on Strava, it will <span class="font-weight-bold">not</span> trigger your automations on Strautomator.
                             </p>
                             <p class="font-italic">In the future I might add support for automations on updated activities as well.</p>
                         </v-expansion-panel-content>
@@ -111,58 +112,49 @@
                         <v-expansion-panel-header>Why are some weather details on my activities wrong?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Strautomator is using ClimaCell, Dark Sky, Weatherbit, OpenWeatherMap and WeatherAPI.com to get weather data. You can set your preferred weather provider on your Account page in case the default (random) is not working
-                                well for you.
+                                Strautomator is using ClimaCell, Dark Sky, Weatherbit, OpenWeatherMap and WeatherAPI.com to get weather data. On free accounts the actual provider will be selected based on location and API usage. Users with PRO
+                                accounts can manually set their preferred weather provider.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
 
-                <h2 class="mb-1">Donations and PRO</h2>
+                <h2 class="mb-1">Free vs. PRO accounts</h2>
                 <v-expansion-panels class="mb-5" hover>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Free vs PRO account, what's the deal?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Free vs. PRO, what's the deal?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Feature-wise, they're basically the same. The forever-free account is restricted to only 3 automations, containing a maximum of 3 conditions each. Additionally, free accounts will have a link to strautomator.com added
-                                to the description of {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5).
+                                Feature-wise they're almost the same. The free account is restricted to {{ $store.state.freePlanDetails.maxRecipes }} automations, containing a maximum of {{ $store.state.freePlanDetails.maxConditions }} conditions
+                                each. Additionally, free accounts will have a link to strautomator.com added to the description of {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5).
                             </p>
                             <p>
-                                Users who <n-link :to="loggedIn ? '/donate' : '/donate/register'" title="Donate now!">donate</n-link>
-                                will get a PRO account with no limits and no automated links.
+                                Users who subscribe to PRO will have no limits on automations or conditions, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider.
+                            </p>
+                            <p>PRO costs ${{ $store.state.proPlanDetails.price.year.toFixed(2) }} / year via PayPal or ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub.</p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Why should I pay to get PRO?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                <span class="font-weight-bold">A valid question!</span>
+                                The free account should be sufficient to the vast majority of users. But if you have dozens of weekly activities and want to automate their details as much as possible, PRO is the way to go.
+                            </p>
+                            <p>
+                                Suppose you earn $15 per hour, and have on average 1 activity per day. We'll round to 350 activities / year. By using Strautomator, you save that 1 minute hassle of opening Strava to update these activities manually.
+                                So it can potentially save you 25 cents per activity. If half of your activities are automated, in 1 year that's around $44.
+                            </p>
+                            <p>
+                                The calculation above is obviously a bit silly, but you get the point. There are running costs (domain, servers, weather APIs...) and I hope to at least cover these costs with a few PRO subscribers.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Why should I donate?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Can I get PRO for free?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                <span class="font-weight-bold">A valid question!</span> Suppose you earn 18 EUR per hour, and have on average 1 activity per day. We'll round to 350 activities / year. By using Strautomator you save that 1 minute
-                                hassle of opening Strava to update these activities manually. So it can potentially save you 30 cents per activity. In 1 year that's around 105 EUR.
-                            </p>
-                            <p>
-                                The calculation above is obviously a bit silly, but you get the point. There are running costs (domain, servers, weather APIs...) and I hope to at least cover these costs with some of your donations.
-                            </p>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-                    <v-expansion-panel>
-                        <v-expansion-panel-header>How can I donate?</v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <p>
-                                I have integrated with PayPal to make donations as friction-free as possible, via recurring subscriptions: {{ billingPlanSummaries.join(" or ") }}. PayPal is very popular and trusted by many people. And I won't need to
-                                know any of your payment details.
-                            </p>
-                            <p>
-                                If you prefer you can also support via <a href="https://github.com/sponsors/igoramadas" title="Sponsor me @ GitHub">GitHub sponsors</a>, or directly via
-                                <a href="https://bunq.me/strautomator" title="Donate via bunq">bunq</a>.
-                            </p>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-                    <v-expansion-panel>
-                        <v-expansion-panel-header>Can I get PRO without donating?</v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <p>
-                                You can grab the
+                                Kind of. You can grab the
                                 <a href="https://github.com/strautomator" title="Strautomator @ GitHub">source code</a> and deploy your own instance of Strautomator. I will be glad to help if you want to get it running on your own server.
                             </p>
                         </v-expansion-panel-content>
@@ -210,7 +202,7 @@
                         <v-expansion-panel-content>
                             <p>
                                 If you decide to cancel your Strautomator account, there's no way to restore any of the data that the system had previously processed. All your recipes will vanish into thin air. The connection we have will be killed
-                                and Strautomator will be deauthorized from your Strava account. If you have a running donation on PayPal, this will also be cancelled.
+                                and Strautomator will be deauthorized from your Strava account. If you have a running PRO subscription on PayPal, this will also be cancelled.
                             </p>
                             <p>
                                 And if there's any feedback you might want to share, I'm all ears.

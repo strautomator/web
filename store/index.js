@@ -6,7 +6,9 @@ export const state = () => ({
     recipeMaxLength: null,
     weatherProviders: null,
     linksOnPercent: null,
-    freePlanDetails: {}
+    sportTypes: [],
+    freePlanDetails: {},
+    proPlanDetails: {}
 })
 
 export const getters = {
@@ -30,8 +32,12 @@ export const mutations = {
     setLinksOnPercent(state, data) {
         state.linksOnPercent = data
     },
-    setFreePlanDetails(state, data) {
-        state.freePlanDetails = data
+    setSportTypes(state, data) {
+        state.sportTypes = data
+    },
+    setPlanDetails(state, data) {
+        state.freePlanDetails = data.free
+        state.proPlanDetails = data.pro
     },
     setUser(state, data) {
         state.user = data
@@ -78,8 +84,12 @@ export const actions = {
             const percent = Math.round(100 / settings.plans.free.linksOn)
             commit("setLinksOnPercent", percent)
 
-            // Set free plan details.
-            commit("setFreePlanDetails", settings.plans.free)
+            // Set sport types.
+            const sportTypes = Object.keys(core.StravaSport).map((s) => core.StravaSport[s])
+            commit("setSportTypes", sportTypes)
+
+            // Set free / PRO plan details.
+            commit("setPlanDetails", settings.plans)
         }
 
         let user = state.user

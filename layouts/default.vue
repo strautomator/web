@@ -38,8 +38,8 @@
                     <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
                 </div>
                 <div class="copyright">
-                    <v-chip color="accent" class="caption mb-1 mr-1">BETA</v-chip>
                     <span>Strautomator.com</span>
+                    <v-chip v-if="$store.state.user && $store.state.user.isPro" color="primary" class="caption mb-1 ml-1">PRO</v-chip>
                 </div>
             </div>
         </v-content>

@@ -22,13 +22,13 @@
                             <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                     </div>
-                    <div class="mb-8 mt-n2 text-center text-md-left">
+                    <div v-if="user.isPro" class="mb-8 mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
                             <v-icon color="primary" small>mdi-information-outline</v-icon>
                             Need help choosing a help provider?
                         </n-link>
                     </div>
-                    <div class="mt-n2">
+                    <div v-if="!user.isPro" class="mt-n2">
                         <h3 class="mb-2">Hashtag preference</h3>
                         <div class="body-2">
                             A link back to Strautomator will be added to {{ $store.state.linksOnPercent }}% of processed activities.
@@ -49,9 +49,9 @@
             <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="primary" to="/donate" title="Donate and become a PRO!" rounded nuxt>
+                <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
                     <v-icon left>mdi-credit-card-outline</v-icon>
-                    Donate now
+                    Get a PRO account
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
@@ -90,6 +90,16 @@ export default {
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const weatherProvider = user && user.preferences ? user.preferences.weatherProvider : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
+        const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
+
+        if (!user.isPro) {
+            for (let wp of listWeatherProviders) {
+                if (wp.value) {
+                    wp.disabled = true
+                    wp.text += " (PRO only)"
+                }
+            }
+        }
 
         return {
             savePending: false,
@@ -97,7 +107,7 @@ export default {
             twitterShare: twitterShare,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
-            listWeatherProviders: _.cloneDeep(this.$store.state.weatherProviders),
+            listWeatherProviders: listWeatherProviders,
             listWeatherUnits: [
                 {value: "c", text: "Celsius"},
                 {value: "f", text: "Fahrenheit"}

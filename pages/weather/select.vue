@@ -16,7 +16,7 @@
             </template>
             <template v-else>
                 <p>
-                    So... which one you like the most?
+                    So, which provider has the most accurate conditions?
                 </p>
                 <v-radio-group v-model="weatherProvider">
                     <v-simple-table v-if="$breakpoint.mdAndUp">
@@ -76,6 +76,12 @@
                         </v-card>
                     </div>
                 </v-radio-group>
+                <div class="mt-4">
+                    <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
+                        <v-icon left>mdi-check</v-icon>
+                        Use {{ weatherProvider }}
+                    </v-btn>
+                </div>
             </template>
         </v-container>
     </v-layout>
@@ -122,7 +128,6 @@ export default {
 
                 // Iterate weather summaries to set the provider name and append to the weatherSummaries list.
                 for (let id of Object.keys(result)) {
-                    console.dir(result[id])
                     result[id].id = id
                     result[id].name = _.find(this.$store.state.weatherProviders, {value: id}).text
                     summaries.push(result[id])
@@ -148,6 +153,13 @@ export default {
             } catch (ex) {
                 this.$webError("Weather.savePreferences", ex)
             }
+        },
+        async saveAndExit() {
+            await this.savePreferences()
+
+            this.$router.push({
+                path: `/account`
+            })
         }
     }
 }

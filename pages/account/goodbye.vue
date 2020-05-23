@@ -12,8 +12,14 @@
                             Once you hit that button there's no way back, we'll delete your automations and the connection to your Strava account.
                         </p>
                         <div class="text-center mt-8">
-                            <v-btn color="gray" class="mr-3" to="/account" title="Back to my account" text rounded nuxt>Go back</v-btn>
-                            <v-btn color="red" @click="cancelAccount()" title="Goodbye :-(" rounded>Close my account</v-btn>
+                            <v-btn color="gray" class="mr-3" to="/account" title="Back to my account" text rounded nuxt>
+                                <v-icon left>mdi-arrow-left</v-icon>
+                                Back
+                            </v-btn>
+                            <v-btn color="red" @click="cancelAccount()" title="Goodbye :-(" rounded>
+                                <v-icon left>mdi-close-circle</v-icon>
+                                Close my account
+                            </v-btn>
                         </div>
                     </div>
                     <div v-else>

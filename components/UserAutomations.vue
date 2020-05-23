@@ -4,7 +4,7 @@
             <v-hover v-slot:default="{hover}">
                 <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                     <v-card-title class="accent">
-                        <v-icon class="ml-n1 mr-2" color="primary" v-if="recipe.defaultFor">{{ recipe.defaultFor == "Ride" ? "mdi-bike" : "mdi-run" }}</v-icon>
+                        <v-icon class="ml-n1 mr-2" color="primary" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
                         <span class="primary--text">{{ recipe.title }}</span>
                         <v-spacer />
                         <v-icon v-show="hover" small>mdi-pencil-outline</v-icon>
@@ -13,7 +13,7 @@
             </v-hover>
             <v-card-text>
                 <ul class="mt-0 pl-4">
-                    <li v-if="recipe.defaultFor">This is a catch-all automation for your "{{ recipe.defaultFor }}" activities</li>
+                    <li v-if="recipe.defaultFor">This is a catch-all automation for your "{{ getSportName(recipe.defaultFor) }}" activities</li>
                     <li v-for="condition in recipe.conditions">
                         {{ conditionSummary(condition) }}
                     </li>
@@ -26,10 +26,22 @@
             </v-card-text>
         </v-card>
         <div class="mt-5 text-center text-md-left">
-            <v-btn color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
+            <v-btn v-if="!needsPro" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
                 <v-icon left>mdi-plus-circle</v-icon>
                 Create new automation
             </v-btn>
+            <div v-else>
+                <v-alert border="top" color="primary" colored-border>
+                    <p>
+                        You have reached the limit of {{ $store.state.freePlanDetails.maxRecipes }}
+                        automations on your free account. To have unlimited automations and access to all the features, you'll need a PRO account.
+                    </p>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                        <v-icon left>mdi-credit-card</v-icon>
+                        Subscribe to PRO
+                    </v-btn>
+                </v-alert>
+            </div>
         </div>
     </div>
 </template>

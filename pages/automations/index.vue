@@ -4,6 +4,9 @@
             <h1>
                 Automations
                 <v-badge v-if="recipes.length > 0" color="primary" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
+                <v-btn v-if="!needsPro" class="float-right mt-2" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>
+                    <v-icon>mdi-plus-circle</v-icon>
+                </v-btn>
             </h1>
             <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="3000" bottom>
                 New automation "{{ this.user.recipes[$route.query.new].title }}" created!

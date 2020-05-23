@@ -1,26 +1,26 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1 v-if="canDonate">Donate</h1>
+            <h1 v-if="!user.isPro">Billing</h1>
             <div v-else class="mt-4 mb-8 text-center display-3 font-weight-black">Thank you!</div>
             <p>Hi {{ user.profile.firstName }}!</p>
-            <div v-if="canDonate">
+            <div v-if="!user.isPro">
                 <p>
                     Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of the service, but I hope I could get support to at least keep the servers, systems and
                     domain running smoothly.
                 </p>
                 <div class="mt-4 mb-6">
-                    You can donate via PayPal or GitHub.
+                    You can subscribe via PayPal or GitHub.
                 </div>
                 <v-card class="mb-8" outlined>
-                    <v-card-title class="accent primary--text">Setup your donation</v-card-title>
+                    <v-card-title class="accent primary--text">PRO subscription</v-card-title>
                     <v-card-text>
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
                                 <template v-for="plan in billingPlans">
-                                    <v-btn color="primary" title="Donate via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
+                                    <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
                                         <v-icon left>mdi-credit-card-outline</v-icon>
-                                        {{ plan.price + " EUR / " + plan.frequency }} via PayPal
+                                        ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
                                     </v-btn>
                                 </template>
                             </v-col>
@@ -28,7 +28,7 @@
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
                                     <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        $1.00 / month via GitHub
+                                        ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub
                                     </v-btn>
                                 </a>
                             </v-col>
@@ -41,17 +41,14 @@
                 <free-pro-table />
             </div>
             <div v-else>
-                <p>Thanks for donating and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
-                <p class="mb-8">
-                    If for some reason you want to stop donating, I'm still grateful for your support.
-                </p>
+                <p>Thanks for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
                 <div class="text-center text-md-left">
-                    <v-btn color="red" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>Stop donating</v-btn>
+                    <v-btn color="red" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>Cancel subscription</v-btn>
                 </div>
                 <v-dialog v-model="unsubDialog" max-width="440" overlay-opacity="0.94">
                     <v-card>
                         <v-toolbar color="red darken-4">
-                            <v-toolbar-title>Stop donating</v-toolbar-title>
+                            <v-toolbar-title>Cancel subscription</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-toolbar-items>
                                 <v-btn icon @click.stop="hideUnsubDialog">
@@ -61,15 +58,15 @@
                         </v-toolbar>
                         <v-card-text>
                             <p class="mt-2">
-                                Thanks for your support! If you don't mind, please let me know why're you're cancelling the donation (optional).
+                                Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).
                             </p>
                             <div>
-                                <v-textarea label="I will stop donating because..." v-model="unsubReason" maxlength="120" outlined></v-textarea>
+                                <v-textarea label="I'm cancelling my PRO subscription because..." v-model="unsubReason" maxlength="120" outlined></v-textarea>
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mr-1" color="success" title="I want to keep donating" @click.stop="hideUnsubDialog" text rounded>Back</v-btn>
-                                <v-btn color="red" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Stop donating</v-btn>
+                                <v-btn class="mr-1" color="success" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>Back</v-btn>
+                                <v-btn color="red" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
                             </div>
                         </v-card-text>
                     </v-card>
@@ -94,7 +91,7 @@ export default {
     mixins: [userMixin],
     head() {
         return {
-            title: "Donate"
+            title: "Billing"
         }
     },
     data() {
@@ -102,11 +99,6 @@ export default {
             billingPlans: [],
             unsubDialog: false,
             unsubReason: ""
-        }
-    },
-    computed: {
-        canDonate() {
-            return !this.user.isPro || !this.user.subscription || !this.user.subscription.enabled
         }
     },
     async fetch() {
@@ -126,11 +118,11 @@ export default {
                 if (subscription && subscription.approvalUrl) {
                     document.location.href = subscription.approvalUrl
                 } else {
-                    this.$webError("Donate.prepareSubscription", "Could not setup a donation with PayPal")
+                    this.$webError("Billing.prepareSubscription", "Could not setup your subscription with PayPal")
                 }
             } catch (ex) {
-                ex.title = "Could not setup a donation with PayPal"
-                this.$webError("Donate.prepareSubscription", ex)
+                ex.title = "Could not setup your subscription with PayPal"
+                this.$webError("Billing.prepareSubscription", ex)
             }
         },
         showUnsubDialog() {

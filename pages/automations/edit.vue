@@ -8,7 +8,19 @@
             <v-card outlined>
                 <v-card-title>Conditions</v-card-title>
                 <v-card-text>
-                    <template v-if="recipe.conditions && recipe.conditions.length > 0">
+                    <div class="mb-3" v-if="recipe.defaultFor">
+                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                            <div class="mr-2">
+                                <v-icon color="red lighten-1" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
+                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="red" @click="deleteCondition({defaultFor: recipe.defaultFor})">mdi-minus-circle</v-icon>
+                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                            </div>
+                            <div>
+                                <span class="font-weight-bold">This is a catch-all automation for your "{{ getSportName(recipe.defaultFor) }}" activities</span>
+                            </div>
+                        </v-container>
+                    </div>
+                    <template v-else-if="recipe.conditions && recipe.conditions.length > 0">
                         <div class="mb-3" v-for="condition in recipe.conditions">
                             <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                                 <div class="mr-2">
@@ -22,20 +34,11 @@
                             </v-container>
                         </div>
                     </template>
-                    <div class="mb-3" v-if="recipe.defaultFor">
-                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                            <div class="mr-2">
-                                <v-icon color="red lighten-1" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="red" @click="deleteCondition({defaultFor: recipe.defaultFor})">mdi-minus-circle</v-icon>
-                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
-                            </div>
-                            <div>
-                                <span class="font-weight-bold">This is a catch-all automation for your "{{ recipe.defaultFor }}" activities</span>
-                            </div>
-                        </v-container>
-                    </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new condition</v-btn>
+                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" text small>
+                            <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                            Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
+                        </v-btn>
                     </div>
                     <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
@@ -70,7 +73,11 @@
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
                 </v-btn>
-                <v-btn class="ml-1" color="red" v-if="recipe.id" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>Delete</v-btn>
+                <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
+                <v-btn color="red" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
+                    <v-icon left>mdi-delete</v-icon>
+                    Delete
+                </v-btn>
             </div>
             <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
@@ -165,6 +172,9 @@ export default {
         checkValid() {
             const hasConditions = this.recipe.defaultFor || this.recipe.conditions.length > 0
             this.valid = hasConditions && this.recipe.actions.length > 0
+        },
+        isMaxConditions() {
+            return !this.user.isPro && this.recipe.conditions.length >= this.$store.state.freePlanDetails.maxConditions
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")

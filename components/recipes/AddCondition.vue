@@ -17,8 +17,11 @@
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
                             <div v-if="selectedProperty.value && !defaultFor">
-                                <v-select label="Operator..." v-model="selectedOperator" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
-                                <div v-if="isWeekday">
+                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
+                                <div v-if="isDefaultFor">
+                                    <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="isWeekday">
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
@@ -71,18 +74,17 @@ export default {
 
             return this.selectedProperty.suffix
         },
-        defaultFor() {
-            if (this.selectedProperty.value && this.selectedProperty.value.indexOf("defaultFor-") == 0) {
-                return this.selectedProperty.value.split("-")[1]
-            }
-
-            return false
+        isDefaultFor() {
+            return this.selectedProperty.value && this.selectedProperty.value == "defaultFor"
         },
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
         isLocation() {
-            return this.selectedProperty.value && this.selectedProperty.value.indexOf("location") >= 0
+            if (this.selectedProperty.value) {
+                return this.selectedProperty.value == "polyline" || this.selectedProperty.value.indexOf("location") >= 0
+            }
+            return false
         },
         isLocationImg() {
             return this.isLocation && this.selectedOperator.value && this.locationInput && this.locationInput.value
@@ -112,15 +114,18 @@ export default {
     },
     methods: {
         initialData() {
-            const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
             const recipes = Object.values(this.$store.state.user.recipes)
+            const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+            const sportTypes = []
 
-            // Add "defaults" to the top of the condition dropdown.
-            if (!_.find(recipes, {defaultFor: "Ride"})) {
-                recipeProperties.unshift({value: "defaultFor-Ride", text: "Default automation for all cycling activities"})
+            // Only add "defaultFor" options for sports which use has no defaultFor yet.
+            for (let st of this.$store.state.sportTypes) {
+                const disabled = _.find(recipes, {defaultFor: st})
+                sportTypes.push({value: st, text: this.getSportName(st), disabled: disabled})
             }
-            if (!_.find(recipes, {defaultFor: "Run"})) {
-                recipeProperties.unshift({value: "defaultFor-Run", text: "Default automation for all running activities"})
+
+            if (sportTypes.length > 0) {
+                recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
             }
 
             // Weekdays mapping.
@@ -139,10 +144,12 @@ export default {
                 loading: false,
                 valid: true,
                 recipeProperties: recipeProperties,
+                sportTypes: sportTypes,
                 weekdays: weekdays,
                 selectedProperty: {},
                 selectedOperator: {},
                 selectedWeekday: {},
+                selectedDefaultFor: {},
                 valueInput: "",
                 locationInput: null,
                 searchLocations: null,
@@ -158,8 +165,8 @@ export default {
                 let result
 
                 // Condition is default for an activity type?
-                if (this.defaultFor) {
-                    result = {defaultFor: this.defaultFor}
+                if (this.isDefaultFor) {
+                    result = {defaultFor: this.selectedDefaultFor.value}
                 } else {
                     result = {
                         property: this.selectedProperty.value,
@@ -182,7 +189,7 @@ export default {
             }
         },
         propertyChanged() {
-            if (this.defaultFor) {
+            if (this.isDefaultFor) {
                 this.selectedOperator = {value: true}
             } else if (this.selectedProperty.operators.length == 1) {
                 this.selectedOperator = this.selectedProperty.operators[0]
