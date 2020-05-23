@@ -11,9 +11,11 @@
                     <div class="mb-3" v-if="recipe.defaultFor">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                             <div class="mr-2">
-                                <v-icon color="red lighten-1" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="red" @click="deleteCondition({defaultFor: recipe.defaultFor})">mdi-minus-circle</v-icon>
+                                <v-icon color="red darken-3" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
                                 <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                            </div>
+                            <div class="mr-2" v-if="deleteItemSelected == recipe.defaultFor">
+                                <v-btn color="red darken-3" @click="deleteCondition({defaultFor: recipe.defaultFor})" rounded x-small>Delete</v-btn>
                             </div>
                             <div>
                                 <span class="font-weight-bold">This is a catch-all automation for your "{{ getSportName(recipe.defaultFor) }}" activities</span>
@@ -24,9 +26,12 @@
                         <div class="mb-3" v-for="condition in recipe.conditions">
                             <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                                 <div class="mr-2">
-                                    <v-icon color="red lighten-1" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
-                                    <v-icon v-if="deleteItemSelected == condition" color="red" @click="deleteCondition(condition)">mdi-minus-circle</v-icon>
+                                    <v-icon color="red darken-3" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
+
                                     <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                </div>
+                                <div class="mr-2" v-if="deleteItemSelected == condition">
+                                    <v-btn color="red darken-3" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
                                 </div>
                                 <div>
                                     <span>{{ conditionSummary(condition) }}</span>
@@ -51,9 +56,12 @@
                     <div class="mb-3" v-for="action in recipe.actions">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                             <div class="mr-2">
-                                <v-icon color="red lighten-1" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == action" color="red" @click="deleteAction(action)">mdi-minus-circle</v-icon>
+                                <v-icon color="red darken-3" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>
+
                                 <v-icon v-if="deleteItemSelected == action" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                            </div>
+                            <div class="mr-2" v-if="deleteItemSelected == action">
+                                <v-btn color="red darken-3" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
                             </div>
                             <div>
                                 <span class="ml-1">{{ actionSummary(action) }}</span>
@@ -74,14 +82,14 @@
                     Save automation
                 </v-btn>
                 <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="red" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
+                <v-btn color="red darken-3" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete
                 </v-btn>
             </div>
             <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
-                    <v-toolbar color="red darken-4">
+                    <v-toolbar color="red darken-3">
                         <v-toolbar-title>Delete automation</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
@@ -98,7 +106,7 @@
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Confirm and delete recipe" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
-                            <v-btn color="red" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
+                            <v-btn color="red darken-3" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
                         </div>
                     </v-card-text>
                 </v-card>

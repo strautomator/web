@@ -86,7 +86,6 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
 
         // Create subscription and update it on the user.
         const subscription = await paypal.subscriptions.createSubscription(billingPlan, user.id)
-
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

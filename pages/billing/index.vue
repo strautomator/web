@@ -6,8 +6,8 @@
             <p>Hi {{ user.profile.firstName }}!</p>
             <div v-if="!user.isPro">
                 <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it running isn't. I don't expect to make any money out of the service, but I hope I could get support to at least keep the servers, systems and
-                    domain running smoothly.
+                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the subscription of a few power users out there should help with running
+                    costs and my development time for features and bug fixes.
                 </p>
                 <div class="mt-4 mb-6">
                     You can subscribe via PayPal or GitHub.
@@ -41,13 +41,25 @@
                 <free-pro-table />
             </div>
             <div v-else>
-                <p>Thanks for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
-                <div class="text-center text-md-left">
-                    <v-btn color="red" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>Cancel subscription</v-btn>
-                </div>
+                <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+
+                <v-card v-if="subscription">
+                    <v-card-text>
+                        <div>Subscription method: {{ subscriptionSource }}</div>
+                        <div>Next payment: {{ nextPaymentDate }}</div>
+                        <div>Last payment: {{ lastPaymentDate }} - ${{ subscription.lastPayment.amount.toFixed(2) }}</div>
+                        <div class="mt-6 text-center text-md-left">
+                            <v-btn color="red darken-3" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel subscription
+                            </v-btn>
+                        </div>
+                    </v-card-text>
+                </v-card>
+
                 <v-dialog v-model="unsubDialog" max-width="440" overlay-opacity="0.94">
                     <v-card>
-                        <v-toolbar color="red darken-4">
+                        <v-toolbar color="red darken-3">
                             <v-toolbar-title>Cancel subscription</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-toolbar-items>
@@ -66,7 +78,7 @@
                             <div class="text-right">
                                 <v-spacer></v-spacer>
                                 <v-btn class="mr-1" color="success" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>Back</v-btn>
-                                <v-btn color="red" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
+                                <v-btn color="red darken-3" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
                             </div>
                         </v-card-text>
                     </v-card>
@@ -80,6 +92,7 @@
 
 <script>
 import _ from "lodash"
+import moment from "moment"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
@@ -97,8 +110,20 @@ export default {
     data() {
         return {
             billingPlans: [],
+            subscription: null,
+            subscriptionSource: null,
             unsubDialog: false,
             unsubReason: ""
+        }
+    },
+    computed: {
+        lastPaymentDate() {
+            if (!this.subscription) return ""
+            return moment(this.subscription.lastPayment.date).format("LL")
+        },
+        nextPaymentDate() {
+            if (!this.subscription) return ""
+            return moment(this.subscription.dateNextPayment).format("LL")
         }
     },
     async fetch() {
@@ -106,6 +131,24 @@ export default {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
             const billingPlans = await this.$axios.$get("/api/paypal/billingplans")
             this.billingPlans = Object.values(billingPlans)
+        } catch (ex) {
+            this.$webError("Billing.fetch", ex)
+        }
+
+        try {
+            const user = this.$store.state.user
+
+            if (user && user.isPro && user.subscription) {
+                const subscription = await this.$axios.$get(`/api/users/${user.id}/subscription`)
+
+                if (subscription.paypal) {
+                    this.subscriptionSource = "PayPal"
+                    this.subscription = subscription.paypal
+                } else {
+                    this.subscriptionSource = "GitHub"
+                    this.subscription = subscription.github
+                }
+            }
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }

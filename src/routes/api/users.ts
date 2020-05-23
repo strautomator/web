@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {recipes, strava, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
+import {paypal, recipes, strava, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -26,6 +26,35 @@ router.get("/:userId", async (req, res) => {
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get subscription details for the passed user.
+ */
+router.get("/:userId/subscription", async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        // User has no subscription? Stop here.
+        if (!user.subscription) {
+            logger.error("Routes", req.method, req.originalUrl, "User has no valid subscription")
+            return webserver.renderJson(req, res, "User has no valid subscription", 404)
+        }
+
+        // Subscribed via PayPal or GitHub?
+        if (user.subscription.source == "paypal") {
+            const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
+            subscription.userId = userId
+            webserver.renderJson(req, res, {paypal: subscription})
+        } else {
+            webserver.renderJson(req, res, {github: null})
+        }
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderJson(req, res, {error: ex.toString()})
     }
 })
 

@@ -4,8 +4,8 @@
             <thead>
                 <tr>
                     <th>Features</th>
-                    <th class="text-center">FREE</ht>
-                    <th class="text-center">PRO</th>
+                    <th class="text-center" :class="{'secondary--text': !$store.state.user.isPro}">FREE</ht>
+                    <th class="text-center" :class="{'secondary--text': $store.state.user.isPro}">PRO</th>
                 </tr>
             </thead>
             <tbody>

@@ -51,11 +51,11 @@
             <div class="mt-4 text-center text-md-left">
                 <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
                     <v-icon left>mdi-credit-card-outline</v-icon>
-                    Get a PRO account
+                    Subscribe to PRO
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
-                <v-btn color="red" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                <v-btn color="red darken-3" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>
