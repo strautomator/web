@@ -2,7 +2,18 @@
     <v-layout column>
         <v-container fluid>
             <h1>Weather comparison</h1>
-            <template v-if="weatherSummaries.length == 0">
+            <template v-if="user && !user.isPro">
+                <p>
+                    The full selection of weather providers is available to PRO accounts only.
+                </p>
+                <div class="mt-6 text-center text-md-left">
+                    <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
+                        <v-icon left>mdi-credit-card-outline</v-icon>
+                        Subscribe to PRO
+                    </v-btn>
+                </div>
+            </template>
+            <template v-else-if="weatherSummaries.length == 0">
                 <p>
                     Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, and then you can select the provider with the most accurate results.
                 </p>
