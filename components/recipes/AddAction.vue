@@ -23,7 +23,7 @@
                                 <v-textarea v-model="valueInput" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
-                                <v-text-field v-model="valueInput" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-text-field>
+                                <v-text-field v-model="valueInput" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-text-field>
                             </div>
                             <div v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
                                 <h3 class="mb-2">Activity tags</h3>
@@ -78,7 +78,15 @@ export default {
     mixins: [userMixin, recipeMixin],
     props: ["disabled-actions"],
     data() {
-        return this.initialData(true)
+        return this.initialData()
+    },
+    computed: {
+        actionRules() {
+            if (this.selectedAction.value == "webhook") {
+                return [this.recipeRules.required, this.recipeRules.url]
+            }
+            return [this.recipeRules.required]
+        }
     },
     watch: {
         disabledActions(arr) {
@@ -87,11 +95,7 @@ export default {
     },
     methods: {
         initialData(filter) {
-            const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
-
-            if (filter) {
-                this.filterActions(this.disabledActions)
-            }
+            let recipeActions = this.filterActions(this.disabledActions)
 
             // Get bikes and shoes and create gears list.
             const bikes = _.cloneDeep(this.$store.state.user.profile.bikes)
@@ -129,7 +133,15 @@ export default {
                 _.remove(recipeActions, {value: "gear"})
             }
 
+            // Webhook is enabled only on PRO accounts.
+            if (!this.$store.state.user.isPro) {
+                const webhook = _.find(recipeActions, {value: "webhook"})
+                webhook.disabled = true
+                webhook.text += " (PRO only)"
+            }
+
             this.recipeActions = recipeActions
+            return recipeActions
         },
         cancel() {
             this.$emit("closed", false)

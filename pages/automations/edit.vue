@@ -27,7 +27,6 @@
                             <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                                 <div class="mr-2">
                                     <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
-
                                     <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                                 </div>
                                 <div class="mr-2" v-if="deleteItemSelected == condition">
@@ -57,14 +56,13 @@
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                             <div class="mr-2">
                                 <v-icon color="removal" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>
-
                                 <v-icon v-if="deleteItemSelected == action" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                             </div>
                             <div class="mr-2" v-if="deleteItemSelected == action">
                                 <v-btn color="removal" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
                             </div>
                             <div>
-                                <span class="ml-1">{{ actionSummary(action) }}</span>
+                                <span>{{ actionSummary(action) }}</span>
                             </div>
                         </v-container>
                     </div>

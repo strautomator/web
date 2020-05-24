@@ -17,7 +17,8 @@ export default {
                 },
                 anyNumber: (value) => {
                     if (isNaN(value)) return "Invalid number"
-                    return /^-?\d*\.?\d*$/.test(value)
+                    if (/^-?\d*\.?\d*$/.test(value)) return true
+                    return "Invalid number"
                 },
                 time: (value) => {
                     if (!value) return "Invalid time"
@@ -28,7 +29,13 @@ export default {
                     return true
                 },
                 text: (value) => {
-                    return value.length > 0
+                    if (value.length > 0) return true
+                    return "Empty text"
+                },
+                url: (value) => {
+                    if (!value) return "Empty URL"
+                    if (/(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(value)) return true
+                    return "Invalid URL"
                 }
             }
         }

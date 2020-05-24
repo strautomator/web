@@ -25,6 +25,11 @@
                     <td class="text-center">5</td>
                 </tr>
                 <tr>
+                    <td>Webhooks</td>
+                    <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                    <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                </tr>
+                <tr>
                     <td>No Linkbacks</td>
                     <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                     <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>

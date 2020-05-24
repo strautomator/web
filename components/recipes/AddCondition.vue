@@ -25,7 +25,7 @@
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="defaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="isDefaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
