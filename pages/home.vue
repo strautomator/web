@@ -17,7 +17,7 @@
                             <h2>How does it work?</h2>
                             <div>
                                 <p>
-                                    First you connect Strautomator to your Strava account. Then you can create automations to automagically update your activities based on any of its properties, including weather conditions.
+                                    First you connect Strautomator to your Strava account. Then you create recipes to automagically update your activities based on any of its properties like distance, speed, time, location, weather and many more.
                                 </p>
                                 <p>
                                     Like IFTTT, but for Strava. And it's open source.
@@ -78,7 +78,7 @@
 }
 
 .home-panel {
-    box-shadow: 0 0 1px 0 #ffa000;
+    box-shadow: 0 0 5px -1px #ffa000;
 }
 
 .home-chip {
