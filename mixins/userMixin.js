@@ -7,7 +7,7 @@ export default {
     methods: {
         needsPro() {
             if (!this.user) return false
-            return !this.user.isPro && this.user.recipes.length >= this.$store.state.freePlanDetails.maxRecipes
+            return !this.user.isPro && Object.keys(this.user.recipes).length >= this.$store.state.freePlanDetails.maxRecipes
         }
     },
     mounted() {
