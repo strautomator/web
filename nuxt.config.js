@@ -82,6 +82,7 @@ module.exports = {
                     info: colors.grey.lighten1,
                     warning: colors.amber.base,
                     error: colors.deepOrange.accent4,
+                    removal: colors.red.darken3,
                     success: colors.lightGreen.darken4
                 }
             }

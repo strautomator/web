@@ -11,15 +11,15 @@
                     </v-card-title>
                 </n-link>
             </v-hover>
-            <v-card-text>
-                <ul class="mt-0 pl-4">
-                    <li v-if="recipe.defaultFor">This is a catch-all automation for your "{{ getSportName(recipe.defaultFor) }}" activities</li>
+            <v-card-text class="white--text">
+                <ul class="mt-0 pl-4 condition-list">
+                    <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
                     <li v-for="condition in recipe.conditions">
                         {{ conditionSummary(condition) }}
                     </li>
                 </ul>
-                <ul class="mt-1 pl-4">
-                    <li class="font-weight-medium white--text" v-for="action in recipe.actions">
+                <ul class="mt-1 pl-4 action-list">
+                    <li class="font-weight-medium" v-for="action in recipe.actions">
                         {{ actionSummary(action) }}
                     </li>
                 </ul>
@@ -46,7 +46,14 @@
     </div>
 </template>
 
-<style></style>
+<style>
+.action-list {
+    list-style-type: disc;
+}
+.condition-list {
+    list-style-type: circle;
+}
+</style>
 
 <script>
 import _ from "lodash"

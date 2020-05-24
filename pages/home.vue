@@ -5,7 +5,7 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-2 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
+                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
                     Automate your Strava activities
                 </h1>
                 <div>with</div>
@@ -17,15 +17,18 @@
                             <h2>How does it work?</h2>
                             <div>
                                 <p>
-                                    Once you authorize and connect Strautomator to your Strava account, it will start processing your uploaded activities. You can then create automations to update your activity details based on a bunch of conditions.
+                                    First you connect Strautomator to your Strava account. Then you can create automations to automagically update your activities based on any of its properties, including weather conditions.
                                 </p>
                                 <p>
-                                    It's like IFTTT, but focused on Strava.
+                                    Like IFTTT, but for Strava. And it's open source.
                                 </p>
                             </div>
                             <h2>Is it free?</h2>
                             <div>
-                                <p>Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automations. For unlimited automations and extra features, you can subscribe to a PRO account.</p>
+                                <p>
+                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes. Unlimited recipes and extra features are available to PRO subscribers for ${{ $store.state.proPlanDetails.price.year }}
+                                    / year, paid via PayPal.
+                                </p>
                             </div>
                             <h2>Ready?</h2>
                             <div>
@@ -39,26 +42,26 @@
                             <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                         </div>
 
-                        <h2 class="display-1 font-weight-light mt-8 mb-4">Automation ideas</h2>
-
-                        <v-responsive>
-                            <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
-                                <div class="home-chip" :class="sampleAlignClass(index)">
-                                    <span class="if primary--text" v-if="sample.condition">If</span>
-                                    <span class="condition" v-if="sample.condition">{{ sample.condition }}<br /></span>
-                                    <span class="then primary--text" v-if="sample.condition">then</span>
-                                    <span class="primary--text" v-else>Always</span>
-                                    <span class="action">{{ sample.action }}</span>
-                                </div>
-                            </div>
-                        </v-responsive>
-
                         <h3 class="mt-10">Want to know more?</h3>
                         <div>
                             <p>
                                 <n-link to="/help" title="Strautomator's Help">Check the help section</n-link>
                             </p>
                         </div>
+
+                        <h2 class="display-1 font-weight-light mt-8 mb-4">Automation ideas</h2>
+
+                        <v-responsive>
+                            <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
+                                <div class="home-chip" :class="sampleAlignClass(index)">
+                                    <span class="if primary--text" v-if="sample.condition">If</span>
+                                    <span class="condition" v-if="sample.condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp"/></span>
+                                    <span class="then primary--text" v-if="sample.condition">then</span>
+                                    <span class="primary--text" v-else>Always</span>
+                                    <span class="action">{{ sample.action }}</span>
+                                </div>
+                            </div>
+                        </v-responsive>
                     </v-card-text>
                 </v-card>
             </div>
@@ -68,7 +71,7 @@
 
 <style>
 .home-wrapper {
-    max-width: 620px;
+    max-width: 660px;
     margin: auto;
     position: relative;
     z-index: 99;
@@ -117,7 +120,7 @@ export default {
     data() {
         const allSamples = [
             {
-                condition: "ride starts at Alexanderplatz and ends at Potsdam",
+                condition: "ride starts at Alexanderplatz, ends at Potsdam",
                 action: "mark it as commute and set bike to 'Cityrad'"
             },
             {
@@ -125,12 +128,12 @@ export default {
                 action: "mark it as commute and set name to 'Run2work'"
             },
             {
-                condition: "average power is higher than 300 watts",
+                condition: "avg. power is higher than 300 watts",
                 action: "name the activity 'Suffer test'"
             },
             {
-                condition: "average speed is higher than 35kph on Monday",
-                action: "set bike to 'Aero' and activity name to 'Fast Mondays'"
+                condition: "avg. speed higher than 35kph on Monday",
+                action: "set bike to 'Aero', activity name to 'Fast Mondays'"
             },
             {
                 condition: "activity starts before 6AM",
@@ -138,7 +141,7 @@ export default {
             },
             {
                 condition: "ride is recorded with a Garmin Edge 130",
-                action: "mark the activity as commute and name it 'Bike to work'"
+                action: "mark it as commute and name it 'B2W'"
             },
             {
                 condition: "ride distance is around 300km",
@@ -149,7 +152,11 @@ export default {
                 action: "set the activity name to 'Beach time!'"
             },
             {
-                condition: "temperature is under 0°C and average speed under 20kph",
+                condition: "ride passes on Central Park and has more than 20km",
+                action: "set the activity name to 'Central Park loops'"
+            },
+            {
+                condition: "temperature is under 0°C and avg. speed under 20kph",
                 action: "set the activity name to 'Frosty commute'"
             },
             {

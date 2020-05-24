@@ -8,7 +8,7 @@
             <div v-else>
                 <v-card outlined>
                     <v-card-title class="accent">
-                        Processed activities
+                        Recent activities
                     </v-card-title>
                     <v-card-text>
                         <div class="mt-4" v-if="!activities">
@@ -40,16 +40,16 @@
                             <tbody>
                                 <tr v-for="activity in activities" :key="activity.id">
                                     <td v-if="$breakpoint.mdAndUp">
-                                        <v-icon>{{ activity.type == "Ride" ? "mdi-bike" : activity.type == "Run" ? "mdi-run" : "mdi-dumbbell" }}</v-icon>
+                                        <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
                                     </td>
                                     <td :class="{'pl-0 pr-0 pt-2 pb-2': !$breakpoint.mdAndUp}">
                                         <template v-if="!$breakpoint.mdAndUp">
-                                            <v-icon class="mt-n1 mr-1" small>{{ activity.type == "Ride" ? "mdi-bike" : activity.type == "Run" ? "mdi-run" : "mdi-dumbbell" }}</v-icon>
+                                            <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
                                             <span class="float-right ml-2">{{ getDate(activity.dateStart).format("L") }}</span>
                                             <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
                                             <ul>
-                                                <li v-for="(recipe, index) in Object.values(activity.recipes)" :key="`${activity.id}-recipe${index}`">
-                                                    {{ recipe.title }}
+                                                <li v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-m-${id}`">
+                                                    <span :class="{'font-italic grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                                 </li>
                                             </ul>
                                         </template>
@@ -60,8 +60,8 @@
                                         </template>
                                     </td>
                                     <td v-if="$breakpoint.mdAndUp">
-                                        <div v-for="(recipe, index) in Object.values(activity.recipes)" :key="`${activity.id}-recipe${index}`">
-                                            {{ recipe.title }}
+                                        <div v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-d-${id}`">
+                                            <span :class="{'font-italic grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                         </div>
                                     </td>
                                     <td v-if="$breakpoint.mdAndUp">

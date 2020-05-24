@@ -16,7 +16,7 @@
                                 <v-icon left>mdi-arrow-left</v-icon>
                                 Back
                             </v-btn>
-                            <v-btn color="red darken-3" @click="cancelAccount()" title="Goodbye :-(" rounded>
+                            <v-btn color="removal" @click="cancelAccount()" title="Goodbye :-(" rounded>
                                 <v-icon left>mdi-close-circle</v-icon>
                                 Close my account
                             </v-btn>

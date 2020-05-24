@@ -43,23 +43,38 @@
             <div v-else>
                 <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
 
-                <v-card v-if="subscription">
+                <v-card>
                     <v-card-text>
-                        <div>Subscription method: {{ subscriptionSource }}</div>
-                        <div>Next payment: {{ nextPaymentDate }}</div>
-                        <div>Last payment: {{ lastPaymentDate }} - ${{ subscription.lastPayment.amount.toFixed(2) }}</div>
-                        <div class="mt-6 text-center text-md-left">
-                            <v-btn color="red darken-3" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
-                                <v-icon left>mdi-cancel</v-icon>
-                                Cancel subscription
-                            </v-btn>
+                        <template v-if="loading">
+                            <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
+                            <span class="ml-4">Loading subscription details...</span>
+                        </template>
+                        <template v-else-if="!subscription">
+                            <div>Subscription method: {{ subscriptionSource }}</div>
+                            <div>Next payment: {{ nextPaymentDate }}</div>
+                            <div>Last payment: {{ lastPaymentDate }} - ${{ subscription.lastPayment.amount.toFixed(2) }}</div>
+                            <div class="mt-6 text-center text-md-left">
+                                <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
+                                    <v-icon left>mdi-cancel</v-icon>
+                                    Cancel subscription
+                                </v-btn>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <h3 class="secondary--text ma-0 mb-2">Oops!</h3>
+                            Seems like your subscription is missing some details on our end.
+                            <br v-if="$breakpoint.mdAndUp" />
+                            Don't worry, your PRO account is still safe and I will troubleshoot this issue ASAP.
+                        </template>
+                        <div class="mt-8 text-center text-md-left">
+                            <n-link to="/account" title="Back to my account">Back to my account...</n-link>
                         </div>
                     </v-card-text>
                 </v-card>
 
                 <v-dialog v-model="unsubDialog" max-width="440" overlay-opacity="0.94">
                     <v-card>
-                        <v-toolbar color="red darken-3">
+                        <v-toolbar color="removal">
                             <v-toolbar-title>Cancel subscription</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-toolbar-items>
@@ -78,7 +93,7 @@
                             <div class="text-right">
                                 <v-spacer></v-spacer>
                                 <v-btn class="mr-1" color="success" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>Back</v-btn>
-                                <v-btn color="red darken-3" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
+                                <v-btn color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
                             </div>
                         </v-card-text>
                     </v-card>
@@ -109,6 +124,7 @@ export default {
     },
     data() {
         return {
+            loading: true,
             billingPlans: [],
             subscription: null,
             subscriptionSource: null,
@@ -139,7 +155,9 @@ export default {
             const user = this.$store.state.user
 
             if (user && user.isPro && user.subscription) {
+                this.loading = true
                 const subscription = await this.$axios.$get(`/api/users/${user.id}/subscription`)
+                this.loading = false
 
                 if (subscription.paypal) {
                     this.subscriptionSource = "PayPal"
@@ -152,6 +170,8 @@ export default {
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }
+
+        this.loading = false
     },
     methods: {
         async prepareSubscription(planId) {

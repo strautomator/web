@@ -49,13 +49,13 @@
             <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
+                <v-btn color="primary" to="/billing" title="PRO Subscription" rounded nuxt>
                     <v-icon left>mdi-credit-card-outline</v-icon>
-                    Subscribe to PRO
+                    {{ user.isPro ? "View my subscription" : "Subscribe to PRO" }}
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
-                <v-btn color="red darken-3" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                <v-btn color="removal" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>
