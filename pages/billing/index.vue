@@ -47,12 +47,21 @@
                     <v-card-text>
                         <template v-if="loading">
                             <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
-                            <span class="ml-4">Loading subscription details...</span>
+                            <span class="ml-4">Fetching subscription details...</span>
                         </template>
-                        <template v-else-if="!subscription">
+                        <template v-else-if="unsubscribed">
+                            <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
+                            <div>
+                                Your account should be downgraded back to Free as soon as your previous subscription expires.
+                            </div>
+                            <div class="text-center mt-8 mb-6">
+                                <v-icon x-large>mdi-emoticon-sad</v-icon>
+                            </div>
+                        </template>
+                        <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
                             <div>Next payment: {{ nextPaymentDate }}</div>
-                            <div>Last payment: {{ lastPaymentDate }} - ${{ subscription.lastPayment.amount.toFixed(2) }}</div>
+                            <div>Last payment: {{ lastPaymentDate }}</div>
                             <div class="mt-6 text-center text-md-left">
                                 <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
@@ -128,6 +137,7 @@ export default {
             billingPlans: [],
             subscription: null,
             subscriptionSource: null,
+            unsubscribed: false,
             unsubDialog: false,
             unsubReason: ""
         }
@@ -180,6 +190,10 @@ export default {
 
                 if (subscription && subscription.approvalUrl) {
                     document.location.href = subscription.approvalUrl
+                } else if (subscription && subscription.status == "ACTIVE") {
+                    this.$router.push({
+                        path: `/billing/success?fixed=${subscription.id}`
+                    })
                 } else {
                     this.$webError("Billing.prepareSubscription", "Could not setup your subscription with PayPal")
                 }
@@ -188,17 +202,13 @@ export default {
                 this.$webError("Billing.prepareSubscription", ex)
             }
         },
-        showUnsubDialog() {
-            this.unsubDialog = true
-        },
-        hideUnsubDialog() {
-            this.unsubDialog = false
-        },
         async unsubscribe() {
             try {
+                this.loading = true
                 if (this.unsubReason) this.unsubReason = this.unsubReason.trim()
                 await this.$axios.$post(`/api/${this.user.subscription.source}/unsubscribe`, {reason: this.unsubReason || "Default reason"})
-
+                this.loading = false
+                this.unsubscribed = true
                 const subscription = JSON.parse(JSON.stringify(this.user.subscription))
                 subscription.enabled = false
 
@@ -208,6 +218,13 @@ export default {
                 this.$webError(ex)
             }
 
+            this.loading = false
+            this.unsubDialog = false
+        },
+        showUnsubDialog() {
+            this.unsubDialog = true
+        },
+        hideUnsubDialog() {
             this.unsubDialog = false
         }
     }

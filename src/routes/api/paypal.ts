@@ -50,7 +50,7 @@ router.get("/billingplans", async (req, res) => {
         webserver.renderJson(req, res, paypal.currentBillingPlans)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -78,9 +78,12 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
                 return webserver.renderJson(req, res, existingSub)
             }
 
-            // User has a valid subscription? Throw an error then.
-            if (existingSub.status == "ACTIVE") {
-                throw new Error(`Already subscribed, subscription ID ${existingSub.id}`)
+            // User has a valid subscription? Update the database and activate PRO again.
+            if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
+                logger.warn("Routes", req.method, req.originalUrl, `Already subscribed, subscription ID ${existingSub.id}, will fix it`)
+                existingSub.userId = user.id
+                await paypal.subscriptions.fixSubscription(existingSub)
+                return webserver.renderJson(req, res, existingSub)
             }
         }
 
@@ -89,7 +92,7 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -114,12 +117,14 @@ router.post("/unsubscribe", async (req, res) => {
             return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 400)
         }
 
+        // Force set user ID on subscription and request cancellation on PayPal.
+        subscription.userId = user.id
         await paypal.subscriptions.cancelSubscription(subscription)
 
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 

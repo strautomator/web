@@ -16,7 +16,7 @@
                         <v-expansion-panel-header>What exactly can I do with Strautomator?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                You can automatically update the name, description, gear, commute flag and some other details of your Strava activities, based on "recipes" that you create. Each recipe can have multiple conditions, for example
+                                You can automatically update the name, description, gear, commute flag and some other details of your Strava activities, based on your own automation recipes. Each recipe can have multiple conditions, for example
                                 distance, average or max speed, power, moving time, start and end location, day of week, weather, GPS device used... and so on.
                             </p>
                             <p>
@@ -26,7 +26,7 @@
                                 <li>Mark rides as commute if going from point A to point B</li>
                                 <li>Mark runs as commute if recorded with a specific GPS device</li>
                                 <li>Set activity names with distance, power, weather and other data</li>
-                                <li>Set the correct bike based on ride speed</li>
+                                <li>Set the correct bike based on average speed</li>
                                 <li>Add weather details to the activity name</li>
                             </ul>
                         </v-expansion-panel-content>
@@ -34,8 +34,7 @@
                     <v-expansion-panel>
                         <v-expansion-panel-header>Who's behind Strautomator?</v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            <p>Igor Ramadas. Pleased to meet you. You can find more about me at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>.</p>
-                            <p>Strautomator is powered by Strava, but it is <strong>not made by</strong> them.</p>
+                            <p>Igor Ramadas. Pleased to meet you :-) You can find more about me at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>.</p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
@@ -43,18 +42,18 @@
                         <v-expansion-panel-content>
                             <p>
                                 Once you click or tap the <a title="Connect with Strava" @click="login">"Connect with Strava"</a> button, you'll be redirected to Strava to give Strautomator the necessary permissions to read and update activities on
-                                your Strava account. Once permissions are given, Strava will automatically ping the Strautomator service whenever you upload or createa new activity.
+                                your Strava account. Once permissions are given, Strava will automatically ping the Strautomator service whenever you upload or createa new activities.
                             </p>
                             <p>
-                                Everything happens on the cloud. You don't need to install any extra software on your devices.
+                                Everything happens on the cloud, you don't need to install any software on your device(s).
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>Do I need Strava Premium to use it?</v-expansion-panel-header>
+                        <v-expansion-panel-header>Do I need a paid Strava to use it?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Not at all! It also works with free accounts. Strava has recently made some users unhappy by making some of their features available to Premium only, but that doesn't affect Strautomator.
+                                Not at all! It also works with free accounts. Strava has recently made some users unhappy by making some of their features available to paid subscribers only, but that doesn't affect Strautomator.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -65,8 +64,8 @@
                                 First let me clarify: I used both Commute Marker and Klimat, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to their devs for their amazing work.
                             </p>
                             <p>
-                                Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to the activity description. Then there's IFTTT to integrate
-                                with other services. Strautomator is a all-in-one. A jack of all trades.
+                                Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to activities. Then there's IFTTT to integrate with other
+                                services. Strautomator is a all-in-one. A jack of all trades.
                             </p>
                             <p>
                                 And last but not least: it's
@@ -117,6 +116,14 @@
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>I want a new feature, can you implement it?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                If it's related to automating tasks related to your Strava activities... then maybe. Just drop me a message via email or Twitter with your suggestion, and I'll get back to you soon.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
 
                 <h2 class="mb-1">Free vs. PRO accounts</h2>
@@ -139,11 +146,11 @@
                         <v-expansion-panel-content>
                             <p>
                                 <span class="font-weight-bold">A valid question!</span>
-                                The free account should be sufficient to the vast majority of users. But if you have dozens of weekly activities and want to automate their details as much as possible, PRO is the way to go.
+                                The free account should be sufficient to the vast majority of users. But if you have dozens of weekly activities and want to automate them to the fullest, PRO is the way to go.
                             </p>
                             <p>
-                                Suppose you earn $15 per hour, and have on average 1 activity per day. We'll round to 350 activities / year. By using Strautomator, you save that 1 minute hassle of opening Strava to update these activities manually.
-                                So it can potentially save you 25 cents per activity. If half of your activities are automated, in 1 year that's around $44.
+                                Suppose you earn $15 per hour, and have on average 1 activity per day. Let's round to 350 activities / year. By using Strautomator, you save that 1 minute hassle of opening Strava to update these activities manually.
+                                So it can potentially save you around 25 cents per activity. If half of your activities are automated, in 1 year that's around $44.
                             </p>
                             <p>
                                 The calculation above is obviously a bit silly, but you get the point. There are running costs (domain, servers, weather APIs...) and I hope to at least cover these costs with a few PRO subscribers.
