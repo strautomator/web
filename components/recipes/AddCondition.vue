@@ -16,7 +16,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
-                            <div v-if="selectedProperty.value && !defaultFor">
+                            <div v-if="selectedProperty.value && !isDefaultFor">
                                 <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
                                 <div v-if="isDefaultFor">
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" outlined rounded return-object></v-select>
@@ -31,7 +31,7 @@
                                     <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
                                 </div>
                             </div>
-                            <div class="text-center mb-6 " v-if="defaultFor">
+                            <div class="text-center mb-6 " v-if="isDefaultFor">
                                 <v-icon color="grey" small>mdi-information-outline</v-icon>
                                 <span>This automation will run on <strong>all</strong> future "{{ defaultFor }}" activities!</span>
                             </div>
@@ -199,9 +199,26 @@ export default {
         },
         async fetchLocations(value) {
             try {
-                this.loading = true
                 this.locationInput = null
 
+                // User typed the coordinates directly?
+                if (_.isString(value) && value.indexOf(",") > 0) {
+                    const arrValue = value.split(",")
+
+                    if (arrValue.length == 2 && !isNaN(arrValue[0]) && !isNaN(arrValue[1])) {
+                        const lat = parseFloat(arrValue[0])
+                        const long = parseFloat(arrValue[1])
+
+                        if (lat >= -90 && lat <= 90 && long >= -180 && long <= 180) {
+                            const option = {value: [lat, long], address: `Coordinates ${lat}, ${long}`}
+                            this.locations = [option]
+                            this.locationInput = option
+                            return
+                        }
+                    }
+                }
+
+                this.loading = true
                 const data = await this.$axios.$get(`/api/maps/geocode?address=${value}`)
 
                 for (let loc of data) {
