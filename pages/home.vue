@@ -66,6 +66,10 @@
                 </v-card>
             </div>
         </v-container>
+        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="0" multi-line bottom>
+            This website will use cookies for login, analytics and usability features. Proceed with usage only if you accept them.
+            <v-btn @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+        </v-snackbar>
     </v-content>
 </template>
 
@@ -172,6 +176,7 @@ export default {
         ]
 
         return {
+            showCookieConsent: !(this.$cookies.get("cookie-consent", {parseJSON: false}) || false),
             samples: _.sampleSize(allSamples, 5)
         }
     },
@@ -187,6 +192,14 @@ export default {
                 return "float-right text-right"
             }
             return "text-center"
+        },
+        acceptCookies() {
+            this.$cookies.set("cookie-consent", true, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 365 * 10
+            })
+
+            this.showCookieConsent = false
         }
     }
 }

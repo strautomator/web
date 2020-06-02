@@ -114,12 +114,15 @@ export default {
     data() {
         return {
             loading: false,
+            saved: false,
             weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "darksky" : "darksky",
             weatherSummaries: []
         }
     },
     beforeDestroy() {
-        this.savePreferences()
+        if (!this.saved) {
+            this.savePreferences()
+        }
     },
     methods: {
         getPosition() {
@@ -158,9 +161,9 @@ export default {
                     weatherProvider: this.weatherProvider
                 }
 
-                this.$store.commit("setUserPreferences", data)
-
                 await this.$axios.$post(`/api/users/${userId}/preferences`, data)
+                this.$store.commit("setUserPreferences", data)
+                this.saved = true
             } catch (ex) {
                 this.$webError("Weather.savePreferences", ex)
             }
