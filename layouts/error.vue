@@ -9,8 +9,8 @@
                 </div>
                 <div class="mt-8">
                     <p>
-                        If you are just sneaking around, then we wish you happy exploring. Otherwise please contact us on
-                        <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> if the problem persists.
+                        If you are just sneaking around, then I wish you happy exploring. Otherwise please contact me on
+                        <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> and I'll be glad to investigate and fix potential bugs.
                     </p>
                 </div>
                 <div class="mt-6">
@@ -18,7 +18,7 @@
                 </div>
                 <div class="copyright">
                     <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
-                    <span>Strautomator - Made in Berlin</span>
+                    <span>Strautomator</span>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@ export default {
             } else {
                 return {
                     title: this.error.title || "Crashed while sprinting",
-                    message: this.error.message
+                    message: this.error.message || "Something went very, very wrong..."
                 }
             }
         }
@@ -66,9 +66,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-h1 {
-    font-size: 20px;
-}
-</style>

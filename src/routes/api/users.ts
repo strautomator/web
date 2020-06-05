@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, strava, users, weather, RecipeData, UserData, UserPreferences} from "strautomator-core"
+import {paypal, recipes, strava, users, weather, RecipeData, RecipeStats, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -252,5 +252,24 @@ router.post("/:userId/recipes", routeUserRecipe)
  * Delete the specified recipe from the user's automations.
  */
 router.delete("/:userId/recipes/:recipeId", routeUserRecipe)
+
+/**
+ * Get recipe stats for the user.
+ */
+router.get("/:userId/recipes/stats", async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const arrStats = (await recipes.getStats(user)) as RecipeStats[]
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, arrStats)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
 
 export = router

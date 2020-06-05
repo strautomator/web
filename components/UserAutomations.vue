@@ -23,6 +23,9 @@
                         {{ actionSummary(action) }}
                     </li>
                 </ul>
+                <div class="mt-3" v-if="recipeStats[recipe.id]">
+                    <v-chip class="mb-0 ml-1" disabled outlined small> Executed {{ recipeStats[recipe.id].activities.length }} time(s), last on {{ recipeStats[recipe.id].dateLastTrigger }} </v-chip>
+                </div>
             </v-card-text>
         </v-card>
         <div class="mt-5 text-center text-md-left">
@@ -64,6 +67,11 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 export default {
     authenticated: true,
     mixins: [userMixin, recipeMixin],
+    data() {
+        return {
+            recipeStats: {}
+        }
+    },
     computed: {
         recipes() {
             const recipes = _.sortBy(Object.values(this.user.recipes), ["defaultFor"])
@@ -73,14 +81,25 @@ export default {
     async fetch() {
         try {
             const timestamp = new Date().valueOf()
+            this.$axios.setToken(this.$store.state.oauth.accessToken)
 
             // Fetch new user data once every 60 seconds...
             if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 60000) {
-                this.$axios.setToken(this.$store.state.oauth.accessToken)
                 const user = await this.$axios.$get(`/api/users/${this.user.id}`)
                 this.$store.commit("setLastUserFetch", new Date().valueOf())
                 this.$store.commit("setUser", user)
             }
+
+            // Get recipe stats.
+            const recipeStats = {}
+            const arrStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats`)
+            for (let stats of arrStats) {
+                const recipeId = stats.id.split("-")[1]
+                stats.dateLastTrigger = moment(stats.dateLastTrigger).format("lll")
+                recipeStats[recipeId] = stats
+            }
+
+            this.recipeStats = recipeStats
         } catch (ex) {
             this.$webError("UserAutomations.fetch", ex)
         }
