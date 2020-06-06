@@ -25,7 +25,7 @@
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="isDefaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="isDefaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" :type="selectedType" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
@@ -65,6 +65,9 @@ export default {
     },
     computed: {
         selectedSuffix() {
+            if (this.selectedProperty.type == "time" || this.selectedProperty.type == "elapsedTime") {
+                return ""
+            }
             if (this.user.preferences && this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
                 return this.selectedProperty.fSuffix
             }
@@ -73,6 +76,13 @@ export default {
             }
 
             return this.selectedProperty.suffix
+        },
+        selectedType() {
+            if (this.selectedProperty.type == "time" || this.selectedProperty.type == "elapsedTime") {
+                return "time"
+            }
+
+            return "text"
         },
         isDefaultFor() {
             return this.selectedProperty.value && this.selectedProperty.value == "defaultFor"
@@ -174,13 +184,17 @@ export default {
                         value: this.valueInput
                     }
 
-                    // Get correct condition values for weekdays and conditions.
+                    // Get correct values for special conditions.
                     if (this.isWeekday) {
                         result.value = this.selectedWeekday.value
                         result.friendlyValue = this.selectedWeekday.text
                     } else if (this.isLocation) {
                         result.value = this.locationInput.value
                         result.friendlyValue = this.locationInput.address
+                    } else if (this.selectedType == "time") {
+                        const arrTime = result.value.split(":")
+                        result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
+                        result.friendlyValue = this.valueInput
                     }
                 }
 
