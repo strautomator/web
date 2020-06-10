@@ -16,7 +16,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
-                            <div v-if="selectedProperty.value && !isDefaultFor">
+                            <div v-if="selectedProperty.value">
                                 <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
                                 <div v-if="isDefaultFor">
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" outlined rounded return-object></v-select>
@@ -33,7 +33,7 @@
                             </div>
                             <div class="text-center mb-6 " v-if="isDefaultFor">
                                 <v-icon color="grey" small>mdi-information-outline</v-icon>
-                                <span>This automation will run on <strong>all</strong> future "{{ defaultFor }}" activities!</span>
+                                <span>This automation will run on <strong>all</strong> future "{{ selectedDefaultFor.value }}" activities!</span>
                             </div>
                         </v-col>
                         <v-col cols="12" :sm="12" :md="5" v-if="isLocationImg">
