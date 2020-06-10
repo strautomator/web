@@ -32,7 +32,7 @@
                                 <tr>
                                     <th></th>
                                     <th>Activity</th>
-                                    <th>Automation(s)</ht>
+                                    <th>Automation(s)</th>
                                     <th>Updated fields</th>
                                     <th>Strava</th>
                                 </tr>
@@ -87,7 +87,7 @@ import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
-    authenticated: true,
+    authenticated:    true,
     mixins: [userMixin, recipeMixin],
     components: {
         CreateFirst
@@ -110,7 +110,7 @@ export default {
     async fetch() {
         try {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
-            this.activities = await this.$axios.$get(`/api/users/${this.user.id}/processed-activities`)
+            this.activities = await this.$axios.$get(`/api/strava/activities/processed`)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }

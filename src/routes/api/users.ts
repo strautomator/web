@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, strava, users, weather, RecipeData, RecipeStats, UserData, UserPreferences} from "strautomator-core"
+import {paypal, recipes, users, weather, RecipeData, RecipeStats, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -128,28 +128,6 @@ router.post("/:userId/preferences", async (req, res) => {
 
         logger.info("Routes", req.method, req.originalUrl, _.toPairs(preferences))
         webserver.renderJson(req, res, preferences)
-    } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
-    }
-})
-
-// USER ACTIVITIES
-// --------------------------------------------------------------------------
-
-/**
- * Get user's activities that were processed by Strautomator.
- */
-router.get("/:userId/processed-activities", async (req, res) => {
-    try {
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
-        if (!user) return
-
-        const activities = await strava.activities.getProcessedActivites(user, 10)
-
-        logger.info("Routes", req.method, req.originalUrl)
-        webserver.renderJson(req, res, activities)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

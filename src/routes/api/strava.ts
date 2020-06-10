@@ -1,8 +1,10 @@
 // Strautomator API: Strava routes
 
-import {strava, users} from "strautomator-core"
+import {strava, users, UserData} from "strautomator-core"
+import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
+import moment = require("moment")
 import webserver = require("../../webserver")
 const axios = require("axios").default
 const settings = require("setmeup").settings
@@ -47,6 +49,74 @@ const webhookValidator = (req, res): boolean => {
 
     return true
 }
+
+// USER ACTIVITIES
+// --------------------------------------------------------------------------
+
+/**
+ * Get logged user's recent activities from Strava.
+ * By default, return only 10 results.
+ */
+router.get("/activities/recent", async (req, res) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
+        const timestamp = moment().subtract(21, "days")
+        let activities = await strava.activities.getActivities(user, {after: timestamp.unix()})
+
+        if (activities.length > limit) {
+            activities = activities.slice(0, limit)
+        }
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, activities)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get logged user's latest activities that were processed by Strautomator.
+ */
+router.get("/activities/processed", async (req, res) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const activities = await strava.activities.getProcessedActivites(user, 10)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, activities)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Logged user can trigger a forced processing of a particular activity.
+ */
+router.get("/process-activity/:activityId", async (req, res) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Process the passed activity.
+        const processedActivity = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        webserver.renderJson(req, res, processedActivity)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        const errorMessage = ex.toString()
+        const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
+        webserver.renderError(req, res, {error: errorMessage}, status)
+    }
+})
+
+// WEBHOOKS
+// --------------------------------------------------------------------------
 
 /**
  * Activity subscription events sent by Strava. Please note that this route will
