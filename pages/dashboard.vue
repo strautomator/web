@@ -75,6 +75,12 @@
                         </v-simple-table>
                     </v-card-text>
                 </v-card>
+                <v-alert class="mt-6 text-center text-md-left">
+                    Missing something?
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    <n-link to="/activities/sync" title="Try your automations" nuxt>Try a manual sync</n-link>
+                    to test your automations.
+                </v-alert>
             </div>
         </v-container>
     </v-layout>
@@ -87,7 +93,7 @@ import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
-    authenticated:    true,
+    authenticated: true,
     mixins: [userMixin, recipeMixin],
     components: {
         CreateFirst
