@@ -70,6 +70,9 @@ router.get("/activities/recent", async (req, res) => {
             activities = activities.slice(0, limit)
         }
 
+        // Recent activities should come first, so we reverse the array.
+        activities.reverse()
+
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
