@@ -88,7 +88,7 @@ export default {
         const user = this.$store.state.user
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
-        const weatherProvider = user && user.preferences ? user.preferences.weatherProvider : null
+        const weatherProvider = user && user.preferences ? user.preferences.weatherProvider || null : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
 
