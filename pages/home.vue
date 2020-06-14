@@ -1,5 +1,5 @@
 <template>
-    <v-content fluid>
+    <v-main fluid>
         <div class="stripe"></div>
         <div class="py-2"></div>
 
@@ -66,11 +66,11 @@
                 </v-card>
             </div>
         </v-container>
-        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="0" multi-line bottom>
+        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="-1" multi-line bottom>
             This website will use cookies for login, analytics and usability features. Proceed with usage only if you accept them.
             <v-btn @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
         </v-snackbar>
-    </v-content>
+    </v-main>
 </template>
 
 <style>

@@ -22,7 +22,7 @@
                 <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down caption">Logout</span>
             </v-btn>
         </v-app-bar>
-        <v-content>
+        <v-main>
             <v-container class="width-wrapper" fluid>
                 <nuxt />
             </v-container>
@@ -42,7 +42,7 @@
                     <v-chip v-if="$store.state.user && $store.state.user.isPro" color="primary" class="caption mb-1 ml-1">PRO</v-chip>
                 </div>
             </div>
-        </v-content>
+        </v-main>
         <v-bottom-navigation class="hidden-md-and-up" color="primary" v-model="activeNavBtn" app grow>
             <v-btn value="/dashboard" to="/dashboard" router nuxt>
                 <span>Dashboard</span>

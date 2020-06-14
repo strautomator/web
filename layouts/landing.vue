@@ -1,8 +1,8 @@
 <template>
     <v-app class="landing">
-        <v-content fluid>
+        <v-main fluid>
             <nuxt />
-        </v-content>
+        </v-main>
 
         <div class="mb-6 text-center strava-powered">
             <img src="/images/strava-powered.svg" width="130" />
