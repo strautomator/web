@@ -44,13 +44,15 @@ router.get("/:userId/subscription", async (req, res) => {
             return webserver.renderJson(req, res, "User has no valid subscription", 404)
         }
 
-        // Subscribed via PayPal or GitHub?
-        if (user.subscription.source == "paypal") {
+        // Subscribed as a friend, via PayPal, or via GitHub?
+        if (user.subscription.source == "friend") {
+            webserver.renderJson(req, res, {friend: user.subscription.enabled})
+        } else if (user.subscription.source == "paypal") {
             const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
             subscription.userId = userId
             webserver.renderJson(req, res, {paypal: subscription})
-        } else {
-            webserver.renderJson(req, res, {github: null})
+        } else if (user.subscription.source == "github") {
+            webserver.renderJson(req, res, {github: true})
         }
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

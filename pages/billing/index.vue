@@ -145,10 +145,12 @@ export default {
     computed: {
         lastPaymentDate() {
             if (!this.subscription) return ""
+            if (this.subscriptionSource == "friend") return "never"
             return moment(this.subscription.lastPayment.date).format("LL")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
+            if (this.subscriptionSource == "friend") return "maybe a beer?"
             return moment(this.subscription.dateNextPayment).format("LL")
         }
     },
@@ -169,10 +171,12 @@ export default {
                 const subscription = await this.$axios.$get(`/api/users/${user.id}/subscription`)
                 this.loading = false
 
-                if (subscription.paypal) {
+                if (subscription.friend) {
+                    this.subscriptionSource = "Just a friend :-)"
+                } else if (subscription.paypal) {
                     this.subscriptionSource = "PayPal"
                     this.subscription = subscription.paypal
-                } else {
+                } else if (subscription.github) {
                     this.subscriptionSource = "GitHub"
                     this.subscription = subscription.github
                 }
