@@ -34,7 +34,10 @@
                     <v-expansion-panel>
                         <v-expansion-panel-header>Who's behind Strautomator?</v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            <p>Igor Ramadas. Pleased to meet you :-) You can find more about me at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>.</p>
+                            <p>
+                                Igor Ramadas. Pleased to meet you :-) You can find more about me at <a href="https://aboutigor.com" title="About Igor">aboutigor.com</a>. And of course, I'm also on
+                                <a href="https://www.strava.com/athletes/5649845" title="Igor @ Strava">Strava</a> itself.
+                            </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
@@ -61,7 +64,7 @@
                         <v-expansion-panel-header>Why this instead of Commute Marker, Klimat and other tools?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to their devs for their amazing work.
+                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to the devs for their amazing work.
                             </p>
                             <p>
                                 Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to activities. Then there's IFTTT to integrate with other

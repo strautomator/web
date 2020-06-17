@@ -75,7 +75,7 @@
                 </v-card-text>
             </v-card>
             <div class="text-center text-md-left mt-4">
-                <v-btn color="primary" :disabled="!valid" @click="save" rounded>
+                <v-btn color="primary" :disabled="!valid || overMaxRecipes" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
                 </v-btn>
@@ -85,6 +85,12 @@
                     Delete
                 </v-btn>
             </div>
+            <v-alert color="error" class="mt-5" v-if="overMaxRecipes">
+                <p>
+                    You are over the limit of {{ $store.state.freePlanDetails.maxRecipes }} automations on free accounts. Please delete some of your automations, down to a maximum of {{ $store.state.freePlanDetails.maxRecipes }}, before editing
+                    existing automations.
+                </p>
+            </v-alert>
             <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
                     <v-toolbar color="removal">
@@ -158,10 +164,20 @@ export default {
             deleteDialog: false
         }
     },
+    computed: {
+        overMaxRecipes() {
+            if (!this.user) return false
+            return !this.user.isPro && Object.keys(this.user.recipes).length > this.$store.state.freePlanDetails.maxRecipes
+        }
+    },
     methods: {
         async save() {
             try {
                 if (this.$refs.form.validate()) {
+                    if (this.recipe.defaultFor == null) {
+                        delete this.recipe.defaultFor
+                    }
+
                     const user = this.$store.state.user
                     const url = `/api/users/${user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)

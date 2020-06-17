@@ -8,7 +8,7 @@
             <div v-else>
                 <v-card outlined>
                     <v-card-title class="accent">
-                        Recent activities
+                        Last automated activities
                     </v-card-title>
                     <v-card-text>
                         <div class="mt-4" v-if="!activities">
