@@ -4,6 +4,7 @@ const colors = require("vuetify/es5/util/colors").default
 // overwritten during startup on ~/src/index.ts, specially when running in development.
 module.exports = {
     mode: "universal",
+    telemetry: false,
 
     head: {
         titleTemplate: "Strautomator - %s",
