@@ -31,7 +31,11 @@ module.exports = {
 
     // Additional build config.
     build: {
-        extend() {}
+        extend(config, {isClient}) {
+            if (isClient) {
+                config.optimization.splitChunks.maxSize = 200000
+            }
+        }
     },
 
     // Additional builders.
