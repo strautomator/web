@@ -111,6 +111,17 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
+                        <v-expansion-panel-header>Some location based automations are not working properly, why?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Strautomator uses Google Maps to translate addresses to [lat, lng] coordinates. Sometimes these coordinates might be slightly off, for example pointing to a building instead of the actual street.
+                            </p>
+                            <p>
+                                To fix this, you can set the condition to 650m radius instead of 60m. Or you can simply type the actual (precise) coordinates of your desired location directly on the search field.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
                         <v-expansion-panel-header>Why are some weather details on my activities wrong?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
@@ -123,7 +134,7 @@
                         <v-expansion-panel-header>I want a new feature, can you implement it?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                If it's related to automating tasks related to your Strava activities... then maybe. Just drop me a message via email or Twitter with your suggestion, and I'll get back to you soon.
+                                If it's related to automating tasks related to your Strava activities... then likely, yes. Just drop me a message via email or Twitter with your suggestion, and I'll get back to you soon.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>

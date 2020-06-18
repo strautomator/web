@@ -25,10 +25,21 @@
                                     <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="isDefaultFor ? null : [recipeRules.required, recipeRules[selectedProperty.type]]" :suffix="selectedSuffix" :type="selectedType" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
-                                    <v-autocomplete v-model="locationInput" label="Location..." item-text="address" :items="locations" :loading="loading" :search-input.sync="searchLocations" return-object rounded outlined no-filter></v-autocomplete>
+                                    <v-autocomplete
+                                        v-model="locationInput"
+                                        label="Location or geo coordinates..."
+                                        item-text="address"
+                                        :items="locations"
+                                        :loading="loading"
+                                        :search-input.sync="searchLocations"
+                                        return-object
+                                        rounded
+                                        outlined
+                                        no-filter
+                                    ></v-autocomplete>
                                 </div>
                             </div>
                             <div class="text-center mb-6 " v-if="isDefaultFor">
@@ -65,7 +76,7 @@ export default {
     },
     computed: {
         selectedSuffix() {
-            if (this.selectedProperty.type == "time" || this.selectedProperty.type == "elapsedTime") {
+            if (this.selectedProperty.type == "time") {
                 return ""
             }
             if (this.user.preferences && this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
@@ -78,7 +89,7 @@ export default {
             return this.selectedProperty.suffix
         },
         selectedType() {
-            if (this.selectedProperty.type == "time" || this.selectedProperty.type == "elapsedTime") {
+            if (this.selectedProperty.type == "time") {
                 return "time"
             }
 
@@ -120,6 +131,11 @@ export default {
             }
 
             return `/api/maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
+        },
+        valueInputRules() {
+            if (this.isDefaultFor) return false
+            if (this.recipeRules[this.selectedProperty.type]) return [this.recipeRules.required, this.recipeRules[this.selectedProperty.type]]
+            return [this.recipeRules.required]
         }
     },
     methods: {
