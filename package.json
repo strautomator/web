@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.255.10017",
+    "version": "20.255.12107",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "private": true,
@@ -16,6 +16,7 @@
     "dependencies": {
         "@nuxtjs/axios": "^5.11.0",
         "@nuxtjs/google-analytics": "^2.3.0",
+        "@nuxtjs/moment": "^1.6.1",
         "@nuxtjs/vuetify": "^1.11.2",
         "anyhow": "^2.0.0",
         "body-parser": "^1.19.0",

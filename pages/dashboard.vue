@@ -87,7 +87,6 @@
 </template>
 
 <script>
-import moment from "moment"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
@@ -123,7 +122,7 @@ export default {
     },
     methods: {
         getDate(date) {
-            return moment(date)
+            return this.$moment(date)
         },
         getUpdatedFields(fields) {
             const arr = Object.keys(fields)

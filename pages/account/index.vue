@@ -66,7 +66,6 @@
 
 <script>
 import _ from "lodash"
-import moment from "moment"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
@@ -116,7 +115,7 @@ export default {
     },
     computed: {
         dateRegistered() {
-            return moment(this.user.dateRegistered).format("LL")
+            return this.$moment(this.user.dateRegistered).format("LL")
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`

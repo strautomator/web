@@ -60,7 +60,6 @@
 
 <script>
 import _ from "lodash"
-import moment from "moment"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
@@ -95,7 +94,7 @@ export default {
             const arrStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats`)
             for (let stats of arrStats) {
                 const recipeId = stats.id.split("-")[1]
-                stats.dateLastTrigger = moment(stats.dateLastTrigger).format("lll")
+                stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("lll")
                 recipeStats[recipeId] = stats
             }
 

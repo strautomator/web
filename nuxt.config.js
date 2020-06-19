@@ -15,7 +15,7 @@ module.exports = {
             {
                 hid: "description",
                 name: "description",
-                content: "Turbocharge your Strava activities with automated rules!"
+                content: "Turbocharge your Strava activities with automated rules! Strautomator is like IFTTT, but for Strava."
             }
         ],
         link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}]
@@ -31,15 +31,13 @@ module.exports = {
 
     // Additional build config.
     build: {
-        extend(config, {isClient}) {
-            if (isClient) {
-                config.optimization.splitChunks.maxSize = 200000
-            }
+        optimization: {
+            runtimeChunk: true
         }
     },
 
     // Additional builders.
-    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/google-analytics"],
+    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/moment", "@nuxtjs/google-analytics"],
 
     // Append global styles.
     css: ["@/assets/styles.scss"],

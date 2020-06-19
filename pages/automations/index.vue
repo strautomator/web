@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import moment from "moment"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import UserAutomations from "~/components/UserAutomations.vue"
 import userMixin from "~/mixins/userMixin.js"

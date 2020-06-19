@@ -100,7 +100,6 @@
 
 <script>
 import _ from "lodash"
-import moment from "moment"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
