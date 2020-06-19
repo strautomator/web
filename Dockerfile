@@ -15,6 +15,7 @@ RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make
 # FINAL IMAGE
 FROM node:alpine AS strautomator-web-final
 ENV NODE_ENV=production
+ENV JSON_LOGGING=true
 ENV HOST 0.0.0.0
 WORKDIR /app
 COPY . .
