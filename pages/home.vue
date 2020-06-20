@@ -54,10 +54,9 @@
                         <v-responsive>
                             <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
                                 <div class="home-chip" :class="sampleAlignClass(index)">
-                                    <span class="if primary--text" v-if="sample.condition">If</span>
-                                    <span class="condition" v-if="sample.condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp"/></span>
-                                    <span class="then primary--text" v-if="sample.condition">then</span>
-                                    <span class="primary--text" v-else>Always</span>
+                                    <span class="c-if primary--text">If</span>
+                                    <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp"/></span>
+                                    <span class="c-then primary--text">then</span>
                                     <span class="action">{{ sample.action }}</span>
                                 </div>
                             </div>
@@ -66,9 +65,9 @@
                 </v-card>
             </div>
         </v-container>
-        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="-1" multi-line bottom>
-            This website will use cookies for login, analytics and usability features. Proceed with usage only if you accept them.
-            <v-btn @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
+            This website is using cookies!
+            <v-btn class="ml-1" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
         </v-snackbar>
     </v-main>
 </template>
@@ -96,8 +95,8 @@
     position: relative;
 }
 
-.home-chip .if,
-.home-chip .then {
+.home-chip .c-if,
+.home-chip .c-then {
     font-weight: bold;
 }
 
@@ -168,15 +167,22 @@ export default {
                 action: "set the description to 'Windy as hell'"
             },
             {
+                condition: "activity is a bike ride",
                 action: "add weather data to activity descriptions"
             },
             {
+                condition: "activity is a short run",
                 action: "link your blog on the activity description"
             }
         ]
 
+        let displayCookieConsent = true
+        try {
+            displayCookieConsent = !(this.$cookies.get("cookie-consent", {parseJSON: false}) || false)
+        } catch (ex) {}
+
         return {
-            showCookieConsent: !(this.$cookies.get("cookie-consent", {parseJSON: false}) || false),
+            showCookieConsent: displayCookieConsent,
             samples: _.sampleSize(allSamples, 5)
         }
     },
@@ -194,12 +200,14 @@ export default {
             return "text-center"
         },
         acceptCookies() {
-            this.$cookies.set("cookie-consent", true, {
-                path: "/",
-                maxAge: 60 * 60 * 24 * 365 * 10
-            })
+            try {
+                this.$cookies.set("cookie-consent", true, {
+                    path: "/",
+                    maxAge: 60 * 60 * 24 * 365 * 10
+                })
 
-            this.showCookieConsent = false
+                this.showCookieConsent = false
+            } catch (ex) {}
         }
     }
 }
