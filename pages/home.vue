@@ -11,7 +11,7 @@
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
-                <v-card color="black" class="mb-5 home-panel">
+                <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
                         <div class="home-faq mt-6 px-1 text-left">
                             <h2>How does it work?</h2>
@@ -20,14 +20,18 @@
                                     First you connect Strautomator to your Strava account. Then you create recipes to automagically update your activities based on any of its properties like distance, speed, time, location, weather and many more.
                                 </p>
                                 <p>
-                                    Like IFTTT, but for Strava. And it's open source.
+                                    Like IFTTT, but for Strava.
                                 </p>
                             </div>
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
-                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes. Unlimited recipes and extra features are available to PRO subscribers for ${{ $store.state.proPlanDetails.price.year }}
+                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes, which should be enough for the vast majority of users. Unlimited recipes and extra features can be unlocked with a PRO subscription
+                                    for ${{ $store.state.proPlanDetails.price.year }}
                                     / year, paid via PayPal.
+                                </p>
+                                <p>
+                                    Do you have development skills and want a PRO account "for free"? You can run your own Strautomator, it's open source!
                                 </p>
                             </div>
                             <h2>Ready?</h2>
@@ -38,18 +42,9 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 mb-8">
+                        <div class="mt-6 mb-6">
                             <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                         </div>
-
-                        <h3 class="mt-10">Want to know more?</h3>
-                        <div>
-                            <p>
-                                <n-link to="/help" title="Strautomator's Help">Check the help section</n-link>
-                            </p>
-                        </div>
-
-                        <h2 class="display-1 font-weight-light mt-8 mb-4">Automation ideas</h2>
 
                         <v-responsive>
                             <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
@@ -61,6 +56,25 @@
                                 </div>
                             </div>
                         </v-responsive>
+
+                        <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
+
+                        <v-carousel height="580" :interval="4000" cycle continuous hide-delimiter-background show-arrows-on-hover>
+                            <v-carousel-item>
+                                <img class="home-screenshot" src="/images/screenshot-condition.jpg" />
+                            </v-carousel-item>
+                            <v-carousel-item>
+                                <img class="home-screenshot" src="/images/screenshot-action.jpg" />
+                            </v-carousel-item>
+                            <v-carousel-item>
+                                <img class="home-screenshot" src="/images/screenshot-automations.jpg" />
+                            </v-carousel-item>
+                        </v-carousel>
+
+                        <h3 class="mt-4">Want to know more?</h3>
+                        <div>
+                            <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
+                        </div>
                     </v-card-text>
                 </v-card>
             </div>
@@ -107,6 +121,12 @@
 
 .home-faq div {
     margin-bottom: 20px;
+}
+
+.home-screenshot {
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px #000000;
+    max-width: 300px;
 }
 </style>
 
@@ -183,7 +203,8 @@ export default {
 
         return {
             showCookieConsent: displayCookieConsent,
-            samples: _.sampleSize(allSamples, 5)
+            samples: _.sampleSize(allSamples, 5),
+            screenshot: 0
         }
     },
     methods: {
@@ -208,6 +229,12 @@ export default {
 
                 this.showCookieConsent = false
             } catch (ex) {}
+        },
+        nextScreenshot() {
+            this.screenshot = this.screenshot + 1 === this.length ? 0 : this.screenshot + 1
+        },
+        prevScreenshot() {
+            this.screenshot = this.screenshot - 1 < 0 ? this.length - 1 : this.screenshot - 1
         }
     }
 }
