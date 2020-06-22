@@ -203,7 +203,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         await strava.activities.processActivity(user, parseInt(req.params.activityId))
 
         // Set last activity date on user, and save.
-        user.dateLastActivity = new Date()
+        user.dateLastActivity = moment.utc().toDate()
         await users.update(user)
 
         webserver.renderJson(req, res, {ok: true})

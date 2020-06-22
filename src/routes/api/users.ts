@@ -4,6 +4,7 @@ import {paypal, recipes, users, weather, RecipeData, RecipeStats, UserData, User
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
+import moment = require("moment")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router = express.Router()
@@ -180,7 +181,7 @@ const routeUserRecipe = async (req: any, res: any) => {
                 throw new Error(`User ${user.id} is not PRO and has reached the free acccount limit`)
             }
 
-            const now = new Date()
+            const now = moment.utc().toDate()
             const hex = Math.round(now.getTime() / 1000).toString(16)
             recipe.id = "r" + hex.toLowerCase()
 
