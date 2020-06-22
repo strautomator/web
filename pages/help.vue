@@ -147,10 +147,11 @@
                         <v-expansion-panel-content>
                             <p>
                                 Feature-wise they're almost the same. The free account is restricted to {{ $store.state.freePlanDetails.maxRecipes }} automations, containing a maximum of {{ $store.state.freePlanDetails.maxConditions }} conditions
-                                each. Additionally, free accounts will have a link to strautomator.com added to the description of {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5).
+                                each. Additionally, free accounts will have a link to strautomator.com added to the description of {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5) by default. You can change this value on your
+                                account preferences.
                             </p>
                             <p>
-                                Users who subscribe to PRO will have no limits on automations or conditions, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider.
+                                Users who subscribe to PRO will have no limits on automations or conditions, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider and using webhooks.
                             </p>
                             <p>PRO costs ${{ $store.state.proPlanDetails.price.year.toFixed(2) }} / year via PayPal or ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub.</p>
                         </v-expansion-panel-content>
