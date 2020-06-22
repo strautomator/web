@@ -25,12 +25,12 @@
                     <td class="text-center">5</td>
                 </tr>
                 <tr>
-                    <td>Webhooks</td>
+                    <td>No Linkbacks</td>
                     <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                     <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                 </tr>
                 <tr>
-                    <td>No Linkbacks</td>
+                    <td>Webhooks</td>
                     <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                     <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                 </tr>
@@ -43,7 +43,7 @@
         </v-simple-table>
         <ul class="caption mt-2 mb-5 pl-4">
             <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
-            <li>Free accounts will have a link to Strautomator on the description of {{ $store.state.linksOnPercent }}% of processed activities.</li>
+            <li>Free accounts will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
         </ul>
     </div>
 </template>

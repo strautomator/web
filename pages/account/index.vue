@@ -25,19 +25,32 @@
                     <div v-if="user.isPro" class="mb-8 mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
                             <v-icon color="primary" small>mdi-information-outline</v-icon>
-                            Need help choosing a help provider?
+                            Need help choosing a weather provider?
                         </n-link>
                     </div>
-                    <div v-if="!user.isPro" class="mt-n2">
+                    <div class="mt-n1">
+                        <h3 class="mb-2">Linkback preference</h3>
+                        <div class="body-2">
+                            <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
+                            <span v-else-if="linksOn > 0">A linkback to Strautomator {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of activities processed by Strautomator.</span>
+                            <span v-else>A linkback won't be added to any of your activities.</span>
+                            <v-radio-group v-model="linksOn" row>
+                                <v-radio label="100%" :value="1"></v-radio>
+                                <v-radio label="50%" :value="2"></v-radio>
+                                <v-radio label="20%" :value="5"></v-radio>
+                                <v-radio label="10%" :value="10"></v-radio>
+                                <v-radio class="mt-2 mt-md-0" :value="0" :label="user.isPro ? 'No links' : 'No links (PRO only)'" :disabled="!user.isPro"></v-radio>
+                            </v-radio-group>
+                        </div>
+                    </div>
+                    <div class="mt-4" v-if="linksOn > 0">
                         <h3 class="mb-2">Hashtag preference</h3>
                         <div class="body-2">
-                            A link back to Strautomator will be added to {{ $store.state.linksOnPercent }}% of processed activities.
-                            <br />
-                            Do you prefer using hashtags on activity names instead of an URL on activity descriptions?
+                            Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?
                         </div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, use a hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
-                    <div class="mt-2">
+                    <div class="mt-4">
                         <h3 class="mb-2">Twitter sharing</h3>
                         <div class="body-2">
                             Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.
@@ -85,6 +98,8 @@ export default {
     },
     data() {
         const user = this.$store.state.user
+        const defaultLinksOn = user && user.isPro ? 0 : this.$store.state.linksOnPercent
+        const linksOn = user && user.preferences ? user.preferences.linksOn : defaultLinksOn
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const weatherProvider = user && user.preferences ? user.preferences.weatherProvider || null : null
@@ -102,6 +117,7 @@ export default {
 
         return {
             savePending: false,
+            linksOn: linksOn || defaultLinksOn,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
             weatherProvider: weatherProvider,
@@ -160,6 +176,7 @@ export default {
 
             try {
                 const data = {
+                    linksOn: this.linksOn,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
                     weatherProvider: this.weatherProvider,
