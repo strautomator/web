@@ -107,6 +107,17 @@ router.post("/:userId/preferences", async (req, res) => {
             preferences.weatherProvider = weatherProvider
         }
 
+        // Make sure linksOn is valid.
+        if (!_.isNil(req.body.linksOn)) {
+            preferences.linksOn = req.body.linksOn
+        }
+
+        // Only PRO users can disable the linkback.
+        if (preferences.linksOn == 0 && !user.isPro) {
+            preferences.linksOn = settings.plans.free.linksOn
+            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, linksOn changed from 0 to ${settings.plans.free.linksOn}`)
+        }
+
         // Make sure weather unit is valid.
         if (!_.isNil(req.body.weatherUnit)) {
             preferences.weatherUnit = req.body.weatherUnit != "c" ? "f" : "c"
@@ -129,7 +140,7 @@ router.post("/:userId/preferences", async (req, res) => {
         }
         await users.update(data)
 
-        logger.info("Routes", req.method, req.originalUrl, _.toPairs(preferences))
+        logger.info("Routes", req.method, req.originalUrl, _.toPairs(preferences).join(" | "))
         webserver.renderJson(req, res, preferences)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

@@ -32,7 +32,7 @@
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
-                            <span v-else-if="linksOn > 0">A linkback to Strautomator {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of activities processed by Strautomator.</span>
+                            <span v-else-if="linksOn > 0">A linkback {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
                             <span v-else>A linkback won't be added to any of your activities.</span>
                             <v-radio-group v-model="linksOn" row>
                                 <v-radio label="100%" :value="1"></v-radio>
@@ -138,6 +138,12 @@ export default {
         }
     },
     watch: {
+        linksOn(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
         activityHashtag(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
