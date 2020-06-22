@@ -31,7 +31,7 @@
                             <thead v-if="$breakpoint.mdAndUp">
                                 <tr>
                                     <th></th>
-                                    <th>Activity</th>
+                                    <th>Original activity</th>
                                     <th>Automation(s)</th>
                                     <th>Updated fields</th>
                                     <th>Strava</th>
@@ -45,7 +45,7 @@
                                     <td :class="{'pl-0 pr-0 pt-2 pb-2': !$breakpoint.mdAndUp}">
                                         <template v-if="!$breakpoint.mdAndUp">
                                             <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
-                                            <span class="float-right ml-2">{{ getDate(activity.dateStart).format("L") }}</span>
+                                            <span class="float-right ml-2">{{ getDate(activity).format("L") }}</span>
                                             <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
                                             <ul>
                                                 <li v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-m-${id}`">
@@ -56,7 +56,7 @@
                                         <template v-else>
                                             {{ activity.name }}
                                             <br />
-                                            {{ getDate(activity.dateStart).format("lll") }}
+                                            {{ getDate(activity).format("lll") }}
                                         </template>
                                     </td>
                                     <td v-if="$breakpoint.mdAndUp">
@@ -121,8 +121,15 @@ export default {
         }
     },
     methods: {
-        getDate(date) {
-            return this.$moment(date)
+        getDate(activity) {
+            const aDate = this.$moment(activity.dateStart)
+
+            // Always display local activity times!
+            if (activity.utcStartOffset) {
+                aDate.utcOffset(activity.utcStartOffset)
+            }
+
+            return aDate
         },
         getUpdatedFields(fields) {
             const arr = Object.keys(fields)
