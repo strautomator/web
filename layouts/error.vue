@@ -13,6 +13,12 @@
                         <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> and I'll be glad to investigate and fix potential bugs.
                     </p>
                 </div>
+                <v-alert color="error" border="top" v-if="stravaStatus" class="mb-4 " outlined>
+                    <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
+                    <div>
+                        <a class="secondary--text" href="https://status.strava.com" title="Strava API status">https://status.strava.com</a>
+                    </div>
+                </v-alert>
                 <div class="mt-6">
                     <v-btn color="primary" title="Go back home..." @click="backHome" rounded small>Back home</v-btn>
                 </div>
@@ -39,6 +45,11 @@ export default {
             default: null
         }
     },
+    data() {
+        return {
+            stravaStatus: null
+        }
+    },
     computed: {
         errorDetails() {
             if (this.error.statusCode == 401 || this.error.statusCode == 403) {
@@ -59,7 +70,22 @@ export default {
             }
         }
     },
+    mounted() {
+        this.getStravaStatus()
+    },
     methods: {
+        async getStravaStatus() {
+            try {
+                const res = await fetch("https://status.strava.com/api/v2/status.json")
+                const data = await res.json()
+
+                if (data.status && data.status.indicator != "" && data.status.indicator != "none") {
+                    this.stravaStatus = data.status.description
+                }
+            } catch (ex) {
+                console.error("Could not get API status from Strava", ex)
+            }
+        },
         backHome() {
             window.location.href = "/"
         }

@@ -2,6 +2,13 @@
     <v-layout column>
         <v-container fluid>
             <h1 class="mb-4">Hello {{ user ? user.profile.firstName : "guest" }}!</h1>
+            <v-alert color="error" border="top" v-if="stravaStatus" class="mb-4">
+                <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
+                <div>
+                    Please note that some of the automations might fail to run during this incident. For more information please check
+                    <a class="secondary--text" href="https://status.strava.com" title="Strava API status">status.strava.com.</a>
+                </div>
+            </v-alert>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
             </div>
@@ -104,7 +111,8 @@ export default {
     },
     data() {
         return {
-            activities: null
+            activities: null,
+            stravaStatus: null
         }
     },
     computed: {
@@ -116,11 +124,34 @@ export default {
         try {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
             this.activities = await this.$axios.$get(`/api/strava/activities/processed`)
+
+            const getStatus = () => this.getStravaStatus()
+            setTimeout(getStatus, 100)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }
     },
     methods: {
+        async getStravaStatus() {
+            try {
+                const res = await fetch("https://status.strava.com/api/v2/status.json")
+                const data = await res.json()
+                const issueKeywords = ["garmin", "uploads", "site degraded", "strava degraded", "site outage", "site slowness", "site instability"]
+
+                if (data.status && data.status.description) {
+                    const description = data.status.description.toLowerCase()
+
+                    for (let keyword of issueKeywords) {
+                        if (description.indexOf(keyword) >= 0) {
+                            this.stravaStatus = data.status.description
+                            return
+                        }
+                    }
+                }
+            } catch (ex) {
+                console.error("Could not get API status from Strava", ex)
+            }
+        },
         getDate(activity) {
             const aDate = this.$moment(activity.dateStart)
 
