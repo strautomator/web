@@ -124,12 +124,12 @@ export default {
         try {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
             this.activities = await this.$axios.$get(`/api/strava/activities/processed`)
-
-            const getStatus = () => this.getStravaStatus()
-            setTimeout(getStatus, 100)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }
+    },
+    mounted() {
+        this.getStravaStatus()
     },
     methods: {
         async getStravaStatus() {
