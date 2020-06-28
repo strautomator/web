@@ -39,7 +39,7 @@
                         </div>
                     </template>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" text small>
+                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
                         </v-btn>
@@ -67,7 +67,10 @@
                         </v-container>
                     </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showActionDialog" text small><v-icon class="mr-2">mdi-plus-circle</v-icon> Add new action</v-btn>
+                        <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showActionDialog" rounded text small>
+                            <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                            Add new action
+                        </v-btn>
                     </div>
                     <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-action :disabled-actions="disabledActions" @closed="setAction" />
@@ -109,7 +112,7 @@
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Confirm and delete recipe" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
+                            <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
                             <v-btn color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
                         </div>
                     </v-card-text>

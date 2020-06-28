@@ -20,6 +20,11 @@
                     <td class="text-center">Unlimited</td>
                 </tr>
                 <tr>
+                    <td>Gear Tracking</td>
+                    <td class="text-center">{{ $store.state.freePlanDetails.maxGearWear }}</td>
+                    <td class="text-center">Unlimited</td>
+                </tr>
+                <tr>
                     <td>Weather Providers</td>
                     <td class="text-center">1</td>
                     <td class="text-center">5</td>
@@ -43,6 +48,7 @@
         </v-simple-table>
         <ul class="caption mt-2 mb-5 pl-4">
             <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
+            <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} GearWear™ configuration.</li>
             <li>Free accounts will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
         </ul>
     </div>

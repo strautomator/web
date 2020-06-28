@@ -59,7 +59,7 @@
 
                         <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
 
-                        <v-carousel height="580" :interval="4000" cycle continuous hide-delimiter-background show-arrows-on-hover>
+                        <v-carousel height="580" :interval="6000" cycle continuous hide-delimiter-background show-arrows-on-hover>
                             <v-carousel-item>
                                 <img class="home-screenshot" src="/images/screenshot-condition.jpg" />
                             </v-carousel-item>

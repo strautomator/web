@@ -17,14 +17,14 @@
                     <v-card-title class="accent">
                         Last automated activities
                     </v-card-title>
-                    <v-card-text>
-                        <div class="mt-4" v-if="!activities">
+                    <v-card-text class="pl-0 pr-0">
+                        <div class="mt-4 pl-4 pr-4" v-if="!activities">
                             <p>
                                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
                                 Loading statistics...
                             </p>
                         </div>
-                        <div class="mt-4" v-else-if="activities.length == 0">
+                        <div class="mt-4 pl-4 pr-4" v-else-if="activities.length == 0">
                             <p>
                                 <v-icon color="secondary" class="mr-1">mdi-alert-circle-outline</v-icon>
                                 None of your activities were processed by Strautomator yet.
@@ -46,10 +46,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="activity in activities" :key="activity.id">
-                                    <td v-if="$breakpoint.mdAndUp">
+                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
                                         <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
                                     </td>
-                                    <td :class="{'pl-0 pr-0 pt-2 pb-2': !$breakpoint.mdAndUp}">
+                                    <td class="pt-2 pb-2">
                                         <template v-if="!$breakpoint.mdAndUp">
                                             <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
                                             <span class="float-right ml-2">{{ getDate(activity).format("L") }}</span>

@@ -140,6 +140,34 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
 
+                <h2 class="mb-1">GearWear</h2>
+                <v-expansion-panels class="mb-5" hover>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>What is GearWear?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Just a fancy name for the gear mileage tracking feature of Strautomator. Strava has its own mileage tracking of bikes and shoes, but there's no way to track the mileage of individual components.
+                            </p>
+                            <p>
+                                With GearWear you can track the mileage of the current chain, cassette, tires and other expendable parts of your bikes, or specific parts of your shoes. Once you reach a specific mileage on an expendable part,
+                                Strautomator will alert you so you can have it replaced and reset the mileage once again.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>How does it work?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Every night (UTC time), Strautomator will fetch your Strava activities from the day before yesterday and increase the mileage of the gear set for each of these activites.
+                            </p>
+                            <p>
+                                Why have a 2 days delay, you might ask? This is to give you plenty of time to have your activities manually updated with the correct gear, in case it wasn't done automatically via one of your automations. This also
+                                mean that if you have multiple gears and GearWear configuration, you must make sure all your activities are assigned with the correct gear, otherwise the mileage might count towards the wrong bike or shoes.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+
                 <h2 class="mb-1">Free vs. PRO accounts</h2>
                 <v-expansion-panels class="mb-5" hover>
                     <v-expansion-panel>
@@ -147,11 +175,12 @@
                         <v-expansion-panel-content>
                             <p>
                                 Feature-wise they're almost the same. The free account is restricted to {{ $store.state.freePlanDetails.maxRecipes }} automations, containing a maximum of {{ $store.state.freePlanDetails.maxConditions }} conditions
-                                each. Additionally, free accounts will have a link to strautomator.com added to the description of {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5) by default. You can change this value on your
-                                account preferences.
+                                each, and a maximum of {{ $store.state.freePlanDetails.maxGearWear }} GearWear registrations. Additionally, free accounts will have a link to strautomator.com added to the description of
+                                {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5) by default. You can change this value on your account preferences.
                             </p>
                             <p>
-                                Users who subscribe to PRO will have no limits on automations or conditions, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider and using webhooks.
+                                Users who subscribe to PRO will have no limits on automations or GearWear registrations, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider and using
+                                webhooks.
                             </p>
                             <p>PRO costs ${{ $store.state.proPlanDetails.price.year.toFixed(2) }} / year via PayPal or ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub.</p>
                         </v-expansion-panel-content>
@@ -281,6 +310,17 @@ export default {
             loggedIn: this.$store.state.oauth && this.$store.state.user,
             billingPlanSummaries: [],
             panel: null
+        }
+    },
+    mounted() {
+        let parent = this.$parent.$parent
+
+        while (parent && !parent.$data.activeNavBtn) {
+            parent = parent.$parent
+        }
+
+        if (parent && parent.$data.activeNavBtn) {
+            parent.$data.activeNavBtn = "/help"
         }
     },
     async fetch() {

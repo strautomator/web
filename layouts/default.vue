@@ -10,6 +10,7 @@
 
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn to="/automations" router nuxt>Automations</v-btn>
+                <v-btn to="/gear" router nuxt>Gear</v-btn>
                 <v-btn to="/account" router nuxt>Account</v-btn>
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
@@ -33,9 +34,9 @@
                     <img src="/images/strava-powered.svg" width="130" />
                 </div>
                 <div>
-                    <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon>mdi-github</v-icon></a>
-                    <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2">mdi-twitter</v-icon></a>
-                    <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
+                    <n-link to="/help" title="Need help?"><v-icon>mdi-help-circle</v-icon></n-link>
+                    <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-4 ml-md-3">mdi-github</v-icon></a>
+                    <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-4 ml-md-3">mdi-twitter</v-icon></a>
                 </div>
                 <div class="copyright">
                     <span>Strautomator.com</span>
@@ -43,7 +44,7 @@
                 </div>
             </div>
         </v-main>
-        <v-bottom-navigation class="hidden-md-and-up" color="primary" v-model="activeNavBtn" app grow>
+        <v-bottom-navigation class="hidden-md-and-up" color="primary" :value="activeNavBtn" app grow>
             <v-btn value="/dashboard" to="/dashboard" router nuxt>
                 <span>Dashboard</span>
                 <v-icon>mdi-home</v-icon>
@@ -52,11 +53,15 @@
                 <span>Automations</span>
                 <v-icon>mdi-file-tree</v-icon>
             </v-btn>
+            <v-btn value="/gear" to="/gear" router nuxt>
+                <span>Gear</span>
+                <v-icon>mdi-cog-refresh</v-icon>
+            </v-btn>
             <v-btn value="/account" to="/account" router nuxt>
                 <span>Account</span>
                 <v-icon>mdi-account</v-icon>
             </v-btn>
-            <v-btn value="/help" to="/help" router nuxt>
+            <v-btn value="/help" to="/help" v-show="false" router nuxt>
                 <span>Help</span>
                 <v-icon>mdi-help</v-icon>
             </v-btn>

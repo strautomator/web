@@ -1,6 +1,7 @@
 export const state = () => ({
     lastUserFetch: new Date().valueOf(),
     user: null,
+    gearwearCount: null,
     recipeProperties: null,
     recipeActions: null,
     recipeMaxLength: null,
@@ -57,6 +58,9 @@ export const mutations = {
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
+    },
+    setGearWearCount(state, count) {
+        state.gearwearCount = count
     }
 }
 
