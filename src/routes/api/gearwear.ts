@@ -1,0 +1,141 @@
+// Strautomator API: GearWear routes
+
+import {gearwear, UserData} from "strautomator-core"
+import auth from "../auth"
+import _ = require("lodash")
+import express = require("express")
+import logger = require("anyhow")
+import webserver = require("../../webserver")
+const router = express.Router()
+const settings = require("setmeup").settings
+
+// GEARWEAR
+// --------------------------------------------------------------------------
+
+/**
+ * Get GearWear configurations for the user.
+ */
+router.get("/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const gearwearConfigs = await gearwear.getForUser(user)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, gearwearConfigs)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get the specified GearWear configuration.
+ */
+router.get("/:userId/:gearId", async (req, res) => {
+    try {
+        const gearId = req.params.gearId
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        // Get GearWear config.
+        const config = await gearwear.getById(gearId)
+
+        // Stop here if owner of the specified gear is not the logged user.
+        if (config && config.userId != user.id) {
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} has no access to GearWear ${gearId}`)
+            return webserver.renderError(req, res, "No permissions to access this GearWear", 403)
+        }
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, config)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Updated gearwear configuration for the specified GearWear.
+ */
+router.post("/:userId/:gearId", async (req, res) => {
+    try {
+        const gearId = req.params.gearId
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const max = settings.plans.free.maxGearWear
+        let configs = await gearwear.getForUser(user)
+
+        _.remove(configs, {id: gearId})
+
+        // Check if user has reached the limit of gearwear configs on free accounts.
+        if (!user.isPro && configs.length > max) {
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} reached limit of ${max} GearWear on free accounts`)
+            return webserver.renderError(req, res, `Reached the limit of GearWear on free accounts`, 400)
+        }
+
+        const bike = _.find(user.profile.bikes, {id: gearId})
+        const shoe = _.find(user.profile.shoes, {id: gearId})
+
+        // Make sure gear exists on the user profile.
+        if (!bike && !shoe) {
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id}`, `Gear ${gearId} not found`)
+            return webserver.renderError(req, res, "Gear not found", 404)
+        }
+
+        // Get GearWear configuration from request body and validate it.
+        const config = {
+            id: gearId,
+            userId: userId,
+            components: req.body.components,
+            updating: false
+        }
+        gearwear.validate(user, config)
+
+        // Save GearWear configuration to the database.
+        const result = gearwear.upsert(user, config)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, result)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Delete the specified GearWear configuration.
+ */
+router.delete("/:userId/:gearId", async (req, res) => {
+    try {
+        const gearId = req.params.gearId
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        // Get GearWear config and check its owner.
+        const config = await gearwear.getById(gearId)
+
+        // Stop here if owner of the specified gear is not the logged user.
+        if (config.userId != user.id) {
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} has no access to GearWear ${gearId}`)
+            return webserver.renderError(req, res, "No permissions to access this GearWear", 403)
+        }
+
+        // Delete the GearWear from the database.
+        await gearwear.delete(config)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, {deleted: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+export = router

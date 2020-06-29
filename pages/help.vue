@@ -64,7 +64,7 @@
                         <v-expansion-panel-header>Why this instead of Commute Marker, Klimat and other tools?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                First let me clarify: I used both Commute Marker and Klimat, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to the devs for their amazing work.
+                                I used both Commute Marker and Klimat in the past, and they were in fact part of my inspiration to develop Strautomator. So thumbs up to the devs for their amazing work.
                             </p>
                             <p>
                                 Now most of these other Strava tools serve a very specific need. Commute Marker to mark commutes based on start and end location. Klimat to add weather data to activities. Then there's IFTTT to integrate with other

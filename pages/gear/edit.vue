@@ -2,61 +2,68 @@
     <v-layout column>
         <v-container v-if="gear" fluid>
             <h1>{{ gearType }}: {{ gear.name }}</h1>
+            <p class="mt-3">Total mileage: {{ gear.mileage }} {{ units }}</p>
             <v-card outlined>
                 <v-card-title class="accent">
                     <span>Components</span>
                 </v-card-title>
                 <v-card-text class="pl-0 pr-0">
-                    <v-simple-table v-if="gearwearConfig">
-                        <thead>
-                            <tr>
-                                <th colspan="2">Component</th>
-                                <th>Mileage</th>
-                                <th v-if="$breakpoint.mdAndUp">Last reset</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="comp of gearwearConfig.components">
-                                <td width="1" class="pr-0">
-                                    <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
-                                </td>
-                                <td width="1" class="pl-2">
-                                    <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
-                                        {{ comp.name }}
-                                    </a>
-                                </td>
-                                <td>
-                                    {{ comp.currentMileage }} {{ units }}
-                                    <v-icon color="primary" class="ml-1" @click="showResetDialog(comp)" v-if="comp.currentMileage >= 1" small>mdi-refresh</v-icon>
-                                    <span class="float-right">{{ comp.alertMileage }}</span>
-                                    <v-progress-linear class="mt-2" color="secondary" background-color="accent" :value="getProgress(comp)"></v-progress-linear>
-                                </td>
-                                <td width="17%" v-if="$breakpoint.mdAndUp">
-                                    {{ comp.lastResetDate ? comp.lastResetDate : "never" }}
-                                </td>
-                                <td width="1" class="text-right pr-0 pl-1">
-                                    <v-icon color="removal" class="mr-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
-                    <div class="mt-3 mb-3 pl-4 pr-4" v-else>
-                        <p>
-                            You haven't registered any components for this gear. If you want you can kickstart with the defaults:
-                        </p>
-                        <ul class="pl-4 mb-4">
-                            <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertMileage }} {{ units }}</li>
-                        </ul>
-                        <v-btn color="primary" title="Start with the default components" @click="createDefaults" rounded>
-                            <v-icon left>mdi-text-box-check</v-icon>
-                            Use defaults
-                        </v-btn>
+                    <div class="mt-5 pl-4" v-if="isLoading">
+                        <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                        Loading gear details...
                     </div>
-                    <v-btn class="mt-3 ml-1" color="primary" title="Add a new component" @click.stop="showComponentDialog(false)" rounded text small>
-                        <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                        Add new component
-                    </v-btn>
+                    <template v-else>
+                        <v-simple-table v-if="gearwearConfig">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Component</th>
+                                    <th>Mileage</th>
+                                    <th v-if="$breakpoint.mdAndUp">Last reset</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="comp of gearwearConfig.components">
+                                    <td width="1" class="pr-0">
+                                        <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
+                                    </td>
+                                    <td width="1" class="pl-2">
+                                        <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
+                                            {{ comp.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ comp.currentMileage }} {{ units }}
+                                        <v-icon color="primary" class="ml-1" @click="showResetDialog(comp)" v-if="comp.currentMileage >= 1" small>mdi-refresh</v-icon>
+                                        <span class="float-right">{{ comp.alertMileage }}</span>
+                                        <v-progress-linear class="mt-2" color="secondary" :background-color="getProgressBg(comp)" :value="getProgressValue(comp)" rounded></v-progress-linear>
+                                    </td>
+                                    <td width="17%" v-if="$breakpoint.mdAndUp">
+                                        {{ comp.lastResetDate ? comp.lastResetDate : "never" }}
+                                    </td>
+                                    <td width="1" class="text-right pr-0 pl-1">
+                                        <v-icon color="removal" class="mr-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-simple-table>
+                        <div class="mt-3 mb-3 pl-4 pr-4" v-else>
+                            <p>
+                                You haven't registered any components for this gear. If you want you can kickstart with the defaults:
+                            </p>
+                            <ul class="pl-4 mb-4">
+                                <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertMileage }} {{ units }}</li>
+                            </ul>
+                            <v-btn color="primary" title="Start with the default components" @click="createDefaults" rounded>
+                                <v-icon left>mdi-text-box-check</v-icon>
+                                Use defaults
+                            </v-btn>
+                        </div>
+                        <v-btn class="mt-3 ml-1" color="primary" title="Add a new component" @click.stop="showComponentDialog(false)" rounded text small>
+                            <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                            Add new component
+                        </v-btn>
+                    </template>
                 </v-card-text>
             </v-card>
             <div class="text-center text-md-left mt-4">
@@ -87,7 +94,16 @@
                             <v-container class="ma-0 pa-0 pt-5" fluid>
                                 <v-row no-gutters>
                                     <v-col cols="12">
-                                        <v-text-field v-model="compName" label="Component name" placeholder="Ex: chain, cassette, tires..." maxlength="20" :rules="[inputRules.required, inputRules.name]" outlined rounded></v-text-field>
+                                        <v-text-field
+                                            v-model="compName"
+                                            label="Component name"
+                                            placeholder="Ex: chain, cassette, tires..."
+                                            maxlength="20"
+                                            :rules="[inputRules.required, inputRules.name]"
+                                            validate-on-blur
+                                            outlined
+                                            rounded
+                                        ></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
@@ -114,7 +130,7 @@
             <v-dialog v-model="resetDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
                     <v-toolbar color="primary">
-                        <v-toolbar-title>Reset {{ compName }} mileage</v-toolbar-title>
+                        <v-toolbar-title>Reset mileage: {{ compName }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideResetDialog">
@@ -137,7 +153,7 @@
             <v-dialog v-model="deleteComponentDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
                     <v-toolbar color="removal">
-                        <v-toolbar-title>Delete {{ compName }}</v-toolbar-title>
+                        <v-toolbar-title>Delete component: {{ compName }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideDeleteComponentDialog">
@@ -146,8 +162,7 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-4">Are you sure you want to delete this component?</p>
-                        <p>{{ compName }}, with {{ compCurrentMileage }} {{ units }}</p>
+                        <p class="mt-4">Are you sure you want to delete the component {{ compName }}?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>Cancel</v-btn>
@@ -237,9 +252,10 @@ export default {
                 {
                     name: "Tires",
                     currentMileage: 0,
-                    alertMileage: imperial ? 8000 : 5000
+                    alertMileage: imperial ? 3000 : 5000
                 }
             ],
+            isLoading: true,
             imperial: imperial,
             units: imperial ? "mi" : "km",
             gear: gear,
@@ -274,7 +290,7 @@ export default {
                 return this.$webError("GearEdit.fetch", {status: 404, message: "Missing gear ID on the URL"})
             }
 
-            const config = await this.$axios.$get(`/api/users/${this.user.id}/gearwear/${this.$route.query.id}`)
+            const config = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
             this.gearwearConfig = config
             this.isNew = !config
 
@@ -289,6 +305,8 @@ export default {
         } catch (ex) {
             this.$webError("GearEdit.fetch", ex)
         }
+
+        this.isLoading = false
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges) {
@@ -306,7 +324,7 @@ export default {
     methods: {
         async saveConfig() {
             try {
-                const config = await this.$axios.$post(`/api/users/${this.user.id}/gearwear/${this.gear.id}`, {components: this.gearwearConfig.components})
+                const config = await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {components: this.gearwearConfig.components})
                 this.hasChanges = false
 
                 this.$router.push({
@@ -324,8 +342,16 @@ export default {
 
             this.hasChanges = true
         },
-        getProgress(component) {
-            return (component.currentMileage / component.alertMileage) * 100
+        // PROGRESS BARS
+        // --------------------------------------------------------------------------
+        getProgressValue(component) {
+            const percent = (component.currentMileage / component.alertMileage) * 100
+            if (percent > 100) return 200 - percent
+            return percent
+        },
+        getProgressBg(component) {
+            if (component.currentMileage / component.alertMileage >= 1) return "error"
+            return "accent"
         },
         // EDIT COMPONENTS
         // --------------------------------------------------------------------------
@@ -426,7 +452,7 @@ export default {
         },
         async deleteGearWear() {
             try {
-                const config = await this.$axios.$delete(`/api/users/${this.user.id}/gearwear/${this.gear.id}`)
+                const config = await this.$axios.$delete(`/api/gearwear/${this.user.id}/${this.gear.id}`)
                 this.hasChanges = false
 
                 this.$router.push({

@@ -56,7 +56,7 @@
                                             <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
                                             <ul>
                                                 <li v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-m-${id}`">
-                                                    <span :class="{'font-italic grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
+                                                    <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                                 </li>
                                             </ul>
                                         </template>
@@ -68,7 +68,7 @@
                                     </td>
                                     <td v-if="$breakpoint.mdAndUp">
                                         <div v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-d-${id}`">
-                                            <span :class="{'font-italic grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
+                                            <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                         </div>
                                     </td>
                                     <td v-if="$breakpoint.mdAndUp">
