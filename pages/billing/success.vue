@@ -23,8 +23,6 @@
     </v-layout>
 </template>
 
-<style></style>
-
 <script>
 import userMixin from "~/mixins/userMixin.js"
 

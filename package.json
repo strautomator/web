@@ -1,9 +1,8 @@
 {
     "name": "strautomator-web",
-    "version": "20.271.12154",
+    "version": "20.272.12350",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
-    "private": true,
     "main": "server/index.js",
     "types": "server/index.d.ts",
     "scripts": {
@@ -30,8 +29,8 @@
         "nuxt": "^2.13.2",
         "qs": "^6.9.4",
         "setmeup": "^1.6.0",
-        "strautomator-core": "strautomator/core",
-        "typescript": "^3.9.5"
+        "typescript": "^3.9.5",
+        "strautomator-core": "strautomator/core"
     },
     "devDependencies": {
         "@nuxt/types": "^2.13.2",

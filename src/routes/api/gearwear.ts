@@ -1,6 +1,6 @@
 // Strautomator API: GearWear routes
 
-import {gearwear, UserData} from "strautomator-core"
+import {gearwear, GearWearConfig, UserData} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -70,8 +70,7 @@ router.post("/:userId/:gearId", async (req, res) => {
 
         const max = settings.plans.free.maxGearWear
         let configs = await gearwear.getForUser(user)
-
-        _.remove(configs, {id: gearId})
+        let existingConfig: GearWearConfig = _.remove(configs, {id: gearId})
 
         // Check if user has reached the limit of gearwear configs on free accounts.
         if (!user.isPro && configs.length > max) {
@@ -88,20 +87,26 @@ router.post("/:userId/:gearId", async (req, res) => {
             return webserver.renderError(req, res, "Gear not found", 404)
         }
 
-        // Get GearWear configuration from request body and validate it.
-        const config = {
-            id: gearId,
-            userId: userId,
-            components: req.body.components,
-            updating: false
-        }
-        gearwear.validate(user, config)
+        // Is it a GearWear config upate, or a reset mileage request?
+        if (!req.body.resetMileage) {
+            const config = {
+                id: gearId,
+                userId: userId,
+                components: req.body.components,
+                updating: false
+            }
 
-        // Save GearWear configuration to the database.
-        const result = gearwear.upsert(user, config)
+            // Save GearWear configuration to the database.
+            await gearwear.upsert(user, config)
+        } else {
+            const compName = req.body.resetMileage
+
+            // Reset mileage for the specified component.
+            await gearwear.resetMileage(existingConfig[0], compName)
+        }
 
         logger.info("Routes", req.method, req.originalUrl)
-        webserver.renderJson(req, res, result)
+        webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

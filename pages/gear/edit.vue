@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container v-if="gear" fluid>
             <h1>{{ gearType }}: {{ gear.name }}</h1>
-            <p class="mt-3">Total mileage: {{ gear.mileage }} {{ units }}</p>
+            <p class="mt-3">Total mileage on Strava: {{ gear.mileage }} {{ units }}</p>
             <v-card outlined>
                 <v-card-title class="accent">
                     <span>Components</span>
@@ -18,6 +18,7 @@
                                 <tr>
                                     <th colspan="2">Component</th>
                                     <th>Mileage</th>
+                                    <th class="text-center">Reset</th>
                                     <th v-if="$breakpoint.mdAndUp">Last reset</th>
                                     <th></th>
                                 </tr>
@@ -34,15 +35,17 @@
                                     </td>
                                     <td>
                                         {{ comp.currentMileage }} {{ units }}
-                                        <v-icon color="primary" class="ml-1" @click="showResetDialog(comp)" v-if="comp.currentMileage >= 1" small>mdi-refresh</v-icon>
                                         <span class="float-right">{{ comp.alertMileage }}</span>
                                         <v-progress-linear class="mt-2" color="secondary" :background-color="getProgressBg(comp)" :value="getProgressValue(comp)" rounded></v-progress-linear>
+                                    </td>
+                                    <td width="1" class="text-center">
+                                        <v-icon color="primary" @click="showResetDialog(comp)" v-if="comp.currentMileage >= 1">mdi-refresh</v-icon>
                                     </td>
                                     <td width="17%" v-if="$breakpoint.mdAndUp">
                                         {{ comp.lastResetDate ? comp.lastResetDate : "never" }}
                                     </td>
                                     <td width="1" class="text-right pr-0 pl-1">
-                                        <v-icon color="removal" class="mr-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
+                                        <v-icon color="removal" class="mr-3" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
                                     </td>
                                 </tr>
                             </tbody>
@@ -66,12 +69,12 @@
                     </template>
                 </v-card-text>
             </v-card>
-            <div class="text-center text-md-left mt-4">
+            <div class="text-center text-md-left mt-5">
                 <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
                 </v-btn>
-                <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
+                <div class="pa-3" v-if="!$breakpoint.mdAndUp"></div>
                 <v-btn color="removal" v-if="gearwearConfig && !isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
@@ -94,16 +97,7 @@
                             <v-container class="ma-0 pa-0 pt-5" fluid>
                                 <v-row no-gutters>
                                     <v-col cols="12">
-                                        <v-text-field
-                                            v-model="compName"
-                                            label="Component name"
-                                            placeholder="Ex: chain, cassette, tires..."
-                                            maxlength="20"
-                                            :rules="[inputRules.required, inputRules.name]"
-                                            validate-on-blur
-                                            outlined
-                                            rounded
-                                        ></v-text-field>
+                                        <v-text-field v-model="compName" label="Component name" placeholder="Ex: chain, cassette, tires..." maxlength="20" :rules="inputRules" validate-on-blur outlined rounded></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
@@ -225,17 +219,6 @@ export default {
         const gearType = gear.id.substring(0, 1) == "b" ? "Bike" : "Shoes"
         const imperial = user.profile.units == "imperial"
 
-        // Make sure there are no duplicate components.
-        const inputRules = {
-            required: (value) => !!value || "Field is required",
-            name: (value) => {
-                if (!this.gearwearConfig) return true
-                if (value && !_.find(this.gearwearConfig.components, {name: value.trim()})) return true
-                if (this.gearwearComponent && this.gearwearComponent.name == value) return true
-                return `${value} is a duplicate of another component`
-            }
-        }
-
         // Set the default components for bikes and shoes.
         return {
             defaultComponents: [
@@ -262,7 +245,6 @@ export default {
             gearType: gearType,
             gearwearConfig: null,
             gearwearComponent: null,
-            inputRules: inputRules,
             compValid: false,
             compName: "",
             compCurrentMileage: 0,
@@ -278,6 +260,19 @@ export default {
     computed: {
         configValid() {
             return this.gearwearConfig && this.gearwearConfig.components.length > 0
+        },
+        inputRules() {
+            const rules = {
+                required: (value) => !!value || "Field is required",
+                name: (value) => {
+                    if (!this.gearwearConfig) return true
+                    if (value && !_.find(this.gearwearConfig.components, {name: value.trim()})) return true
+                    if (this.gearwearComponent && this.gearwearComponent.name == value) return true
+                    return `${value} is a duplicate of another component`
+                }
+            }
+
+            return [rules.required, rules.name]
         },
         overMaxGearWear() {
             if (!this.user) return false
@@ -297,8 +292,8 @@ export default {
             // Add friendly last reset date to components.
             if (config && config.components) {
                 for (let comp of config.components) {
-                    if (comp.resetDates && comp.resetDates.length > 0) {
-                        comp.lastResetDate = moment(comp.resetDates[comp.resetDates.length - 1]).format("ll")
+                    if (comp.history && comp.history.length > 0) {
+                        comp.lastResetDate = this.$moment(comp.history[comp.history.length - 1].date).format("ll")
                     }
                 }
             }
@@ -307,6 +302,15 @@ export default {
         }
 
         this.isLoading = false
+    },
+    mounted() {
+        if (this.$route.query.reset) {
+            const component = _.find(this.gearwearConfig.components, {name: this.$route.query.reset})
+
+            if (component) {
+                this.showResetDialog(component)
+            }
+        }
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges) {
@@ -324,8 +328,14 @@ export default {
     methods: {
         async saveConfig() {
             try {
-                const config = await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {components: this.gearwearConfig.components})
                 this.hasChanges = false
+
+                // Remove lastResetDate helper from components.
+                for (let comp of this.gearwearConfig.components) {
+                    delete comp.lastResetDate
+                }
+
+                await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {components: this.gearwearConfig.components})
 
                 this.$router.push({
                     path: `/gear`
@@ -400,6 +410,10 @@ export default {
                 this.gearwearConfig.components = this.gearwearConfig.components
                 this.componentDialog = false
                 this.hasChanges = true
+
+                if (this.compCurrentMileage < 1) {
+                    this.resetDialog = true
+                }
             }
         },
         // MILEAGE RESET
@@ -414,7 +428,18 @@ export default {
         },
         async resetMileage() {
             try {
+                await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {resetMileage: this.compName})
+
+                // Make sure there's a history array.
+                if (!this.gearwearComponent.history) {
+                    this.gearwearComponent.history = []
+                }
+
+                const currentMileage = this.gearwearComponent.currentMileage
+                this.gearwearComponent.history.push({date: new Date(), mileage: currentMileage})
                 this.gearwearComponent.currentMileage = 0
+                this.gearwearComponent.dateAlertSent = null
+                this.gearweatComponent.lastResetDate = this.$moment().format("ll")
             } catch (ex) {
                 this.$webError("GearEdit.resetMileage", ex)
             }

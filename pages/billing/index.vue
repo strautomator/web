@@ -112,8 +112,6 @@
     </v-layout>
 </template>
 
-<style></style>
-
 <script>
 import _ from "lodash"
 import FreeProTable from "~/components/FreeProTable.vue"

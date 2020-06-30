@@ -25,7 +25,7 @@
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
                                 <v-text-field v-model="valueInput" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-text-field>
                             </div>
-                            <div v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
+                            <div class="action-activity-tags" v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
                                 <h3 class="mb-2">Activity tags</h3>
                                 <v-chip @click="addTag('distance')" small>Distance</v-chip>
                                 <v-chip @click="addTag('speedAvg')" small>Avg speed</v-chip>
@@ -64,7 +64,7 @@
 </template>
 
 <style>
-.v-chip {
+.action-activity-tags .v-chip {
     margin: 1px 2px 10px -1px;
 }
 </style>

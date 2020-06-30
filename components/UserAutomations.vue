@@ -29,15 +29,16 @@
             </v-card-text>
         </v-card>
         <div class="mt-5 text-center text-md-left">
-            <v-btn v-if="!needsPro()" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
+            <v-btn v-if="!needsPro" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
                 <v-icon left>mdi-plus-circle</v-icon>
                 Create new automation
             </v-btn>
             <div v-else>
                 <v-alert border="top" color="primary" colored-border>
                     <p>
-                        You have reached the limit of {{ $store.state.freePlanDetails.maxRecipes }}
-                        automations on your free account. To have unlimited automations and access to all the features, you'll need a PRO account.
+                        You have reached the limit of {{ $store.state.freePlanDetails.maxRecipes }} automations on your free account.
+                        <br v-if="$breakpoint.mdAndUp" />
+                        To have unlimited automations and access to all the features, you'll need a PRO account.
                     </p>
                     <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>

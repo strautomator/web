@@ -3,8 +3,11 @@
         <v-container fluid>
             <h1>
                 My Gear
-                <v-chip color="accent" class="ml-1 mt-1">BETA</v-chip>
+                <v-chip color="accent" class="ml-1 mt-n1">BETA</v-chip>
             </h1>
+            <div class="mt-2 mb-4 caption">
+                <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava"><v-icon color="primary" small>mdi-open-in-new</v-icon> Manage my gear on Strava...</a>
+            </div>
             <template v-if="!isLoading && !hasGearWear">
                 <p>
                     With GearWear you can set up automated alerts for your expendable parts when they reach a certain mileage.
@@ -24,7 +27,7 @@
                         <p>To get GearWear mileage alerts, Strautomator needs to know your email address first.</p>
                         <div class="d-flex flex-column flex-md-row mb-0 pb-0">
                             <div class="flex-grow-1">
-                                <v-text-field v-model="userEmail" label="Your email address" maxlength="150" :rules="[emailRules.required, emailRules.email]" validate-on-blur dense outlined rounded></v-text-field>
+                                <v-text-field v-model="userEmail" label="Your email address" maxlength="150" :rules="inputRules" validate-on-blur dense outlined rounded></v-text-field>
                             </div>
                             <div class="flex-grow-1 ml-2 mr-2">
                                 <v-btn color="primary" title="Set your email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>Save email</v-btn>
@@ -38,90 +41,25 @@
                     Loading bikes and shoes...
                 </div>
                 <template v-else>
-                    <v-card class="mb-5" outlined>
-                        <v-card-title class="accent">
-                            <v-icon class="ml-n1 mr-2">mdi-bike</v-icon>
-                            <span>Bikes</span>
-                        </v-card-title>
-                        <v-card-text class="pl-0 pr-0">
-                            <v-simple-table>
-                                <thead v-if="$breakpoint.mdAndUp">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Mileage</th>
-                                        <th>Components</th>
-                                        <th>Strava</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="bike in bikes" :key="bike.id">
-                                        <td class="pt-4 pt-md-0">
-                                            <n-link :to="'/gear/edit?id=' + bike.id" :title="`Edit GearWear for ${bike.name}`">{{ bike.name }}</n-link>
-                                            <div class="mt-1" v-if="!$breakpoint.mdAndUp">
-                                                <template v-if="gearwearConfigs[bike.id]">
-                                                    <v-chip class="mt-md-2 mr-2" v-for="comp in gearwearConfigs[bike.id].components" small>
-                                                        <v-icon class="mr-1" color="warning" v-if="comp.currentMileage >= comp.alertMileage" small>mdi-sync-alert</v-icon>
-                                                        {{ comp.name }}
-                                                    </v-chip>
-                                                </template>
-                                                <div class="grey--text" v-else>
-                                                    No GearWear configured
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td v-if="$breakpoint.mdAndUp">{{ bike.mileage }} {{ units }}</td>
-                                        <td v-if="$breakpoint.mdAndUp">
-                                            <template v-if="gearwearConfigs[bike.id]">
-                                                <v-chip class="mt-md-2 mr-2" v-for="comp in gearwearConfigs[bike.id].components" small>
-                                                    <v-icon class="mr-1" color="warning" v-if="comp.currentMileage >= comp.alertMileage" small>mdi-sync-alert</v-icon>
-                                                    {{ comp.name }}
-                                                </v-chip>
-                                            </template>
-                                            <div class="grey--text" v-else>
-                                                No GearWear configured
-                                            </div>
-                                        </td>
-                                        <td width="1" v-if="$breakpoint.mdAndUp">
-                                            <a :href="`https://www.strava.com/bikes/${bike.id.substring(1)}`" :title="`Edit ${bike.name} on Strava`" target="strava"><v-icon color="primary" class="mt-n1">mdi-open-in-new</v-icon></a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
-                        </v-card-text>
-                    </v-card>
-                    <v-card class="mb-5" outlined>
-                        <v-card-title class="accent">
-                            <v-icon class="ml-n1 mr-2">mdi-shoe-print</v-icon>
-                            <span>Shoes</span>
-                        </v-card-title>
-                        <v-card-text class="pl-0 pr-0">
-                            <v-simple-table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Components</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="shoe in shoes" :key="shoe.id">
-                                        <td width="40%">
-                                            <n-link :to="'/gear/edit?id=' + shoe.id" :title="`Edit GearWear for ${shoe.name}`">{{ shoe.name }}</n-link>
-                                        </td>
-                                        <td v-if="gearwearConfigs[shoe.id]">
-                                            {{ gearwearConfigs[bike.id].components.map((c) => c.name).join(", ") }}
-                                        </td>
-                                        <td class="grey--text" v-else>
-                                            No GearWear configuration
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
-                        </v-card-text>
-                    </v-card>
+                    <div v-for="gear in bikes" :key="gear.id">
+                        <gear-card gear-type="bike" :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
+                    </div>
+                    <div v-for="gear in shoes" :key="gear.id">
+                        <gear-card gear-type="shoes" :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
+                    </div>
                 </template>
-                <div class="mt-4 text-center text-md-left">
-                    <a href="https://www.strava.com/settings/gear" target="strava"><v-btn color="primary" title="Manage my gear on Strava" rounded>Manage gear on Strava</v-btn></a>
-                </div>
+                <v-alert border="top" color="primary" v-if="needsPro" colored-border>
+                    <p>
+                        You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
+                        GearWear (gear with component mileage) on your free account.
+                        <br v-if="$breakpoint.mdAndUp" />
+                        To use this feature with more gear, you'll need a PRO account.
+                    </p>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                        <v-icon left>mdi-credit-card</v-icon>
+                        Subscribe to PRO
+                    </v-btn>
+                </v-alert>
             </template>
         </v-container>
     </v-layout>
@@ -130,9 +68,13 @@
 <script>
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
+import GearCard from "~/components/gearwear/GearCard.vue"
 
 export default {
     authenticated: true,
+    components: {
+        GearCard
+    },
     mixins: [userMixin],
     head() {
         return {
@@ -144,29 +86,35 @@ export default {
         const shoes = this.$store.state.user.profile.shoes
 
         // Email validation.
-        const emailRules = {
-            required: (value) => !!value || "Email is required",
-            email: (value) => {
-                const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                return pattern.test(value) || "Invalid email address"
-            }
-        }
 
         return {
             isLoading: true,
-            units: this.user && this.user.profile.units == "imperial" ? "mi" : "km",
             userEmail: "",
             emailValid: false,
             emailSaved: false,
             bikes: bikes || [],
             shoes: shoes || [],
-            gearwearConfigs: {},
-            emailRules: emailRules
+            gearwearConfigs: {}
         }
     },
     computed: {
+        needsPro() {
+            if (!this.user) return false
+            return !this.user.isPro && Object.keys(this.gearwearConfigs).length >= this.$store.state.freePlanDetails.maxGearWear
+        },
         hasGearWear() {
             return Object.keys(this.gearwearConfigs).length > 0
+        },
+        inputRules() {
+            const rules = {
+                required: (value) => !!value || "Email is required",
+                email: (value) => {
+                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    return pattern.test(value) || "Invalid email address"
+                }
+            }
+
+            return [rules.required, rules.email]
         }
     },
     async fetch() {
@@ -200,23 +148,6 @@ export default {
                 }
             } catch (ex) {
                 this.$webError("Gear.saveEmail", ex)
-            }
-        },
-        getCompStatus(gearwearConfig) {
-            if (!gearwearConfig) return ""
-
-            const needsReplacing = []
-
-            for (let comp of gearwearConfig.components) {
-                if (comp.currentMileage >= comp.alertMileage) {
-                    needsReplacing.push(comp.name)
-                }
-            }
-
-            if (needsReplacing.length == 0) {
-                return "All good"
-            } else {
-                return `Needs replacing: ${needsReplacing.join(", ")}`
             }
         }
     }

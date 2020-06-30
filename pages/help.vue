@@ -146,11 +146,11 @@
                         <v-expansion-panel-header>What is GearWear?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Just a fancy name for the gear mileage tracking feature of Strautomator. Strava has its own mileage tracking of bikes and shoes, but there's no way to track the mileage of individual components.
+                                Just a fancy name for the gear mileage tracking features of Strautomator. Strava has its own mileage counter of bikes and shoes, but there's no way to track the mileage of individual components.
                             </p>
                             <p>
-                                With GearWear you can track the mileage of the current chain, cassette, tires and other expendable parts of your bikes, or specific parts of your shoes. Once you reach a specific mileage on an expendable part,
-                                Strautomator will alert you so you can have it replaced and reset the mileage once again.
+                                With GearWear you can track the mileage of the current chain, cassette, tires and other expendable parts of your bikes, or specific parts of your shoes. Once you reach a specific mileage, Strautomator will alert you so
+                                you can have it replaced and reset the mileage once again.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -158,11 +158,22 @@
                         <v-expansion-panel-header>How does it work?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Every night (UTC time), Strautomator will fetch your Strava activities from the day before yesterday and increase the mileage of the gear set for each of these activites.
+                                Every night Strautomator will fetch your Strava activities from the day before yesterday and increase the mileage of the gear set for each of these activites.
                             </p>
                             <p>
                                 Why have a 2 days delay, you might ask? This is to give you plenty of time to have your activities manually updated with the correct gear, in case it wasn't done automatically via one of your automations. This also
-                                mean that if you have multiple gears and GearWear configuration, you must make sure all your activities are assigned with the correct gear, otherwise the mileage might count towards the wrong bike or shoes.
+                                mean that if you have multiple bikes and shoes, you must make sure that all your activities have the correct gear assigned, otherwise the mileage might count towards the wrong one.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Can I track different wheelsets / tires for the same bike?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Unfortunately no. Strautomator does not keep the full history of your activities, therefore it can't correlate specific activities with specific components. For now I'm choosing simplicity over complexity.
+                            </p>
+                            <p>
+                                A simple workaround is to register 2 (or more) bikes on Strava, one for each different wheelset.
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -274,7 +285,7 @@
     </v-layout>
 </template>
 
-<style scoped>
+<style>
 .help-wrapper {
     position: relative;
     z-index: 99;

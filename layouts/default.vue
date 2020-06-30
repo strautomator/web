@@ -18,7 +18,7 @@
             <v-avatar v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
                 <img :src="$store.state.user.profile.urlAvatar" />
             </v-avatar>
-            <v-btn color="info" class="ml-1" :class="{'mr-n2': $breakpoint.smAndDown}" to="/logout" title="Logout" @click="logout" rounded text router nuxt>
+            <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
                 <v-icon>mdi-logout</v-icon>
                 <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down caption">Logout</span>
             </v-btn>
@@ -66,6 +66,31 @@
                 <v-icon>mdi-help</v-icon>
             </v-btn>
         </v-bottom-navigation>
+
+        <v-dialog v-model="logoutDialog" max-width="440" overlay-opacity="0.94">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Logout</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideLogoutDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-3">
+                        Do you want to logout from Strautomator?
+                    </p>
+                    <p>To log back in please use the <strong>Connect with Strava</strong> button again on the homepage.</p>
+                    <div class="text-right">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>Cancel</v-btn>
+                        <v-btn color="primary" title="Yes, logout" @click="logout" rounded>Logout</v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -77,10 +102,17 @@ export default {
     },
     data() {
         return {
-            activeNavBtn: this.$route.path || null
+            activeNavBtn: this.$route.path || null,
+            logoutDialog: false
         }
     },
     methods: {
+        showLogoutDialog() {
+            this.logoutDialog = true
+        },
+        hideLogoutDialog() {
+            this.logoutDialog = false
+        },
         logout() {
             this.$logout()
         }
