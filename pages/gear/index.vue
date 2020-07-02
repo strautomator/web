@@ -5,19 +5,21 @@
                 My Gear
                 <v-chip color="accent" class="ml-1 mt-n1">BETA</v-chip>
             </h1>
-            <div class="mt-2 mb-4 caption">
-                <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava"><v-icon color="primary" small>mdi-open-in-new</v-icon> Manage my gear on Strava...</a>
-            </div>
             <template v-if="!isLoading && !hasGearWear">
                 <p>
-                    With GearWear you can set up automated alerts for your expendable parts when they reach a certain mileage.
+                    With GearWear you can set up automated alerts for your expendable parts when they reach a certain mileage. To start, please create specific GearWear to your desired bikes and/or shoes below.
                 </p>
             </template>
             <template v-if="!isLoading && bikes.length == 0 && shoes.length == 0">
                 <v-alert class="text-center text-md-left">
-                    You don't have bikes or shoes registered on your Strava. Please register them first.
+                    You don't have bikes or shoes registered on your Strava account. Please register them there first, and then refresh this page.
                     <div class="mt-4">
-                        <a href="https://www.strava.com/settings/gear" target="strava"><v-btn color="primary" title="Manage my gear on Strava" rounded>My gear on Strava</v-btn></a>
+                        <a href="https://www.strava.com/settings/gear" target="strava">
+                            <v-btn color="primary" title="Manage my gear on Strava" rounded>
+                                <v-icon left>mdi-open-in-new</v-icon>
+                                Manage gear on Strava
+                            </v-btn>
+                        </a>
                     </div>
                 </v-alert>
             </template>
@@ -48,12 +50,12 @@
                         <gear-card gear-type="shoes" :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
                     </div>
                 </template>
-                <v-alert border="top" color="primary" v-if="needsPro" colored-border>
+                <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="needsPro" colored-border>
                     <p>
                         You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
-                        GearWear (gear with component mileage) on your free account.
+                        GearWear configurations on your free account.
                         <br v-if="$breakpoint.mdAndUp" />
-                        To use this feature with more gear, you'll need a PRO account.
+                        To use this feature with more bikes or shoes, you'll need a PRO account, or simply delete an existing configuration.
                     </p>
                     <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
@@ -61,6 +63,14 @@
                     </v-btn>
                 </v-alert>
             </template>
+            <div class="mt-4" v-if="!needsPro && (bikes.length > 0 || shoes.length > 0)">
+                <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava">
+                    <v-btn color="primary" rounded>
+                        <v-icon left>mdi-open-in-new</v-icon>
+                        Manage gear on Strava
+                    </v-btn>
+                </a>
+            </div>
         </v-container>
     </v-layout>
 </template>
@@ -99,7 +109,7 @@ export default {
     },
     computed: {
         needsPro() {
-            if (!this.user) return false
+            if (!this.user || !this.gearwearConfigs) return false
             return !this.user.isPro && Object.keys(this.gearwearConfigs).length >= this.$store.state.freePlanDetails.maxGearWear
         },
         hasGearWear() {

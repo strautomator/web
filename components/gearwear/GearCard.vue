@@ -21,8 +21,12 @@
                     <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
                 </template>
                 <div v-else>
-                    No GearWear configuration for this gear.
-                    <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
+                    <div>
+                        No GearWear configuration for this gear.
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
+                    </div>
+                    <div>Total mileage: {{ gear.mileage }} {{ units }}</div>
                 </div>
             </div>
         </v-card-text>

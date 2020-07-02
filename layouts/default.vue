@@ -10,7 +10,7 @@
 
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn to="/automations" router nuxt>Automations</v-btn>
-                <v-btn to="/gear" router nuxt>Gear</v-btn>
+                <v-btn to="/gear" router nuxt>Gear <v-icon class="ml-1">mdi-new-box</v-icon></v-btn>
                 <v-btn to="/account" router nuxt>Account</v-btn>
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
@@ -54,7 +54,7 @@
                 <v-icon>mdi-file-tree</v-icon>
             </v-btn>
             <v-btn value="/gear" to="/gear" router nuxt>
-                <span>Gear</span>
+                <span>Gear (NEW)</span>
                 <v-icon>mdi-cog-refresh</v-icon>
             </v-btn>
             <v-btn value="/account" to="/account" router nuxt>
@@ -69,7 +69,7 @@
 
         <v-dialog v-model="logoutDialog" max-width="440" overlay-opacity="0.94">
             <v-card>
-                <v-toolbar color="primary">
+                <v-toolbar color="accent">
                     <v-toolbar-title>Logout</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
@@ -86,7 +86,7 @@
                     <div class="text-right">
                         <v-spacer></v-spacer>
                         <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>Cancel</v-btn>
-                        <v-btn color="primary" title="Yes, logout" @click="logout" rounded>Logout</v-btn>
+                        <v-btn color="removal" title="Yes, logout" @click="logout" rounded>Logout</v-btn>
                     </div>
                 </v-card-text>
             </v-card>

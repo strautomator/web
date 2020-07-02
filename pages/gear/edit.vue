@@ -52,7 +52,7 @@
                         </v-simple-table>
                         <div class="mt-3 mb-3 pl-4 pr-4" v-else>
                             <p>
-                                You haven't registered any components for this gear. If you want you can kickstart with the defaults:
+                                You haven't registered components for this gear yet. If you want you can kickstart with the defaults:
                             </p>
                             <ul class="pl-4 mb-4">
                                 <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertMileage }} {{ units }}</li>
@@ -209,19 +209,21 @@ export default {
     data() {
         const gearId = this.$route.query.id
         const user = this.$store.state.user
+        const imperial = user.profile.units == "imperial"
         const gear = _.find(user.profile.bikes, {id: gearId}) || _.find(user.profile.shoes, {id: gearId})
+        let gearType
+        let defaultComponents
 
         // Abort here if gear does not exist on the user.
         if (!gear) {
-            return this.$webError("GearEdit.data", {status: 404, message: "Invalid gear ID"})
+            this.$webError("GearEdit.data", {status: 404, message: `Invalid gear ID: ${gearId}`})
+        } else {
+            gearType = gear.id.substring(0, 1) == "b" ? "Bike" : "Shoes"
         }
 
-        const gearType = gear.id.substring(0, 1) == "b" ? "Bike" : "Shoes"
-        const imperial = user.profile.units == "imperial"
-
-        // Set the default components for bikes and shoes.
-        return {
-            defaultComponents: [
+        // Set defaults for bikes and shoes.
+        if (gearType == "Bike") {
+            defaultComponents = [
                 {
                     name: "Chain",
                     currentMileage: 0,
@@ -237,7 +239,20 @@ export default {
                     currentMileage: 0,
                     alertMileage: imperial ? 3000 : 5000
                 }
-            ],
+            ]
+        } else {
+            defaultComponents = [
+                {
+                    name: "Shoes",
+                    currentMileage: 0,
+                    alertMileage: imperial ? 500 : 800
+                }
+            ]
+        }
+
+        // Set the default components for bikes and shoes.
+        return {
+            defaultComponents: defaultComponents,
             isLoading: true,
             imperial: imperial,
             units: imperial ? "mi" : "km",
@@ -411,7 +426,8 @@ export default {
                 this.componentDialog = false
                 this.hasChanges = true
 
-                if (this.compCurrentMileage < 1) {
+                // Mileage was set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
+                if (this.compCurrentMileage < 1 && this.gearwearComponent.lastResetDate != this.$moment().format("ll")) {
                     this.resetDialog = true
                 }
             }
@@ -439,7 +455,7 @@ export default {
                 this.gearwearComponent.history.push({date: new Date(), mileage: currentMileage})
                 this.gearwearComponent.currentMileage = 0
                 this.gearwearComponent.dateAlertSent = null
-                this.gearweatComponent.lastResetDate = this.$moment().format("ll")
+                this.gearwearComponent.lastResetDate = this.$moment().format("ll")
             } catch (ex) {
                 this.$webError("GearEdit.resetMileage", ex)
             }
