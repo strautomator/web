@@ -2,7 +2,6 @@
 
 {
     "app": {
-        "title": "Strautomator",
         // The server will look for the files strautomator.cert and strautomator.key on the
         // app root to start a HTTPS server on port 8443. If these files are not there,
         // the server will listen on HTTP port 8080 instead.
