@@ -29,7 +29,7 @@
             </v-card-text>
         </v-card>
         <div class="mt-5 text-center text-md-left">
-            <v-btn v-if="!needsPro" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
+            <v-btn v-if="!needsProRecipes" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
                 <v-icon left>mdi-plus-circle</v-icon>
                 Create new automation
             </v-btn>
