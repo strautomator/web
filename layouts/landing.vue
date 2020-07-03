@@ -8,9 +8,9 @@
             <img src="/images/strava-powered.svg" width="130" />
         </div>
         <div class="mb-6 text-center">
-            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon>mdi-github</v-icon></a>
-            <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2">mdi-twitter</v-icon></a>
-            <a href="https://instagram.com/strautomator" title="Strautomator @ Instagram"><v-icon class="ml-2">mdi-instagram</v-icon></a>
+            <n-link to="/help" title="Need help?"><v-icon>mdi-help-circle</v-icon></n-link>
+            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-4 ml-md-3">mdi-github</v-icon></a>
+            <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-4 ml-md-3">mdi-twitter</v-icon></a>
         </div>
         <div id="cookie-panel" class="hidden">
             <div class="wrapper columns">

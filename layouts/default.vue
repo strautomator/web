@@ -54,7 +54,7 @@
                 <v-icon>mdi-file-tree</v-icon>
             </v-btn>
             <v-btn value="/gear" to="/gear" router nuxt>
-                <span>Gear (NEW)</span>
+                <span>Gear</span>
                 <v-icon>mdi-cog-refresh</v-icon>
             </v-btn>
             <v-btn value="/account" to="/account" router nuxt>

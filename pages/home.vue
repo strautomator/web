@@ -6,44 +6,29 @@
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
                 <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Automate your Strava activities
+                    Automate your Strava
                 </h1>
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
+                <div class="mt-6 mb-2">
+                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                </div>
+
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
-                        <div class="home-faq mt-6 px-1 text-left">
+                        <div class="home-faq mt-2 px-1 text-left">
                             <h2>How does it work?</h2>
                             <div>
                                 <p>
-                                    First you connect Strautomator to your Strava account. Then you create recipes to automagically update your activities based on any of its properties like distance, speed, time, location, weather and many more.
+                                    First you connect Strautomator to your Strava account. Then you create automation recipes to automagically update your activities based on any of its properties like distance, speed, time, location, weather and
+                                    many more.
                                 </p>
                                 <p>
-                                    Like IFTTT, but for Strava.
+                                    Like IFTTT, but for Strava. And fully open source!
                                 </p>
+                                <p><strong>NEW: GearWear!</strong> You can now register your shoes and bike components and setup mileage alerts for them. Never forget to swap a chain again!</p>
                             </div>
-                            <h2>Is it free?</h2>
-                            <div>
-                                <p>
-                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes, which should be enough for the vast majority of users. Unlimited recipes and extra features can be unlocked with a PRO subscription
-                                    for ${{ $store.state.proPlanDetails.price.year }}
-                                    / year, paid via PayPal.
-                                </p>
-                                <p>
-                                    Do you have development skills and want a PRO account "for free"? You can run your own Strautomator, it's open source!
-                                </p>
-                            </div>
-                            <h2>Ready?</h2>
-                            <div>
-                                <p>
-                                    Start by connecting your Strava account...
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 mb-6">
-                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                         </div>
 
                         <v-responsive>
@@ -57,7 +42,28 @@
                             </div>
                         </v-responsive>
 
-                        <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
+                        <div class="home-faq mt-6 px-1 text-left">
+                            <h2>Is it free?</h2>
+                            <div>
+                                <p>
+                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users.
+                                    Unlimited recipes, GearWear and extra features can be unlocked with a PRO subscription for ${{ $store.state.proPlanDetails.price.year }}
+                                    / year, paid via PayPal.
+                                </p>
+                            </div>
+                            <h2>Ready?</h2>
+                            <div>
+                                <p>
+                                    Start by connecting Strautomator with your Strava...
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 mb-6">
+                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                        </div>
+
+                        <h2 class="display-1 font-weight-light mt-6 mb-4">Screenshots</h2>
 
                         <v-carousel height="600" :interval="5500" cycle continuous hide-delimiter-background show-arrows-on-hover>
                             <v-carousel-item>
@@ -109,8 +115,9 @@
     border-radius: 6px;
     clear: both;
     display: inline-block;
-    margin: 5px 10px 5px 10px;
-    max-width: 460px;
+    margin: 5px 0 5px 0;
+    min-width: 325px;
+    max-width: 490px;
     padding: 8px 14px 8px 14px;
     position: relative;
 }
@@ -199,6 +206,14 @@ export default {
             {
                 condition: "activity is a short run",
                 action: "link your blog on the activity description"
+            },
+            {
+                condition: "bike chain reaches 4000km",
+                action: "alert me to swap it via email"
+            },
+            {
+                condition: "bike tires reaches 8500km",
+                action: "alert me to swap it via email"
             }
         ]
 
