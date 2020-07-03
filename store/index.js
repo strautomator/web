@@ -47,6 +47,9 @@ export const mutations = {
         if (!state.user.preferences) state.user.preferences = {}
         state.user.preferences = Object.assign(state.user.preferences, data)
     },
+    setUserEmail(state, email) {
+        state.user.email = email
+    },
     setUserSubscription(state, data) {
         state.user.subscription = data
     },
