@@ -27,6 +27,7 @@ build:
 
 # Run the app locally
 run: build
+	-cp -r ../core/settings*.json ./node_modules/strautomator-core/
 	-cp -r ../core/lib/. ./node_modules/strautomator-core/lib/
 	npm run start:dev
 
