@@ -59,15 +59,21 @@
 
                         <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
 
-                        <v-carousel height="580" :interval="6000" cycle continuous hide-delimiter-background show-arrows-on-hover>
+                        <v-carousel height="600" :interval="5500" cycle continuous hide-delimiter-background show-arrows-on-hover>
                             <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-condition.jpg" />
+                                <img class="home-screenshot" src="/images/screenshot-1.jpg" />
                             </v-carousel-item>
                             <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-action.jpg" />
+                                <img class="home-screenshot" src="/images/screenshot-2.jpg" />
                             </v-carousel-item>
                             <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-automations.jpg" />
+                                <img class="home-screenshot" src="/images/screenshot-3.jpg" />
+                            </v-carousel-item>
+                            <v-carousel-item>
+                                <img class="home-screenshot" src="/images/screenshot-4.jpg" />
+                            </v-carousel-item>
+                            <v-carousel-item>
+                                <img class="home-screenshot" src="/images/screenshot-5.jpg" />
                             </v-carousel-item>
                         </v-carousel>
 
