@@ -167,10 +167,22 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
+                        <v-expansion-panel-header>Doesn't Strava have its own gear mileage alert?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Yes, but unfortunately only for shoes. And believe it or not, there are shoes out there with replaceable soles, so you might want to zero the mileage instead of creating a new gear on Strava.
+                            </p>
+                            <p>
+                                Strautomator's mileage alert is more useful than Strava's (for bikes and shoes), yet still extremely simple to use.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
                         <v-expansion-panel-header>Can I track different wheelsets / tires for the same bike?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>
-                                Unfortunately no. Strautomator does not keep the full history of your activities, therefore it can't correlate specific activities with specific components. For now I'm choosing simplicity over complexity.
+                                Unfortunately no. Strautomator does not keep the full history of your activities, therefore it can't correlate specific activities with specific components. For now I'm choosing simplicity over complexity, but if
+                                there's enough demand I might change this in the future.
                             </p>
                             <p>
                                 A simple workaround is to register 2 (or more) bikes on Strava, one for each different wheelset.
@@ -186,12 +198,11 @@
                         <v-expansion-panel-content>
                             <p>
                                 Feature-wise they're almost the same. The free account is restricted to {{ $store.state.freePlanDetails.maxRecipes }} automations, containing a maximum of {{ $store.state.freePlanDetails.maxConditions }} conditions
-                                each, and a maximum of {{ $store.state.freePlanDetails.maxGearWear }} GearWear registrations. Additionally, free accounts will have a link to strautomator.com added to the description of
+                                each, and a maximum of {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations. Additionally, free accounts will have a link to strautomator.com added to the description of
                                 {{ $store.state.linksOnPercent }}% of processed activites (1 out of 5) by default. You can change this value on your account preferences.
                             </p>
                             <p>
-                                Users who subscribe to PRO will have no limits on automations or GearWear registrations, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider and using
-                                webhooks.
+                                Users who subscribe to PRO will have unlimited automations and GearWear configurations, no backlinks added to activity descriptions, and access to extra features like choosing their weather provider and using webhooks.
                             </p>
                             <p>PRO costs ${{ $store.state.proPlanDetails.price.year.toFixed(2) }} / year via PayPal or ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub.</p>
                         </v-expansion-panel-content>
