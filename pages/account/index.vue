@@ -2,8 +2,12 @@
     <v-layout column>
         <v-container fluid>
             <h1>Account</h1>
-            <div class="text-center text-md-left">
+            <div>
                 <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
+                <div class="mb-3">
+                    <span class="mr-1" v-if="user.email">{{ user.email }}</span>
+                    <v-btn :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
+                </div>
                 <div>Account ID {{ user.id }}</div>
                 <div>Units: {{ user.profile.units }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
@@ -73,20 +77,26 @@
                     Close my account
                 </v-btn>
             </div>
+            <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
+            <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Your email was updated to {{ $store.state.user.email }}!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
         </v-container>
     </v-layout>
 </template>
 
 <script>
 import _ from "lodash"
+import EmailDialog from "~/components/account/EmailDialog.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
-    components: {
-        FreeProTable
-    },
+    components: {EmailDialog, FreeProTable},
     mixins: [userMixin],
     head() {
         return {
@@ -117,6 +127,8 @@ export default {
 
         return {
             savePending: false,
+            emailDialog: false,
+            emailSaved: false,
             linksOn: linksOn || defaultLinksOn,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
@@ -177,6 +189,10 @@ export default {
         }
     },
     methods: {
+        hideEmailDialog(emailSaved) {
+            this.emailDialog = false
+            this.emailSaved = emailSaved
+        },
         async savePreferences() {
             this.savePending = false
 

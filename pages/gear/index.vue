@@ -24,19 +24,10 @@
                 </v-alert>
             </template>
             <template v-else>
-                <v-alert class="text-center text-md-left pb-md-0" :color="emailSaved ? 'success' : ''" v-if="!user.email">
-                    <v-form v-model="emailValid" v-if="!emailSaved" ref="emailForm">
-                        <p>To get GearWear mileage alerts, Strautomator needs to know your email address first.</p>
-                        <div class="d-flex flex-column flex-md-row mb-0 pb-0">
-                            <div class="flex-grow-1">
-                                <v-text-field v-model="userEmail" label="Your email address" maxlength="150" :rules="inputRules" validate-on-blur dense outlined rounded></v-text-field>
-                            </div>
-                            <div class="flex-grow-1 ml-2 mr-2">
-                                <v-btn color="primary" title="Set your email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>Save email</v-btn>
-                            </div>
-                        </div>
-                    </v-form>
-                    <div class="pb-md-3" v-else>Email saved: {{ userEmail }}!</div>
+                <v-alert class="text-center text-md-left " v-if="!user.email">
+                    <p>To get GearWear mileage alerts, Strautomator needs to know your email address first.</p>
+                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
+                    <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
                 </v-alert>
                 <div class="mt-5 mb-2" v-if="isLoading">
                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
@@ -72,6 +63,12 @@
                 </a>
             </div>
         </v-container>
+        <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
+            Your email was set to {{ $store.state.user.email }}!
+            <template v-slot:action="{attrs}">
+                <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
+            </template>
+        </v-snackbar>
     </v-layout>
 </template>
 
@@ -79,12 +76,11 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import GearCard from "~/components/gearwear/GearCard.vue"
+import EmailDialog from "~/components/account/EmailDialog.vue"
 
 export default {
     authenticated: true,
-    components: {
-        GearCard
-    },
+    components: {GearCard, EmailDialog},
     mixins: [userMixin],
     head() {
         return {
@@ -95,12 +91,9 @@ export default {
         const bikes = this.$store.state.user.profile.bikes
         const shoes = this.$store.state.user.profile.shoes
 
-        // Email validation.
-
         return {
             isLoading: true,
-            userEmail: "",
-            emailValid: false,
+            emailDialog: false,
             emailSaved: false,
             bikes: bikes || [],
             shoes: shoes || [],
@@ -114,17 +107,6 @@ export default {
         },
         hasGearWear() {
             return Object.keys(this.gearwearConfigs).length > 0
-        },
-        inputRules() {
-            const rules = {
-                required: (value) => !!value || "Email is required",
-                email: (value) => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || "Invalid email address"
-                }
-            }
-
-            return [rules.required, rules.email]
         }
     },
     async fetch() {
@@ -150,15 +132,9 @@ export default {
         this.isLoading = false
     },
     methods: {
-        async saveEmail() {
-            try {
-                if (this.$refs.emailForm.validate()) {
-                    await this.$axios.$post(`/api/users/${this.user.id}/email`, {email: this.userEmail})
-                    this.emailSaved = true
-                }
-            } catch (ex) {
-                this.$webError("Gear.saveEmail", ex)
-            }
+        hideEmailDialog(emailSaved) {
+            this.emailDialog = false
+            this.emailSaved = emailSaved
         }
     }
 }
