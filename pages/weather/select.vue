@@ -169,10 +169,7 @@ export default {
         },
         async saveAndExit() {
             await this.savePreferences()
-
-            this.$router.push({
-                path: `/account`
-            })
+            this.$router.push({path: "/account"})
         }
     }
 }

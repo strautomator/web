@@ -352,9 +352,7 @@ export default {
 
                 await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {components: this.gearwearConfig.components})
 
-                this.$router.push({
-                    path: `/gear`
-                })
+                this.$router.push({path: `/gear?new=${this.gear.id}`})
             } catch (ex) {
                 this.$webError("GearEdit.saveConfig", ex)
             }
@@ -496,9 +494,7 @@ export default {
                 const config = await this.$axios.$delete(`/api/gearwear/${this.user.id}/${this.gear.id}`)
                 this.hasChanges = false
 
-                this.$router.push({
-                    path: `/gear`
-                })
+                this.$router.push({path: `/gear?deleted=${this.gear.id}`})
             } catch (ex) {
                 this.$webError("GearEdit.deleteGearWear", ex)
             }

@@ -9,8 +9,8 @@
                     <v-btn :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
                 <div>Account ID {{ user.id }}</div>
-                <div>Units: {{ user.profile.units }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
+                <div>Units: {{ user.profile.units }}</div>
                 <p class="mt-3 caption">
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile... </a>
                 </p>

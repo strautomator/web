@@ -69,6 +69,18 @@
                 <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
+        <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
+            GearWear configuration for "{{ alertGearTitle }}" created!
+            <template v-slot:action="{attrs}">
+                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            </template>
+        </v-snackbar>
+        <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded bottom>
+            GearWear configuration for "{{ alertGearTitle }}" deleted!
+            <template v-slot:action="{attrs}">
+                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            </template>
+        </v-snackbar>
     </v-layout>
 </template>
 
@@ -95,6 +107,9 @@ export default {
             isLoading: true,
             emailDialog: false,
             emailSaved: false,
+            alertNew: false,
+            alertDeleted: false,
+            alertGearTitle: "",
             bikes: bikes || [],
             shoes: shoes || [],
             gearwearConfigs: {}
@@ -131,10 +146,27 @@ export default {
 
         this.isLoading = false
     },
+    mounted() {
+        if (this.$route.query.new) {
+            this.alertGearTitle = this.getGearName(this.$route.query.new)
+            this.alertNew = true
+        } else if (this.$route.query.deleted) {
+            this.alertGearTitle = this.getGearName(this.$route.query.deleted)
+            this.alertDeleted = true
+        }
+    },
     methods: {
         hideEmailDialog(emailSaved) {
             this.emailDialog = false
             this.emailSaved = emailSaved
+        },
+        getGearName(id) {
+            let gear = _.find(this.bikes, {id: id}) || _.find(this.shoes, {id: id})
+            return gear ? gear.name : "gear"
+        },
+        closeAlert() {
+            this.alertNew = false
+            this.alertDeleted = false
         }
     }
 }

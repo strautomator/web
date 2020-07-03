@@ -190,9 +190,7 @@ export default {
                 if (subscription && subscription.approvalUrl) {
                     document.location.href = subscription.approvalUrl
                 } else if (subscription && subscription.status == "ACTIVE") {
-                    this.$router.push({
-                        path: `/billing/success?fixed=${subscription.id}`
-                    })
+                    this.$router.push({path: `/billing/success?fixed=${subscription.id}`})
                 } else {
                     this.$webError("Billing.prepareSubscription", "Could not setup your subscription with PayPal")
                 }

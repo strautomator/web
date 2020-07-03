@@ -85,7 +85,7 @@
                 <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
                 <v-btn color="removal" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
-                    Delete
+                    Delete automation
                 </v-btn>
             </div>
             <v-alert color="error" class="mt-5" v-if="overMaxRecipes">
@@ -161,7 +161,8 @@ export default {
             actionDialog: false,
             conditionDialog: false,
             deleteItemSelected: false,
-            deleteDialog: false
+            deleteDialog: false,
+            hasChanges: false
         }
     },
     computed: {
@@ -170,9 +171,24 @@ export default {
             return !this.user.isPro && Object.keys(this.user.recipes).length > this.$store.state.freePlanDetails.maxRecipes
         }
     },
+    beforeRouteLeave(to, from, next) {
+        if (this.hasChanges) {
+            const answer = window.confirm("You have unsaved changes on this automation. Sure you want to leave?")
+
+            if (answer) {
+                next()
+            } else {
+                next(false)
+            }
+        } else {
+            next()
+        }
+    },
     methods: {
         async save() {
             try {
+                this.hasChanges = false
+
                 if (this.$refs.form.validate()) {
                     if (this.recipe.defaultFor == null) {
                         delete this.recipe.defaultFor
@@ -183,9 +199,7 @@ export default {
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
                     this.$store.commit("addUserRecipe", recipeData)
-                    this.$router.push({
-                        path: `/automations?new=${recipeData.id}`
-                    })
+                    this.$router.push({path: `/automations?new=${recipeData.id}`})
                 }
             } catch (ex) {
                 this.$webError("AutomationEdit.save", ex)
@@ -214,6 +228,7 @@ export default {
 
             this.checkValid()
             this.actionDialog = false
+            this.hasChanges = true
         },
         setCondition(value) {
             if (value) {
@@ -226,11 +241,13 @@ export default {
 
             this.checkValid()
             this.conditionDialog = false
+            this.hasChanges = true
         },
         deleteAction(action) {
             _.remove(this.recipe.actions, action)
             this.checkValid()
             this.deleteItemSelected = false
+            this.hasChanges = true
         },
         deleteCondition(condition) {
             if (condition.defaultFor) {
@@ -241,6 +258,7 @@ export default {
 
             this.checkValid()
             this.deleteItemSelected = false
+            this.hasChanges = true
         },
         confirmDelete(obj) {
             this.deleteItemSelected = obj
@@ -268,9 +286,7 @@ export default {
             this.deleteDialog = false
 
             this.$store.commit("deleteUserRecipe", this.recipe)
-            this.$router.push({
-                path: `/automations?deleted=${recipeId}&title=${recipeTitle}`
-            })
+            this.$router.push({path: `/automations?deleted=${recipeId}&title=${recipeTitle}`})
         }
     }
 }
