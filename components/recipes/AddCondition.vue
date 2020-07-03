@@ -15,17 +15,17 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
-                            <v-select label="Select a property..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" outlined rounded return-object></v-select>
+                            <v-select label="Select a condition..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-select>
                             <div v-if="selectedProperty.value">
-                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" outlined rounded return-object></v-select>
+                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" dense outlined rounded return-object></v-select>
                                 <div v-if="isDefaultFor">
-                                    <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" outlined rounded return-object></v-select>
+                                    <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isWeekday">
-                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" outlined rounded return-object></v-select>
+                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" dense outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete
@@ -36,6 +36,7 @@
                                         :loading="loading"
                                         :search-input.sync="searchLocations"
                                         return-object
+                                        dense
                                         rounded
                                         outlined
                                         no-filter
@@ -52,10 +53,8 @@
                         </v-col>
                     </v-row>
                     <v-row no-gutters>
-                        <v-col cols="12">
-                            <div class="mt-2 text-center">
-                                <v-btn color="primary" @click="save" title="Save this condition" :disabled="!selectedProperty.value || !selectedOperator.value" rounded>Save condition</v-btn>
-                            </div>
+                        <v-col class="mt-4 text-center" cols="12">
+                            <v-btn color="primary" @click="save" title="Save this condition" :disabled="!selectedProperty.value || !selectedOperator.value" rounded>Save condition</v-btn>
                         </v-col>
                     </v-row>
                 </v-container>

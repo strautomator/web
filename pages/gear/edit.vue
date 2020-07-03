@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container v-if="gear" fluid>
             <h1>{{ gearType }}: {{ gear.name }}</h1>
-            <p class="mt-3">Total mileage on Strava: {{ gear.mileage }} {{ units }}</p>
+            <p class="mt-3">Total mileage on Strava: 17116 {{ units }}</p>
             <v-card outlined>
                 <v-card-title class="accent">
                     <span>Components</span>

@@ -119,9 +119,7 @@ import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
-    components: {
-        FreeProTable
-    },
+    components: {FreeProTable},
     mixins: [userMixin],
     head() {
         return {

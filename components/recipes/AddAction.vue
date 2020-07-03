@@ -15,15 +15,15 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12">
-                            <v-select label="Select an action..." v-model="selectedAction" :items="recipeActions" outlined rounded return-object></v-select>
+                            <v-select label="Select an action..." v-model="selectedAction" :items="recipeActions" dense outlined rounded return-object></v-select>
                             <div v-if="selectedAction.value == 'gear'">
-                                <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" outlined rounded return-object></v-select>
+                                <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
                             <div v-else-if="selectedAction.value == 'description'">
-                                <v-textarea v-model="valueInput" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-textarea>
+                                <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
-                                <v-text-field v-model="valueInput" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" outlined></v-text-field>
+                                <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
                             <div class="action-activity-tags" v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
                                 <h3 class="mb-2">Activity tags</h3>
@@ -42,6 +42,7 @@
                                 <v-chip @click="addTag('dateEnd')" small>End time</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
                                 <v-chip @click="addTag('movingTime')" small>Moving time</v-chip>
+                                <v-chip @click="addTag('device')" small>GPS device</v-chip>
                                 <h3 class="mt-3 mb-2">Weather tags</h3>
                                 <v-chip @click="addTag('weather.icon')" small>Icon</v-chip>
                                 <v-chip @click="addTag('weather.summary')" small>Summary</v-chip>
@@ -53,9 +54,9 @@
                         </v-col>
                     </v-row>
                     <v-row no-gutters>
-                        <div class="mt-2 text-center">
+                        <v-col class="mt-4 text-center" cols="12">
                             <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>Save action</v-btn>
-                        </div>
+                        </v-col>
                     </v-row>
                 </v-container>
             </v-form>

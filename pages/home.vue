@@ -93,7 +93,9 @@
         </v-container>
         <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
             This website is using cookies!
-            <v-btn class="ml-1" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+            <template v-slot:action="{attrs}">
+                <v-btn v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+            </template>
         </v-snackbar>
     </v-main>
 </template>

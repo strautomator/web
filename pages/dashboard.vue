@@ -100,10 +100,8 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
     authenticated: true,
+    components: {CreateFirst},
     mixins: [userMixin, recipeMixin],
-    components: {
-        CreateFirst
-    },
     head() {
         return {
             title: "Dashboard"

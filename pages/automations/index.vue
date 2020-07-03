@@ -6,13 +6,17 @@
                 <v-badge v-if="recipes.length > 0" color="accent" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
                 <v-btn v-if="!needsProRecipes" class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
             </h1>
-            <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="3000" bottom>
+            <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
                 New automation "{{ this.user.recipes[$route.query.new].title }}" created!
-                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
             </v-snackbar>
-            <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="3000" bottom>
+            <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded bottom>
                 Automation "{{ $route.query.title }}" deleted!
-                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
             </v-snackbar>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
@@ -36,11 +40,8 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
     authenticated: true,
+    components: {CreateFirst, UserAutomations},
     mixins: [userMixin, recipeMixin],
-    components: {
-        CreateFirst,
-        UserAutomations
-    },
     head() {
         return {
             title: "Automations"

@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container v-if="recipe" fluid>
             <h1>{{ recipe.id ? "Edit" : "New" }} automation</h1>
-            <v-form v-model="valid" ref="form">
+            <v-form v-model="valid" class="mb-0" ref="form">
                 <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" outlined rounded></v-text-field>
             </v-form>
             <v-card outlined>
@@ -131,10 +131,7 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 
 export default {
     authenticated: true,
-    components: {
-        AddCondition,
-        AddAction
-    },
+    components: {AddCondition, AddAction},
     mixins: [userMixin, recipeMixin],
     head() {
         return {
