@@ -167,6 +167,18 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
+                        <v-expansion-panel-header>How does it work?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                Every night Strautomator will fetch your Strava activities from the day before yesterday and increase the mileage of the gear set for each of these activites.
+                            </p>
+                            <p>
+                                Why have a 2 days delay, you might ask? This is to give you plenty of time to have your activities manually updated with the correct gear, in case it wasn't done automatically via one of your automations. This also
+                                mean that if you have multiple bikes and shoes, you must make sure that all your activities have the correct gear assigned, otherwise the mileage might count towards the wrong one.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
                         <v-expansion-panel-header>Doesn't Strava have its own gear mileage alert?</v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <p>

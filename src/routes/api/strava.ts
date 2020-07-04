@@ -2,6 +2,7 @@
 
 import {strava, users, UserData} from "strautomator-core"
 import auth from "../auth"
+import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
 import moment = require("moment")
@@ -62,8 +63,16 @@ router.get("/activities/recent", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
-        const timestamp = moment().subtract(21, "days")
+        // Limit number of recent activites, with a hard coded maximum of 50.
+        let limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
+        if (limit > 50) limit = 50
+
+        // Get activities for the past 21 days by default, with a hard limit of 30 days.
+        let timestamp = req.query.since ? moment.unix(parseInt(req.query.since as string)) : moment().subtract(21, "days")
+        let minTimestamp = moment().subtract(30, "days")
+        if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
+
+        // Fetch recent activities.
         let activities = await strava.activities.getActivities(user, {after: timestamp.unix()})
 
         if (activities.length > limit) {
@@ -74,6 +83,41 @@ router.get("/activities/recent", async (req, res) => {
         activities.reverse()
 
         logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, activities)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get logged user's activities from Strava since the specified timestamp.
+ * Maximum of 1 year.
+ */
+router.get("/activities/since/:timestamp", async (req, res) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Timestamp is mandatory.
+        if (!req.params.timestamp) {
+            throw new Error("Missing timestamp")
+        }
+
+        // Hard limit of 1 year on the minimum timestamp.
+        let timestamp = moment.unix(parseInt(req.params.timestamp as string))
+        let minTimestamp = moment().subtract(1, "year")
+        if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
+
+        // Fetch activities since the specified timestamp.
+        let activities = await strava.activities.getActivities(user, {after: timestamp.unix()})
+
+        // If a gear filter was passed, remove activities that are not for that particular gear.
+        if (req.query.gear) {
+            _.remove(activities, (a) => !a.gear || a.gear.id != req.query.gear)
+        }
+
+        logger.info("Routes", req.method, req.originalUrl, `Got ${activities.length} activites`)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

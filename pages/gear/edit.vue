@@ -69,6 +69,28 @@
                     </template>
                 </v-card-text>
             </v-card>
+
+            <v-card class="mt-4" v-if="isNew && gearwearConfig && gearwearConfig.components.length > 0" outlined>
+                <v-card-text class="pb-0">
+                    <p>
+                        If you don't know the current mileage of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 1 year ago.
+                    </p>
+                    <div class="d-flex">
+                        <div class="flex-grow-0">
+                            <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                                <template v-slot:activator="{on, attrs}">
+                                    <v-text-field v-model="dateSince" v-bind="attrs" v-on="on" width="200px" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" outlined readonly rounded dense></v-text-field>
+                                </template>
+                                <v-date-picker v-model="dateSince" :min="dateSinceMin" @input="dateMenu = false"></v-date-picker>
+                            </v-menu>
+                        </div>
+                        <div class="flex-grow-0">
+                            <v-btn color="primary" class="ml-2" title="Get mileage from Strava activities" @click="getPastMileage" :disabled="pastLoading" rounded>Get expected mileage</v-btn>
+                        </div>
+                    </div>
+                </v-card-text>
+            </v-card>
+
             <div class="text-center text-md-left mt-5">
                 <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
@@ -191,6 +213,15 @@
                 </v-card>
             </v-dialog>
         </v-container>
+
+        <v-snackbar v-model="pastMileageAlert" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <span v-if="pastMileage > 0">Calculated {{ pastMileage }} {{ units }} for {{ pastActivities }} since {{ dateSince }}.</span>
+            <span v-else>No activities found since {{ dateSince }} for that gear.</span>
+
+            <template v-slot:action="{attrs}">
+                <v-icon v-bind="attrs" @click="pastMileageAlert = false">mdi-close-circle</v-icon>
+            </template>
+        </v-snackbar>
     </v-layout>
 </template>
 
@@ -250,6 +281,9 @@ export default {
             ]
         }
 
+        // Minimum allowed date since (when fetching past mileage).
+        const dateSinceMin = this.$moment().subtract(1, "year")
+
         // Set the default components for bikes and shoes.
         return {
             defaultComponents: defaultComponents,
@@ -264,6 +298,13 @@ export default {
             compName: "",
             compCurrentMileage: 0,
             compAlertMileage: 0,
+            dateSince: null,
+            dateSinceMin: dateSinceMin.format("YYYY-MM-DD"),
+            dateMenu: false,
+            pastActivities: 0,
+            pastMileage: 0,
+            pastMileageAlert: false,
+            pastLoading: false,
             isNew: false,
             hasChanges: false,
             componentDialog: false,
@@ -364,6 +405,36 @@ export default {
             }
 
             this.hasChanges = true
+        },
+        async getPastMileage() {
+            try {
+                this.pastLoading = true
+                const timestamp = this.$moment(this.dateSince).unix()
+                const activities = await this.$axios.$get(`/api/strava/activities/since/${timestamp}?gear=${this.gear.id}`)
+                let mileage = 0
+
+                for (let a of activities) {
+                    if (a.distance && a.distance > 0) {
+                        mileage += a.distance
+                    }
+                }
+
+                mileage = Math.round(mileage)
+
+                if (mileage > 0) {
+                    for (let comp of this.gearwearConfig.components) {
+                        comp.currentMileage = mileage
+                    }
+                }
+
+                this.pastActivities = activities.length
+                this.pastMileage = mileage
+                this.pastMileageAlert = true
+            } catch (ex) {
+                this.$webError("GearEdit.getPastMileage", ex)
+            }
+
+            this.pastLoading = false
         },
         // PROGRESS BARS
         // --------------------------------------------------------------------------
