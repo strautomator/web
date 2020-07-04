@@ -85,8 +85,14 @@
                     <p>To log back in please use the <strong>Connect with Strava</strong> button again on the homepage.</p>
                     <div class="text-right">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>Cancel</v-btn>
-                        <v-btn color="removal" title="Yes, logout" @click="logout" rounded>Logout</v-btn>
+                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="removal" title="Yes, logout" @click="logout" rounded>
+                            <v-icon left>mdi-logout</v-icon>
+                            Logout
+                        </v-btn>
                     </div>
                 </v-card-text>
             </v-card>

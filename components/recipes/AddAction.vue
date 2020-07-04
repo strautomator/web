@@ -55,7 +55,10 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>Save action</v-btn>
+                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>
+                                <v-icon left>mdi-check</v-icon>
+                                Save action
+                            </v-btn>
                         </v-col>
                     </v-row>
                 </v-container>

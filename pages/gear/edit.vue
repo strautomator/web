@@ -133,7 +133,10 @@
                                 <v-row no-gutters>
                                     <v-col cols="12">
                                         <div class="mt-2 text-center">
-                                            <v-btn color="primary" @click="saveComponent" title="Save component details" rounded>Save component</v-btn>
+                                            <v-btn color="primary" @click="saveComponent" title="Save component details" rounded>
+                                                <v-icon left>mdi-check</v-icon>
+                                                Save component
+                                            </v-btn>
                                         </div>
                                     </v-col>
                                 </v-row>
@@ -159,8 +162,14 @@
                         <p>You should do this once you have replaced the component.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Keep current mileage" @click.stop="hideResetDialog" text rounded>Cancel</v-btn>
-                            <v-btn color="primary" title="Confirm and reset mileage" @click="resetMileage" rounded>Reset</v-btn>
+                            <v-btn class="mr-1" color="grey" title="Keep current mileage" @click.stop="hideResetDialog" text rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel
+                            </v-btn>
+                            <v-btn color="primary" title="Confirm and reset mileage" @click="resetMileage" rounded>
+                                <v-icon left>mdi-refresh</v-icon>
+                                Reset
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -181,8 +190,14 @@
                         <p class="mt-4">Are you sure you want to delete the component {{ compName }}?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>Cancel</v-btn>
-                            <v-btn color="removal" title="Confirm and delete component" @click="deleteComponent" rounded>Delete</v-btn>
+                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel
+                            </v-btn>
+                            <v-btn color="removal" title="Confirm and delete component" @click="deleteComponent" rounded>
+                                <v-icon left>mdi-check</v-icon>
+                                Delete
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -206,8 +221,14 @@
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>Cancel</v-btn>
-                            <v-btn color="removal" title="Confirm and delete GearWear" @click="deleteGearWear" rounded>Delete</v-btn>
+                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel
+                            </v-btn>
+                            <v-btn color="removal" title="Confirm and delete GearWear" @click="deleteGearWear" rounded>
+                                <v-icon left>mdi-check</v-icon>
+                                Delete
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>

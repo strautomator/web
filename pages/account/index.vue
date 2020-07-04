@@ -6,7 +6,7 @@
                 <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
                 <div class="mb-3">
                     <span class="mr-1" v-if="user.email">{{ user.email }}</span>
-                    <v-btn :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
+                    <v-btn title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>

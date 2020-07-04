@@ -19,8 +19,14 @@
                 </v-form>
                 <div class="text-right">
                     <v-spacer></v-spacer>
-                    <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideDialog" text rounded>Cancel</v-btn>
-                    <v-btn color="primary" title="Save email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>Save email</v-btn>
+                    <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideDialog" text rounded>
+                        <v-icon left>mdi-cancel</v-icon>
+                        Cancel
+                    </v-btn>
+                    <v-btn color="primary" title="Save email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>
+                        <v-icon left>mdi-check</v-icon>
+                        Save email
+                    </v-btn>
                 </div>
             </v-card-text>
         </v-card>
