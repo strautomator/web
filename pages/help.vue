@@ -201,6 +201,15 @@
                             </p>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>Why is Strautomator showing a different total mileage for my gear?</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <p>
+                                The total mileage is not updated in real-time, and it might a few hours behind the official Strava stats. So if you just had a long activity some moments ago, the displayed total mileage of your bike or shoes might be
+                                slightly less than the real value.
+                            </p>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
 
                 <h2 class="mb-1">Free vs. PRO accounts</h2>
