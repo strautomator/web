@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container v-if="gear" fluid>
             <h1>{{ gearType }}: {{ gear.name }}</h1>
-            <p class="mt-3">Total mileage on Strava: 17116 {{ units }}</p>
+            <p class="mt-3">Total mileage on Strava: {{ gear.mileage }} {{ units }}</p>
             <v-card outlined>
                 <v-card-title class="accent">
                     <span>Components</span>
@@ -39,7 +39,7 @@
                                         <v-progress-linear class="mt-2" color="secondary" :background-color="getProgressBg(comp)" :value="getProgressValue(comp)" rounded></v-progress-linear>
                                     </td>
                                     <td width="1" class="text-center">
-                                        <v-icon color="primary" @click="showResetDialog(comp)" v-if="comp.currentMileage >= 1">mdi-refresh</v-icon>
+                                        <v-icon color="primary" :title="'Reset ' + gear.name + ' mileage'" @click="showResetDialog(comp)" :disabled="comp.currentMileage < 1">mdi-refresh</v-icon>
                                     </td>
                                     <td width="17%" v-if="$breakpoint.mdAndUp">
                                         {{ comp.lastResetDate ? comp.lastResetDate : "never" }}

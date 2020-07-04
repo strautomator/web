@@ -52,6 +52,10 @@ async function start() {
         // Start the web server.
         const webserver = require("./webserver")
         await webserver.init(nuxt.render)
+
+        // Enable logging unhandled exceptions and rejections.
+        logger.uncaughtExceptions = true
+        logger.unhandledRejections = true
     } catch (ex) {
         logger.error("Strautomator.startup", "Failed to start", ex)
         process.exit(1)

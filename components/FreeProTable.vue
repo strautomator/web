@@ -40,7 +40,7 @@
                     <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                 </tr>
                 <tr>
-                    <td>How much?</td>
+                    <td>Price</td>
                     <td class="text-center">Free</td>
                     <td class="text-center">${{ $store.state.proPlanDetails.price.year }} / year</td>
                 </tr>
