@@ -71,21 +71,21 @@
             </v-card>
 
             <v-card class="mt-4" v-if="isNew && gearwearConfig && gearwearConfig.components.length > 0" outlined>
-                <v-card-text class="pb-0">
+                <v-card-text class="pb-md-0">
                     <p>
                         If you don't know the current mileage of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 1 year ago.
                     </p>
-                    <div class="d-flex">
+                    <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-0">
                             <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
                                 <template v-slot:activator="{on, attrs}">
                                     <v-text-field v-model="dateSince" v-bind="attrs" v-on="on" width="200px" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" outlined readonly rounded dense></v-text-field>
                                 </template>
-                                <v-date-picker v-model="dateSince" :min="dateSinceMin" @input="dateMenu = false"></v-date-picker>
+                                <v-date-picker v-model="dateSince" :min="dateSinceMin" :max="dateSinceMax" @input="dateMenu = false"></v-date-picker>
                             </v-menu>
                         </div>
                         <div class="flex-grow-0">
-                            <v-btn color="primary" class="ml-2" title="Get mileage from Strava activities" @click="getPastMileage" :disabled="pastLoading" rounded>Get expected mileage</v-btn>
+                            <v-btn color="primary" class="ml-2" title="Get mileage from Strava activities" @click="getPastMileage" :disabled="pastLoading || !dateSince" rounded>Get expected mileage</v-btn>
                         </div>
                     </div>
                 </v-card-text>
@@ -282,7 +282,9 @@ export default {
         }
 
         // Minimum allowed date since (when fetching past mileage).
+        const dateSince = this.$moment().subtract(3, "months")
         const dateSinceMin = this.$moment().subtract(1, "year")
+        const dateSinceMax = this.$moment()
 
         // Set the default components for bikes and shoes.
         return {
@@ -298,8 +300,9 @@ export default {
             compName: "",
             compCurrentMileage: 0,
             compAlertMileage: 0,
-            dateSince: null,
+            dateSince: dateSince.format("YYYY-MM-01"),
             dateSinceMin: dateSinceMin.format("YYYY-MM-DD"),
+            dateSinceMax: dateSinceMax.format("YYYY-MM-DD"),
             dateMenu: false,
             pastActivities: 0,
             pastMileage: 0,
