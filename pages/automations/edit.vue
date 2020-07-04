@@ -112,8 +112,14 @@
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>Cancel</v-btn>
-                            <v-btn color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>Delete</v-btn>
+                            <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel
+                            </v-btn>
+                            <v-btn color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>
+                                <v-icon left>mdi-check</v-icon>
+                                Delete
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
