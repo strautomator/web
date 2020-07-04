@@ -282,7 +282,6 @@ export default {
         }
 
         // Minimum allowed date since (when fetching past mileage).
-        const dateSince = this.$moment().subtract(3, "months")
         const dateSinceMin = this.$moment().subtract(1, "year")
         const dateSinceMax = this.$moment()
 
@@ -300,7 +299,7 @@ export default {
             compName: "",
             compCurrentMileage: 0,
             compAlertMileage: 0,
-            dateSince: dateSince.format("YYYY-MM-01"),
+            dateSince: null,
             dateSinceMin: dateSinceMin.format("YYYY-MM-DD"),
             dateSinceMax: dateSinceMax.format("YYYY-MM-DD"),
             dateMenu: false,
