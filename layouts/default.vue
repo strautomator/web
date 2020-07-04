@@ -10,7 +10,7 @@
 
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn to="/automations" router nuxt>Automations</v-btn>
-                <v-btn to="/gear" router nuxt>Gear <v-icon class="ml-1">mdi-new-box</v-icon></v-btn>
+                <v-btn to="/gear" router nuxt>Gear</v-btn>
                 <v-btn to="/account" router nuxt>Account</v-btn>
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
