@@ -12,6 +12,8 @@ const router = express.Router()
  */
 router.get("/:coordinates", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 

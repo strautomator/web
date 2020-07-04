@@ -17,6 +17,8 @@ const settings = require("setmeup").settings
  */
 router.get("/:userId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
@@ -36,6 +38,8 @@ router.get("/:userId", async (req, res) => {
  */
 router.get("/:userId/:gearId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const gearId = req.params.gearId
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
@@ -63,6 +67,8 @@ router.get("/:userId/:gearId", async (req, res) => {
  */
 router.post("/:userId/:gearId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const gearId = req.params.gearId
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
@@ -118,6 +124,8 @@ router.post("/:userId/:gearId", async (req, res) => {
  */
 router.delete("/:userId/:gearId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const gearId = req.params.gearId
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
@@ -125,6 +133,12 @@ router.delete("/:userId/:gearId", async (req, res) => {
 
         // Get GearWear config and check its owner.
         const config = await gearwear.getById(gearId)
+
+        // GearWear does not exist? Log error.
+        if (!config) {
+            logger.error("Routes", req.method, req.originalUrl, `GearWear ${gearId} does not exist`)
+            return webserver.renderJson(req, res, {deleted: false})
+        }
 
         // Stop here if owner of the specified gear is not the logged user.
         if (config.userId != user.id) {

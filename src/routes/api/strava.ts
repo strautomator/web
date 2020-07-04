@@ -96,6 +96,8 @@ router.get("/activities/recent", async (req, res) => {
  */
 router.get("/activities/since/:timestamp", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
@@ -148,6 +150,8 @@ router.get("/activities/processed", async (req, res) => {
  */
 router.get("/process-activity/:activityId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
@@ -171,6 +175,8 @@ router.get("/process-activity/:activityId", async (req, res) => {
  */
 router.get("/:urlToken", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const challenge = req.query["hub.challenge"] as string
         const verifyToken = req.query["hub.verify_token"] as string
 
@@ -206,7 +212,9 @@ router.get("/:urlToken", async (req, res) => {
  */
 router.post("/:urlToken", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
+
         const obj = req.body
 
         logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
@@ -235,7 +243,9 @@ router.post("/:urlToken", async (req, res) => {
  */
 router.get("/:urlToken/:userId/:activityId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
+
         const user = await users.getById(req.params.userId)
 
         // User not found? Stop here.

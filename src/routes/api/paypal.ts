@@ -59,6 +59,8 @@ router.get("/billingplans", async (req, res) => {
  */
 router.post("/subscribe/:billingPlanId", async (req, res) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
