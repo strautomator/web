@@ -6,15 +6,15 @@
             <p>Hi {{ user.profile.firstName }}!</p>
             <div v-if="!user.isPro">
                 <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the subscription of a few power users out there should help with running
-                    costs and my development time for features and bug fixes.
+                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
+                    and give me the motivation to keep adding new features.
                 </p>
                 <div class="mt-4 mb-6">
                     You can subscribe via PayPal or GitHub.
                 </div>
-                <v-card class="mb-8" outlined>
-                    <v-card-title class="accent primary--text">PRO subscription</v-card-title>
-                    <v-card-text>
+                <v-card class="mb-6" outlined>
+                    <v-card-title class="accent">PRO subscription</v-card-title>
+                    <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
                                 <template v-for="plan in billingPlans">
@@ -35,9 +35,6 @@
                         </v-row>
                     </v-card-text>
                 </v-card>
-                <p>
-                    How do the free and the PRO accounts compare?
-                </p>
                 <free-pro-table />
             </div>
             <div v-else>

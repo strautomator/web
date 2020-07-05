@@ -15,10 +15,12 @@
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile... </a>
                 </p>
             </div>
-            <h3 class="mt-5 mb-3">My preferences</h3>
-            <v-card>
+            <v-card class="mt-5" outlined>
+                <v-card-title class="accent">
+                    My preferences
+                </v-card-title>
                 <v-card-text>
-                    <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                    <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-1">
                             <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>

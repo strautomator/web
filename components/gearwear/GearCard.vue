@@ -26,7 +26,7 @@
                         <br v-if="!$breakpoint.mdAndUp" />
                         <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
                     </div>
-                    <div>Total mileage: ≈{{ gear.mileage }} {{ units }}</div>
+                    <div>Total mileage ≈ {{ gear.mileage }} {{ units }}</div>
                 </div>
             </div>
         </v-card-text>

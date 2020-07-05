@@ -12,6 +12,11 @@ a {
     text-align: left;
 }
 
+.width-divider {
+    margin: auto;
+    max-width: 910px !important;
+}
+
 .v-toolbar__title a {
     color: rgb(255, 255, 255);
 }
