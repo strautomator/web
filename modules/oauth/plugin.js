@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved, import/no-extraneous-dependencies, prefer-template */
 import middleware from "@@/.nuxt/middleware"
 
 const moduleName = "oauth"

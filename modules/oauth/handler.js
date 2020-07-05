@@ -1,6 +1,8 @@
 const core = require("strautomator-core")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
+const {atob, btoa} = require("Base64")
+const {parse} = require("qs")
 
 function Handler(opts) {
     this.init(opts)
@@ -56,6 +58,17 @@ Handler.prototype.checkRequestAuthorization = async function checkRequestAuthori
 }
 
 Handler.prototype.authenticateCallbackToken = async function authenticateCallbackToken() {
+    const defaultRedirect = "/dashboard"
+    let redirectUrl
+
+    try {
+        const {state} = parse(this.req.url.split("?")[1])
+        redirectUrl = atob(state)
+    } catch (ex) {
+        logger.error("OAuth.authenticateCallbackToken", "Can't parse redirect URL", ex)
+        redirectUrl = defaultRedirect
+    }
+
     try {
         const tokens = await core.strava.getToken(this.req.query.code)
 
@@ -72,7 +85,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         await core.users.upsert(athlete, tokens)
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
 
-        return this.redirect("/dashboard")
+        return this.redirect(redirectUrl)
     } catch (ex) {
         logger.error("OAuth.authenticateCallbackToken", ex)
         return this.redirectToOAuth()
@@ -156,8 +169,12 @@ Handler.prototype.updateToken = async function updateToken() {
     return token
 }
 
-Handler.prototype.redirectToOAuth = async function redirectToOAuth() {
-    return this.redirect(core.strava.authUrl)
+Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) {
+    if (redirectUrl) {
+        redirectUrl = btoa(redirectUrl)
+    }
+
+    return this.redirect(core.strava.getAuthUrl(redirectUrl))
 }
 
 Handler.prototype.logout = async function logout() {

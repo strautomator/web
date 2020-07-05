@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, users, weather, RecipeData, RecipeStats, UserData, UserPreferences} from "strautomator-core"
+import {paypal, recipes, users, weather, RecipeData, RecipeStats, UserData, UserPreferences, strava} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -23,6 +23,21 @@ router.get("/:userId", async (req, res) => {
         const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
+
+        // Refresh profile from Strava?
+        if (req.query && req.query.refresh) {
+            const profile = await strava.athletes.getAthlete(user.stravaTokens)
+
+            // Save updated profile on the database.
+            const data: Partial<UserData> = {
+                id: userId,
+                profile: profile
+            }
+            users.update(data)
+
+            // Update profile on current user.
+            user.profile = profile
+        }
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, user)
