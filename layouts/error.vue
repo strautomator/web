@@ -7,10 +7,20 @@
                     <h1 class="display-1">{{ errorDetails.title }}</h1>
                     <div class="headline">{{ errorDetails.message }}</div>
                 </div>
-                <div class="mt-8">
+                <div class="mt-8" v-if="showLogin">
                     <p>
-                        If you are just sneaking around, then I wish you happy exploring. Otherwise please contact me on
-                        <a href="mailto:info@strautomator.com" title="Send us your feedback!">info@strautomator.com</a> and I'll be glad to investigate and fix potential bugs.
+                        Please try connecting to Strava again.
+                    </p>
+                    <div class="mt-4">
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                    </div>
+                </div>
+                <div class="mt-8" v-else>
+                    <p>
+                        If you are just sneaking around then I wish you happy exploring.
+                        <br v-if="$breakpoint.mdAndUp" />
+                        Otherwise contact me on
+                        <a href="mailto:info@strautomator.com" title="Bug report via email">info@strautomator.com</a> and I'll be glad to investigate.
                     </p>
                 </div>
                 <v-alert color="error" border="top" v-if="stravaStatus" class="mb-4 " outlined>
@@ -23,8 +33,7 @@
                     <v-btn color="primary" title="Go back home..." @click="backHome" rounded small>Back home</v-btn>
                 </div>
                 <div class="copyright">
-                    <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
-                    <span>Strautomator</span>
+                    <span>Strautomator.com</span>
                 </div>
             </div>
         </div>
@@ -35,9 +44,8 @@
 export default {
     layout: "landing",
     head() {
-        return {
-            title: `Error ${this.error.statusCode}`
-        }
+        const status = this.error.status || this.error.statusCode
+        return {title: `Error ${status}`}
     },
     props: {
         error: {
@@ -52,22 +60,33 @@ export default {
     },
     computed: {
         errorDetails() {
-            if (this.error.statusCode == 401 || this.error.statusCode == 403) {
+            let status = this.error.status || this.error.statusCode
+            let message = this.error.description ? this.error.description : this.error.message
+
+            if (message && message.indexOf("{") == 0 && message.indexOf("}") > 0) {
+                message = null
+            }
+
+            if (status == 401 || status == 403) {
                 return {
                     title: this.error.title || "Access denied",
-                    message: this.error.message || "We're not entirely sure if you should be here..."
+                    message: message || "We're not entirely sure if you should be here..."
                 }
-            } else if (this.error.statusCode == 404) {
+            } else if (status == 404) {
                 return {
                     title: this.error.title || "Lost GPS signal",
-                    message: this.error.message || "This is the infamous error 404. We can't find this route..."
+                    message: message || "This is the infamous error 404. We can't find this route..."
                 }
             } else {
                 return {
                     title: this.error.title || "Crashed while sprinting",
-                    message: this.error.message || "Something went very, very wrong..."
+                    message: message || "Something went very, very wrong..."
                 }
             }
+        },
+        showLogin() {
+            const status = this.error.status || this.error.statusCode
+            return status == 401 || status == 403
         }
     },
     mounted() {
