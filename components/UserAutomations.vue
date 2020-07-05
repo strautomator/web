@@ -80,17 +80,6 @@ export default {
     },
     async fetch() {
         try {
-            const timestamp = new Date().valueOf()
-            this.$axios.setToken(this.$store.state.oauth.accessToken)
-
-            // Fetch new user data once every 60 seconds...
-            if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < timestamp - 60000) {
-                const user = await this.$axios.$get(`/api/users/${this.user.id}`)
-                this.$store.commit("setLastUserFetch", new Date().valueOf())
-                this.$store.commit("setUser", user)
-            }
-
-            // Get recipe stats.
             const recipeStats = {}
             const arrStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats`)
             for (let stats of arrStats) {
