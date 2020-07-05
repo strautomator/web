@@ -1,7 +1,6 @@
 const core = require("strautomator-core")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
-const {parse} = require("qs")
 
 function Handler(opts) {
     this.init(opts)
@@ -127,6 +126,7 @@ Handler.prototype.saveData = async function saveData(token) {
 
 Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
+
     let {token} = this.req[this.opts.sessionName]
     if (!token) return false
 
@@ -167,9 +167,7 @@ Handler.prototype.logout = async function logout() {
     this.req[this.opts.sessionName].setDuration(0)
 
     if (this.res.headersSent) return
-
-    const redirectUrl = "/home"
-    this.redirect(redirectUrl)
+    this.redirect("/home")
 }
 
 Handler.routes = {
@@ -192,7 +190,7 @@ Handler.prototype.extractToken = function extractToken() {
 
     if (!authorization) return null
 
-    // Take the second split, handles all token types
+    // Take the second split so it handles all token types.
     const [, token] = authorization.split(" ")
 
     return token

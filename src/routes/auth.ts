@@ -16,9 +16,6 @@ export class Auth {
         return this._instance || (this._instance = new this())
     }
 
-    /** Cached token info. */
-    tokens: []
-
     /**
      * Validate request according to the passed options. Returns false if not authorized,
      * otherwise the user object (if identified), or just true (if not user identified).

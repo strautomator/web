@@ -108,8 +108,20 @@ export const actions = {
         }
     },
     async assignUser({commit, state}) {
-        this.$axios.setToken(state.oauth.accessToken)
-        const user = await this.$axios.$get(`/api/users/${state.oauth.user.id}`)
-        commit("setUser", user)
+        try {
+            this.$axios.setToken(state.oauth.accessToken)
+            const user = await this.$axios.$get(`/api/users/${state.oauth.user.id}`)
+            commit("setUser", user)
+        } catch (ex) {
+            if (process.server) {
+                const logger = require("anyhow")
+                const userId = state.oauth ? state.oauth.user.id : "unknown"
+                logger.error("nuxtServerInit.assignUser", `User ${userId}`, ex)
+            } else {
+                console.error(ex)
+                const status = ex.response ? ex.response.status : 401
+                document.location.href = `/error?status=${encodeURIComponent(status)}&message=${encodeURIComponent(ex.ToString())}`
+            }
+        }
     }
 }
