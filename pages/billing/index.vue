@@ -138,12 +138,12 @@ export default {
         lastPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "friend") return "never"
-            return this.$moment(this.subscription.lastPayment.date).format("LL")
+            return this.$moment(this.subscription.lastPayment.date).format("ll")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "friend") return "maybe a beer?"
-            return this.$moment(this.subscription.dateNextPayment).format("LL")
+            return this.$moment(this.subscription.dateNextPayment).format("ll")
         }
     },
     async fetch() {

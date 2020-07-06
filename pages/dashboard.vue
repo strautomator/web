@@ -52,7 +52,7 @@
                                     <td class="pt-2 pb-2">
                                         <template v-if="!$breakpoint.mdAndUp">
                                             <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
-                                            <span class="float-right ml-2">{{ getDate(activity).format("L") }}</span>
+                                            <span class="float-right ml-2">{{ getDate(activity).format("ll") }}</span>
                                             <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
                                             <ul>
                                                 <li v-for="[id, recipe] in Object.entries(activity.recipes)" :key="`${activity.id}-m-${id}`">

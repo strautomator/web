@@ -30,7 +30,7 @@
                                     {{ activity.name }}
 
                                     <div class="caption">
-                                        {{ getDate(activity.dateStart).format("L") }}
+                                        {{ getDate(activity.dateStart).format("ll") }}
                                         {{ activity.distance }}
                                         {{ user.profile.units == "imperial" ? "mi" : "km" }}
                                     </div>
@@ -89,7 +89,7 @@
                             </div>
                             <div class="mt-4" v-else>
                                 <div class="font-weight-bold">Name: {{ processedActivity.name }}</div>
-                                <div>Date: {{ getDate(processedActivity.dateStart).format("LLL") }}</div>
+                                <div>Date: {{ getDate(processedActivity.dateStart).format("lll") }}</div>
                                 <div class="mt-4">
                                     Updated fields:
                                 </div>

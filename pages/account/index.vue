@@ -145,7 +145,7 @@ export default {
     },
     computed: {
         dateRegistered() {
-            return this.$moment(this.user.dateRegistered).format("LL")
+            return this.$moment(this.user.dateRegistered).format("ll")
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
