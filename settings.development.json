@@ -7,5 +7,10 @@
         // Please set the app URL on your settings.secret.json file or
         // via the $SMU_app_url environment variable.
         "url": "http://strautomator.local/"
+    },
+    "strava": {
+        // Enabling test mode will prevent activities from being written to Strava.
+        // They will be logged to the console instead.
+        "testMode": true
     }
 }
