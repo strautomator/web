@@ -5,6 +5,10 @@ export default {
         }
     },
     computed: {
+        distanceUnits() {
+            if (!this.user) return ""
+            return this.user.profile.units == "imperial" ? "mi" : "km"
+        },
         needsProRecipes() {
             if (!this.user) return false
             return !this.user.isPro && Object.keys(this.user.recipes).length >= this.$store.state.freePlanDetails.maxRecipes
