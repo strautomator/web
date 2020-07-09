@@ -11,7 +11,7 @@
                     Loading recent activities from Strava...
                 </div>
                 <v-simple-table class="mt-4" v-else>
-                    <thead v-if="$breakpoint.mdAndUp">
+                    <thead v-if="$breakpoint.mdAndUp && recentActivities.length > 0">
                         <tr>
                             <th></th>
                             <th>Activity</th>
@@ -21,6 +21,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr v-if="recentActivities.length == 0">
+                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-10">
+                                No recent activities found.
+                            </td>
+                        </tr>
                         <tr v-for="activity in recentActivities" :key="activity.id">
                             <td>
                                 <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
