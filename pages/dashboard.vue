@@ -94,14 +94,16 @@
 </template>
 
 <script>
+import _ from "lodash"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
     authenticated: true,
     components: {CreateFirst},
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
             title: "Dashboard"
@@ -109,8 +111,7 @@ export default {
     },
     data() {
         return {
-            activities: null,
-            stravaStatus: null
+            activities: null
         }
     },
     computed: {
@@ -120,7 +121,6 @@ export default {
     },
     async fetch() {
         try {
-            this.$axios.setToken(this.$store.state.oauth.accessToken)
             this.activities = await this.$axios.$get(`/api/strava/activities/processed`)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
@@ -130,26 +130,6 @@ export default {
         this.getStravaStatus()
     },
     methods: {
-        async getStravaStatus() {
-            try {
-                const res = await fetch("https://status.strava.com/api/v2/status.json")
-                const data = await res.json()
-                const issueKeywords = ["garmin", "uploads", "site degraded", "strava degraded", "site outage", "site slowness", "site instability"]
-
-                if (data.status && data.status.description) {
-                    const description = data.status.description.toLowerCase()
-
-                    for (let keyword of issueKeywords) {
-                        if (description.indexOf(keyword) >= 0) {
-                            this.stravaStatus = data.status.description
-                            return
-                        }
-                    }
-                }
-            } catch (ex) {
-                console.error("Could not get API status from Strava", ex)
-            }
-        },
         getDate(activity) {
             const aDate = this.$moment(activity.dateStart)
 

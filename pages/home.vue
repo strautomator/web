@@ -27,7 +27,7 @@
                                 <p>
                                     Like IFTTT, but for Strava. And fully open source!
                                 </p>
-                                <p><strong>NEW: GearWear!</strong> You can now register your shoes and bike components and setup mileage alerts for them. Never forget to swap a chain again!</p>
+                                <p><strong>NEW: GearWear!</strong> You can now register your shoes and bike components and setup distance alerts for them. Never forget to swap a chain again!</p>
                             </div>
                         </div>
 
@@ -91,6 +91,16 @@
                 </v-card>
             </div>
         </v-container>
+        <div id="cookie-panel" class="hidden">
+            <div class="wrapper columns">
+                <div class="column has-text-left-tablet">
+                    <span class="is-size-7"></span>
+                </div>
+                <div class="column is-one-fifth">
+                    <button id="but-cookie" class="button is-rounded is-pulled-right-mobile-only is-size-7">Accept cookies</button>
+                </div>
+            </div>
+        </div>
         <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
             This website is using cookies!
             <template v-slot:action="{attrs}">

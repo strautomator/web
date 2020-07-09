@@ -164,7 +164,6 @@ export default {
     async fetch() {
         try {
             this.loading = true
-            this.$axios.setToken(this.$store.state.oauth.accessToken)
             this.recentActivities = await this.$axios.$get(`/api/strava/activities/recent`)
             this.loading = false
         } catch (ex) {

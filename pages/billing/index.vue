@@ -148,7 +148,6 @@ export default {
     },
     async fetch() {
         try {
-            this.$axios.setToken(this.$store.state.oauth.accessToken)
             const billingPlans = await this.$axios.$get("/api/paypal/billingplans")
             this.billingPlans = Object.values(billingPlans)
         } catch (ex) {

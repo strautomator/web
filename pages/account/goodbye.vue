@@ -66,6 +66,7 @@ export default {
                 const logout = () => {
                     this.$logout()
                 }
+
                 setTimeout(logout, 20000)
             } catch (ex) {
                 this.$webError("AccountGoodbye.cancelAccount", ex)
