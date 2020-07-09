@@ -1,16 +1,13 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>
-                My Gear
-                <v-chip color="accent" class="ml-1 mt-n1">BETA</v-chip>
-            </h1>
-            <template v-if="!isLoading && !hasGearWear">
+            <h1>My Gear</h1>
+            <template v-if="!isLoading && gearWithConfig.length == 0">
                 <p>
-                    With GearWear you can set up automated alerts for your expendable parts when they reach a certain mileage. To start, please create specific GearWear to your desired bikes and/or shoes below.
+                    With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.
                 </p>
             </template>
-            <template v-if="!isLoading && bikes.length == 0 && shoes.length == 0">
+            <template v-if="!isLoading && noGear">
                 <v-alert class="text-center text-md-left">
                     You don't have bikes or shoes registered on your Strava account. Please register them there first, and then refresh this page.
                     <div class="mt-4">
@@ -25,7 +22,7 @@
             </template>
             <template v-else>
                 <v-alert class="text-center text-md-left " v-if="!user.email">
-                    <p>To get GearWear mileage alerts, Strautomator needs to know your email address first.</p>
+                    <p>To get GearWear distance alerts, Strautomator needs to know your email address first.</p>
                     <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
                     <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
                 </v-alert>
@@ -34,12 +31,36 @@
                     Loading bikes and shoes...
                 </div>
                 <template v-else>
-                    <div v-for="gear in bikes" :key="gear.id">
-                        <gear-card gear-type="bike" :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
+                    <div v-for="gear in gearWithConfig" :key="gear.id">
+                        <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
                     </div>
-                    <div v-for="gear in shoes" :key="gear.id">
-                        <gear-card gear-type="shoes" :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
-                    </div>
+                    <v-card class="mt-2" outlined>
+                        <v-card-title>
+                            <span>{{ gearWithConfig.length > 0 ? "Gear with no configuration" : "Your Strava gear" }}</span>
+                        </v-card-title>
+                        <v-card-text class="pa-0 white--text">
+                            <v-simple-table>
+                                <tbody>
+                                    <tr v-for="gear in gearWithoutConfig" :key="gear.id">
+                                        <td class="pl-0 pr-0">
+                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="needsPro" nuxt text rounded small>
+                                                <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                                                {{ gear.name }}
+                                            </v-btn>
+                                        </td>
+                                        <td>
+                                            <v-icon small>{{ getGearIcon(gear) }}</v-icon>
+                                            <span class="ml-1" v-if="$breakpoint.mdAndUp">{{ gear.brand }} {{ gear.model }}</span>
+                                        </td>
+                                        <td v-if="$breakpoint.mdAndUp">
+                                            <v-chip class="text-lowercase" v-if="gear.primary" outlined small>Main {{ getGearType(gear) }}</v-chip>
+                                        </td>
+                                        <td class="pl-0 text-right">{{ gear.distance }} {{ distanceUnits }}</td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
+                        </v-card-text>
+                    </v-card>
                 </template>
                 <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="needsPro" colored-border>
                     <p>
@@ -54,7 +75,7 @@
                     </v-btn>
                 </v-alert>
             </template>
-            <div class="mt-4" v-if="!needsPro && (bikes.length > 0 || shoes.length > 0)">
+            <div class="mt-5" v-if="!needsPro && !noGear">
                 <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava">
                     <v-btn color="primary" rounded>
                         <v-icon left>mdi-open-in-new</v-icon>
@@ -87,22 +108,20 @@
 <script>
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
+import gearwearMixin from "~/mixins/gearwearMixin.js"
 import GearCard from "~/components/gearwear/GearCard.vue"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 
 export default {
     authenticated: true,
     components: {GearCard, EmailDialog},
-    mixins: [userMixin],
+    mixins: [userMixin, gearwearMixin],
     head() {
         return {
             title: "Gear"
         }
     },
     data() {
-        const bikes = this.$store.state.user.profile.bikes
-        const shoes = this.$store.state.user.profile.shoes
-
         return {
             isLoading: true,
             emailDialog: false,
@@ -110,8 +129,8 @@ export default {
             alertNew: false,
             alertDeleted: false,
             alertGearTitle: "",
-            bikes: bikes || [],
-            shoes: shoes || [],
+            gearWithConfig: [],
+            gearWithoutConfig: [],
             gearwearConfigs: {}
         }
     },
@@ -120,18 +139,19 @@ export default {
             if (!this.user || !this.gearwearConfigs) return false
             return !this.user.isPro && Object.keys(this.gearwearConfigs).length >= this.$store.state.freePlanDetails.maxGearWear
         },
-        hasGearWear() {
-            return Object.keys(this.gearwearConfigs).length > 0
+        noGear() {
+            return this.gearWithConfig.length == 0 && this.gearWithoutConfig.length == 0
         }
     },
     async fetch() {
         try {
-            this.$axios.setToken(this.$store.state.oauth.accessToken)
-
             const gearwearConfigs = {}
 
+            // Force trigger a refresh of gear details?
+            const queryRefresh = this.$route.query && this.$route.query.refresh ? "?refresh=1" : ""
+
             // Get GearWear configurations, and populate the gearwearConfigs list.
-            const list = await this.$axios.$get(`/api/gearwear/${this.user.id}`)
+            const list = await this.$axios.$get(`/api/gearwear/${this.user.id}${queryRefresh}`)
             for (let config of list) {
                 gearwearConfigs[config.id] = config
             }
@@ -140,6 +160,14 @@ export default {
 
             // Update count on user store.
             this.$store.commit("setGearWearCount", list.length)
+
+            // Get list of bikes and shoes with and without GearWear configuration.
+            const bikes = this.$store.state.user.profile.bikes || []
+            const shoes = this.$store.state.user.profile.shoes || []
+            const gearWithConfig = _.concat(bikes, shoes)
+            const gearWithoutConfig = _.remove(gearWithConfig, (g) => !this.gearwearConfigs[g.id])
+            this.gearWithConfig = gearWithConfig
+            this.gearWithoutConfig = gearWithoutConfig
         } catch (ex) {
             this.$webError("Gear.fetch", ex)
         }
@@ -161,8 +189,11 @@ export default {
             this.emailSaved = emailSaved
         },
         getGearName(id) {
-            let gear = _.find(this.bikes, {id: id}) || _.find(this.shoes, {id: id})
-            return gear ? gear.name : "gear"
+            let gear = _.find(this.$store.state.user.profile.bikes, {id: id})
+            if (gear) return gear.name
+            gear = _.find(this.$store.state.user.profile.shoes, {id: id})
+            if (gear) return gear.name
+            return this.getGearType(id).toLowerCase()
         },
         closeAlert() {
             this.alertNew = false

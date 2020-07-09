@@ -1,9 +1,15 @@
 <template>
     <v-layout column>
         <v-container v-if="gear" fluid>
-            <h1>{{ gearType }}: {{ gear.name }}</h1>
-            <p class="mt-3">Total mileage on Strava: {{ gear.mileage }} {{ units }}</p>
-            <v-card outlined>
+            <h1>
+                <v-icon class="mr-1 mt-n1">{{ getGearIcon(gear) }}</v-icon>
+                {{ gear.name }}
+            </h1>
+            <div>
+                <span v-if="hasBrandModel">{{ gear.brand }} {{ gear.model }} -</span>
+                {{ gear.distance }} {{ distanceUnits }}
+            </div>
+            <v-card class="mt-2" outlined>
                 <v-card-title class="accent">
                     <span>Components</span>
                 </v-card-title>
@@ -13,39 +19,32 @@
                         Loading gear details...
                     </div>
                     <template v-else>
-                        <v-simple-table v-if="gearwearConfig">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Component</th>
-                                    <th>Mileage</th>
-                                    <th class="text-center">Reset</th>
-                                    <th v-if="$breakpoint.mdAndUp">Last reset</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
+                        <v-simple-table v-if="gearwearConfig.components.length > 0">
                             <tbody>
                                 <tr v-for="comp of gearwearConfig.components">
-                                    <td width="1" class="pr-0">
+                                    <td width="1" class="pl-3 pr-0">
                                         <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
                                     </td>
-                                    <td width="1" class="pl-2">
+                                    <td width="1" class="pl-1 pr-1 pr-md-3">
                                         <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
                                             {{ comp.name }}
                                         </a>
                                     </td>
-                                    <td>
-                                        {{ comp.currentMileage }} {{ units }}
-                                        <span class="float-right">{{ comp.alertMileage }}</span>
-                                        <v-progress-linear class="mt-2" color="secondary" :background-color="getProgressBg(comp)" :value="getProgressValue(comp)" rounded></v-progress-linear>
+                                    <td class="pb-3 pt-3">
+                                        <div>
+                                            {{ comp.currentDistance }} {{ distanceUnits }}
+                                            <span class="float-right" v-if="comp.alertDistance">{{ comp.alertDistance }}</span>
+                                            <v-progress-linear class="mt-2" color="secondary" v-if="comp.alertDistance" :background-color="getProgressBg(comp, 'distance')" :value="getProgressValue(comp, 'distance')" rounded></v-progress-linear>
+                                        </div>
+                                        <div class="mt-2">
+                                            <v-progress-linear class="mb-2" color="secondary" v-if="comp.alertTime" :background-color="getProgressBg(comp, 'time')" :value="getProgressValue(comp, 'time')" rounded></v-progress-linear>
+                                            {{ getHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
+                                            <span class="float-right" v-if="comp.alertTime">{{ getHours(comp.alertTime) }}</span>
+                                        </div>
                                     </td>
-                                    <td width="1" class="text-center">
-                                        <v-icon color="primary" :title="'Reset ' + gear.name + ' mileage'" @click="showResetDialog(comp)" :disabled="comp.currentMileage < 1">mdi-refresh</v-icon>
-                                    </td>
-                                    <td width="17%" v-if="$breakpoint.mdAndUp">
-                                        {{ comp.lastResetDate ? comp.lastResetDate : "never" }}
-                                    </td>
-                                    <td width="1" class="text-right pr-0 pl-1">
-                                        <v-icon color="removal" class="mr-3" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
+                                    <td class="text-center pr-3" :width="$breakpoint.mdAndUp ? '10%' : '1'">
+                                        <v-icon color="primary" :title="'Reset ' + gear.name + ' usage'" @click="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew">mdi-refresh</v-icon>
+                                        <v-icon color="removal" class="mt-4 mt-md-0 ml-md-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
                                     </td>
                                 </tr>
                             </tbody>
@@ -55,14 +54,14 @@
                                 You haven't registered components for this gear yet. If you want you can kickstart with the defaults:
                             </p>
                             <ul class="pl-4 mb-4">
-                                <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertMileage }} {{ units }}</li>
+                                <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
                             </ul>
                             <v-btn color="primary" title="Start with the default components" @click="createDefaults" rounded>
                                 <v-icon left>mdi-text-box-check</v-icon>
                                 Use defaults
                             </v-btn>
                         </div>
-                        <v-btn class="mt-3 ml-1" color="primary" title="Add a new component" @click.stop="showComponentDialog(false)" rounded text small>
+                        <v-btn class="mt-4 ml-1" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new component
                         </v-btn>
@@ -70,26 +69,7 @@
                 </v-card-text>
             </v-card>
 
-            <v-card class="mt-4" v-if="isNew && gearwearConfig && gearwearConfig.components.length > 0" outlined>
-                <v-card-text class="pb-md-0">
-                    <p>
-                        If you don't know the current mileage of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 1 year ago.
-                    </p>
-                    <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
-                        <div class="flex-grow-0">
-                            <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
-                                <template v-slot:activator="{on, attrs}">
-                                    <v-text-field v-model="dateSince" v-bind="attrs" v-on="on" width="200px" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" outlined readonly rounded dense></v-text-field>
-                                </template>
-                                <v-date-picker v-model="dateSince" :min="dateSinceMin" :max="dateSinceMax" @input="dateMenu = false"></v-date-picker>
-                            </v-menu>
-                        </div>
-                        <div class="flex-grow-0">
-                            <v-btn color="primary" class="ml-2" title="Get mileage from Strava activities" @click="getPastMileage" :disabled="pastLoading || !dateSince" rounded>Get expected mileage</v-btn>
-                        </div>
-                    </div>
-                </v-card-text>
-            </v-card>
+            <past-usage-panel :gearwear-config="gearwearConfig" v-if="isNew && gearwearConfig.components.length > 0" />
 
             <div class="text-center text-md-left mt-5">
                 <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
@@ -97,59 +77,20 @@
                     Save configuration
                 </v-btn>
                 <div class="pa-3" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="removal" v-if="gearwearConfig && !isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
+                <v-btn color="removal" v-if="!isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
                 </v-btn>
             </div>
 
             <v-dialog v-model="componentDialog" max-width="540" overlay-opacity="0.94">
-                <v-card>
-                    <v-toolbar color="primary">
-                        <v-toolbar-title>{{ gearwearComponent ? "Edit" : "New" }} component</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-toolbar-items>
-                            <v-btn icon @click.stop="hideComponentDialog">
-                                <v-icon>mdi-close</v-icon>
-                            </v-btn>
-                        </v-toolbar-items>
-                    </v-toolbar>
-                    <v-card-text>
-                        <v-form v-model="compValid" ref="componentForm">
-                            <v-container class="ma-0 pa-0 pt-5" fluid>
-                                <v-row no-gutters>
-                                    <v-col cols="12">
-                                        <v-text-field v-model="compName" label="Component name" placeholder="Ex: chain, cassette, tires..." maxlength="20" :rules="inputRules" validate-on-blur outlined rounded></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col cols="6">
-                                        <v-text-field v-model="compCurrentMileage" type="number" class="mr-1" label="Current mileage" min="0" :suffix="units" outlined rounded></v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
-                                        <v-text-field v-model="compAlertMileage" type="number" class="ml-1" label="Alert mileage" min="50" :suffix="units" outlined rounded></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col cols="12">
-                                        <div class="mt-2 text-center">
-                                            <v-btn color="primary" @click="saveComponent" title="Save component details" rounded>
-                                                <v-icon left>mdi-check</v-icon>
-                                                Save component
-                                            </v-btn>
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-form>
-                    </v-card-text>
-                </v-card>
+                <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
             </v-dialog>
 
             <v-dialog v-model="resetDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
                     <v-toolbar color="primary">
-                        <v-toolbar-title>Reset mileage: {{ compName }}</v-toolbar-title>
+                        <v-toolbar-title>Reset: {{ gearwearComponent.name }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideResetDialog">
@@ -158,15 +99,15 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-4">Confirm the mileage reset for "{{ compName }}" back to 0 {{ units }}?</p>
-                        <p>You should do this once you have replaced the component.</p>
+                        <p class="mt-4">Confirm reset of "{{ gearwearComponent.name }}" back to 0?</p>
+                        <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Keep current mileage" @click.stop="hideResetDialog" text rounded>
+                            <v-btn class="mr-1" color="grey" title="Keep current tracking" @click.stop="hideResetDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="primary" title="Confirm and reset mileage" @click="resetMileage" rounded>
+                            <v-btn color="primary" title="Confirm and reset tracking" @click="resetTracking" rounded>
                                 <v-icon left>mdi-refresh</v-icon>
                                 Reset
                             </v-btn>
@@ -178,7 +119,7 @@
             <v-dialog v-model="deleteComponentDialog" max-width="440" overlay-opacity="0.94">
                 <v-card>
                     <v-toolbar color="removal">
-                        <v-toolbar-title>Delete component: {{ compName }}</v-toolbar-title>
+                        <v-toolbar-title>Delete: {{ gearwearComponent.name }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideDeleteComponentDialog">
@@ -187,7 +128,8 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-4">Are you sure you want to delete the component {{ compName }}?</p>
+                        <h3 class="mt-4">{{ gearwearComponent.name }} with {{ gearwearComponent.currentDistance }} {{ distanceUnits }}</h3>
+                        <p class="mt-2">Sure you want to delete this component?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
@@ -217,7 +159,7 @@
                     <v-card-text>
                         <h3 class="mt-4">{{ gear.name }}</h3>
                         <p class="mt-2">
-                            Are you sure you want to delete this GearWear configuration?
+                            Sure you want to delete this GearWear configuration?
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
@@ -234,25 +176,20 @@
                 </v-card>
             </v-dialog>
         </v-container>
-
-        <v-snackbar v-model="pastMileageAlert" class="text-left" color="success" :timeout="5000" rounded bottom>
-            <span v-if="pastMileage > 0">Calculated {{ pastMileage }} {{ units }} for {{ pastActivities }} since {{ dateSince }}.</span>
-            <span v-else>No activities found since {{ dateSince }} for that gear.</span>
-
-            <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="pastMileageAlert = false">mdi-close-circle</v-icon>
-            </template>
-        </v-snackbar>
     </v-layout>
 </template>
 
 <script>
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
+import gearwearMixin from "~/mixins/gearwearMixin.js"
+import EditComponent from "~/components/gearwear/EditComponent.vue"
+import PastUsagePanel from "~/components/gearwear/PastUsagePanel.vue"
 
 export default {
     authenticated: true,
-    mixins: [userMixin],
+    components: {EditComponent, PastUsagePanel},
+    mixins: [userMixin, gearwearMixin],
     head() {
         return {
             title: "Gear Configuration"
@@ -263,71 +200,57 @@ export default {
         const user = this.$store.state.user
         const imperial = user.profile.units == "imperial"
         const gear = _.find(user.profile.bikes, {id: gearId}) || _.find(user.profile.shoes, {id: gearId})
-        let gearType
         let defaultComponents
 
         // Abort here if gear does not exist on the user.
         if (!gear) {
             this.$webError("GearEdit.data", {status: 404, message: `Invalid gear ID: ${gearId}`})
-        } else {
-            gearType = gear.id.substring(0, 1) == "b" ? "Bike" : "Shoes"
         }
 
         // Set defaults for bikes and shoes.
-        if (gearType == "Bike") {
+        if (this.getGearType(gear) == "Bike") {
             defaultComponents = [
                 {
                     name: "Chain",
-                    currentMileage: 0,
-                    alertMileage: imperial ? 2200 : 3500
+                    currentDistance: 0,
+                    currentTime: 0,
+                    alertDistance: imperial ? 2200 : 3500,
+                    alertTime: 0
                 },
                 {
                     name: "Cassette",
-                    currentMileage: 0,
-                    alertMileage: imperial ? 6600 : 10500
+                    currentDistance: 0,
+                    currentTime: 0,
+                    alertDistance: imperial ? 6600 : 10500,
+                    alertTime: 0
                 },
                 {
                     name: "Tires",
-                    currentMileage: 0,
-                    alertMileage: imperial ? 3000 : 5000
+                    currentDistance: 0,
+                    currentTime: 0,
+                    alertDistance: imperial ? 3000 : 5000,
+                    alertTime: 0
                 }
             ]
         } else {
             defaultComponents = [
                 {
                     name: "Shoes",
-                    currentMileage: 0,
-                    alertMileage: imperial ? 500 : 800
+                    currentDistance: 0,
+                    currentTime: 0,
+                    alertDistance: imperial ? 500 : 800,
+                    alertTime: 0
                 }
             ]
         }
 
-        // Minimum allowed date since (when fetching past mileage).
-        const dateSinceMin = this.$moment().subtract(1, "year")
-        const dateSinceMax = this.$moment()
-
-        // Set the default components for bikes and shoes.
         return {
             defaultComponents: defaultComponents,
             isLoading: true,
             imperial: imperial,
-            units: imperial ? "mi" : "km",
             gear: gear,
-            gearType: gearType,
             gearwearConfig: null,
-            gearwearComponent: null,
-            compValid: false,
-            compName: "",
-            compCurrentMileage: 0,
-            compAlertMileage: 0,
-            dateSince: null,
-            dateSinceMin: dateSinceMin.format("YYYY-MM-DD"),
-            dateSinceMax: dateSinceMax.format("YYYY-MM-DD"),
-            dateMenu: false,
-            pastActivities: 0,
-            pastMileage: 0,
-            pastMileageAlert: false,
-            pastLoading: false,
+            gearwearComponent: {},
             isNew: false,
             hasChanges: false,
             componentDialog: false,
@@ -340,22 +263,12 @@ export default {
         configValid() {
             return this.gearwearConfig && this.gearwearConfig.components.length > 0
         },
-        inputRules() {
-            const rules = {
-                required: (value) => !!value || "Field is required",
-                name: (value) => {
-                    if (!this.gearwearConfig) return true
-                    if (value && !_.find(this.gearwearConfig.components, {name: value.trim()})) return true
-                    if (this.gearwearComponent && this.gearwearComponent.name == value) return true
-                    return `${value} is a duplicate of another component`
-                }
-            }
-
-            return [rules.required, rules.name]
-        },
         overMaxGearWear() {
             if (!this.user) return false
             return !this.user.isPro && !this.gearwearConfig && this.$store.state.gearwearCount >= this.$store.state.freePlanDetails.maxGearWearCount
+        },
+        hasBrandModel() {
+            return this.gear.brand || this.gear.model
         }
     },
     async fetch() {
@@ -365,14 +278,14 @@ export default {
             }
 
             const config = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
-            this.gearwearConfig = config
+            this.gearwearConfig = config || {components: []}
             this.isNew = !config
 
             // Add friendly last reset date to components.
-            if (config && config.components) {
+            if (this.gearwearConfig.components.length > 0) {
                 for (let comp of config.components) {
                     if (comp.history && comp.history.length > 0) {
-                        comp.lastResetDate = this.$moment(comp.history[comp.history.length - 1].date).format("ll")
+                        comp.lastResetDate = this.$moment(comp.history[comp.history.length - 1].date).format("YYYY-MM-DD")
                     }
                 }
             }
@@ -429,127 +342,78 @@ export default {
 
             this.hasChanges = true
         },
-        async getPastMileage() {
-            try {
-                this.pastLoading = true
-                const timestamp = this.$moment(this.dateSince).unix()
-                const activities = await this.$axios.$get(`/api/strava/activities/since/${timestamp}?gear=${this.gear.id}`)
-                let mileage = 0
-
-                for (let a of activities) {
-                    if (a.distance && a.distance > 0) {
-                        mileage += a.distance
-                    }
-                }
-
-                mileage = Math.round(mileage)
-
-                if (mileage > 0) {
-                    for (let comp of this.gearwearConfig.components) {
-                        comp.currentMileage = mileage
-                    }
-                }
-
-                this.pastActivities = activities.length
-                this.pastMileage = mileage
-                this.pastMileageAlert = true
-            } catch (ex) {
-                this.$webError("GearEdit.getPastMileage", ex)
-            }
-
-            this.pastLoading = false
-        },
-        // PROGRESS BARS
+        // HELPERS
         // --------------------------------------------------------------------------
-        getProgressValue(component) {
-            const percent = (component.currentMileage / component.alertMileage) * 100
+        getProgressValue(component, alertType) {
+            const current = alertType == "distance" ? component.currentDistance : component.currentTime
+            const alert = alertType == "distance" ? component.alertDistance : component.alertTime
+            const percent = (current / alert) * 100
             if (percent > 100) return 200 - percent
             return percent
         },
-        getProgressBg(component) {
-            if (component.currentMileage / component.alertMileage >= 1) return "error"
+        getProgressBg(component, alertType) {
+            const current = alertType == "distance" ? component.currentDistance : component.currentTime
+            const alert = alertType == "distance" ? component.alertDistance : component.alertTime
+            if (current / alert >= 1) return "error"
             return "accent"
+        },
+        canReset(component) {
+            return component.currentDistance > 0 || component.currentTime > 0
         },
         // EDIT COMPONENTS
         // --------------------------------------------------------------------------
         showComponentDialog(component) {
-            if (component) {
-                this.gearwearComponent = _.find(this.gearwearConfig.components, {name: component.name})
-                this.compName = this.gearwearComponent.name
-                this.compCurrentMileage = this.gearwearComponent.currentMileage
-                this.compAlertMileage = this.gearwearComponent.alertMileage
-            } else {
-                this.gearwearComponent = null
-                this.compName = ""
-                this.compCurrentMileage = 0
-                this.compAlertMileage = 500
-            }
-
+            this.gearwearComponent = component
             this.componentDialog = true
         },
-        hideComponentDialog() {
-            this.componentDialog = false
-        },
-        saveComponent() {
-            if (this.$refs.componentForm.validate()) {
-                if (!this.gearwearConfig) {
-                    this.gearwearConfig = {id: this.gear.id, components: []}
+        closedComponentDialog(component, changed) {
+            if (component) {
+                if (!this.gearwearConfig.id) {
+                    this.gearwearConfig.id = this.gear.id
                 }
 
-                this.compCurrentMileage = parseInt(this.compCurrentMileage)
-                this.compAlertMileage = parseInt(this.compAlertMileage)
-
-                // Editing or creating a new component?
-                if (this.gearwearComponent) {
-                    this.gearwearComponent.name = this.compName
-                    this.gearwearComponent.currentMileage = this.compCurrentMileage
-                    this.gearwearComponent.alertMileage = this.compAlertMileage
+                if (this.gearwearComponent.name) {
+                    _.assign(this.gearwearComponent, component)
                 } else {
-                    const newComp = {
-                        name: this.compName,
-                        currentMileage: this.compCurrentMileage,
-                        alertMileage: this.compAlertMileage
-                    }
-
-                    this.gearwearConfig.components.push(newComp)
+                    this.gearwearConfig.components.push(component)
                 }
 
-                this.gearwearConfig.components = this.gearwearConfig.components
-                this.componentDialog = false
-                this.hasChanges = true
-
-                // Mileage was set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
-                if (this.compCurrentMileage < 1 && this.gearwearComponent.lastResetDate != this.$moment().format("ll")) {
+                // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
+                const wasNotResetToday = component.lastResetDate != this.$moment().format("ll")
+                if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
                     this.resetDialog = true
                 }
+
+                this.hasChanges = true
             }
+
+            this.componentDialog = false
         },
-        // MILEAGE RESET
+        // TRACKING RESET
         // --------------------------------------------------------------------------
         showResetDialog(component) {
             this.gearwearComponent = component
-            this.compName = component.name
             this.resetDialog = true
         },
         hideResetDialog() {
             this.resetDialog = false
         },
-        async resetMileage() {
+        async resetTracking() {
             try {
-                await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {resetMileage: this.compName})
+                await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {resetTracking: this.gearwearComponent.name})
 
                 // Make sure there's a history array.
                 if (!this.gearwearComponent.history) {
                     this.gearwearComponent.history = []
                 }
 
-                const currentMileage = this.gearwearComponent.currentMileage
-                this.gearwearComponent.history.push({date: new Date(), mileage: currentMileage})
-                this.gearwearComponent.currentMileage = 0
+                const currentDistance = this.gearwearComponent.currentDistance
+                this.gearwearComponent.history.push({date: new Date(), distance: currentDistance})
+                this.gearwearComponent.currentDistance = 0
                 this.gearwearComponent.dateAlertSent = null
                 this.gearwearComponent.lastResetDate = this.$moment().format("ll")
             } catch (ex) {
-                this.$webError("GearEdit.resetMileage", ex)
+                this.$webError("GearEdit.resetTracking", ex)
             }
 
             this.resetDialog = false
@@ -558,8 +422,6 @@ export default {
         // --------------------------------------------------------------------------
         showDeleteComponentDialog(component) {
             this.gearwearComponent = component
-            this.compName = component.name
-            this.compCurrentMileage = component.currentMileage
             this.deleteComponentDialog = true
         },
         hideDeleteComponentDialog() {
