@@ -64,6 +64,12 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     try {
         const {state} = parse(this.req.url.split("?")[1])
         redirectUrl = atob(state)
+
+        // Make sure we never redirect back to home or error pages.
+        const redirectPath = redirectUrl.replace("/", "").substring(0, 5)
+        if (redirectPath == "home" || redirectPath == "error") {
+            redirectUrl = defaultRedirect
+        }
     } catch (ex) {
         logger.error("OAuth.authenticateCallbackToken", "Can't parse redirect URL", ex)
         redirectUrl = defaultRedirect
@@ -125,7 +131,7 @@ Handler.prototype.saveData = async function saveData(token) {
     if (!user) {
         return false
     } else {
-        logger.debug("OAuth.saveData", `User ${user.id} - ${user.displayName}`)
+        logger.debug("OAuth.saveData", `User ${user.id} ${user.displayName}`)
     }
 
     // No need to expose the tokens under the user object.
@@ -178,6 +184,12 @@ Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) 
 }
 
 Handler.prototype.logout = async function logout() {
+    const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
+
+    if (user) {
+        logger.warn("OAuth.logout", user.id)
+    }
+
     await this.createSession()
 
     this.req[this.opts.sessionName].reset()
