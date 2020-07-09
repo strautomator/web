@@ -28,6 +28,18 @@ router.get("/:userId", async (req, res) => {
         if (req.query && req.query.refresh) {
             const profile = await strava.athletes.getAthlete(user.stravaTokens)
 
+            // Merge bikes and shoes.
+            // Do not overwrite all gear details, as they won't have brand and model (coming from the athlete endpoint).
+            // Merge the bikes and shoes instead.
+            for (let bike of profile.bikes) {
+                const existingBike = _.find(user.profile.bikes, {id: bike.id})
+                if (existingBike) _.defaults(bike, existingBike)
+            }
+            for (let shoes of profile.shoes) {
+                const existingShoes = _.find(user.profile.shoes, {id: shoes.id})
+                if (existingShoes) _.defaults(shoes, existingShoes)
+            }
+
             // Save updated profile on the database.
             const data: Partial<UserData> = {
                 id: userId,

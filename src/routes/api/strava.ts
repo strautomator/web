@@ -259,7 +259,10 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
 
         // Set last activity date on user, and save.
         user.dateLastActivity = moment.utc().toDate()
-        await users.update(user)
+
+        // Update user.
+        const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
+        await users.update(newData)
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {

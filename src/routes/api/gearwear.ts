@@ -25,6 +25,12 @@ router.get("/:userId", async (req, res) => {
 
         const gearwearConfigs = await gearwear.getForUser(user)
 
+        // If a refresh query was passed, trigger an async call to
+        // refresh gear details from Strava.
+        if (req.query && req.query.refresh) {
+            gearwear.refreshGearDetails(user)
+        }
+
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, gearwearConfigs)
     } catch (ex) {
@@ -89,12 +95,12 @@ router.post("/:userId/:gearId", async (req, res) => {
 
         // Make sure gear exists on the user profile.
         if (!bike && !shoe) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id}`, `Gear ${gearId} not found`)
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName}`, `Gear ${gearId} not found`)
             return webserver.renderError(req, res, "Gear not found", 404)
         }
 
-        // Is it a GearWear config upate, or a reset mileage request?
-        if (!req.body.resetMileage) {
+        // Is it a GearWear config upate, or a reset distance request?
+        if (!req.body.resetTracking) {
             const config = {
                 id: gearId,
                 userId: userId,
@@ -105,10 +111,10 @@ router.post("/:userId/:gearId", async (req, res) => {
             // Save GearWear configuration to the database.
             await gearwear.upsert(user, config)
         } else {
-            const compName = req.body.resetMileage
+            const compName = req.body.resetTracking
 
-            // Reset mileage for the specified component.
-            await gearwear.resetMileage(existingConfig[0], compName)
+            // Reset distance for the specified component.
+            await gearwear.resetTracking(existingConfig[0], compName)
         }
 
         logger.info("Routes", req.method, req.originalUrl)
