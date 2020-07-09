@@ -14,10 +14,10 @@
             <div class="mt-1 mb-3">
                 <template v-if="gearwearConfig">
                     <v-chip class="mr-3 ml-n1" :class="getChipClass(comp)" :color="getChipColor(comp)" v-for="comp in gearwearConfig.components" :key="gear.id + comp.name + 'sm'">
-                        <v-icon class="mr-1" v-if="comp.currentMileage >= comp.alertMileage" small>mdi-sync-alert</v-icon>
+                        <v-icon class="mr-1" v-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync-alert</v-icon>
                         {{ getChipText(comp) }}
                     </v-chip>
-                    <div class="mt-3">Total mileage: {{ gear.mileage }} {{ units }}</div>
+                    <div class="mt-3">Total distance: {{ gear.distance }} {{ units }}</div>
                     <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
                 </template>
                 <div v-else>
@@ -26,7 +26,7 @@
                         <br v-if="!$breakpoint.mdAndUp" />
                         <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
                     </div>
-                    <div>Total mileage ≈ {{ gear.mileage }} {{ units }}</div>
+                    <div>Total distance ≈ {{ gear.distance }} {{ units }}</div>
                 </div>
             </div>
         </v-card-text>
@@ -34,23 +34,21 @@
 </template>
 
 <script>
-import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
+import gearwearMixin from "~/mixins/gearwearMixin.js"
 
 export default {
-    mixins: [userMixin],
-    props: ["gear", "gear-type", "gearwear-config", "needs-pro"],
-    data() {
-        return {
-            units: this.user && this.user.profile.units == "imperial" ? "mi" : "km"
-        }
-    },
+    mixins: [userMixin, gearwearMixin],
+    props: ["gear", "gearwear-config", "needs-pro"],
     computed: {
+        units() {
+            return this.user && this.user.profile.units == "imperial" ? "mi" : "km"
+        },
         canEdit() {
             return !this.needsPro || this.gearwearConfig
         },
         gearIcon() {
-            if (this.gearType == "bike") return "mdi-bike"
+            if (this.gear.id.substring(0, 1) == "b") return "mdi-bike"
             else return "mdi-shoe-print"
         },
         lastResetDatails() {
@@ -79,15 +77,15 @@ export default {
     },
     methods: {
         getChipClass(comp) {
-            if (comp.currentMileage >= comp.alertMileage * 1.2) return "font-weight-bold"
+            if (comp.currentDistance >= comp.alertDistance * 1.2) return "font-weight-bold"
             return ""
         },
         getChipColor(comp) {
-            if (comp.currentMileage >= comp.alertMileage) return "error"
+            if (comp.currentDistance >= comp.alertDistance) return "error"
             return ""
         },
         getChipText(comp) {
-            if (this.$breakpoint.mdAndUp) return `${comp.name} - ${comp.currentMileage} ${this.units}`
+            if (this.$breakpoint.mdAndUp) return `${comp.name} - ${comp.currentDistance} ${this.units}`
             return comp.name
         }
     }
