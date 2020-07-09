@@ -12,16 +12,6 @@
             <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-4 ml-md-3">mdi-github</v-icon></a>
             <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-4 ml-md-3">mdi-twitter</v-icon></a>
         </div>
-        <div id="cookie-panel" class="hidden">
-            <div class="wrapper columns">
-                <div class="column has-text-left-tablet">
-                    <span class="is-size-7"></span>
-                </div>
-                <div class="column is-one-fifth">
-                    <button id="but-cookie" class="button is-rounded is-pulled-right-mobile-only is-size-7">Accept cookies</button>
-                </div>
-            </div>
-        </div>
         <v-footer class="justify-center" color="#292929" height="100">
             <div class="title font-weight-light grey--text text--lighten-1 text-center">
                 <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
