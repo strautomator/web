@@ -11,7 +11,7 @@
                     </v-card-title>
                 </n-link>
             </v-hover>
-            <v-card-text class="white--text">
+            <v-card-text class="white--text pb-1 pb-md-2">
                 <ul class="mt-0 pl-4 condition-list">
                     <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
                     <li v-for="condition in recipe.conditions">
@@ -23,8 +23,21 @@
                         {{ actionSummary(action) }}
                     </li>
                 </ul>
-                <div class="mt-3" v-if="recipeStats[recipe.id]">
+                <div class="mt-2 float-left" v-if="recipeStats[recipe.id]">
                     <v-chip class="mb-0 ml-1" disabled outlined small> Executed {{ recipeStats[recipe.id].activities.length }} time(s), last on {{ recipeStats[recipe.id].dateLastTrigger }} </v-chip>
+                </div>
+                <div class="text-right mr-n1">
+                    <template v-if="recipe.defaultFor">
+                        <v-chip class="text-lowercase" small outlined>default for {{ getSportName(recipe.defaultFor) }}</v-chip>
+                    </template>
+                    <template v-else>
+                        <v-btn color="secondary" title="Send this automation down (executes last)" class="mr-1" @click="setRecipeOrder(recipe, 1)" icon>
+                            <v-icon>mdi-arrow-down-circle</v-icon>
+                        </v-btn>
+                        <v-btn color="secondary" title="Send this automation up (executes first)" class="mr-n1" @click="setRecipeOrder(recipe, -1)" icon>
+                            <v-icon>mdi-arrow-up-circle</v-icon>
+                        </v-btn>
+                    </template>
                 </div>
             </v-card-text>
         </v-card>
@@ -69,13 +82,9 @@ export default {
     mixins: [userMixin, recipeMixin],
     data() {
         return {
-            recipeStats: {}
-        }
-    },
-    computed: {
-        recipes() {
-            const recipes = _.sortBy(Object.values(this.user.recipes), ["defaultFor"])
-            return recipes
+            hasChanges: false,
+            recipeStats: {},
+            recipes: []
         }
     },
     async fetch() {
@@ -84,13 +93,65 @@ export default {
             const arrStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats`)
             for (let stats of arrStats) {
                 const recipeId = stats.id.split("-")[1]
-                stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("lll")
+                stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("ll")
                 recipeStats[recipeId] = stats
             }
 
             this.recipeStats = recipeStats
         } catch (ex) {
             this.$webError("UserAutomations.fetch", ex)
+        }
+    },
+    mounted() {
+        this.delaySaveOrder = _.debounce(this.saveOrder, 5000)
+        this.reorderRecipes(_.cloneDeep(Object.values(this.user.recipes)))
+    },
+    beforeRouteLeave(to, from, next) {
+        this.saveOrder()
+        next()
+    },
+    methods: {
+        reorderRecipes(recipes) {
+            if (!recipes) recipes = this.recipes
+            this.recipes = _.sortBy(recipes, ["defaultFor", "order", "title"])
+        },
+        setRecipeOrder(recipe, offset) {
+            const index = _.indexOf(this.recipes, recipe)
+            const neighbour = this.recipes[index + offset]
+
+            // Make sure ordering will only change inside the bounds.
+            if (neighbour && !neighbour.defaultFor) {
+                if (offset < 0 && neighbour.order > 0) {
+                    this.recipes[index + offset].order++
+                    recipe.order--
+                } else if (offset > 0) {
+                    this.recipes[index + offset].order--
+                    recipe.order++
+                }
+            }
+
+            this.hasChanges = true
+            this.reorderRecipes()
+            this.delaySaveOrder()
+        },
+        async saveOrder() {
+            if (!this.hasChanges) return
+
+            try {
+                const data = {}
+
+                // Create object to update the order of recipes.
+                for (let recipe of this.recipes) {
+                    data[recipe.id] = recipe.order
+                    this.$store.commit("setUserRecipe", _.cloneDeep(recipe))
+                }
+
+                await this.$axios.$post(`/api/users/${this.user.id}/recipes/order`, data)
+            } catch (ex) {
+                this.$webError("UserAutomations.saveOrder", ex)
+            }
+
+            this.hasChanges = false
         }
     }
 }

@@ -204,7 +204,7 @@ export default {
                     const url = `/api/users/${user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
-                    this.$store.commit("addUserRecipe", recipeData)
+                    this.$store.commit("setUserRecipe", recipeData)
                     this.$router.push({path: `/automations?new=${recipeData.id}`})
                 }
             } catch (ex) {

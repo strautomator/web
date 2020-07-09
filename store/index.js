@@ -56,7 +56,7 @@ export const mutations = {
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
     },
-    addUserRecipe(state, recipe) {
+    setUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe
     },
     deleteUserRecipe(state, recipe) {

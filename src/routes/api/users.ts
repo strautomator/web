@@ -24,6 +24,15 @@ router.get("/:userId", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
+        // DEPRECATED! Recipes with no order must have a default set now.
+        let recipeCounter = 0
+        for (let recipe of Object.values(user.recipes)) {
+            if (!recipe.order) {
+                recipe.order = recipeCounter
+                recipeCounter++
+            }
+        }
+
         // Refresh profile from Strava?
         if (req.query && req.query.refresh) {
             const profile = await strava.athletes.getAthlete(user.stravaTokens)
@@ -305,6 +314,28 @@ router.post("/:userId/recipes", routeUserRecipe)
  * Delete the specified recipe from the user's automations.
  */
 router.delete("/:userId/recipes/:recipeId", routeUserRecipe)
+
+/**
+ * Update the ordering of recipes for a user.
+ */
+router.post("/:userId/recipes/order", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        const recipesOrder = req.body
+        await users.setRecipesOrder(user, recipesOrder)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
 
 /**
  * Get recipe stats for the user.
