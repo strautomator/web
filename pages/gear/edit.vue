@@ -61,7 +61,7 @@
                                 Use defaults
                             </v-btn>
                         </div>
-                        <v-btn class="mt-4 ml-1" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded text small>
+                        <v-btn class="mt-4 ml-0" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new component
                         </v-btn>
