@@ -3,7 +3,10 @@ import Vue from "vue"
 Vue.prototype.$webError = async (method, ex) => {
     try {
         const responseData = ex.response ? ex.response.data : null
-        let status = ex.status || ex.statusCode || 500
+        let status = responseData ? responseData.status || responseData.statusCode : ex.status || ex.statusCode
+
+        // Status defaults to 500.
+        if (!status) status = 500
 
         // Get error message.
         let message = responseData ? responseData.message : ex.message
