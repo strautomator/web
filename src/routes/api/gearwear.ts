@@ -85,7 +85,7 @@ router.post("/:userId/:gearId", async (req, res) => {
         let existingConfig: GearWearConfig = _.remove(configs, {id: gearId})
 
         // Check if user has reached the limit of gearwear configs on free accounts.
-        if (!user.isPro && configs.length > max) {
+        if (!user.isPro && configs.length >= max) {
             logger.error("Routes", req.method, req.originalUrl, `User ${user.id} reached limit of ${max} GearWear on free accounts`)
             return webserver.renderError(req, res, `Reached the limit of GearWear on free accounts`, 400)
         }
