@@ -64,12 +64,17 @@ export class Auth {
             if (!user) {
                 const athlete = await strava.athletes.getAthlete({accessToken: token})
 
-                // User found on Strava? Update token saved on the database.
+                // User token is valid on Strava? Update previous token saved on the database.
                 if (athlete) {
                     user = await users.getById(athlete.id)
                     user.stravaTokens.accessToken = token
-                    await users.update(user)
-                    logger.info("Auth.requestValidator", req.originalUrl, `Updated Strava token for user ${user.id} - ${user.displayName}`)
+                    const newUserData = {
+                        id: user.id,
+                        stravaTokens: {previousAccessToken: token}
+                    }
+
+                    await users.update(newUserData)
+                    logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} - ${user.displayName}`)
                 }
             }
 
