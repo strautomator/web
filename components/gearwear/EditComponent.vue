@@ -12,7 +12,7 @@
         <v-card-text>
             <v-form v-model="valid" ref="componentForm">
                 <div class="d-flex flex-grow-1 mt-5">
-                    <v-text-field v-model="name" label="Component name" placeholder="Ex: chain, cassette, tires..." maxlength="20" :rules="inputRules" validate-on-blur outlined rounded></v-text-field>
+                    <v-text-field v-model="name" label="Component name" placeholder="Ex: chain, cassette, tires..." maxlength="20" :rules="nameRules" validate-on-blur outlined rounded></v-text-field>
                 </div>
                 <div class="d-flex">
                     <div class="flex-grow-1">
@@ -22,7 +22,7 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertDistance > 0 ? 'primary' : ''">mdi-sign-direction</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="100" :suffix="distanceUnits" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="100" :rules="alertRules" :suffix="distanceUnits" outlined rounded></v-text-field>
                     </div>
                 </div>
                 <div class="d-flex">
@@ -33,7 +33,7 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertHours > 0 ? 'primary' : ''">mdi-clock-outline</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="20" suffix="h" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="20" :rules="alertRules" suffix="h" outlined rounded></v-text-field>
                     </div>
                 </div>
                 <div class="text-center">
@@ -66,7 +66,7 @@ export default {
         }
     },
     computed: {
-        inputRules() {
+        nameRules() {
             const rules = {
                 required: (value) => !!value || "Field is required",
                 name: (value) => {
@@ -78,6 +78,16 @@ export default {
             }
 
             return [rules.required, rules.name]
+        },
+        alertRules() {
+            const rules = {
+                number: (value) => {
+                    if (value >= 0 || value == "") return true
+                    return "Minimum is 0"
+                }
+            }
+
+            return [rules.number]
         },
         hasAlert() {
             return this.alertHours > 0 || this.alertDistance > 0
