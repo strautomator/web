@@ -119,7 +119,7 @@ export default {
 
             // Make sure ordering will only change inside the bounds.
             if (neighbour && !neighbour.defaultFor) {
-                if (offset < 0 && neighbour.order > 0) {
+                if (offset < 0 && neighbour.order >= 0) {
                     this.recipes[index + offset].order++
                     recipe.order--
                 } else if (offset > 0) {
