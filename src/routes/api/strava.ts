@@ -255,9 +255,14 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
             return webserver.renderError(req, res, "User not found", 404)
         }
 
-        await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        // User has no recipes? Stop here.
+        if (!user.recipes) {
+            logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} has no recipes`)
+            return webserver.renderError(req, res, "User has no recipes", 400)
+        }
 
-        // Set last activity date on user, and save.
+        // Process and set last activity date.
+        await strava.activities.processActivity(user, parseInt(req.params.activityId))
         user.dateLastActivity = moment.utc().toDate()
 
         // Update user.
