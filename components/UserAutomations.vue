@@ -102,13 +102,11 @@ export default {
             this.$webError("UserAutomations.fetch", ex)
         }
     },
-    mounted() {
-        this.delaySaveOrder = _.debounce(this.saveOrder, 5000)
-        this.reorderRecipes(_.cloneDeep(Object.values(this.user.recipes)))
+    created() {
+        this.delaySaveOrder = _.debounce(this.saveOrder, 4000)
     },
-    beforeRouteLeave(to, from, next) {
-        this.saveOrder()
-        next()
+    mounted() {
+        this.reorderRecipes(_.cloneDeep(Object.values(this.user.recipes)))
     },
     methods: {
         reorderRecipes(recipes) {
@@ -136,6 +134,7 @@ export default {
         },
         async saveOrder() {
             if (!this.hasChanges) return
+            this.hasChanges = false
 
             try {
                 const data = {}
@@ -150,8 +149,6 @@ export default {
             } catch (ex) {
                 this.$webError("UserAutomations.saveOrder", ex)
             }
-
-            this.hasChanges = false
         }
     }
 }

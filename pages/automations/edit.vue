@@ -230,11 +230,11 @@ export default {
         setAction(value) {
             if (value) {
                 this.recipe.actions.push(value)
+                this.hasChanges = true
             }
 
             this.checkValid()
             this.actionDialog = false
-            this.hasChanges = true
         },
         setCondition(value) {
             if (value) {
@@ -243,11 +243,12 @@ export default {
                 } else {
                     this.recipe.conditions.push(value)
                 }
+
+                this.hasChanges = true
             }
 
             this.checkValid()
             this.conditionDialog = false
-            this.hasChanges = true
         },
         deleteAction(action) {
             _.remove(this.recipe.actions, action)

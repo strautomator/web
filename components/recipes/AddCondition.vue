@@ -186,7 +186,8 @@ export default {
         },
         cancel() {
             this.$emit("closed", false)
-            Object.assign(this.$data, this.initialData())
+            const reset = () => Object.assign(this.$data, this.initialData())
+            setTimeout(reset, 500)
         },
         save() {
             if (this.$refs.form.validate()) {
