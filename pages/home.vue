@@ -216,8 +216,8 @@ export default {
                 action: "add weather data to activity descriptions"
             },
             {
-                condition: "activity is a short run",
-                action: "link your blog on the activity description"
+                condition: "activity passes on a specific location",
+                action: "append a link on the activity description"
             },
             {
                 condition: "bike chain reaches 4000km",
@@ -226,6 +226,14 @@ export default {
             {
                 condition: "bike tires reaches 8500km",
                 action: "alert me to swap it via email"
+            },
+            {
+                condition: "bike cassette reaches 12000km",
+                action: "alert me to swap it via email"
+            },
+            {
+                condition: "temperature is over 30°C",
+                action: "append a weather icon to the activity name"
             }
         ]
 
