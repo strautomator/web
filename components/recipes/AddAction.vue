@@ -19,13 +19,13 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
-                            <div v-else-if="selectedAction.value == 'description'">
+                            <div v-else-if="selectedAction.value == 'description' || selectedAction.value == 'appendDescription'">
                                 <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
-                            <div class="action-activity-tags" v-if="selectedAction.value == 'name' || selectedAction.value == 'description'">
+                            <div class="action-activity-tags" v-if="actionIsText">
                                 <h3 class="mb-2">Activity tags</h3>
                                 <v-chip @click="addTag('distance')" small>Distance</v-chip>
                                 <v-chip @click="addTag('speedAvg')" small>Avg speed</v-chip>
@@ -90,6 +90,9 @@ export default {
                 return [this.recipeRules.required, this.recipeRules.url]
             }
             return [this.recipeRules.required]
+        },
+        actionIsText() {
+            return ["name", "appendName", "description", "appendDescription"].indexOf(this.selectedAction.value) >= 0
         }
     },
     watch: {
@@ -130,7 +133,22 @@ export default {
         },
         filterActions(arr) {
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
-            _.remove(recipeActions, (a) => arr.indexOf(a.value) >= 0)
+            arr = _.cloneDeep(arr)
+
+            // Make sure we disable name / description if appendName / appendDescription
+            // was already set, and vice versa.
+            if (arr.indexOf("name") >= 0) arr.push("appendName")
+            if (arr.indexOf("appendName") >= 0) arr.push("name")
+            if (arr.indexOf("description") >= 0) arr.push("appendDescription")
+            if (arr.indexOf("appendDescription") >= 0) arr.push("description")
+            arr = _.uniq(arr)
+
+            // Iterate actions already set for the current automation recipe.
+            for (let existingAction of arr) {
+                const item = _.find(recipeActions, {value: existingAction})
+                item.disabled = true
+                item.text += " (already defined)"
+            }
 
             // User has no gears? Force disable the "Set gear" action.
             if (this.gears && this.gears.length == 0) {
@@ -149,7 +167,8 @@ export default {
         },
         cancel() {
             this.$emit("closed", false)
-            Object.assign(this.$data, this.initialData())
+            const reset = () => Object.assign(this.$data, this.initialData())
+            setTimeout(reset, 500)
         },
         save() {
             if (this.$refs.form.validate()) {
