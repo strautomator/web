@@ -67,7 +67,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 
         // Make sure we never redirect back to home or error pages.
         const redirectPath = redirectUrl.replace("/", "").substring(0, 4)
-        if (redirectPath == "home" || redirectPath == "erro" || redirectUrl == "auth") {
+        if (redirectPath == "home" || redirectPath == "erro" || redirectPath == "auth") {
             redirectUrl = defaultRedirect
         }
     } catch (ex) {
