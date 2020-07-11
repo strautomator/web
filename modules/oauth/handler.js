@@ -43,8 +43,7 @@ Handler.prototype.createSession = function createSession() {
 Handler.prototype.checkRequestAuthorization = async function checkRequestAuthorization() {
     const existingToken = this.extractToken()
 
-    // When an existing token exists try to authenticate the session,
-    // and logout if failed.
+    // When an existing token exists try to authenticate the session, and logout if failed.
     try {
         if (existingToken) {
             await this.saveData({accessToken: existingToken})
@@ -105,8 +104,11 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
     }
 
     const {accessToken, refreshToken, expiresAt} = token
-    this.req[this.opts.sessionName].token = {accessToken, refreshToken, expiresAt}
     this.req.accessToken = accessToken
+    this.req[this.opts.sessionName].token = {accessToken}
+
+    if (refreshToken) this.req[this.opts.sessionName].token.refreshToken = refreshToken
+    if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
 
     const fetchUser = async () => {
         try {
@@ -118,26 +120,12 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
         }
     }
 
-    const now = new Date().getTime() / 1000
-    let user
-
-    if (now < expiresAt) {
-        user = this.req[this.opts.sessionName].user
-    }
-    if (!user) {
-        user = await fetchUser()
-    }
-
-    if (!user) {
-        return false
-    } else {
-        logger.debug("OAuth.saveData", `User ${user.id} ${user.displayName}`)
-    }
-
+    // Get user from session or fetch from the database.
+    const user = this.req[this.opts.sessionName].user || (await fetchUser())
     this.req[this.opts.sessionName].user = user
     this.req.user = user
 
-    return true
+    logger.debug("OAuth.saveData", `User ${user.id} ${user.displayName}`)
 }
 
 Handler.prototype.updateToken = async function updateToken() {
@@ -150,7 +138,11 @@ Handler.prototype.updateToken = async function updateToken() {
         const now = new Date()
         const epoch = Math.round(now.getTime() / 1000)
 
-        if (token.expiresAt * 0.9 < epoch) {
+        if (token.expiresAt <= epoch) {
+            const user = this.req[this.opts.sessionName].user
+            const userId = user ? user.id : "unknown"
+            logger.info("OAuth.updateToken", `Will refresh token for ${userId}`)
+
             const stravaTokens = await core.strava.refreshToken(token.refreshToken, token.accessToken)
 
             if (stravaTokens) {
