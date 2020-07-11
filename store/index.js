@@ -109,9 +109,11 @@ export const actions = {
     },
     async assignUser({commit, state}) {
         try {
-            this.$axios.setToken(state.oauth.accessToken)
-            const user = await this.$axios.$get(`/api/users/${state.oauth.user.id}`)
-            commit("setUser", user)
+            if (state.oauth.user) {
+                this.$axios.setToken(state.oauth.accessToken)
+                const user = await this.$axios.$get(`/api/users/${state.oauth.user.id}`)
+                commit("setUser", user)
+            }
         } catch (ex) {
             if (process.server) {
                 const logger = require("anyhow")
