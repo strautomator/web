@@ -13,6 +13,12 @@ const router = express.Router()
 const packageVersion = require("../../../package.json").version
 
 /**
+ * Cache of ignored user IDs, which do not exist in Strautomator any longer
+ * but might still be connected to Strava because of a failed deauth.
+ */
+const ignoredUserIds = []
+
+/**
  * Helper to validate incoming webhook events sent by Strava.
  */
 const webhookValidator = (req, res): boolean => {
@@ -228,9 +234,7 @@ router.post("/:urlToken", async (req, res) => {
             url: `/strava/${req.params.urlToken}/${obj.owner_id}/${obj.object_id}`,
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
-        axios(options).catch((err) => {
-            logger.error("Routes", req.method, req.originalUrl, "Callback failed", err.toString())
-        })
+        axios(options).catch((err) => logger.debug("Routes", req.method, req.originalUrl, "Callback failed", err.toString()))
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
@@ -247,27 +251,29 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
 
-        const user = await users.getById(req.params.userId)
+        const userId = req.params.userId
+        const user = await users.getById(userId)
 
         // User not found? Stop here.
         if (!user) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} not found`)
+            if (ignoredUserIds.indexOf(userId) < 0) {
+                logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} not found`)
+                ignoredUserIds.push(req.params.userId)
+            }
+
             return webserver.renderError(req, res, "User not found", 404)
         }
 
-        // User has no recipes? Stop here.
-        if (!user.recipes) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} has no recipes`)
-            return webserver.renderError(req, res, "User has no recipes", 400)
+        // Process and set last activity date if the activity was update by any automation recipe.
+        const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+
+        if (processed) {
+            user.dateLastActivity = moment.utc().toDate()
+
+            // Update user.
+            const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
+            await users.update(newData)
         }
-
-        // Process and set last activity date.
-        await strava.activities.processActivity(user, parseInt(req.params.activityId))
-        user.dateLastActivity = moment.utc().toDate()
-
-        // Update user.
-        const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
-        await users.update(newData)
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
