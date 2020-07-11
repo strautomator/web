@@ -66,8 +66,8 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         redirectUrl = atob(state)
 
         // Make sure we never redirect back to home or error pages.
-        const redirectPath = redirectUrl.replace("/", "").substring(0, 5)
-        if (redirectPath == "home" || redirectPath == "error") {
+        const redirectPath = redirectUrl.replace("/", "").substring(0, 4)
+        if (redirectPath == "home" || redirectPath == "erro" || redirectUrl == "auth") {
             redirectUrl = defaultRedirect
         }
     } catch (ex) {
@@ -83,11 +83,10 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         const {accessToken, refreshToken, expiresAt} = tokens
-        await this.saveData({accessToken, refreshToken, expiresAt})
-
         const athlete = await core.strava.athletes.getAthlete(tokens)
+        await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
 
-        // Check for existing user, and create a new one if necessary.
+        // Check for existing user and create a new one if necessary.
         await core.users.upsert(athlete, tokens)
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
 
@@ -98,7 +97,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     }
 }
 
-Handler.prototype.saveData = async function saveData(token) {
+Handler.prototype.saveData = async function saveData(token, athlete) {
     await this.createSession()
 
     if (!token) {
@@ -111,7 +110,7 @@ Handler.prototype.saveData = async function saveData(token) {
 
     const fetchUser = async () => {
         try {
-            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken})
+            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, athlete.id)
             return userFromToken
         } catch (ex) {
             logger.error("OAuth.fetchUser", ex)
@@ -128,14 +127,12 @@ Handler.prototype.saveData = async function saveData(token) {
     if (!user) {
         user = await fetchUser()
     }
+
     if (!user) {
         return false
     } else {
         logger.debug("OAuth.saveData", `User ${user.id} ${user.displayName}`)
     }
-
-    // No need to expose the tokens under the user object.
-    delete user.stravaTokens
 
     this.req[this.opts.sessionName].user = user
     this.req.user = user
