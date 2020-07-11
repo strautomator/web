@@ -49,7 +49,7 @@ Handler.prototype.checkRequestAuthorization = async function checkRequestAuthori
         if (existingToken) {
             await this.saveData({accessToken: existingToken})
         }
-    } catch (e) {
+    } catch (ex) {
         logger.warn("OAuth.checkRequestAuthorization", ex)
         return this.logout()
     }
