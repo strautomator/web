@@ -83,6 +83,11 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 
         const {accessToken, refreshToken, expiresAt} = tokens
         const athlete = await core.strava.athletes.getAthlete(tokens)
+
+        if (!athlete) {
+            throw new Error("Strava athlete not found")
+        }
+
         await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
 
         // Check for existing user and create a new one if necessary.
@@ -121,12 +126,19 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
         }
     }
 
+    const now = new Date().getTime() / 1000
+    let user
+
     // Get user from session or fetch from the database.
-    const user = this.req[this.opts.sessionName].user || (await fetchUser())
+    if (expiresAt && now < expiresAt) {
+        user = this.req[this.opts.sessionName].user
+    }
+    if (!user) {
+        user = await fetchUser()
+    }
+
     this.req[this.opts.sessionName].user = user
     this.req.user = user
-
-    logger.debug("OAuth.saveData", `User ${user.id} ${user.displayName}`)
 }
 
 Handler.prototype.updateToken = async function updateToken() {
@@ -140,9 +152,12 @@ Handler.prototype.updateToken = async function updateToken() {
         const epoch = Math.round(now.getTime() / 1000)
 
         if (token.expiresAt <= epoch) {
-            const user = this.req[this.opts.sessionName].user
-            const userId = user ? user.id : "unknown"
-            logger.info("OAuth.updateToken", `Will refresh token for ${userId}`)
+            const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
+            const userId = user ? user.id : null
+
+            if (userId) {
+                logger.info("OAuth.updateToken", `Will refresh token for ${userId}`)
+            }
 
             const stravaTokens = await core.strava.refreshToken(token.refreshToken, token.accessToken)
 
