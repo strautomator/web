@@ -34,7 +34,7 @@
                     <div v-for="gear in gearWithConfig" :key="gear.id">
                         <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
                     </div>
-                    <v-card class="mt-2" outlined>
+                    <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" outlined>
                         <v-card-title>
                             <span>{{ gearWithConfig.length > 0 ? "Gear with no configuration" : "Your Strava gear" }}</span>
                         </v-card-title>
