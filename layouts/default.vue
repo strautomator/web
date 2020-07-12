@@ -29,7 +29,6 @@
             </v-container>
 
             <div class="mt-3 text-center">
-                <v-divider class="mb-8 width-divider"></v-divider>
                 <div class="mb-6">
                     <img src="/images/strava-powered.svg" width="130" />
                 </div>

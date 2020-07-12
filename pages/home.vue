@@ -234,6 +234,10 @@ export default {
             {
                 condition: "temperature is over 30°C",
                 action: "append a weather icon to the activity name"
+            },
+            {
+                condition: "activity is a virtual ride",
+                action: "prepend the weather details to the activity name"
             }
         ]
 
@@ -244,7 +248,7 @@ export default {
 
         return {
             showCookieConsent: displayCookieConsent,
-            samples: _.sampleSize(allSamples, 5),
+            samples: _.sampleSize(allSamples, 7),
             screenshot: 0
         }
     },
