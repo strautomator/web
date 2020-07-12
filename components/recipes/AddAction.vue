@@ -19,7 +19,7 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
-                            <div v-else-if="selectedAction.value == 'description' || selectedAction.value == 'appendDescription'">
+                            <div v-else-if="actionIsDescription">
                                 <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
@@ -91,8 +91,11 @@ export default {
             }
             return [this.recipeRules.required]
         },
+        actionIsDescription() {
+            return this.selectedAction.value == "description" || this.selectedAction.value == "prependDescription" || this.selectedAction.value == "appendDescription"
+        },
         actionIsText() {
-            return ["name", "appendName", "description", "appendDescription"].indexOf(this.selectedAction.value) >= 0
+            return ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription"].indexOf(this.selectedAction.value) >= 0
         }
     },
     watch: {
@@ -135,19 +138,38 @@ export default {
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
             arr = _.cloneDeep(arr)
 
-            // Make sure we disable name / description if appendName / appendDescription
-            // was already set, and vice versa.
-            if (arr.indexOf("name") >= 0) arr.push("appendName")
-            if (arr.indexOf("appendName") >= 0) arr.push("name")
-            if (arr.indexOf("description") >= 0) arr.push("appendDescription")
-            if (arr.indexOf("appendDescription") >= 0) arr.push("description")
+            // Make sure we disable related actions that were already set.
+            if (arr.indexOf("name") >= 0) {
+                arr.push("prependName")
+                arr.push("appendName")
+            }
+            if (arr.indexOf("prependName") >= 0) {
+                arr.push("name")
+                arr.push("appendName")
+            }
+            if (arr.indexOf("appendName") >= 0) {
+                arr.push("name")
+                arr.push("prependName")
+            }
+            if (arr.indexOf("description") >= 0) {
+                arr.push("prependDescription")
+                arr.push("appendDescription")
+            }
+            if (arr.indexOf("prependDescription") >= 0) {
+                arr.push("description")
+                arr.push("appendDescription")
+            }
+            if (arr.indexOf("appendDescription") >= 0) {
+                arr.push("description")
+                arr.push("prependDescription")
+            }
+
             arr = _.uniq(arr)
 
             // Iterate actions already set for the current automation recipe.
             for (let existingAction of arr) {
                 const item = _.find(recipeActions, {value: existingAction})
                 item.disabled = true
-                item.text += " (already defined)"
             }
 
             // User has no gears? Force disable the "Set gear" action.
