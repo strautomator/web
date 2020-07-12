@@ -53,7 +53,7 @@
                                             <span class="ml-1" v-if="$breakpoint.mdAndUp">{{ gear.brand }} {{ gear.model }}</span>
                                         </td>
                                         <td v-if="$breakpoint.mdAndUp">
-                                            <v-chip class="text-lowercase" v-if="gear.primary" outlined small>Main {{ getGearType(gear) }}</v-chip>
+                                            <v-chip class="text-lowercase" v-if="gear.primary" outlined small>Primary {{ getGearType(gear) }}</v-chip>
                                         </td>
                                         <td class="pl-0 text-right">{{ gear.distance }} {{ distanceUnits }}</td>
                                     </tr>
