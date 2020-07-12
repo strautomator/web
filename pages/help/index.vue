@@ -77,7 +77,8 @@ export default {
     data() {
         const categories = [
             {tag: "about", title: "About"},
-            {tag: "features", title: "Features"},
+            {tag: "automations", title: "Automations"},
+            {tag: "gearwear", title: "GearWear"},
             {tag: "subscription", title: "Free vs. PRO"},
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
@@ -107,7 +108,7 @@ export default {
                 results.push({title: `Search results: ${query}`, questions: questions})
             } else {
                 for (let category of this.categories) {
-                    const questions = _.filter(this.faq, (q) => q.tags.indexOf(category.tag) >= 0)
+                    const questions = _.filter(this.faq, (q) => q.tags.indexOf(category.tag) == 0)
                     results.push({title: category.title, questions: questions})
                 }
             }

@@ -12,14 +12,22 @@
         </v-hover>
         <v-card-text class="pb-0 white--text">
             <div class="mt-1 mb-3">
-                <template v-if="gearwearConfig">
-                    <v-chip class="mr-3 ml-n1" :class="getChipClass(comp)" :color="getChipColor(comp)" v-for="comp in gearwearConfig.components" :key="gear.id + comp.name + 'sm'">
-                        <v-icon class="mr-1" v-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync-alert</v-icon>
-                        {{ getChipText(comp) }}
-                    </v-chip>
-                    <div class="mt-3">Total distance: {{ gear.distance }} {{ units }}</div>
-                    <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
-                </template>
+                <v-container class="ma-0 pa-0" v-if="gearwearConfig" fluid>
+                    <v-row no-gutters>
+                        <v-col cols="12" :sm="12" :md="5">
+                            <div class="font-weight-bold" v-if="gear.brand || gear.model">{{ gear.brand }} {{ gear.model }}</div>
+                            <div>Total distance: {{ gear.distance }} {{ units }}</div>
+                            <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
+                        </v-col>
+                        <v-col class="pt-2 pt-md-0" cols="12" :sm="12" :md="7">
+                            <v-chip class="mr-3 ml-n1" :class="getChipClass(comp)" :color="getChipColor(comp)" v-for="comp in gearwearConfig.components" :key="gear.id + comp.name + 'sm'">
+                                <v-icon class="mr-1" v-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync-alert</v-icon>
+                                {{ getChipText(comp) }}
+                            </v-chip>
+                        </v-col>
+                    </v-row>
+                </v-container>
+
                 <div v-else>
                     <div>
                         No GearWear configuration for this gear.
