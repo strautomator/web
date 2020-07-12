@@ -37,6 +37,7 @@
                     <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-4 ml-md-3">mdi-github</v-icon></a>
                     <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-4 ml-md-3">mdi-twitter</v-icon></a>
                 </div>
+
                 <div class="copyright">
                     <span>Strautomator.com</span>
                     <v-chip v-if="$store.state.user && $store.state.user.isPro" color="primary" class="caption mb-1 ml-1">PRO</v-chip>
@@ -66,7 +67,7 @@
             </v-btn>
         </v-bottom-navigation>
 
-        <v-dialog v-model="logoutDialog" max-width="440" overlay-opacity="0.94">
+        <v-dialog v-model="logoutDialog" max-width="440" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="accent">
                     <v-toolbar-title>Logout</v-toolbar-title>

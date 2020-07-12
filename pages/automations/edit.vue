@@ -44,7 +44,7 @@
                             Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
                         </v-btn>
                     </div>
-                    <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
                     </v-dialog>
                 </v-card-text>
@@ -72,7 +72,7 @@
                             Add new action
                         </v-btn>
                     </div>
-                    <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.94" :fullscreen="$breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-action :disabled-actions="disabledActions" @closed="setAction" />
                     </v-dialog>
                 </v-card-text>
@@ -94,7 +94,7 @@
                     existing automations.
                 </p>
             </v-alert>
-            <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.94">
+            <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete automation</v-toolbar-title>

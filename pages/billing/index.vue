@@ -78,7 +78,7 @@
                     </v-card-text>
                 </v-card>
 
-                <v-dialog v-model="unsubDialog" max-width="440" overlay-opacity="0.94">
+                <v-dialog v-model="unsubDialog" max-width="440" overlay-opacity="0.95">
                     <v-card>
                         <v-toolbar color="removal">
                             <v-toolbar-title>Cancel subscription</v-toolbar-title>

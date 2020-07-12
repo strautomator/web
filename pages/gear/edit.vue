@@ -83,11 +83,11 @@
                 </v-btn>
             </div>
 
-            <v-dialog v-model="componentDialog" max-width="540" overlay-opacity="0.94">
+            <v-dialog v-model="componentDialog" max-width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
             </v-dialog>
 
-            <v-dialog v-model="resetDialog" max-width="440" overlay-opacity="0.94">
+            <v-dialog v-model="resetDialog" max-width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="primary">
                         <v-toolbar-title>Reset: {{ gearwearComponent.name }}</v-toolbar-title>
@@ -116,7 +116,7 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog v-model="deleteComponentDialog" max-width="440" overlay-opacity="0.94">
+            <v-dialog v-model="deleteComponentDialog" max-width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete: {{ gearwearComponent.name }}</v-toolbar-title>
@@ -145,7 +145,7 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog v-model="deleteGearWearDialog" max-width="440" overlay-opacity="0.94">
+            <v-dialog v-model="deleteGearWearDialog" max-width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete GearWear configuration</v-toolbar-title>
