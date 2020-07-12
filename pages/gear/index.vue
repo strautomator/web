@@ -78,13 +78,18 @@
                     </v-btn>
                 </v-alert>
             </template>
-            <div class="mt-5" v-if="!needsPro && !noGear">
+            <div class="mt-5 text-center text-md-left" v-if="!needsPro && !noGear">
                 <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava">
                     <v-btn color="primary" rounded>
                         <v-icon left>mdi-open-in-new</v-icon>
                         Manage gear on Strava
                     </v-btn>
                 </a>
+            </div>
+            <div class="mt-5 caption text-center text-md-left" v-if="!noGear">
+                Please note that tracking happens with a {{ previousDays }} days delay, so you have enough time to set the correct gear on recent activities.
+                <br v-if="$breakpoint.mdAndUp" />
+                Today's activities will be counted on {{ trackingDay }}.
             </div>
         </v-container>
         <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
@@ -125,7 +130,11 @@ export default {
         }
     },
     data() {
+        const now = this.$moment()
+        const previousDays = 2
+
         return {
+            previousDays: previousDays,
             isLoading: true,
             emailDialog: false,
             emailSaved: false,
@@ -134,7 +143,8 @@ export default {
             alertGearTitle: "",
             gearWithConfig: [],
             gearWithoutConfig: [],
-            gearwearConfigs: {}
+            gearwearConfigs: {},
+            trackingDay: now.add(previousDays, "days").format("dddd Do")
         }
     },
     computed: {
