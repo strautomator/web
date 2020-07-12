@@ -21,6 +21,7 @@ Vue.prototype.$webError = async (method, ex) => {
             const logger = require("anyhow")
             logger.error("Vue", method, `Status ${status}`, `${title || "Error"} - ${message}`)
         } else {
+            this.$ga.exception(message)
             document.location.href = `/error?status=${encodeURIComponent(status)}&message=${encodeURIComponent(message)}&title=${encodeURIComponent(title)}`
         }
     } catch (ex2) {

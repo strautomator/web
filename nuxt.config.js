@@ -49,7 +49,10 @@ module.exports = {
 
     // Please change the GA ID to your own, or simply disable the module if not needed.
     googleAnalytics: {
-        id: "UA-9331973-6"
+        id: "UA-9331973-6",
+        autoTracking: {
+            exception: true
+        }
     },
 
     // Loading specs.
