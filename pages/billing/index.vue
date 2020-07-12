@@ -40,7 +40,7 @@
             <div v-else>
                 <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
 
-                <v-card>
+                <v-card outlined>
                     <v-card-text>
                         <template v-if="loading">
                             <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
@@ -90,7 +90,7 @@
                             </v-toolbar-items>
                         </v-toolbar>
                         <v-card-text>
-                            <p class="mt-2">
+                            <p class="mt-3">
                                 Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).
                             </p>
                             <div>
@@ -98,8 +98,14 @@
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mr-1" color="success" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>Back</v-btn>
-                                <v-btn color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>Cancel subscription</v-btn>
+                                <v-btn class="mr-1" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
+                                    <v-icon left>mdi-check</v-icon>
+                                    Keep
+                                </v-btn>
+                                <v-btn color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>
+                                    <v-icon left>mdi-cancel</v-icon>
+                                    Cancel subscription
+                                </v-btn>
                             </div>
                         </v-card-text>
                     </v-card>

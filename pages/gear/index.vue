@@ -1,7 +1,10 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>My Gear</h1>
+            <h1>
+                My Gear
+                <v-badge v-if="gearWithConfig.length > 0" color="accent" offset-x="-2" offset-y="1" :content="gearWithConfig.length"></v-badge>
+            </h1>
             <template v-if="!isLoading && gearWithConfig.length == 0">
                 <p>
                     With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.

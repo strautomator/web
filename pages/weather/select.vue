@@ -87,7 +87,7 @@
                         </v-card>
                     </div>
                 </v-radio-group>
-                <div class="mt-4">
+                <div class="mt-2">
                     <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
                         Use {{ weatherProvider }}

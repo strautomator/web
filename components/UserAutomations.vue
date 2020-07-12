@@ -31,10 +31,10 @@
                         <v-chip class="text-lowercase" small outlined>default for {{ getSportName(recipe.defaultFor) }}</v-chip>
                     </template>
                     <template v-else>
-                        <v-btn color="secondary" title="Send this automation down (executes last)" class="mr-1" @click="setRecipeOrder(recipe, 1)" icon>
+                        <v-btn color="grey lighten-1" title="Send this automation down (executes last)" class="mr-1" @click="setRecipeOrder(recipe, 1)" icon>
                             <v-icon>mdi-arrow-down-circle</v-icon>
                         </v-btn>
-                        <v-btn color="secondary" title="Send this automation up (executes first)" class="mr-n1" @click="setRecipeOrder(recipe, -1)" icon>
+                        <v-btn color="grey lighten-1" title="Send this automation up (executes first)" class="mr-n1" @click="setRecipeOrder(recipe, -1)" icon>
                             <v-icon>mdi-arrow-up-circle</v-icon>
                         </v-btn>
                     </template>
