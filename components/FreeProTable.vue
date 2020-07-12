@@ -53,13 +53,10 @@
                 </v-simple-table>
             </v-card-text>
         </v-card>
-        <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user.isPro">
+        <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
             <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
             <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations.</li>
             <li>Free accounts will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
-        </ul>
-        <ul class="caption mt-2 mb-5 pl-4" v-else>
-            <li>Thanks for subscribing to PRO!</li>
         </ul>
     </div>
 </template>
