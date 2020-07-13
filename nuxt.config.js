@@ -24,9 +24,7 @@ module.exports = {
     // Additional axios config.
     axios: {
         baseURL: "https://strautomator.com/",
-        retry: {
-            retries: 1
-        }
+        retry: false
     },
 
     // Additional build config.
