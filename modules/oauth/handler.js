@@ -115,30 +115,27 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
     if (refreshToken) this.req[this.opts.sessionName].token.refreshToken = refreshToken
     if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
 
-    const fetchUser = async () => {
-        try {
-            const userId = athlete ? athlete.id : null
-            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
-            return userFromToken
-        } catch (ex) {
-            logger.error("OAuth.fetchUser", ex)
-            return null
-        }
-    }
-
     const now = new Date().getTime() / 1000
     let user
 
     // Get user from session or fetch from the database.
-    if (expiresAt && now < expiresAt) {
+    if (expiresAt && now < expiresAt - 300) {
         user = this.req[this.opts.sessionName].user
     }
     if (!user) {
-        user = await fetchUser()
+        try {
+            const userId = athlete ? athlete.id : null
+            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
+            user = userFromToken
+        } catch (ex) {
+            logger.error("OAuth.saveData", "Error fething user", ex)
+        }
     }
 
-    this.req[this.opts.sessionName].user = user
-    this.req.user = user
+    if (user) {
+        this.req[this.opts.sessionName].user = user
+        this.req.user = user
+    }
 }
 
 Handler.prototype.updateToken = async function updateToken() {
@@ -149,7 +146,7 @@ Handler.prototype.updateToken = async function updateToken() {
 
     try {
         const now = new Date()
-        const epoch = Math.round(now.getTime() / 1000)
+        const epoch = Math.round(now.getTime() / 1000) - 300
 
         if (token.expiresAt <= epoch) {
             const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
