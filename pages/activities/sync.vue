@@ -182,7 +182,11 @@ export default {
         },
         getDuration(seconds) {
             const duration = this.$moment.duration(seconds, "seconds")
-            return `${duration.hours()}:${duration.minutes()}`
+            let hours = duration.hours()
+            let minutes = duration.minutes()
+            if (hours < 10) hours = `0${hours}`
+            if (minutes < 10) minutes = `0${minutes}`
+            return `${hours}:${minutes}`
         },
         async syncActivity(id) {
             try {
