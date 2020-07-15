@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "20.291.12334",
+    "version": "20.293.12320",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -31,8 +31,8 @@
         "express-rate-limit": "^5.1.3",
         "nuxt": "^2.13.3",
         "qs": "^6.9.4",
-        "strautomator-core": "strautomator/core",
-        "typescript": "^3.9.6"
+        "typescript": "^3.9.6",
+        "strautomator-core": "strautomator/core"
     },
     "devDependencies": {
         "@nuxt/types": "^2.13.3",
