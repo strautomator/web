@@ -13,12 +13,6 @@ const router = express.Router()
 const packageVersion = require("../../../package.json").version
 
 /**
- * Cache of ignored user IDs, which do not exist in Strautomator any longer
- * but might still be connected to Strava because of a failed deauth.
- */
-const ignoredUserIds = []
-
-/**
  * Helper to validate incoming webhook events sent by Strava.
  */
 const webhookValidator = (req, res): boolean => {
@@ -256,11 +250,6 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
 
         // User not found? Stop here.
         if (!user) {
-            if (ignoredUserIds.indexOf(userId) < 0) {
-                logger.error("Routes", req.method, req.originalUrl, `User ${req.params.userId} not found`)
-                ignoredUserIds.push(req.params.userId)
-            }
-
             return webserver.renderError(req, res, "User not found", 404)
         }
 
