@@ -254,15 +254,12 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         }
 
         // Process and set last activity date if the activity was update by any automation recipe.
-        const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        await strava.activities.processActivity(user, parseInt(req.params.activityId))
 
-        if (processed) {
-            user.dateLastActivity = moment.utc().toDate()
-
-            // Update user.
-            const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
-            await users.update(newData)
-        }
+        // Update user.
+        user.dateLastActivity = moment.utc().toDate()
+        const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
+        await users.update(newData)
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
