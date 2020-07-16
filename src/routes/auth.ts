@@ -95,8 +95,9 @@ export class Auth {
             // All good!
             return user
         } catch (ex) {
-            logger.error("Auth.requestValidator", ex, `From ${req.ip}`)
+            logger.error("Auth.requestValidator", req.originalUrl, ex, `From ${req.ip}`)
             webserver.renderError(req, res, ex, 401)
+            return false
         }
     }
 }
