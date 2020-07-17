@@ -245,6 +245,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
 
+        const now = moment.utc().toDate()
         const userId = req.params.userId
         const user = await users.getById(userId)
 
@@ -253,13 +254,15 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
             return webserver.renderError(req, res, "User not found", 404)
         }
 
-        // Process and set last activity date if the activity was update by any automation recipe.
-        await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        user.dateLastActivity = now
+
+        // Process and set last processed activity date if the activity was update by any automation recipe.
+        const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        if (processed) user.dateLastProcessedActivity = now
 
         // Update user.
-        user.dateLastActivity = moment.utc().toDate()
-        const newData = {id: user.id, dateLastActivity: user.dateLastActivity}
-        await users.update(newData)
+        const updatedUser = {id: user.id, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
+        await users.update(updatedUser)
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
