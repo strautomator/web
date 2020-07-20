@@ -24,7 +24,7 @@
                     </li>
                 </ul>
                 <div class="mt-2 float-left" v-if="recipeStats[recipe.id]">
-                    <v-chip class="mb-0 ml-1" disabled outlined small> Executed {{ recipeStats[recipe.id].activities.length }} time(s), last on {{ recipeStats[recipe.id].dateLastTrigger }} </v-chip>
+                    <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                 </div>
                 <div class="text-right mr-n1">
                     <template v-if="recipe.defaultFor">
