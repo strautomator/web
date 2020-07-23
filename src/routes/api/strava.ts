@@ -136,7 +136,9 @@ router.get("/activities/processed", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const activities = await strava.activities.getProcessedActivites(user, 10)
+        // Limit number of activites returned?
+        let limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
+        const activities = await strava.activities.getProcessedActivites(user, limit)
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
