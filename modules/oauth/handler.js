@@ -3,6 +3,7 @@ const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
 const {parse} = require("qs")
+const settings = require("setmeup").settings
 
 function Handler(opts) {
     this.init(opts)
@@ -116,20 +117,26 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
     if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
 
     const now = new Date().getTime() / 1000
-    let user
+    let user, userId
 
     // Get user from session or fetch from the database.
     if (expiresAt && now < expiresAt - 300) {
         user = this.req[this.opts.sessionName].user
+        userId = user.id
     }
     if (!user) {
         try {
-            const userId = athlete ? athlete.id : null
+            userId = athlete ? athlete.id : null
             const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
             user = userFromToken
         } catch (ex) {
             logger.error("OAuth.saveData", "Error fething user", ex)
         }
+    }
+
+    // If readProductionSuffix is set, force get the user by its ID.
+    if (settings.database.readProductionSuffix || settings.database.readProductionSuffix === "") {
+        user = await core.users.getById(userId)
     }
 
     if (user) {
