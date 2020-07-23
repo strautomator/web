@@ -1,7 +1,12 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1 class="mb-4">Hello {{ user ? user.profile.firstName : "guest" }}!</h1>
+            <h1 class="mb-4">
+                Hi {{ user ? user.profile.firstName : "guest" }}!
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
+                    <v-icon small>mdi-poll</v-icon>
+                </v-btn>
+            </h1>
             <v-alert color="error" border="top" v-if="stravaStatus" class="mb-4">
                 <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
                 <div>
@@ -121,7 +126,7 @@ export default {
     },
     async fetch() {
         try {
-            this.activities = await this.$axios.$get(`/api/strava/activities/processed`)
+            this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=10`)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }
