@@ -64,6 +64,7 @@ export default {
             period: "3m",
             periodList: periodList,
             chartType: "bar",
+            suggestedMax: 1,
             dataPoints: null,
             processedActivities: null
         }
@@ -133,6 +134,9 @@ export default {
                 datasets.push(dataset)
             }
 
+            // Reset suggested max.
+            this.suggestedMax = 1
+
             // Build chart data depending on the period.
             if (this.period == "4w") {
                 now.subtract(28, "days")
@@ -179,7 +183,8 @@ export default {
                         yAxes: [
                             {
                                 ticks: {
-                                    precision: 0
+                                    precision: 0,
+                                    suggestedMax: this.suggestedMax
                                 }
                             }
                         ]
@@ -199,6 +204,11 @@ export default {
 
             for (let ds of datasets) {
                 const counter = _.filter(periodActivities, (a) => a.recipes[ds.uid]).length
+
+                if (counter >= this.suggestedMax) {
+                    this.suggestedMax = counter + 1
+                }
+
                 ds.data.push(counter)
             }
         }
