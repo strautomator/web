@@ -122,7 +122,7 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
     // Get user from session or fetch from the database.
     if (expiresAt && now < expiresAt - 300) {
         user = this.req[this.opts.sessionName].user
-        userId = user.id
+        userId = user ? user.id : null
     }
     if (!user) {
         try {
@@ -136,7 +136,9 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
 
     // If readProductionSuffix is set, force get the user by its ID.
     if (settings.database.readProductionSuffix || settings.database.readProductionSuffix === "") {
-        user = await core.users.getById(userId)
+        if (userId) {
+            user = await core.users.getById(userId)
+        }
     }
 
     if (user) {
