@@ -4,7 +4,10 @@
             <h1>
                 Automations
                 <v-badge v-if="recipes.length > 0" color="accent" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
-                <v-btn v-if="!needsProRecipes" class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
+                <v-btn v-if="!needsProRecipes" class="float-right mt-3 ml-4 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
+                    <v-icon small>mdi-poll</v-icon>
+                </v-btn>
             </h1>
             <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
                 New automation "{{ this.user.recipes[$route.query.new].title }}" created!
