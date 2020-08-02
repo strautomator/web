@@ -33,11 +33,17 @@
 
                 <div v-else>
                     <div>
-                        No GearWear configuration for this gear.
+                        No GearWear configuration for this gear yet.
                         <br v-if="!$breakpoint.mdAndUp" />
                         <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
                     </div>
                     <div>Total distance ≈ {{ gear.distance }} {{ units }}</div>
+                    <div v-if="gear.lastUpdate">
+                        Last update:
+                        {{ $moment(gear.lastUpdate.date).format("MMM Do") }}
+                        -
+                        {{ gear.lastUpdate.distance }} {{ units }}, {{ getHours(gear.lastUpdate.time) }}h
+                    </div>
                 </div>
             </div>
         </v-card-text>
