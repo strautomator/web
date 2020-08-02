@@ -225,10 +225,17 @@ export default {
                     alertTime: 0
                 },
                 {
-                    name: "Tires",
+                    name: "Rear tire",
                     currentDistance: 0,
                     currentTime: 0,
-                    alertDistance: imperial ? 3000 : 5000,
+                    alertDistance: imperial ? 3100 : 5000,
+                    alertTime: 0
+                },
+                {
+                    name: "Front tire",
+                    currentDistance: 0,
+                    currentTime: 0,
+                    alertDistance: imperial ? 3700 : 6000,
                     alertTime: 0
                 }
             ]
