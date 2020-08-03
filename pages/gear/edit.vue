@@ -25,7 +25,7 @@
                                     <td width="1" class="pl-3 pr-0">
                                         <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
                                     </td>
-                                    <td width="1" class="pl-1 pr-1 pr-md-3">
+                                    <td width="2" class="pl-1 pr-1 pr-md-3 nowrap">
                                         <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
                                             {{ comp.name }}
                                         </a>

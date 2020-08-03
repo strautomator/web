@@ -26,7 +26,7 @@
                 <div class="mt-2 float-left" v-if="recipeStats[recipe.id]">
                     <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                 </div>
-                <div class="text-right mr-n1">
+                <div class="text-right mr-n1 nowrap">
                     <template v-if="recipe.defaultFor">
                         <v-chip class="text-lowercase" small outlined>default for {{ getSportName(recipe.defaultFor) }}</v-chip>
                     </template>
