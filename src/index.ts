@@ -26,7 +26,7 @@ async function start() {
         const {Nuxt, Builder} = require("nuxt")
         const nuxt = new Nuxt(config)
 
-        // Port set via the PORN eenvironment variable?
+        // Port set via the PORT environment variable?
         if (process.env.PORT) {
             logger.info("Strautomator.startup", `Port ${process.env.PORT} set via envionment variable`)
             settings.app.port = process.env.PORT
