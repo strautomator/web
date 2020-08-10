@@ -51,9 +51,10 @@ export default {
         ]
 
         const periodList = [
-            {value: "4w", text: "Last 4 weeks"},
-            {value: "3m", text: "Last 3 months"},
-            {value: "6m", text: "Last 6 months"}
+            {value: 28, text: "Last 4 weeks"},
+            {value: 90, text: "Last 3 months"},
+            {value: 180, text: "Last 6 months"},
+            {value: 365, text: "Last year"}
         ]
 
         return {
@@ -61,7 +62,7 @@ export default {
             chartSource: "automations",
             chartSourceList: chartSourceList,
             chartTypeList: chartTypeList,
-            period: "3m",
+            period: 28,
             periodList: periodList,
             chartType: "bar",
             suggestedMax: 1,
@@ -109,13 +110,15 @@ export default {
             const monthFormat = "MMM YY"
             const now = this.$moment()
             const datasets = []
-            const labels = []
 
             // Default colours.
             const bgColors = ["#F44336AA", "#9C27B0AA", "#3F51B5AA", "#00BCD4AA", "#009688AA", "#CDDC39AA", "#795548AA", "#607D8BAA", "#4CAF50AA"]
 
             // Duplicate downloaded activities so we can process them.
             const activities = _.cloneDeep(this.processedActivities)
+
+            // Get time unit depending on selected period.
+            const timeUnit = this.period > 90 ? "month" : this.period > 28 ? "week" : "day"
 
             // Iterate user recipes to build the individual datasets.
             for (let recipe of Object.values(this.$store.state.user.recipes)) {
@@ -137,34 +140,14 @@ export default {
             // Reset suggested max.
             this.suggestedMax = 1
 
-            // Build chart data depending on the period.
-            if (this.period == "4w") {
-                now.subtract(28, "days")
-                _.remove(activities, this.getActivityDateFilter(now))
+            // Removed older activities.
+            now.subtract(this.period, "days")
+            _.remove(activities, this.getActivityDateFilter(now))
 
-                for (let i = 14; i > 0; i--) {
-                    now.add(2, "day")
-                    labels.push(now.format(dayFormat))
-                    this.populateDatapoints(datasets, activities, now)
-                }
-            } else if (this.period == "3m") {
-                now.subtract(3, "months")
-                _.remove(activities, this.getActivityDateFilter(now))
-
-                for (let i = 12; i > 0; i--) {
-                    now.add(7, "days")
-                    labels.push(now.format(dayFormat))
-                    this.populateDatapoints(datasets, activities, now)
-                }
-            } else if (this.period == "6m") {
-                now.subtract(6, "months")
-                _.remove(activities, this.getActivityDateFilter(now))
-
-                for (let i = 12; i > 0; i--) {
-                    now.add(15, "days")
-                    labels.push(now.format(dayFormat))
-                    this.populateDatapoints(datasets, activities, now)
-                }
+            // Iterate to create the data points.
+            for (let i = this.period; i > 0; i--) {
+                now.add(1, "day")
+                this.populateDatapoints(datasets, activities, now)
             }
 
             // Destroy existing chart.
@@ -180,6 +163,14 @@ export default {
                     responsive: true,
                     lineTension: 1,
                     scales: {
+                        xAxes: [
+                            {
+                                type: "time",
+                                time: {
+                                    unit: timeUnit
+                                }
+                            }
+                        ],
                         yAxes: [
                             {
                                 ticks: {
@@ -191,7 +182,6 @@ export default {
                     }
                 },
                 data: {
-                    labels: labels,
                     datasets: datasets
                 }
             })
@@ -209,7 +199,7 @@ export default {
                     this.suggestedMax = counter + 1
                 }
 
-                ds.data.push(counter)
+                ds.data.push({x: maxMoment.toDate(), y: counter})
             }
         }
     }
