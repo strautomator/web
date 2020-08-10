@@ -157,7 +157,7 @@ Handler.prototype.updateToken = async function updateToken() {
         const now = new Date()
         const epoch = Math.round(now.getTime() / 1000) - 300
 
-        if (token.expiresAt <= epoch) {
+        if (token.expiresAt && token.expiresAt <= epoch) {
             const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
             const userId = user ? user.id : null
 
