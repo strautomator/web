@@ -83,16 +83,17 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         const {accessToken, refreshToken, expiresAt} = tokens
-        const athlete = await core.strava.athletes.getAthlete(tokens)
 
+        // Get athlete data from Strava.
+        const athlete = await core.strava.athletes.getAthlete(tokens)
         if (!athlete) {
             throw new Error("Strava athlete not found")
         }
 
-        await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
-
         // Check for existing user and create a new one if necessary.
         await core.users.upsert(athlete, tokens)
+        await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
+
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
 
         return this.redirect(redirectUrl)
@@ -102,14 +103,14 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     }
 }
 
-Handler.prototype.saveData = async function saveData(token, athlete) {
+Handler.prototype.saveData = async function saveData(tokens) {
     await this.createSession()
 
-    if (!token) {
+    if (!tokens) {
         return this.req[this.opts.sessionName].reset()
     }
 
-    const {accessToken, refreshToken, expiresAt} = token
+    const {accessToken, refreshToken, expiresAt} = tokens
     this.req.accessToken = accessToken
     this.req[this.opts.sessionName].token = {accessToken}
 
@@ -124,6 +125,7 @@ Handler.prototype.saveData = async function saveData(token, athlete) {
         user = this.req[this.opts.sessionName].user
         userId = user ? user.id : null
     }
+
     if (!user) {
         try {
             userId = athlete ? athlete.id : null
