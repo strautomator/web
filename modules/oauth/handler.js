@@ -103,7 +103,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     }
 }
 
-Handler.prototype.saveData = async function saveData(tokens) {
+Handler.prototype.saveData = async function saveData(tokens, athlete) {
     await this.createSession()
 
     if (!tokens) {
