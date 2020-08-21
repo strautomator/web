@@ -415,8 +415,11 @@ export default {
                 }
 
                 const currentDistance = this.gearwearComponent.currentDistance
-                this.gearwearComponent.history.push({date: new Date(), distance: currentDistance})
+                const currentTime = this.gearwearComponent.currentTime
+                this.gearwearComponent.history.push({date: new Date(), distance: currentDistance, time: currentTime})
+
                 this.gearwearComponent.currentDistance = 0
+                this.gearwearComponent.currentTime = 0
                 this.gearwearComponent.dateAlertSent = null
                 this.gearwearComponent.lastResetDate = this.$moment().format("ll")
             } catch (ex) {
