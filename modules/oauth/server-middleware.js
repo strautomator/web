@@ -48,7 +48,7 @@ module.exports = (options) => async (req, res, next) => {
     // Check to see if the request has a valid bearer token.
     await handler.checkRequestAuthorization()
 
-    // On any other route, refresh the token.
+    // On any other route, refresh the token when necessary.
     await handler.updateToken()
 
     return next()

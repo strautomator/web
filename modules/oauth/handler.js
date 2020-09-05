@@ -1,4 +1,5 @@
 const core = require("strautomator-core")
+const jaul = require("jaul")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
@@ -104,28 +105,39 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 }
 
 Handler.prototype.saveData = async function saveData(tokens, athlete) {
+    const now = new Date().getTime() / 1000 - 1
+    let user, userId
+
     await this.createSession()
 
     if (!tokens) {
+        userId = this.req[this.opts.sessionName].user ? this.req[this.opts.sessionName].user.id : "unknown"
+        logger.warn("OAuth.saveData", `User ${userId}`, "No tokens passed to save, will reset")
         return this.req[this.opts.sessionName].reset()
     }
 
     const {accessToken, refreshToken, expiresAt} = tokens
     this.req.accessToken = accessToken
-    this.req[this.opts.sessionName].token = {accessToken}
 
+    // Make sure session exists.
+    if (!this.req[this.opts.sessionName].token) {
+        this.req[this.opts.sessionName].token = {}
+    }
+
+    // Save access token on cookie.
+    this.req[this.opts.sessionName].token.accessToken = accessToken
+
+    // If passed, also save refreshToken and expiry date.
     if (refreshToken) this.req[this.opts.sessionName].token.refreshToken = refreshToken
     if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
 
-    const now = new Date().getTime() / 1000
-    let user, userId
-
-    // Get user from session or fetch from the database.
-    if (expiresAt && now < expiresAt - 300) {
+    // Get user data from session if not expired yet.
+    if (expiresAt && now < expiresAt) {
         user = this.req[this.opts.sessionName].user
         userId = user ? user.id : null
     }
 
+    // If user expired or not set yet, get from database.
     if (!user) {
         try {
             userId = athlete ? athlete.id : null
@@ -153,21 +165,23 @@ Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 
     let {token} = this.req[this.opts.sessionName]
-    if (!token) return false
+    if (!token) return null
 
     try {
         const now = new Date()
-        const epoch = Math.round(now.getTime() / 1000) - 300
+        const epoch = now.getTime() / 1000 - 1
 
+        // Current token expired? Refresh it.
         if (token.expiresAt && token.expiresAt <= epoch) {
             const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
             const userId = user ? user.id : null
 
             if (userId) {
-                logger.info("OAuth.updateToken", `Will refresh token for ${userId}`)
+                logger.info("OAuth.updateToken", `Will refresh token for user ${userId}`)
             }
 
             const stravaTokens = await core.strava.refreshToken(token.refreshToken, token.accessToken)
+            await jaul.io.sleep(100)
 
             if (stravaTokens) {
                 const {accessToken, refreshToken, expiresAt} = stravaTokens
