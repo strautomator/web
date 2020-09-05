@@ -140,7 +140,7 @@ Handler.prototype.updateToken = async function updateToken() {
         }
 
         await this.saveData(stravaTokens)
-        return stravaTokens.accessToken
+        return stravaTokens
     } catch (ex) {
         logger.error("OAuth.updateToken", `User ${userId}`, ex)
         return null
