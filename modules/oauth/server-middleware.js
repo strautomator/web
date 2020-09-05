@@ -17,10 +17,9 @@ module.exports = (options) => async (req, res, next) => {
     // useful for client side 401 handling
     if (handler.isRoute("refresh")) {
         const {accessToken} = (await handler.updateToken()) || {}
-        const isAuthenticated = !!accessToken
-        res.writeHead(isAuthenticated ? 200 : 401, {"Content-Type": "application/json"})
+        res.writeHead(accessToken ? 200 : 401, {"Content-Type": "application/json"})
 
-        if (isAuthenticated) {
+        if (accessToken) {
             const body = JSON.stringify({accessToken})
             return res.end(body)
         }

@@ -1,5 +1,4 @@
 const core = require("strautomator-core")
-const jaul = require("jaul")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
@@ -105,18 +104,16 @@ Handler.prototype.extractToken = function extractToken() {
 }
 
 Handler.prototype.getSessionToken = function getSessionToken() {
-    const {token} = this.req[this.opts.sessionName] || {}
-    return token || {}
+    return this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].token : null
 }
 
 Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 
     const stravaTokens = this.getSessionToken()
-    if (!stravaTokens.accessToken) return null
+    if (!stravaTokens || !stravaTokens.accessToken) return null
 
-    const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
-    const userId = user ? user.id : "unknown"
+    const userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
 
     try {
         const now = new Date()
@@ -124,8 +121,6 @@ Handler.prototype.updateToken = async function updateToken() {
 
         // Current token expired? Refresh it.
         if (stravaTokens.expiresAt && stravaTokens.expiresAt <= epoch) {
-            logger.info("OAuth.updateToken", `Will refresh token for user ${userId}`)
-
             const stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken)
 
             if (stravaTokens) {
@@ -133,7 +128,8 @@ Handler.prototype.updateToken = async function updateToken() {
                 stravaTokens.accessToken = accessToken
                 stravaTokens.refreshToken = refreshToken
                 stravaTokens.expiresAt = expiresAt
-                await jaul.io.sleep(50)
+
+                logger.info("OAuth.updateToken", `Refreshed token for user ${userId}`)
             } else {
                 stravaTokens = null
             }
@@ -148,14 +144,15 @@ Handler.prototype.updateToken = async function updateToken() {
 }
 
 Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
-    const now = new Date().getTime() / 1000 - 1
-    let user, userId
+    const now = new Date()
+    const epoch = now.getTime() / 1000 - 1
+    let userId
 
     await this.createSession()
 
-    if (!stravaTokens) {
-        userId = this.req[this.opts.sessionName].user ? this.req[this.opts.sessionName].user.id : "unknown"
-        logger.warn("OAuth.saveData", `User ${userId}`, "No tokens passed to save, will reset")
+    if (!stravaTokens || !stravaTokens.accessToken) {
+        userId = this.req[this.opts.sessionName].userId ? this.req[this.opts.sessionName].userId : null
+        logger.warn("OAuth.saveData", `User ${userId}`, "No access token passed to save, will reset")
         return this.req[this.opts.sessionName].reset()
     }
 
@@ -175,19 +172,18 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
     if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
 
     // Get user data from session if not expired yet.
-    if (expiresAt && now < expiresAt) {
-        user = this.req[this.opts.sessionName].user
-        userId = user ? user.id : null
+    if (expiresAt && epoch < expiresAt) {
+        userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
     }
 
     // If user expired or not set yet, get from database.
-    if (!user) {
+    if (!userId) {
         try {
             userId = athlete ? athlete.id : null
             const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
 
             if (userFromToken) {
-                user = userFromToken
+                userId = userFromToken.id
             } else {
                 logger.warn("OAuth.saveData", `Can't find user ${userId} by token`)
             }
@@ -196,16 +192,9 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
         }
     }
 
-    // If readProductionSuffix is set, force get the user by its ID.
-    if (settings.database.readProductionSuffix || settings.database.readProductionSuffix === "") {
-        if (userId) {
-            user = await core.users.getById(userId)
-        }
-    }
-
-    if (user) {
-        this.req[this.opts.sessionName].user = user
-        this.req.user = user
+    if (userId) {
+        this.req[this.opts.sessionName].userId = userId
+        this.req.userId = userId
     }
 }
 
@@ -230,10 +219,10 @@ Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) 
 }
 
 Handler.prototype.logout = async function logout() {
-    const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
+    const userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
 
-    if (user) {
-        logger.warn("OAuth.logout", user.id)
+    if (userId) {
+        logger.warn("OAuth.logout", userId)
     }
 
     await this.createSession()

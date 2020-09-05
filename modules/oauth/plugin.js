@@ -13,7 +13,7 @@ const initStore = async (context) => {
         namespaced: true,
         state: {
             accessToken: context.req && context.req.accessToken,
-            user: context.req && context.req.user
+            userId: context.req && context.req.userId
         }
     })
 }
@@ -37,10 +37,10 @@ const redirectToOAuth = ({redirect}, action, redirectUrl = "") => {
 
 middleware.auth = (context) => {
     const isAuthenticated = checkAuthenticatedRoute(context)
-    const {accessToken = null} = context.store.state[moduleName]
+    const accessToken = context.store.state[moduleName] ? context.store.state[moduleName].accessToken : null
 
-    if (!isAuthenticated || !!accessToken) return
-    redirectToOAuth(context, "login", context.route.fullPath)
+    if (!isAuthenticated || accessToken) return
+    else redirectToOAuth(context, "login", context.route.fullPath)
 }
 
 export default async (context, inject) => {
