@@ -17,31 +17,6 @@ Handler.prototype.init = function init({req, res, next, options = {sessionName: 
     this.opts = options
 }
 
-/**
- * TODO Handle some max retry logic to stop the spam when a token is not valid.
- */
-Handler.prototype.redirect = function redirect(path) {
-    this.res.writeHead(302, {location: path})
-    this.res.end()
-}
-
-Handler.prototype.createSession = function createSession() {
-    if (this.req[this.opts.sessionName]) return Promise.resolve()
-
-    try {
-        const session = sessions({
-            cookieName: this.opts.sessionName,
-            secret: this.opts.secretKey,
-            duration: 7 * 24 * 60 * 60 * 1000
-        })
-
-        return new Promise((resolve) => session(this.req, this.res, resolve))
-    } catch (ex) {
-        logger.error("OAuth.createSession", ex)
-        throw ex
-    }
-}
-
 Handler.prototype.checkRequestAuthorization = async function checkRequestAuthorization() {
     const existingToken = this.extractToken()
 
@@ -77,22 +52,22 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     }
 
     try {
-        const tokens = await core.strava.getToken(this.req.query.code)
+        const stravaTokens = await core.strava.getToken(this.req.query.code)
 
-        if (!tokens || !tokens.accessToken) {
+        if (!stravaTokens || !stravaTokens.accessToken) {
             return this.redirectToOAuth()
         }
 
-        const {accessToken, refreshToken, expiresAt} = tokens
+        const {accessToken, refreshToken, expiresAt} = stravaTokens
 
         // Get athlete data from Strava.
-        const athlete = await core.strava.athletes.getAthlete(tokens)
+        const athlete = await core.strava.athletes.getAthlete(stravaTokens)
         if (!athlete) {
             throw new Error("Strava athlete not found")
         }
 
         // Check for existing user and create a new one if necessary.
-        await core.users.upsert(athlete, tokens)
+        await core.users.upsert(athlete, stravaTokens)
         await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
 
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
@@ -104,19 +79,87 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
     }
 }
 
-Handler.prototype.saveData = async function saveData(tokens, athlete) {
+Handler.prototype.createSession = function createSession() {
+    if (this.req[this.opts.sessionName]) return Promise.resolve()
+
+    try {
+        const session = sessions({
+            cookieName: this.opts.sessionName,
+            secret: this.opts.secretKey,
+            duration: 7 * 24 * 60 * 60 * 1000
+        })
+
+        return new Promise((resolve) => session(this.req, this.res, resolve))
+    } catch (ex) {
+        logger.error("OAuth.createSession", ex)
+        throw ex
+    }
+}
+
+Handler.prototype.extractToken = function extractToken() {
+    const authorization = this.req && this.req.headers ? this.req.headers.authorization : null
+    if (!authorization) return null
+
+    // Take the second split so it handles all token types.
+    return authorization.split(" ")[1]
+}
+
+Handler.prototype.getSessionToken = function getSessionToken() {
+    const {token} = this.req[this.opts.sessionName] || {}
+    return token || {}
+}
+
+Handler.prototype.updateToken = async function updateToken() {
+    await this.createSession()
+
+    const stravaTokens = this.getSessionToken()
+    if (!stravaTokens.accessToken) return null
+
+    const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
+    const userId = user ? user.id : "unknown"
+
+    try {
+        const now = new Date()
+        const epoch = now.getTime() / 1000 - 1
+
+        // Current token expired? Refresh it.
+        if (stravaTokens.expiresAt && stravaTokens.expiresAt <= epoch) {
+            logger.info("OAuth.updateToken", `Will refresh token for user ${userId}`)
+
+            const stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken)
+
+            if (stravaTokens) {
+                const {accessToken, refreshToken, expiresAt} = stravaTokens
+                stravaTokens.accessToken = accessToken
+                stravaTokens.refreshToken = refreshToken
+                stravaTokens.expiresAt = expiresAt
+                await jaul.io.sleep(50)
+            } else {
+                stravaTokens = null
+            }
+        }
+
+        await this.saveData(stravaTokens)
+        return stravaTokens.accessToken
+    } catch (ex) {
+        logger.error("OAuth.updateToken", `User ${userId}`, ex)
+        return null
+    }
+}
+
+Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
     const now = new Date().getTime() / 1000 - 1
     let user, userId
 
     await this.createSession()
 
-    if (!tokens) {
+    if (!stravaTokens) {
         userId = this.req[this.opts.sessionName].user ? this.req[this.opts.sessionName].user.id : "unknown"
         logger.warn("OAuth.saveData", `User ${userId}`, "No tokens passed to save, will reset")
         return this.req[this.opts.sessionName].reset()
     }
 
-    const {accessToken, refreshToken, expiresAt} = tokens
+    const {accessToken, refreshToken, expiresAt} = stravaTokens
     this.req.accessToken = accessToken
 
     // Make sure session exists.
@@ -142,9 +185,14 @@ Handler.prototype.saveData = async function saveData(tokens, athlete) {
         try {
             userId = athlete ? athlete.id : null
             const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
-            user = userFromToken
+
+            if (userFromToken) {
+                user = userFromToken
+            } else {
+                logger.warn("OAuth.saveData", `Can't find user ${userId} by token`)
+            }
         } catch (ex) {
-            logger.error("OAuth.saveData", "Error fething user", ex)
+            logger.error("OAuth.saveData", "Error fetching user", ex)
         }
     }
 
@@ -161,45 +209,16 @@ Handler.prototype.saveData = async function saveData(tokens, athlete) {
     }
 }
 
-Handler.prototype.updateToken = async function updateToken() {
-    await this.createSession()
+Handler.routes = {
+    login: "/auth/login",
+    callback: "/auth/callback",
+    logout: "/auth/logout",
+    refresh: "/auth/refresh"
+}
 
-    let {token} = this.req[this.opts.sessionName]
-    if (!token) return null
-
-    try {
-        const now = new Date()
-        const epoch = now.getTime() / 1000 - 1
-
-        // Current token expired? Refresh it.
-        if (token.expiresAt && token.expiresAt <= epoch) {
-            const user = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].user : null
-            const userId = user ? user.id : null
-
-            if (userId) {
-                logger.info("OAuth.updateToken", `Will refresh token for user ${userId}`)
-            }
-
-            const stravaTokens = await core.strava.refreshToken(token.refreshToken, token.accessToken)
-            await jaul.io.sleep(100)
-
-            if (stravaTokens) {
-                const {accessToken, refreshToken, expiresAt} = stravaTokens
-                token.accessToken = accessToken
-                token.refreshToken = refreshToken
-                token.expiresAt = expiresAt
-            } else {
-                token = null
-            }
-        }
-    } catch (ex) {
-        logger.error("OAuth.updateToken", ex)
-        token = null
-    }
-
-    await this.saveData(token)
-
-    return token
+Handler.prototype.redirect = function redirect(path) {
+    this.res.writeHead(302, {location: path})
+    this.res.end()
 }
 
 Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) {
@@ -226,30 +245,9 @@ Handler.prototype.logout = async function logout() {
     this.redirect("/home")
 }
 
-Handler.routes = {
-    login: "/auth/login",
-    callback: "/auth/callback",
-    logout: "/auth/logout",
-    refresh: "/auth/refresh"
-}
-
 Handler.prototype.isRoute = function isRoute(route) {
     const path = this.constructor.routes[route]
-
     return this.req.url.startsWith(path)
-}
-
-Handler.prototype.extractToken = function extractToken() {
-    const {
-        headers: {authorization}
-    } = this.req
-
-    if (!authorization) return null
-
-    // Take the second split so it handles all token types.
-    const [, token] = authorization.split(" ")
-
-    return token
 }
 
 module.exports = Handler
