@@ -22,7 +22,7 @@
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isWeekday">
-                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" dense outlined rounded return-object></v-select>
+                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
                                     <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" dense outlined rounded></v-text-field>
@@ -134,6 +134,10 @@ export default {
 
             return `/api/maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
         },
+        weekdayInputRules() {
+            if (!this.isWeekday) return false
+            return [() => this.selectedWeekday.length > 0]
+        },
         valueInputRules() {
             if (this.isDefaultFor) return false
             if (this.recipeRules[this.selectedProperty.type]) return [this.recipeRules.required, this.recipeRules[this.selectedProperty.type]]
@@ -174,9 +178,9 @@ export default {
                 recipeProperties: recipeProperties,
                 sportTypes: sportTypes,
                 weekdays: weekdays,
+                selectedWeekday: [],
                 selectedProperty: {},
                 selectedOperator: {},
-                selectedWeekday: {},
                 selectedDefaultFor: {},
                 valueInput: "",
                 locationInput: null,
@@ -205,8 +209,8 @@ export default {
 
                     // Get correct values for special conditions.
                     if (this.isWeekday) {
-                        result.value = this.selectedWeekday.value
-                        result.friendlyValue = this.selectedWeekday.text
+                        result.value = _.map(this.selectedWeekday, "value").join(",")
+                        result.friendlyValue = _.map(this.selectedWeekday, "text").join(" or ")
                     } else if (this.isLocation) {
                         result.value = this.locationInput.value
                         result.friendlyValue = this.locationInput.address
