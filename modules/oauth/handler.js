@@ -110,7 +110,7 @@ Handler.prototype.getSessionToken = function getSessionToken() {
 Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 
-    const stravaTokens = this.getSessionToken()
+    let stravaTokens = this.getSessionToken()
     if (!stravaTokens || !stravaTokens.accessToken) return null
 
     const userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
@@ -121,7 +121,7 @@ Handler.prototype.updateToken = async function updateToken() {
 
         // Current token expired? Refresh it.
         if (stravaTokens.expiresAt && stravaTokens.expiresAt <= epoch) {
-            const stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken)
+            stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken)
 
             if (stravaTokens) {
                 const {accessToken, refreshToken, expiresAt} = stravaTokens
