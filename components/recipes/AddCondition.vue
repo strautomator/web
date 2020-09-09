@@ -19,10 +19,13 @@
                             <div v-if="selectedProperty.value">
                                 <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" dense outlined rounded return-object></v-select>
                                 <div v-if="isDefaultFor">
-                                    <v-select label="Sport types" v-model="selectedDefaultFor" :items="sportTypes" dense outlined rounded return-object></v-select>
+                                    <v-select label="Sport types" v-model="selectedDefaultFor" :items="defaultSportTypes" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="isSportType">
+                                    <v-select label="Sport types" v-model="selectedSportTypes" :items="sportTypes" :rules="sportInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isWeekday">
-                                    <v-select label="Weekday" v-model="selectedWeekday" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
+                                    <v-select label="Weekday" v-model="selectedWeekdays" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
                                     <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" dense outlined rounded></v-text-field>
@@ -100,6 +103,9 @@ export default {
         isDefaultFor() {
             return this.selectedProperty.value && this.selectedProperty.value == "defaultFor"
         },
+        isSportType() {
+            return this.selectedProperty.value && this.selectedProperty.value == "sportType"
+        },
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
@@ -134,9 +140,13 @@ export default {
 
             return `/api/maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
         },
+        sportInputRules() {
+            if (!this.isSportType) return false
+            return [() => this.selectedSportTypes.length > 0]
+        },
         weekdayInputRules() {
             if (!this.isWeekday) return false
-            return [() => this.selectedWeekday.length > 0]
+            return [() => this.selectedWeekdays.length > 0]
         },
         valueInputRules() {
             if (this.isDefaultFor) return false
@@ -148,12 +158,15 @@ export default {
         initialData() {
             const recipes = Object.values(this.$store.state.user.recipes)
             const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+            const defaultSportTypes = []
             const sportTypes = []
 
             // Only add "defaultFor" options for sports which use has no defaultFor yet.
             for (let st of this.$store.state.sportTypes) {
+                const sportName = this.getSportName(st)
                 const disabled = _.find(recipes, {defaultFor: st})
-                sportTypes.push({value: st, text: this.getSportName(st), disabled: disabled})
+                defaultSportTypes.push({value: st, text: sportName, disabled: disabled})
+                sportTypes.push({value: st, text: sportName})
             }
 
             if (sportTypes.length > 0) {
@@ -178,7 +191,8 @@ export default {
                 recipeProperties: recipeProperties,
                 sportTypes: sportTypes,
                 weekdays: weekdays,
-                selectedWeekday: [],
+                selectedWeekdays: [],
+                selectedSportTypes: [],
                 selectedProperty: {},
                 selectedOperator: {},
                 selectedDefaultFor: {},
@@ -208,9 +222,12 @@ export default {
                     }
 
                     // Get correct values for special conditions.
-                    if (this.isWeekday) {
-                        result.value = _.map(this.selectedWeekday, "value").join(",")
-                        result.friendlyValue = _.map(this.selectedWeekday, "text").join(" or ")
+                    if (this.isSportType) {
+                        result.value = _.map(this.selectedSportTypes, "value").join(",")
+                        result.friendlyValue = _.map(this.selectedSportTypes, "text").join(" or ")
+                    } else if (this.isWeekday) {
+                        result.value = _.map(this.selectedWeekdays, "value").join(",")
+                        result.friendlyValue = _.map(this.selectedWeekdays, "text").join(" or ")
                     } else if (this.isLocation) {
                         result.value = this.locationInput.value
                         result.friendlyValue = this.locationInput.address
