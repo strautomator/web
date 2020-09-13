@@ -189,6 +189,7 @@ export default {
                 loading: false,
                 valid: true,
                 recipeProperties: recipeProperties,
+                defaultSportTypes: defaultSportTypes,
                 sportTypes: sportTypes,
                 weekdays: weekdays,
                 selectedWeekdays: [],
