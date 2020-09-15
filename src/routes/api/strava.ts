@@ -256,6 +256,12 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
             return webserver.renderError(req, res, "User not found", 404)
         }
 
+        // User has no valid tokens? Stop here.
+        if (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken) {
+            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} has no access tokens`)
+            return webserver.renderError(req, res, "User has no access tokens", 400)
+        }
+
         user.dateLastActivity = now
 
         // Process and set last processed activity date if the activity was update by any automation recipe.
