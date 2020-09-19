@@ -3,7 +3,6 @@ const colors = require("vuetify/es5/util/colors").default
 // Please note that some of the settings here are hard coded for production but can be
 // overwritten during startup on ~/src/index.ts, specially when running in development.
 module.exports = {
-    mode: "universal",
     telemetry: false,
 
     head: {
