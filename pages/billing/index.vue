@@ -49,7 +49,7 @@
                         <template v-else-if="unsubscribed">
                             <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
                             <div>
-                                Your account should be downgraded back to Free as soon as your previous subscription expires.
+                                Your account was now downgraded back to the Free version.
                             </div>
                             <div class="text-center mt-8 mb-6">
                                 <v-icon x-large>mdi-emoticon-sad</v-icon>

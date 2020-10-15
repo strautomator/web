@@ -70,18 +70,23 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
             throw new Error("Invalid billing plan")
         }
 
-        // User already has a subscription running?
+        // User already has a subscription running? Try getting its details.
         if (user.subscription && user.subscription.id) {
             const existingSub = await paypal.subscriptions.getSubscription(user.subscription.id)
 
+            // Subscription expired? Log and continue with the subscription creation further below.
+            if (!existingSub) {
+                logger.debug("Routes", req.method, req.originalUrl, "Subscription not found on PayPal, will create a new one")
+            }
+
             // User hasn't approved it yet, and it's still valid?
-            if (existingSub.billingPlan && existingSub.billingPlan.id == billingPlan.id && existingSub.status == "APPROVAL_PENDING") {
+            else if (existingSub.billingPlan && existingSub.billingPlan.id == billingPlan.id && existingSub.status == "APPROVAL_PENDING") {
                 logger.info("Routes", req.method, req.originalUrl, `Redirecting user ${user.id} to previous subscription ${existingSub.id}`)
                 return webserver.renderJson(req, res, existingSub)
             }
 
             // User has a valid subscription? Update the database and activate PRO again.
-            if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
+            else if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
                 logger.warn("Routes", req.method, req.originalUrl, `Already subscribed, subscription ID ${existingSub.id}, will fix it`)
                 existingSub.userId = user.id
                 await paypal.subscriptions.fixSubscription(existingSub)
