@@ -87,11 +87,17 @@
                         </v-simple-table>
                     </v-card-text>
                 </v-card>
-                <v-alert class="mt-6 text-center text-md-left">
+                <v-alert class="mt-4 text-center text-md-left">
                     Missing something?
                     <br v-if="!$breakpoint.mdAndUp" />
                     <n-link to="/activities/sync" title="Try your automations" nuxt>Try a manual sync</n-link>
                     to test your automations.
+                </v-alert>
+                <v-alert class="mt-4 text-center text-md-left">
+                    Want to see all your Strava activities on your calendar?
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    <n-link to="/calendar" title="Try your automations" nuxt>Subscribe</n-link>
+                    to your own .ics calendar now.
                 </v-alert>
             </div>
         </v-container>

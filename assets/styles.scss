@@ -61,6 +61,11 @@ a {
     z-index: 99;
 }
 
+.free-list-title {
+    list-style-type: none;
+    font-weight: bold;
+}
+
 .stripe {
     position: fixed;
     display: -webkit-box;
