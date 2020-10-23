@@ -32,12 +32,17 @@
                             <td class="text-center">5</td>
                         </tr>
                         <tr>
-                            <td>No Linkbacks</td>
+                            <td>Calendar Export</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
                             <td>Webhooks</td>
+                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                        </tr>
+                        <tr>
+                            <td>No Linkbacks</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
@@ -54,9 +59,11 @@
             </v-card-text>
         </v-card>
         <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
-            <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
-            <li>Free accounts are limited to {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations.</li>
-            <li>Free accounts will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
+            <li class="free-list-title">Free accounts are free forever, but...</li>
+            <li>Limited to {{ $store.state.freePlanDetails.maxConditions }} conditions per automation.</li>
+            <li>Limited to {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations.</li>
+            <li>Exported calendars are limited to activities from the last {{ $store.state.freePlanDetails.maxCalendarDays }} days.</li>
+            <li>Will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
         </ul>
     </div>
 </template>
