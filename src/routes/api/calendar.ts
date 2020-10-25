@@ -10,7 +10,7 @@ const settings = require("setmeup").settings
 /**
  * Return the Strava activities calendar for the specified user.
  */
-router.get("/:userId/:urlToken/activities.ical", async (req, res) => {
+router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
     try {
         const user = await users.getById(req.params.userId)
 
@@ -24,7 +24,7 @@ router.get("/:userId/:urlToken/activities.ical", async (req, res) => {
             sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null
         }
 
-        // Generate and render Strava activities as an iCal calendar.
+        // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
 
         logger.info("Routes", req.method, req.originalUrl)
@@ -33,7 +33,7 @@ router.get("/:userId/:urlToken/activities.ical", async (req, res) => {
         return res.send(cal)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        return webserver.renderError(req, res, ex, 500)
     }
 })
 
