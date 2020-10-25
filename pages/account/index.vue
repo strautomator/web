@@ -12,7 +12,10 @@
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
                 <p class="mt-3 caption">
-                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile... </a>
+                    <n-link to="/calendar" title="Calendar subscription" nuxt><v-icon color="primary" small>mdi-calendar-month</v-icon> My activities calendar</n-link>
+                </p>
+                <p class="mt-3 caption">
+                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
             </div>
             <v-card class="mt-5" outlined>

@@ -4,7 +4,7 @@
             <h1>Calendar</h1>
             <v-alert v-if="user && !user.isPro" border="top" color="primary" colored-border>
                 <div class="mt-1 text-center text-md-left">
-                    Free accounts are limited to exports for the last
+                    Calendars on free accounts are limited to the last
                     {{ $store.state.freePlanDetails.maxCalendarDays }} days only.
                     <br />
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
@@ -14,7 +14,7 @@
             <v-card class="mt-5" outlined>
                 <v-card-text>
                     <p>
-                        Strautomator can export your Strava activities to the iCal format, allowing you to integrate your activities as events on your calendar service of choice.
+                        Strautomator can export your Strava activities using the iCalendar format, allowing you to view your activities as events on the calendar service of your choice.
                     </p>
                     <p class="mt-2">
                         Use the following URL to subscribe directly on your Calendar client:
@@ -37,7 +37,10 @@
                 </v-card-title>
                 <v-card-text>
                     <p class="mt-3">
-                        Try reading the official support pages for these popular services:
+                        Subscribing to .ics calendars should be fairly simple, but the steps are slightly different depending on which service or client you use.
+                    </p>
+                    <p>
+                        Here are the official support pages for some:
                     </p>
                     <ul class="pl-4">
                         <li>
