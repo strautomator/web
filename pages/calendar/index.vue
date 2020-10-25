@@ -20,7 +20,7 @@
                         Use the following URL to subscribe directly on your Calendar client:
                     </p>
                     <div class="text-center text-md-left">
-                        <v-text-field label="URL" :value="'https://' + urlCalendar" dense outlined rounded></v-text-field>
+                        <v-text-field label="URL" :value="'https://' + urlCalendar" readonly dense outlined rounded></v-text-field>
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
