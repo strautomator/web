@@ -21,13 +21,12 @@
                             <h2>How does it work?</h2>
                             <div>
                                 <p>
-                                    First you connect Strautomator to your Strava account. Then you create automation recipes to automagically update your activities based on any of its properties like distance, speed, time, location, weather and
-                                    many more.
+                                    First you connect Strautomator to your Strava account. Then you create automations to automagically update your activities based on its properties like distance, speed, time, location, weather, and many more.
                                 </p>
                                 <p>
-                                    Like IFTTT, but for Strava. And fully open source!
+                                    You can also register your shoes and bike components, to get an email alert letting you know when it's about time to change them. Never forget to swap a chain again!
                                 </p>
-                                <p><strong>NEW: GearWear!</strong> You can now register your shoes and bike components and setup distance alerts for them. Never forget to swap a chain again!</p>
+                                <p><strong>NEW!</strong> Export your Strava activities to an iCalendar (.ics format).</p>
                             </div>
                         </div>
 
@@ -238,6 +237,18 @@ export default {
             {
                 condition: "activity is a virtual ride",
                 action: "prepend the weather details to the activity name"
+            },
+            {
+                condition: "bike chain has over 5000km",
+                action: "alert me via email"
+            },
+            {
+                condition: "bike chain has over 5000km",
+                action: "alert me via email"
+            },
+            {
+                condition: "bike tires were used for longer than 2 years",
+                action: "alert me via email"
             }
         ]
 
