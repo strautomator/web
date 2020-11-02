@@ -257,7 +257,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         }
 
         // User has no valid tokens? Stop here.
-        if (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken) {
+        if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
             logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} has no access tokens`)
             return webserver.renderError(req, res, "User has no access tokens", 400)
         }
