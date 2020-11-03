@@ -93,7 +93,7 @@ router.get("/activities/recent", async (req, res) => {
 
 /**
  * Get logged user's activities from Strava since the specified timestamp.
- * Maximum of 1 year.
+ * Maximum of 2 years.
  */
 router.get("/activities/since/:timestamp", async (req, res) => {
     try {
@@ -107,9 +107,9 @@ router.get("/activities/since/:timestamp", async (req, res) => {
             throw new Error("Missing timestamp")
         }
 
-        // Hard limit of 1 year on the minimum timestamp.
+        // Hard limit of 2 years on the minimum timestamp.
         let timestamp = moment.unix(parseInt(req.params.timestamp as string))
-        let minTimestamp = moment().subtract(1, "year")
+        let minTimestamp = moment().subtract(731, "days")
         if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
 
         // Fetch activities since the specified timestamp.
