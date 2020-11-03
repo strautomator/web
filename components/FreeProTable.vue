@@ -32,9 +32,9 @@
                             <td class="text-center">5</td>
                         </tr>
                         <tr>
-                            <td>Calendar Export</td>
-                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
-                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                            <td>iCalendar (days)</td>
+                            <td class="text-center">{{ $store.state.freePlanDetails.maxCalendarDays }}</td>
+                            <td class="text-center">{{ $store.state.proPlanDetails.maxCalendarDays }}</td>
                         </tr>
                         <tr>
                             <td>Webhooks</td>

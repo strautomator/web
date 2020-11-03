@@ -2,7 +2,7 @@
     <v-card class="mt-4" outlined>
         <v-card-text class="pb-md-0">
             <p>
-                If you don't know the current distance of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 1 year ago.
+                If you don't know the current distance of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 2 years ago.
             </p>
             <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
                 <div class="flex-grow-0">
