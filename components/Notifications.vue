@@ -7,18 +7,19 @@
         </v-badge>
         <v-snackbar v-model="visible" color="accent" elevation="24" timeout="-1" :max-width="960" :width="960" multi-line vertical rounded top>
             <template v-slot:action="{attrs}">
-                <v-btn v-if="unreadCount < 1" v-bind="attrs" class="mt-4" color="primary" title="Close notifications" @click="hidePanel()" text>
+                <v-btn v-if="unreadCount < 1" v-bind="attrs" color="primary" title="Close notifications" @click="hidePanel()" rounded text>
                     Close
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-btn v-else v-bind="attrs" class="mt-4" color="primary" title="Go to next notification" @click="getNextUnread()" text>
+                <v-btn v-else v-bind="attrs" color="primary" title="Go to next notification" @click="getNextUnread()" rounded text>
                     Next
                     <v-icon>mdi-arrow-right-bold</v-icon>
                 </v-btn>
             </template>
             <template v-if="currentNotification">
-                <div class="font-weight-bold">{{ currentNotification.title }}</div>
-                <div class="mt-1">{{ currentNotification.body }}</div>
+                <div class="text-body-1 font-weight-bold secondary--text">{{ currentNotification.title }}</div>
+                <div class="caption">{{ $moment(currentNotification.dateCreated).format("lll") }}</div>
+                <div class="mt-2">{{ currentNotification.body }}</div>
             </template>
         </v-snackbar>
     </div>
@@ -69,7 +70,7 @@ export default {
             try {
                 this.unreadCount--
                 notification.read = true
-                await this.$axios.$post(`/api/notifications/read/${notification.id}`)
+                await this.$axios.$post(`/api/notifications/read/${notification.id}`, null, {progress: false})
             } catch (ex) {
                 console.error("Notifications.markAsRead", `Notification ${notification.id}`)
                 console.error(ex)
