@@ -160,6 +160,11 @@ router.get("/process-activity/:activityId", async (req, res) => {
 
         // Process the passed activity.
         const processedActivity = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+
+        if (!processedActivity) {
+            throw new Error(`There was an issue processing the Strava activity ${req.params.activityId}`)
+        }
+
         webserver.renderJson(req, res, processedActivity)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -266,7 +271,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
 
         // Process and set last processed activity date if the activity was update by any automation recipe.
         const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
-        if (processed) user.dateLastProcessedActivity = now
+        if (processed && !processed.error) user.dateLastProcessedActivity = now
 
         // Update user.
         const updatedUser = {id: user.id, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}

@@ -127,7 +127,12 @@ class WebServer {
 
         try {
             if (!strava.webhooks.current || strava.webhooks.current.callbackUrl != strava.webhooks.callbackUrl) {
-                await strava.webhooks.cancelWebhook()
+                try {
+                    await strava.webhooks.cancelWebhook()
+                } catch (cancelEx) {
+                    logger.warn("WebServer.setupWebhooks", "Could not cancel the current Strava webhook, will proceed anyways")
+                }
+
                 await strava.webhooks.createWebhook()
             }
         } catch (ex) {
@@ -141,7 +146,7 @@ class WebServer {
 
             // No webhooks on PayPal yet? Register one now.
             if (!existingWebhook) {
-                logger.warn("PayPal.setupWebhook", "No matching webhook (URL) found on PayPal, will register one now")
+                logger.warn("WebServer.setupWebhooks", "No matching webhook (URL) found on PayPal, will register one now")
                 await paypal.webhooks.createWebhook()
             }
         } catch (ex) {
