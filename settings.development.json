@@ -11,6 +11,6 @@
     "strava": {
         // Enabling test mode will prevent activities from being written to Strava.
         // They will be logged to the console instead.
-        "testMode": true
+        "testMode": false
     }
 }
