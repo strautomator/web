@@ -23,7 +23,7 @@
                         </v-container>
                     </div>
                     <template v-else-if="recipe.conditions && recipe.conditions.length > 0">
-                        <div class="mb-3" v-for="condition in recipe.conditions">
+                        <div class="mb-3" v-for="(condition, index) in recipe.conditions" :key="`condition-${index}`">
                             <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                                 <div class="mr-2">
                                     <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
@@ -52,7 +52,7 @@
             <v-card class="mt-4" outlined>
                 <v-card-title>Actions</v-card-title>
                 <v-card-text>
-                    <div class="mb-3" v-for="action in recipe.actions">
+                    <div class="mb-3" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                             <div class="mr-2">
                                 <v-icon color="removal" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>

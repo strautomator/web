@@ -7,7 +7,7 @@
 
                 <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Search" class="mt-2" rounded outlined></v-text-field>
 
-                <template v-for="group in groupedQuestions">
+                <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 class="mb-1 ml-1">{{ group.title }}</h2>
                     <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0">
                         No results found.
@@ -22,7 +22,7 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
                     </v-expansion-panels>
-                </template>
+                </div>
 
                 <div class="mt-10 text-center" v-if="!loggedIn">
                     <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>

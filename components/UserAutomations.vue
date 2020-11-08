@@ -14,12 +14,12 @@
             <v-card-text class="white--text pb-1 pb-md-2">
                 <ul class="mt-0 pl-4 condition-list">
                     <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
-                    <li v-for="condition in recipe.conditions">
+                    <li v-for="(condition, index) in recipe.conditions" :key="`condition-${index}`">
                         {{ conditionSummary(condition) }}
                     </li>
                 </ul>
                 <ul class="mt-1 pl-4 action-list">
-                    <li class="font-weight-medium" v-for="action in recipe.actions">
+                    <li class="font-weight-medium" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
                         {{ actionSummary(action) }}
                     </li>
                 </ul>

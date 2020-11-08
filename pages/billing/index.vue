@@ -17,12 +17,12 @@
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
-                                <template v-for="plan in billingPlans">
+                                <div v-for="plan in billingPlans" :key="plan.id">
                                     <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
                                         <v-icon left>mdi-credit-card-outline</v-icon>
                                         ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
                                     </v-btn>
-                                </template>
+                                </div>
                             </v-col>
                             <v-col class="text-center mb-2">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">

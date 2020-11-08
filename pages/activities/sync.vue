@@ -93,13 +93,19 @@
                                 No automations were triggered for this activity.
                             </div>
                             <div class="mt-4" v-else>
+                                <v-alert color="error" v-if="processedActivity.error" class="mt-4 mb-4">
+                                    <div class="font-weight-bold">Sync error!</div>
+                                    <div>
+                                        {{ processedActivity.error }}
+                                    </div>
+                                </v-alert>
                                 <div class="font-weight-bold">Name: {{ processedActivity.name }}</div>
                                 <div>Date: {{ getDate(processedActivity.dateStart).format("lll") }}</div>
                                 <div class="mt-4">
                                     Updated fields:
                                 </div>
                                 <ul class="mt-1 pl-4 action-list">
-                                    <li class="font-weight-medium" v-for="field in updatedFieldsKeys">
+                                    <li class="font-weight-medium" v-for="(field, index) in updatedFieldsKeys" :key="`ufield-${index}`">
                                         <span class="text-capitalize">{{ field }}:</span>
                                         {{ processedActivity.updatedFields[field] }}
                                     </li>
@@ -108,7 +114,7 @@
                                     Triggered automations:
                                 </div>
                                 <ul class="mt-1 pl-4 action-list">
-                                    <li class="font-weight-medium" v-for="recipeId in recipeKeys">
+                                    <li class="font-weight-medium" v-for="recipeId in recipeKeys" :key="recipeId">
                                         <n-link :to="'/automations/edit?id=' + recipeId" :title="processedActivity.recipes[recipeId].title">
                                             {{ processedActivity.recipes[recipeId].title }}
                                         </n-link>

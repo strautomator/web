@@ -94,10 +94,9 @@
                     to test your automations.
                 </v-alert>
                 <v-alert class="mt-4 text-center text-md-left">
-                    Want to see all your Strava activities on your calendar?
-                    <br v-if="!$breakpoint.mdAndUp" />
+                    Want your Strava activities on your device's calendar?
                     <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link>
-                    to your unique .ics calendar now.
+                    to your iCalendar now.
                 </v-alert>
             </div>
         </v-container>

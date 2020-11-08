@@ -21,7 +21,7 @@
                     <template v-else>
                         <v-simple-table v-if="gearwearConfig.components.length > 0">
                             <tbody>
-                                <tr v-for="comp of gearwearConfig.components">
+                                <tr v-for="comp of gearwearConfig.components" :key="comp.name">
                                     <td width="1" class="pl-3 pr-0">
                                         <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
                                     </td>
@@ -54,7 +54,7 @@
                                 You haven't registered components for this gear yet. If you want you can kickstart with the defaults:
                             </p>
                             <ul class="pl-4 mb-4">
-                                <li v-for="comp in defaultComponents">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
+                                <li v-for="comp in defaultComponents" :key="comp.name">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
                             </ul>
                             <v-btn color="primary" title="Start with the default components" @click="createDefaults" rounded>
                                 <v-icon left>mdi-text-box-check</v-icon>
