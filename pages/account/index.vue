@@ -11,7 +11,10 @@
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
-                <p class="mt-3 caption">
+                <p class="mt-3 ">
+                    <n-link to="/account/notifications" title="My notifications" nuxt><v-icon color="primary" small>mdi-bell</v-icon> My notifications</n-link>
+                </p>
+                <p class="mt-3 ">
                     <n-link to="/calendar" title="Calendar subscription" nuxt><v-icon color="primary" small>mdi-calendar-month</v-icon> My activities calendar</n-link>
                 </p>
                 <p class="mt-3 caption">

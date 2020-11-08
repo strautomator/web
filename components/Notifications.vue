@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-badge color="primary" offset-x="18" offset-y="18" v-if="unreadCount > 0" :content="unreadCount" bordered>
-            <v-btn @click="togglePanel()" icon>
+            <v-btn @click="togglePanel()" title="View my notifications" icon>
                 <v-icon>mdi-bell</v-icon>
             </v-btn>
         </v-badge>
@@ -70,7 +70,7 @@ export default {
             try {
                 this.unreadCount--
                 notification.read = true
-                await this.$axios.$post(`/api/notifications/read/${notification.id}`, null, {progress: false})
+                await this.$axios.$post(`/api/notifications/read`, [notification.id], {progress: false})
             } catch (ex) {
                 console.error("Notifications.markAsRead", `Notification ${notification.id}`)
                 console.error(ex)
