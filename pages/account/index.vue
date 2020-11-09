@@ -11,14 +11,14 @@
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
-                <p class="mt-3 ">
-                    <n-link to="/account/notifications" title="My notifications" nuxt><v-icon color="primary" small>mdi-bell</v-icon> My notifications</n-link>
+                <p class="mt-1 caption">
+                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
                 <p class="mt-3 ">
                     <n-link to="/calendar" title="Calendar subscription" nuxt><v-icon color="primary" small>mdi-calendar-month</v-icon> My activities calendar</n-link>
                 </p>
-                <p class="mt-3 caption">
-                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
+                <p class="mt-2 ">
+                    <n-link to="/account/notifications" title="My notifications" nuxt><v-icon color="primary" small>mdi-bell</v-icon> My notifications</n-link>
                 </p>
             </div>
             <v-card class="mt-5" outlined>
