@@ -15,7 +15,7 @@
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
 
-            <notifications />
+            <top-notifications />
 
             <v-spacer></v-spacer>
             <v-avatar v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
@@ -104,11 +104,11 @@
 </template>
 
 <script>
-import Notifications from "~/components/Notifications.vue"
+import TopNotifications from "~/components/TopNotifications.vue"
 
 export default {
     authenticated: true,
-    components: {Notifications},
+    components: {TopNotifications},
     head: {
         meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
     },
