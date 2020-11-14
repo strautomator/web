@@ -28,6 +28,12 @@
                     </v-card-text>
                 </v-card>
             </template>
+            <div class="mt-4 text-center text-md-left">
+                <v-btn color="primary" to="/account" title="Back to my account" small rounded outlined nuxt>
+                    <v-icon left>mdi-arrow-left</v-icon>
+                    Back to my account
+                </v-btn>
+            </div>
         </v-container>
     </v-layout>
 </template>

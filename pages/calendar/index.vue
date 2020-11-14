@@ -6,7 +6,7 @@
                 <div class="mt-1 text-center text-md-left">
                     Calendars on free accounts are limited to the last
                     {{ $store.state.freePlanDetails.maxCalendarDays }} days only.
-                    <br />
+                    <br v-if="$breakpoint.mdAndUp" />
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
                     to export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities.
                 </div>

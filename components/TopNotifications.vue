@@ -21,7 +21,7 @@
                 <div class="caption">{{ $moment(currentNotification.dateCreated).format("lll") }}</div>
                 <div class="mt-2">
                     {{ currentNotification.body }}
-                    <n-link v-if="currentNotification.href" :to="currentNotification.href" title="Fix notification" nuxt><v-icon color="primary" @click="hidePanel()" small>mdi-open-in-new</v-icon></n-link>
+                    <n-link v-if="currentNotification.href" :to="currentNotification.href" title="Fix notification" nuxt><v-icon color="secondary" @click="hidePanel()" small>mdi-open-in-new</v-icon></n-link>
                 </div>
             </template>
         </v-snackbar>
@@ -44,6 +44,7 @@ export default {
     async fetch() {
         try {
             this.notifications = await this.$axios.$get(`/api/notifications/unread`)
+            this.unreadCount = this.notifications.length
 
             const user = this.$store.state.user
             const bikes = _.map(user.profile.bikes, "id")
@@ -56,7 +57,7 @@ export default {
                     if (action.type == "gear" && gearIds.indexOf(action.value) < 0) {
                         const title = `Invalid gear ${action.value}: ${action.friendlyValue}`
                         const body = `Your automation "${recipe.title}" has an invalid gear set. Please update or delete it to avoid triggering unecessary alerts.`
-                        const href = `automations/edit?id=${recipe.id}`
+                        const href = `/automations/edit?id=${recipe.id}`
                         this.addNotification(title, body, href)
                     }
                 }

@@ -6,7 +6,8 @@
                 <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
                 <div class="mb-3">
                     <span class="mr-1" v-if="user.email">{{ user.email }}</span>
-                    <v-btn title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
+                    <br v-if="$breakpoint.mdAndDown" />
+                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
@@ -14,11 +15,15 @@
                 <p class="mt-1 caption">
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
-                <p class="mt-3 ">
-                    <n-link to="/calendar" title="Calendar subscription" nuxt><v-icon color="primary" small>mdi-calendar-month</v-icon> My activities calendar</n-link>
-                </p>
-                <p class="mt-2 ">
-                    <n-link to="/account/notifications" title="My notifications" nuxt><v-icon color="primary" small>mdi-bell</v-icon> My notifications</n-link>
+                <p class="mt-3 text-center text-md-left">
+                    <v-btn color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
+                        <v-icon left>mdi-calendar-month</v-icon>
+                        My activities calendar
+                    </v-btn>
+                    <v-btn class="mt-4 mt-md-0 ml-md-2" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
+                        <v-icon left>mdi-bell</v-icon>
+                        My notifications
+                    </v-btn>
                 </p>
             </div>
             <v-card class="mt-5" outlined>
