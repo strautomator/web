@@ -8,9 +8,9 @@
                             <v-card-title class="accent">
                                 <v-icon class="ml-n1 mr-2" color="primary" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
                                 <span class="primary--text">{{ recipe.title }}</span>
+                                <v-icon class="ml-2" v-show="hover" small>mdi-pencil-outline</v-icon>
                                 <v-spacer />
-                                <v-icon v-show="hover" small>mdi-pencil-outline</v-icon>
-                                <v-icon class="drag-handle ml-1" title="Hold to reorded the automation recipe" v-if="!recipe.defaultFor">mdi-drag</v-icon>
+                                <v-icon class="drag-handle ml-1" title="Hold to reorder this automation recipe" v-if="!recipe.defaultFor">mdi-drag</v-icon>
                             </v-card-title>
                         </n-link>
                     </v-hover>
@@ -28,9 +28,6 @@
                         </ul>
                         <div class="mt-2" v-if="recipeStats[recipe.id]">
                             <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
-                        </div>
-                        <div class="text-right mr-n1 nowrap">
-                            <v-chip class="text-lowercase" v-if="recipe.defaultFor" small outlined>default for {{ getSportName(recipe.defaultFor) }}</v-chip>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -69,13 +66,7 @@
     cursor: move;
 }
 .drag-ghost {
-    opacity: 0.2;
-}
-.flip-list-move {
-    transition: transform 0.5s;
-}
-.no-move {
-    transition: transform 0s;
+    opacity: 0.1;
 }
 </style>
 
@@ -100,7 +91,7 @@ export default {
     computed: {
         dragOptions() {
             return {
-                animation: 200,
+                animation: 250,
                 ghostClass: "drag-ghost"
             }
         }
@@ -122,7 +113,7 @@ export default {
         }
     },
     created() {
-        this.delaySaveOrder = _.debounce(this.saveOrder, 4000)
+        this.delaySaveOrder = _.debounce(this.saveOrder, 3000)
     },
     mounted() {
         this.setOrderedRecipes(_.cloneDeep(Object.values(this.user.recipes)))

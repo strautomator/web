@@ -56,7 +56,7 @@ export default {
                 for (let action of recipe.actions) {
                     if (action.type == "gear" && gearIds.indexOf(action.value) < 0) {
                         const title = `Invalid gear ${action.value}: ${action.friendlyValue}`
-                        const body = `Your automation "${recipe.title}" has an invalid gear set. Please update or delete it to avoid triggering unecessary alerts.`
+                        const body = `Your automation "${recipe.title}" has an invalid gear set. Please update it or delete it to avoid triggering unnecessary alerts.`
                         const href = `/automations/edit?id=${recipe.id}`
                         this.addNotification(title, body, href)
                     }
