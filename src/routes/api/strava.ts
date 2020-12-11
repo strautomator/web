@@ -160,12 +160,7 @@ router.get("/process-activity/:activityId", async (req, res) => {
 
         // Process the passed activity.
         const processedActivity = await strava.activities.processActivity(user, parseInt(req.params.activityId))
-
-        if (!processedActivity) {
-            throw new Error(`There was an issue processing the Strava activity ${req.params.activityId}`)
-        }
-
-        webserver.renderJson(req, res, processedActivity)
+        webserver.renderJson(req, res, processedActivity || {processed: false})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         const errorMessage = ex.toString()
