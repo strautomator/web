@@ -63,11 +63,8 @@ export default {
                 this.$axios.$delete(`/api/users/${userId}`)
                 this.accountDeleted = true
 
-                const logout = () => {
-                    this.$logout()
-                }
-
-                setTimeout(logout, 20000)
+                const logout = () => this.$logout()
+                setTimeout(logout, 3000)
             } catch (ex) {
                 this.$webError("AccountGoodbye.cancelAccount", ex)
             }
