@@ -5,7 +5,7 @@
                 <v-card-title class="accent">
                     <v-icon class="ml-n1 mr-2" color="primary">{{ gearIcon }}</v-icon>
                     <span>{{ gear.name }}</span>
-                    <v-spacer />
+                    <v-spacer></v-spacer>
                     <v-icon v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
                 </v-card-title>
             </n-link>
