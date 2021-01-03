@@ -39,7 +39,7 @@
                         </div>
                     </template>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
+                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
                         </v-btn>
@@ -67,7 +67,7 @@
                         </v-container>
                     </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" @click.stop="showActionDialog" rounded text small>
+                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new action
                         </v-btn>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="mt-4 d-flex">
                         <v-text-field v-model="recipeStats.counter" class="recipe-stats-counter" type="number" label="Counter" min="0" max="9999" dense outlined rounded></v-text-field>
-                        <v-btn color="primary" class="ml-2 mt-1" :disabled="!changedCounter" @click="setCounter" outlined rounded>
+                        <v-btn color="primary" class="ml-2 mt-1" title="Set new counter" :disabled="!changedCounter" @click="setCounter" outlined rounded>
                             <v-icon left>mdi-check-bold</v-icon>
                             Set
                         </v-btn>

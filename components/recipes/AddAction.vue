@@ -20,7 +20,7 @@
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
                             <div v-else-if="actionIsDescription">
-                                <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined></v-textarea>
+                                <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>

@@ -94,7 +94,7 @@
                                 Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).
                             </p>
                             <div>
-                                <v-textarea label="I'm cancelling my PRO subscription because..." v-model="unsubReason" maxlength="120" outlined></v-textarea>
+                                <v-textarea label="I'm cancelling my PRO subscription because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
