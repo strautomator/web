@@ -18,9 +18,9 @@
                 <p class="mt-3 text-center text-md-left">
                     <v-btn color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
                         <v-icon left>mdi-calendar-month</v-icon>
-                        My activities calendar
+                        My calendar
                     </v-btn>
-                    <v-btn class="mt-4 mt-md-0 ml-md-2" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
+                    <v-btn class="ml-2" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
                         <v-icon left>mdi-bell</v-icon>
                         My notifications
                     </v-btn>
