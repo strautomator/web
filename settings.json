@@ -8,10 +8,10 @@
 
 {
     "api": {
-        // API is rate limited to 240 requests per minute per instance, by default. If you wish to disable
+        // API is rate limited to 300 requests per minute per instance, by default. If you wish to disable
         // rate limiting altogether, set "rateLimit": false.
         "rateLimit": {
-            "max": 240,
+            "max": 300,
             "windowMs": 60000
         }
     },
