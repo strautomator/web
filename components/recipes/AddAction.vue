@@ -27,6 +27,7 @@
                             </div>
                             <div class="action-activity-tags" v-if="actionIsText">
                                 <h3 class="mb-2">Activity tags</h3>
+                                <v-chip @click="addTag('counter')" small>Counter</v-chip>
                                 <v-chip @click="addTag('distance')" small>Distance</v-chip>
                                 <v-chip @click="addTag('speedAvg')" small>Avg speed</v-chip>
                                 <v-chip @click="addTag('speedMax')" small>Max speed</v-chip>
@@ -38,11 +39,9 @@
                                 <v-chip @click="addTag('calories')" small>Calories</v-chip>
                                 <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
                                 <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
-                                <v-chip @click="addTag('dateStart')" small>Start time</v-chip>
-                                <v-chip @click="addTag('dateEnd')" small>End time</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
                                 <v-chip @click="addTag('movingTime')" small>Moving time</v-chip>
-                                <v-chip @click="addTag('device')" small>GPS device</v-chip>
+                                <v-chip @click="addTag('device')" small>Device</v-chip>
                                 <h3 class="mt-3 mb-2">Weather tags</h3>
                                 <v-chip @click="addTag('weather.icon')" small>Icon</v-chip>
                                 <v-chip @click="addTag('weather.summary')" small>Summary</v-chip>
