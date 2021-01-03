@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, users, weather, RecipeData, RecipeStats, UserData, UserPreferences, strava} from "strautomator-core"
+import {paypal, recipes, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences, strava} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -338,7 +338,7 @@ router.post("/:userId/recipes/order", async (req, res) => {
 })
 
 /**
- * Get recipe stats for the user.
+ * Get all the recipe stats for the user.
  */
 router.get("/:userId/recipes/stats", async (req, res) => {
     try {
@@ -348,10 +348,68 @@ router.get("/:userId/recipes/stats", async (req, res) => {
         const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
         if (!user) return
 
-        const arrStats = (await recipes.getStats(user)) as RecipeStats[]
+        const arrStats = (await recipes.stats.getStats(user)) as RecipeStatsData[]
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, arrStats)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get a single recipe stats for the user.
+ */
+router.get("/:userId/recipes/stats/:recipeId", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const recipeId = req.params.recipeId
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        if (!user.recipes[recipeId]) {
+            throw new Error("Invalid recipe")
+        }
+
+        const stats = (await recipes.stats.getStats(user, user.recipes[recipeId])) as RecipeStatsData
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, stats)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Update the counter for the specified recipe stats.
+ */
+router.post("/:userId/recipes/stats/:recipeId", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+        if (!req.body || !req.body.counter) throw new Error("Missing counter")
+
+        const counter = req.body.counter
+        const recipeId = req.params.recipeId
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        if (!user.recipes[recipeId]) {
+            throw new Error("Invalid recipe")
+        }
+
+        if (isNaN(counter)) {
+            throw new Error("Counter is not a valid number")
+        }
+
+        await recipes.stats.setCounter(user, user.recipes[recipeId], parseInt(counter))
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, {counter: counter})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

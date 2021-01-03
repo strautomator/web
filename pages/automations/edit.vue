@@ -77,6 +77,20 @@
                     </v-dialog>
                 </v-card-text>
             </v-card>
+            <v-card class="mt-4" v-if="hasCounter" outlined>
+                <v-card-text class="mb-0 pb-0">
+                    <div>
+                        This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.
+                    </div>
+                    <div class="mt-4 d-flex">
+                        <v-text-field v-model="recipeStats.counter" class="recipe-stats-counter" type="number" label="Counter" min="0" max="9999" dense outlined rounded></v-text-field>
+                        <v-btn color="primary" class="ml-2 mt-1" :disabled="!changedCounter" @click="setCounter" outlined rounded>
+                            <v-icon left>mdi-check-bold</v-icon>
+                            Set
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
             <div class="text-center text-md-left mt-4">
                 <v-btn color="primary" :disabled="!valid || overMaxRecipes" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
@@ -128,6 +142,12 @@
     </v-layout>
 </template>
 
+<style>
+.recipe-stats-counter {
+    max-width: 100px;
+}
+</style>
+
 <script>
 import _ from "lodash"
 import AddCondition from "~/components/recipes/AddCondition.vue"
@@ -162,6 +182,8 @@ export default {
 
         return {
             recipe: _.cloneDeep(recipe),
+            recipeStats: {counter: 0},
+            currentCounter: 0,
             valid: valid,
             disabledActions: [],
             actionDialog: false,
@@ -175,10 +197,31 @@ export default {
         overMaxRecipes() {
             if (!this.user) return false
             return !this.user.isPro && Object.keys(this.user.recipes).length > this.$store.state.freePlanDetails.maxRecipes
+        },
+        hasCounter() {
+            if (!this.recipe) return false
+            return _.find(this.recipe.actions, (a) => a.value && a.value.indexOf("${counter}") >= 0)
+        },
+        changedCounter() {
+            return this.recipeStats.counter != this.currentCounter
+        }
+    },
+    async fetch() {
+        if (!this.$route.query.id || !this.$store.state.user.recipes[this.$route.query.id]) return
+
+        try {
+            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}`)
+
+            if (recipeStats) {
+                this.recipeStats = recipeStats
+                this.currentCounter = recipeStats.counter
+            }
+        } catch (ex) {
+            this.$webError("UserAutomations.fetch", ex)
         }
     },
     beforeRouteLeave(to, from, next) {
-        if (this.hasChanges) {
+        if (this.hasChanges || this.changedCounter) {
             const answer = window.confirm("You have unsaved changes on this automation. Sure you want to leave?")
 
             if (answer) {
@@ -209,6 +252,18 @@ export default {
                 }
             } catch (ex) {
                 this.$webError("AutomationEdit.save", ex)
+            }
+        },
+        async setCounter() {
+            try {
+                this.currentCounter = this.recipeStats.counter
+
+                const user = this.$store.state.user
+                const url = `/api/users/${user.id}/recipes/stats/${this.recipe.id}`
+                const body = {id: this.recipe.id, counter: this.recipeStats.counter}
+                await this.$axios.$post(url, body)
+            } catch (ex) {
+                this.$webError("AutomationEdit.setCounter", ex)
             }
         },
         checkValid() {

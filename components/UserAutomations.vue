@@ -9,7 +9,7 @@
                                 <v-icon class="ml-n1 mr-2" color="primary" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
                                 <span class="primary--text">{{ recipe.title }}</span>
                                 <v-icon class="ml-2" v-show="hover" small>mdi-pencil-outline</v-icon>
-                                <v-spacer />
+                                <v-spacer></v-spacer>
                                 <v-icon class="drag-handle ml-1" title="Hold to reorder this automation recipe" v-if="!recipe.defaultFor">mdi-drag</v-icon>
                             </v-card-title>
                         </n-link>
@@ -26,7 +26,7 @@
                                 {{ actionSummary(action) }}
                             </li>
                         </ul>
-                        <div class="mt-2" v-if="recipeStats[recipe.id]">
+                        <div class="mt-2" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
                             <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                         </div>
                     </v-card-text>
@@ -103,7 +103,9 @@ export default {
 
             for (let stats of arrStats) {
                 const recipeId = stats.id.split("-")[1]
-                stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("ll")
+                if (stats.dateLastTrigger) {
+                    stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("ll")
+                }
                 recipeStats[recipeId] = stats
             }
 
