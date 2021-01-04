@@ -127,7 +127,7 @@ router.delete("/:userId", async (req, res) => {
 // --------------------------------------------------------------------------
 
 /**
- * Updated user preferences.
+ * Update user preferences.
  */
 router.post("/:userId/preferences", async (req, res) => {
     try {
