@@ -239,6 +239,10 @@ export default {
                 this.hasChanges = false
 
                 if (this.$refs.form.validate()) {
+                    if (this.changedCounter) {
+                        this.setCounter()
+                    }
+
                     if (this.recipe.defaultFor == null) {
                         delete this.recipe.defaultFor
                     }
