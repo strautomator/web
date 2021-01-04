@@ -47,6 +47,10 @@ export const mutations = {
         if (!state.user.preferences) state.user.preferences = {}
         state.user.preferences = Object.assign(state.user.preferences, data)
     },
+    setUserCalendarTemplate(state, data) {
+        if (!state.user.calendarTemplate) state.user.calendarTemplate = {}
+        state.user.calendarTemplate = Object.assign(state.user.calendarTemplate, data)
+    },
     setUserEmail(state, email) {
         state.user.email = email
     },

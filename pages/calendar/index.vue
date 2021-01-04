@@ -20,8 +20,8 @@
                         Use the following URL to subscribe directly on your Calendar client:
                     </p>
                     <div class="text-center text-md-left">
-                        <v-text-field label="URL" :value="'https://' + urlCalendar" readonly dense outlined rounded></v-text-field>
-                        <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
+                        <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                        <v-btn class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
@@ -31,7 +31,7 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <v-card v-if="user && !user.isPro" class="mt-5" outlined>
+            <v-card v-if="user && user.isPro" class="mt-5" outlined>
                 <v-card-title class="accent">
                     Events template
                 </v-card-title>
@@ -40,37 +40,40 @@
                         As a PRO user, you can customize the summary and details of events on exported calendars. Simply edit the fields below adding your desired tags, or leave blank to use the defaults.
                     </p>
                     <div>
-                        <v-text-field label="Event summary" v-model="calendarTemplate.eventSummary" :placeholder="sampleTemplate.eventSummary" dense outlined rounded></v-text-field>
+                        <v-text-field label="Event summary" v-model="calendarTemplate.eventSummary" :placeholder="sampleTemplate.eventSummary" hide-details dense outlined rounded></v-text-field>
                     </div>
                     <div>
-                        <v-textarea label="Event details" v-model="calendarTemplate.eventDetails" :placeholder="sampleTemplate.eventDetails" height="160" maxlength="255" dense outlined rounded no-resize></v-textarea>
+                        <v-textarea class="mt-3" label="Event details" v-model="calendarTemplate.eventDetails" :placeholder="sampleTemplate.eventDetails" height="160" maxlength="255" hide-details dense outlined rounded no-resize></v-textarea>
                     </div>
                     <div class="text-center text-md-left">
-                        <v-btn color="primary" title="Save your custom calendar template" @click="saveTemplate" rounded nuxt>
+                        <v-btn class="mt-4" color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
                             <v-icon left>mdi-content-save</v-icon>
                             Save template
                         </v-btn>
                     </div>
-                    <div class="mt-5 mb-0">
-                        <div class="caption mb-2">Tag format: ${tagName}. The following tags are available:</div>
-                        <v-chip class="mr-1 mb-2" small>icon</v-chip>
-                        <v-chip class="mr-1 mb-2" small>gear</v-chip>
-                        <v-chip class="mr-1 mb-2" small>distance</v-chip>
-                        <v-chip class="mr-1 mb-2" small>elevationGain</v-chip>
-                        <v-chip class="mr-1 mb-2" small>elevationMax</v-chip>
-                        <v-chip class="mr-1 mb-2" small>speedAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" small>speedMax</v-chip>
-                        <v-chip class="mr-1 mb-2" small>cadenceAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" small>wattsAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" small>wattsWeighted</v-chip>
-                        <v-chip class="mr-1 mb-2" small>wattsMax</v-chip>
-                        <v-chip class="mr-1 mb-2" small>hrAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" small>hrMax</v-chip>
-                        <v-chip class="mr-1 mb-2" small>calories</v-chip>
-                        <v-chip class="mr-1 mb-2" small>temperature</v-chip>
-                        <v-chip class="mr-1 mb-2" small>device</v-chip>
-                        <v-chip class="mr-1 mb-2" small>commute</v-chip>
-                    </div>
+                    <v-alert v-model="templateWarning" color="secondary" class="mt-4" icon="mdi-alert" rounded outlined dense>The new template will be applied once your calendar gets refreshed with new activities from Strava.</v-alert>
+                    <v-card class="mt-5 mb-0" outlined>
+                        <v-card-text>
+                            <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
+                            <v-chip class="mr-1 mb-2" small>icon</v-chip>
+                            <v-chip class="mr-1 mb-2" small>gear</v-chip>
+                            <v-chip class="mr-1 mb-2" small>distance</v-chip>
+                            <v-chip class="mr-1 mb-2" small>elevationGain</v-chip>
+                            <v-chip class="mr-1 mb-2" small>elevationMax</v-chip>
+                            <v-chip class="mr-1 mb-2" small>speedAvg</v-chip>
+                            <v-chip class="mr-1 mb-2" small>speedMax</v-chip>
+                            <v-chip class="mr-1 mb-2" small>cadenceAvg</v-chip>
+                            <v-chip class="mr-1 mb-2" small>wattsAvg</v-chip>
+                            <v-chip class="mr-1 mb-2" small>wattsWeighted</v-chip>
+                            <v-chip class="mr-1 mb-2" small>wattsMax</v-chip>
+                            <v-chip class="mr-1 mb-2" small>hrAvg</v-chip>
+                            <v-chip class="mr-1 mb-2" small>hrMax</v-chip>
+                            <v-chip class="mr-1 mb-2" small>calories</v-chip>
+                            <v-chip class="mr-1 mb-2" small>temperature</v-chip>
+                            <v-chip class="mr-1 mb-2" small>device</v-chip>
+                            <v-chip class="mr-1 mb-2" small>commute</v-chip>
+                        </v-card-text>
+                    </v-card>
                 </v-card-text>
             </v-card>
             <v-card class="mt-5" outlined>
@@ -126,13 +129,18 @@ export default {
         }
     },
     data() {
+        const calendarTemplate = this.$store.state.user.calendarTemplate || {}
+
         return {
             location: null,
             excludeCommutes: false,
+            templateWarning: false,
             sportTypes: [],
+            currentEventSummary: calendarTemplate.eventSummary || "",
+            currentEventDetails: calendarTemplate.eventDetails || "",
             calendarTemplate: {
-                eventSummary: "",
-                eventDetails: ""
+                eventSummary: calendarTemplate.eventSummary || "",
+                eventDetails: calendarTemplate.eventDetails || ""
             },
             sampleTemplate: {
                 eventSummary: "${name} ${icon}",
@@ -155,11 +163,24 @@ export default {
             const urlToken = this.$store.state.user.urlToken
 
             return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/activities.ics`
+        },
+        changedTemplate() {
+            return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails
         }
     },
     methods: {
         async saveTemplate() {
             try {
+                const user = this.$store.state.user
+                const url = `/api/calendar/${user.id}/template`
+
+                const data = {eventSummary: this.calendarTemplate.eventSummary.trim(), eventDetails: this.calendarTemplate.eventDetails.trim()}
+                await this.$axios.$post(url, data)
+                this.$store.commit("setUserCalendarTemplate", data)
+
+                this.currentEventSummary = data.eventSummary
+                this.currentEventDetails = data.eventDetails
+                this.templateWarning = true
             } catch (ex) {
                 this.$webError("Calendar.saveTemplate", ex)
             }

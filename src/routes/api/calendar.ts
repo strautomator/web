@@ -11,7 +11,7 @@ const settings = require("setmeup").settings
 /**
  * Update the user calendar template.
  */
-router.post("/:userId/calendar/template", async (req, res) => {
+router.post("/:userId/template", async (req, res) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -31,10 +31,10 @@ router.post("/:userId/calendar/template", async (req, res) => {
         }
 
         // If template is empty, force set to null.
-        if (calendarTemplate.eventSummary && calendarTemplate.eventSummary.toString().trim() == "") {
+        if (!calendarTemplate.eventSummary || calendarTemplate.eventSummary == "") {
             calendarTemplate.eventSummary = null
         }
-        if (calendarTemplate.eventDetails && calendarTemplate.eventDetails.toString().trim() == "") {
+        if (!calendarTemplate.eventDetails || calendarTemplate.eventDetails == "") {
             calendarTemplate.eventDetails = null
         }
 
@@ -67,9 +67,7 @@ router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
         // Get calendar options from query parameters.
         const options: CalendarOptions = {
             excludeCommutes: req.query.commutes === "0",
-            sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null,
-            eventSummary: user.calendarTemplate ? user.calendarTemplate.eventSummary : null,
-            eventDetails: user.calendarTemplate ? user.calendarTemplate.eventDetails : null
+            sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null
         }
 
         // Generate and render Strava activities as an iCalendar.
