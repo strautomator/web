@@ -27,7 +27,8 @@
                             </li>
                         </ul>
                         <div class="mt-2" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
-                            <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
+                            <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activities.length }} time(s), last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
+                            <v-chip class="mb-0 ml-1" v-if="hasCounter(recipe)" disabled outlined small>Counter: {{ recipeStats[recipe.id].counter }}</v-chip>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -121,6 +122,9 @@ export default {
         this.setOrderedRecipes(_.cloneDeep(Object.values(this.user.recipes)))
     },
     methods: {
+        hasCounter(recipe) {
+            return this.recipeStats[recipe.id] && this.recipeStats[recipe.id].counter > 0 && _.find(recipe.actions, (a) => a.value && a.value.indexOf("${counter}") >= 0)
+        },
         setOrderedRecipes(recipes) {
             if (!recipes) recipes = this.recipes
             this.recipes = _.sortBy(recipes, ["defaultFor", "order", "title"])
