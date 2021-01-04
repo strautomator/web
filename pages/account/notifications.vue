@@ -10,7 +10,7 @@
                 </v-alert>
             </div>
             <div v-else>
-                <v-alert class="mb-4" icon="mdi-bell-outline"> You have no unread notifications! </v-alert>
+                <v-alert class="mb-4" icon="mdi-bell-outline">You have no unread notifications!</v-alert>
             </div>
             <template v-if="readNotifications.length > 0">
                 <v-card class="mt-6" outlined>
