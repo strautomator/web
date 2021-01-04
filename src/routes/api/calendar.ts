@@ -1,11 +1,57 @@
 // Strautomator API: Calendar
 
-import {CalendarOptions, calendar, users} from "strautomator-core"
+import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "strautomator-core"
+import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
+
+/**
+ * Update the user calendar template.
+ */
+router.post("/:userId/calendar/template", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const userId = req.params.userId
+        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        if (!user) return
+
+        // Template is only available for PRO users.
+        if (!user.isPro) {
+            throw new Error("Custom calendar templates are not available on free accounts")
+        }
+
+        // Get template from body.
+        const calendarTemplate: UserCalendarTemplate = {
+            eventSummary: req.body.eventSummary,
+            eventDetails: req.body.eventDetails
+        }
+
+        // If template is empty, force set to null.
+        if (calendarTemplate.eventSummary && calendarTemplate.eventSummary.toString().trim() == "") {
+            calendarTemplate.eventSummary = null
+        }
+        if (calendarTemplate.eventDetails && calendarTemplate.eventDetails.toString().trim() == "") {
+            calendarTemplate.eventDetails = null
+        }
+
+        // Set user calendar template and save to the database.
+        const data: Partial<UserData> = {
+            id: userId,
+            calendarTemplate: calendarTemplate
+        }
+        await users.update(data)
+
+        logger.info("Routes", req.method, req.originalUrl, "Updated template")
+        webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 400)
+    }
+})
 
 /**
  * Return the Strava activities calendar for the specified user.
@@ -21,7 +67,9 @@ router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
         // Get calendar options from query parameters.
         const options: CalendarOptions = {
             excludeCommutes: req.query.commutes === "0",
-            sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null
+            sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null,
+            eventSummary: user.calendarTemplate ? user.calendarTemplate.eventSummary : null,
+            eventDetails: user.calendarTemplate ? user.calendarTemplate.eventDetails : null
         }
 
         // Generate and render Strava activities as an iCalendar.

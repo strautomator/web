@@ -8,7 +8,7 @@
                     {{ $store.state.freePlanDetails.maxCalendarDays }} days only.
                     <br v-if="$breakpoint.mdAndUp" />
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
-                    to export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities.
+                    to export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities and enable a custom events template on your Calendar.
                 </div>
             </v-alert>
             <v-card class="mt-5" outlined>
@@ -28,6 +28,48 @@
                         <div class="caption mt-3">
                             * The button above might not work on some Android devices.
                         </div>
+                    </div>
+                </v-card-text>
+            </v-card>
+            <v-card v-if="user && !user.isPro" class="mt-5" outlined>
+                <v-card-title class="accent">
+                    Events template
+                </v-card-title>
+                <v-card-text>
+                    <p class="mt-4">
+                        As a PRO user, you can customize the summary and details of events on exported calendars. Simply edit the fields below adding your desired tags, or leave blank to use the defaults.
+                    </p>
+                    <div>
+                        <v-text-field label="Event summary" v-model="calendarTemplate.eventSummary" :placeholder="sampleTemplate.eventSummary" dense outlined rounded></v-text-field>
+                    </div>
+                    <div>
+                        <v-textarea label="Event details" v-model="calendarTemplate.eventDetails" :placeholder="sampleTemplate.eventDetails" height="160" maxlength="255" dense outlined rounded no-resize></v-textarea>
+                    </div>
+                    <div class="text-center text-md-left">
+                        <v-btn color="primary" title="Save your custom calendar template" @click="saveTemplate" rounded nuxt>
+                            <v-icon left>mdi-content-save</v-icon>
+                            Save template
+                        </v-btn>
+                    </div>
+                    <div class="mt-5 mb-0">
+                        <div class="caption mb-2">Tag format: ${tagName}. The following tags are available:</div>
+                        <v-chip class="mr-1 mb-2" small>icon</v-chip>
+                        <v-chip class="mr-1 mb-2" small>gear</v-chip>
+                        <v-chip class="mr-1 mb-2" small>distance</v-chip>
+                        <v-chip class="mr-1 mb-2" small>elevationGain</v-chip>
+                        <v-chip class="mr-1 mb-2" small>elevationMax</v-chip>
+                        <v-chip class="mr-1 mb-2" small>speedAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" small>speedMax</v-chip>
+                        <v-chip class="mr-1 mb-2" small>cadenceAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" small>wattsAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" small>wattsWeighted</v-chip>
+                        <v-chip class="mr-1 mb-2" small>wattsMax</v-chip>
+                        <v-chip class="mr-1 mb-2" small>hrAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" small>hrMax</v-chip>
+                        <v-chip class="mr-1 mb-2" small>calories</v-chip>
+                        <v-chip class="mr-1 mb-2" small>temperature</v-chip>
+                        <v-chip class="mr-1 mb-2" small>device</v-chip>
+                        <v-chip class="mr-1 mb-2" small>commute</v-chip>
                     </div>
                 </v-card-text>
             </v-card>
@@ -87,7 +129,15 @@ export default {
         return {
             location: null,
             excludeCommutes: false,
-            sportTypes: []
+            sportTypes: [],
+            calendarTemplate: {
+                eventSummary: "",
+                eventDetails: ""
+            },
+            sampleTemplate: {
+                eventSummary: "${name} ${icon}",
+                eventDetails: "${distance} km - ${elevationGain} m\n${speedAvg} km/h\n${calories} kcal\n${hrAvg} bpm - ${wattsAvg} watts\n{description}"
+            }
         }
     },
     mounted() {
@@ -105,6 +155,14 @@ export default {
             const urlToken = this.$store.state.user.urlToken
 
             return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/activities.ics`
+        }
+    },
+    methods: {
+        async saveTemplate() {
+            try {
+            } catch (ex) {
+                this.$webError("Calendar.saveTemplate", ex)
+            }
         }
     }
 }
