@@ -59,6 +59,8 @@ export default {
 
         return {
             loading: true,
+            dayFormat: "MMM Do",
+            monthFormat: "MMM YYYY",
             chartSource: "automations",
             chartSourceList: chartSourceList,
             chartTypeList: chartTypeList,
@@ -106,8 +108,6 @@ export default {
                 this.loading = false
             }
 
-            const dayFormat = "MMM Do"
-            const monthFormat = "MMM YY"
             const now = this.$moment()
             const datasets = []
 
@@ -146,7 +146,16 @@ export default {
 
             // Iterate to create the data points.
             for (let i = this.period; i > 0; i--) {
-                now.add(1, "day")
+                if (this.period > 180) {
+                    i -= 14
+                    now.add(15, "days")
+                } else if (this.period > 90) {
+                    i -= 6
+                    now.add(7, "days")
+                } else {
+                    now.add(1, "days")
+                }
+
                 this.populateDatapoints(datasets, activities, now)
             }
 
@@ -167,7 +176,8 @@ export default {
                             {
                                 type: "time",
                                 time: {
-                                    unit: timeUnit
+                                    unit: timeUnit,
+                                    tooltipFormat: "YYYY-MM-DD"
                                 }
                             }
                         ],
@@ -179,6 +189,28 @@ export default {
                                 }
                             }
                         ]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: (items, data) => {
+                                const tti = items[0]
+                                const tDate = tti.label.toString()
+
+                                if (this.period > 180) {
+                                    const fromDate = this.$moment(tDate).subtract(15, "days")
+                                    const toDate = this.$moment(tDate)
+                                    return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
+                                }
+
+                                if (this.period > 90) {
+                                    const fromDate = this.$moment(tDate).subtract(7, "days")
+                                    const toDate = this.$moment(tDate)
+                                    return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
+                                }
+
+                                return this.$moment(tti.label).format(this.dayFormat)
+                            }
+                        }
                     }
                 },
                 data: {
@@ -187,7 +219,7 @@ export default {
             })
         },
         getActivityDateFilter(maxMoment) {
-            return (a) => this.$moment(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.unix()
+            return (a) => this.$moment(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.utc().unix()
         },
         populateDatapoints(datasets, activities, maxMoment) {
             const periodActivities = _.remove(activities, this.getActivityDateFilter(maxMoment))
