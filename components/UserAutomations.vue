@@ -123,7 +123,7 @@ export default {
     },
     methods: {
         hasCounter(recipe) {
-            return this.recipeStats[recipe.id] && this.recipeStats[recipe.id].counter > 0 && _.find(recipe.actions, (a) => a.value && a.value.indexOf("${counter}") >= 0)
+            return this.recipeStats[recipe.id] && this.recipeStats[recipe.id].counter > 0 && _.find(recipe.actions, (a) => _.isString(a.value) && a.value.indexOf("${counter}") >= 0)
         },
         setOrderedRecipes(recipes) {
             if (!recipes) recipes = this.recipes
