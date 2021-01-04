@@ -249,6 +249,10 @@ export default {
             {
                 condition: "bike tires were used for longer than 2 years",
                 action: "alert me via email"
+            },
+            {
+                condition: "activity passes on my favourite bakery",
+                action: "name it Cake Ride with an auto-incrementing counter"
             }
         ]
 
