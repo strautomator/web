@@ -200,7 +200,7 @@ export default {
         },
         hasCounter() {
             if (!this.recipe) return false
-            return _.find(this.recipe.actions, (a) => a.value && a.value.indexOf("${counter}") >= 0)
+            return _.find(this.recipe.actions, (a) => _.isString(a.value) && a.value.indexOf("${counter}") >= 0)
         },
         changedCounter() {
             return this.recipeStats.counter != this.currentCounter
