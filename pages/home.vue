@@ -253,6 +253,10 @@ export default {
             {
                 condition: "activity passes on my favourite bakery",
                 action: "name it Cake Ride with an auto-incrementing counter"
+            },
+            {
+                condition: "short rides to work",
+                action: "mark as commute and add a counter to the activity name"
             }
         ]
 
