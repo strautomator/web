@@ -21,12 +21,12 @@
                     </p>
                     <div class="text-center text-md-left">
                         <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                        <v-btn class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
+                        <v-btn elevation="1" class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
                         <div class="caption mt-3">
-                            * The button above might not work on some Android devices.
+                            * The button above might not work on some devices. If that happens, subscribe manually by copying the link.
                         </div>
                     </div>
                 </v-card-text>
@@ -40,40 +40,62 @@
                         As a PRO user, you can customize the summary and details of events on exported calendars. Simply edit the fields below adding your desired tags, or leave blank to use the defaults.
                     </p>
                     <div>
-                        <v-text-field label="Event summary" v-model="calendarTemplate.eventSummary" :placeholder="sampleTemplate.eventSummary" hide-details dense outlined rounded></v-text-field>
+                        <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
                     <div>
-                        <v-textarea class="mt-3" label="Event details" v-model="calendarTemplate.eventDetails" :placeholder="sampleTemplate.eventDetails" height="160" maxlength="255" hide-details dense outlined rounded no-resize></v-textarea>
+                        <v-textarea
+                            ref="eventDetailsInput"
+                            class="mt-3"
+                            label="Event details"
+                            v-model="calendarTemplate.eventDetails"
+                            height="160"
+                            maxlength="255"
+                            @focus="setActiveField('eventDetails')"
+                            hide-details
+                            dense
+                            outlined
+                            rounded
+                            no-resize
+                        ></v-textarea>
                     </div>
-                    <div class="text-center text-md-left">
-                        <v-btn class="mt-4" color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
+                    <div class="mt-2">
+                        <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
+                        <v-chip class="mr-1 mb-2" @click="addTag('icon')" small>icon</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('gear')" small>gear</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('distance')" small>distance</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('elevationGain')" small>elevationGain</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('elevationMax')" small>elevationMax</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('climbingRatio')" small>climbingRatio</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('speedAvg')" small>speedAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('speedMax')" small>speedMax</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>cadenceAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>hasPower*</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsAvg')" small>wattsAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsWeighted')" small>wattsWeighted</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsMax')" small>wattsMax</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hrAvg')" small>hrAvg</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hrMax')" small>hrMax</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('calories')" small>calories</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('device')" small>device</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('commute')" small>commute*</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('manual')" small>manual*</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('temperature')" small>temperature**</v-chip>
+                    </div>
+                    <div class="mt-2 text-center text-md-left">
+                        <v-btn elevation="1" color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
                             <v-icon left>mdi-content-save</v-icon>
                             Save template
                         </v-btn>
+                        <v-btn elevation="1" class="ml-2" color="accent" title="Save your custom calendar template" @click="setSampleTemplate" rounded nuxt>
+                            <v-icon left>mdi-text-box-outline</v-icon>
+                            Sample
+                        </v-btn>
                     </div>
+                    <ul class="caption mt-4 pl-4">
+                        <li>The "hasPower", "commute" and "manual" tags are boolean (yes or no)</li>
+                        <li>The "temperature" tag is the value measured by the GPS device</li>
+                    </ul>
                     <v-alert v-model="templateWarning" color="secondary" class="mt-4" icon="mdi-alert" rounded outlined dense>The new template will be applied once your calendar gets refreshed with new activities from Strava.</v-alert>
-                    <v-card class="mt-5 mb-0" outlined>
-                        <v-card-text>
-                            <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
-                            <v-chip class="mr-1 mb-2" small>icon</v-chip>
-                            <v-chip class="mr-1 mb-2" small>gear</v-chip>
-                            <v-chip class="mr-1 mb-2" small>distance</v-chip>
-                            <v-chip class="mr-1 mb-2" small>elevationGain</v-chip>
-                            <v-chip class="mr-1 mb-2" small>elevationMax</v-chip>
-                            <v-chip class="mr-1 mb-2" small>speedAvg</v-chip>
-                            <v-chip class="mr-1 mb-2" small>speedMax</v-chip>
-                            <v-chip class="mr-1 mb-2" small>cadenceAvg</v-chip>
-                            <v-chip class="mr-1 mb-2" small>wattsAvg</v-chip>
-                            <v-chip class="mr-1 mb-2" small>wattsWeighted</v-chip>
-                            <v-chip class="mr-1 mb-2" small>wattsMax</v-chip>
-                            <v-chip class="mr-1 mb-2" small>hrAvg</v-chip>
-                            <v-chip class="mr-1 mb-2" small>hrMax</v-chip>
-                            <v-chip class="mr-1 mb-2" small>calories</v-chip>
-                            <v-chip class="mr-1 mb-2" small>temperature</v-chip>
-                            <v-chip class="mr-1 mb-2" small>device</v-chip>
-                            <v-chip class="mr-1 mb-2" small>commute</v-chip>
-                        </v-card-text>
-                    </v-card>
                 </v-card-text>
             </v-card>
             <v-card class="mt-5" outlined>
@@ -136,6 +158,7 @@ export default {
             excludeCommutes: false,
             templateWarning: false,
             sportTypes: [],
+            activeField: "eventDetails",
             currentEventSummary: calendarTemplate.eventSummary || "",
             currentEventDetails: calendarTemplate.eventDetails || "",
             calendarTemplate: {
@@ -144,7 +167,7 @@ export default {
             },
             sampleTemplate: {
                 eventSummary: "${name} ${icon}",
-                eventDetails: "${distance} - ${elevationGain} m\n${speedAvg}\n${calories}\n${hrAvg} - ${wattsAvg}\n{description}"
+                eventDetails: "${distance} - ${elevationGain}\n${speedAvg}\n${calories}\n${hrAvg} - ${wattsAvg}\n{description}"
             }
         }
     },
@@ -184,6 +207,28 @@ export default {
             } catch (ex) {
                 this.$webError("Calendar.saveTemplate", ex)
             }
+        },
+        setSampleTemplate() {
+            this.calendarTemplate.eventSummary = this.sampleTemplate.eventSummary
+            this.calendarTemplate.eventDetails = this.sampleTemplate.eventDetails
+        },
+        setActiveField(field) {
+            this.activeField = field
+        },
+        addTag(tag) {
+            const textInput = this.$refs[`${this.activeField}Input`].$refs.input
+            const sentence = textInput.value
+            const len = sentence.length
+            const pos = textInput.selectionStart || 0
+
+            const before = sentence.substring(0, pos)
+            const after = sentence.substring(pos, len)
+
+            this.calendarTemplate[this.activeField] = before + "${" + tag + "}" + after
+
+            this.$nextTick().then(() => {
+                textInput.selectionStart = pos + tag.length
+            })
         }
     }
 }
