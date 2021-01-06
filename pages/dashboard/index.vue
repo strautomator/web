@@ -85,6 +85,9 @@
                                 </tr>
                             </tbody>
                         </v-simple-table>
+                        <div class="caption mt-5 ml-5">
+                            Please note that the list above does not show activities that were not updated by Strautomator.
+                        </div>
                     </v-card-text>
                 </v-card>
                 <v-alert class="mt-4 text-center text-md-left">
