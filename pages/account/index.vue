@@ -15,16 +15,17 @@
                 <p class="mt-1 caption">
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
-                <p class="mt-3 text-center text-md-left">
-                    <v-btn color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
+                <div class="ml-n1 mt-3 text-center text-md-left">
+                    <v-btn class="ma-1" color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
                         <v-icon left>mdi-calendar-month</v-icon>
                         My calendar
                     </v-btn>
-                    <v-btn class="ml-2" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
                         <v-icon left>mdi-bell</v-icon>
                         My notifications
                     </v-btn>
-                </p>
+                </div>
             </div>
             <v-card class="mt-5" outlined>
                 <v-card-title class="accent">
