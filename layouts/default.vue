@@ -9,10 +9,10 @@
             </v-toolbar-title>
 
             <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn to="/automations" router nuxt>Automations</v-btn>
-                <v-btn to="/gear" router nuxt>Gear</v-btn>
-                <v-btn to="/account" router nuxt>Account</v-btn>
-                <v-btn to="/help" router nuxt>Help</v-btn>
+                <v-btn elevation="1" to="/automations" router nuxt>Automations</v-btn>
+                <v-btn elevation="1" to="/gear" router nuxt>Gear</v-btn>
+                <v-btn elevation="1" to="/account" router nuxt>Account</v-btn>
+                <v-btn elevation="1" to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
 
             <v-spacer></v-spacer>
@@ -21,7 +21,7 @@
             <v-avatar class="ml-4" v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
                 <img :src="$store.state.user.profile.urlAvatar" />
             </v-avatar>
-            <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
+            <v-btn elevation="1" color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
                 <v-icon>mdi-logout</v-icon>
                 <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down caption">Logout</span>
             </v-btn>
@@ -48,23 +48,23 @@
             </div>
         </v-main>
         <v-bottom-navigation class="hidden-md-and-up" color="primary" :value="activeNavBtn" app grow>
-            <v-btn value="/dashboard" to="/dashboard" router nuxt>
+            <v-btn elevation="1" value="/dashboard" to="/dashboard" router nuxt>
                 <span>Dashboard</span>
                 <v-icon>mdi-home</v-icon>
             </v-btn>
-            <v-btn value="/automations" to="/automations" router nuxt>
+            <v-btn elevation="1" value="/automations" to="/automations" router nuxt>
                 <span>Automations</span>
                 <v-icon>mdi-file-tree</v-icon>
             </v-btn>
-            <v-btn value="/gear" to="/gear" router nuxt>
+            <v-btn elevation="1" value="/gear" to="/gear" router nuxt>
                 <span>Gear</span>
                 <v-icon>mdi-cog-refresh</v-icon>
             </v-btn>
-            <v-btn value="/account" to="/account" router nuxt>
+            <v-btn elevation="1" value="/account" to="/account" router nuxt>
                 <span>Account</span>
                 <v-icon>mdi-account</v-icon>
             </v-btn>
-            <v-btn value="/help" to="/help" v-show="false" router nuxt>
+            <v-btn elevation="1" value="/help" to="/help" v-show="false" router nuxt>
                 <span>Help</span>
                 <v-icon>mdi-help</v-icon>
             </v-btn>
@@ -76,7 +76,7 @@
                     <v-toolbar-title>Logout</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideLogoutDialog">
+                        <v-btn elevation="1" icon @click.stop="hideLogoutDialog">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </v-toolbar-items>
@@ -88,11 +88,11 @@
                     <p>To log back in please use the <strong>Connect with Strava</strong> button again on the homepage.</p>
                     <div class="text-right">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>
+                        <v-btn elevation="1" class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
-                        <v-btn color="removal" title="Yes, logout" @click="logout" rounded>
+                        <v-btn elevation="1" color="removal" title="Yes, logout" @click="logout" rounded>
                             <v-icon left>mdi-logout</v-icon>
                             Logout
                         </v-btn>

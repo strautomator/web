@@ -56,12 +56,12 @@
                             <ul class="pl-4 mb-4">
                                 <li v-for="comp in defaultComponents" :key="comp.name">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
                             </ul>
-                            <v-btn color="primary" title="Start with the default components" @click="createDefaults" rounded>
+                            <v-btn elevation="1" color="primary" title="Start with the default components" @click="createDefaults" rounded>
                                 <v-icon left>mdi-text-box-check</v-icon>
                                 Use defaults
                             </v-btn>
                         </div>
-                        <v-btn class="mt-4 ml-0" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded text small>
+                        <v-btn elevation="1" class="mt-4 ml-0" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new component
                         </v-btn>
@@ -72,12 +72,12 @@
             <past-usage-panel :gearwear-config="gearwearConfig" v-if="isNew && gearwearConfig.components.length > 0" />
 
             <div class="text-center text-md-left mt-5">
-                <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
+                <v-btn elevation="1" color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
                 </v-btn>
                 <div class="pa-3" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="removal" v-if="!isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
+                <v-btn elevation="1" color="removal" v-if="!isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
                 </v-btn>
@@ -93,7 +93,7 @@
                         <v-toolbar-title>Reset: {{ gearwearComponent.name }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
-                            <v-btn icon @click.stop="hideResetDialog">
+                            <v-btn elevation="1" icon @click.stop="hideResetDialog">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </v-toolbar-items>
@@ -103,11 +103,11 @@
                         <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Keep current tracking" @click.stop="hideResetDialog" text rounded>
+                            <v-btn elevation="1" class="mr-1" color="grey" title="Keep current tracking" @click.stop="hideResetDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="primary" title="Confirm and reset tracking" @click="resetTracking" rounded>
+                            <v-btn elevation="1" color="primary" title="Confirm and reset tracking" @click="resetTracking" rounded>
                                 <v-icon left>mdi-refresh</v-icon>
                                 Reset
                             </v-btn>
@@ -122,7 +122,7 @@
                         <v-toolbar-title>Delete: {{ gearwearComponent.name }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
-                            <v-btn icon @click.stop="hideDeleteComponentDialog">
+                            <v-btn elevation="1" icon @click.stop="hideDeleteComponentDialog">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </v-toolbar-items>
@@ -132,11 +132,11 @@
                         <p class="mt-2">Sure you want to delete this component?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
+                            <v-btn elevation="1" class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete component" @click="deleteComponent" rounded>
+                            <v-btn elevation="1" color="removal" title="Confirm and delete component" @click="deleteComponent" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>
@@ -151,7 +151,7 @@
                         <v-toolbar-title>Delete GearWear configuration</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
-                            <v-btn icon @click.stop="hideDeleteGearWearDialog">
+                            <v-btn elevation="1" icon @click.stop="hideDeleteGearWearDialog">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </v-toolbar-items>
@@ -163,11 +163,11 @@
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
+                            <v-btn elevation="1" class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete GearWear" @click="deleteGearWear" rounded>
+                            <v-btn elevation="1" color="removal" title="Confirm and delete GearWear" @click="deleteGearWear" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>

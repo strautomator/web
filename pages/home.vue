@@ -84,7 +84,7 @@
 
                         <h3 class="mt-4">Want to know more?</h3>
                         <div>
-                            <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
+                            <v-btn elevation="1" class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -103,7 +103,7 @@
         <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
             This website is using cookies!
             <template v-slot:action="{attrs}">
-                <v-btn v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+                <v-btn elevation="1" v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
             </template>
         </v-snackbar>
     </v-main>

@@ -15,7 +15,7 @@
                                 <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                             </div>
                             <div class="mr-2" v-if="deleteItemSelected == recipe.defaultFor">
-                                <v-btn color="removal" @click="deleteCondition({defaultFor: recipe.defaultFor})" rounded x-small>Delete</v-btn>
+                                <v-btn elevation="1" color="removal" @click="deleteCondition({defaultFor: recipe.defaultFor})" rounded x-small>Delete</v-btn>
                             </div>
                             <div>
                                 <span class="font-weight-bold">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</span>
@@ -30,7 +30,7 @@
                                     <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                                 </div>
                                 <div class="mr-2" v-if="deleteItemSelected == condition">
-                                    <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
+                                    <v-btn elevation="1" color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
                                 </div>
                                 <div>
                                     <span>{{ conditionSummary(condition) }}</span>
@@ -39,7 +39,7 @@
                         </div>
                     </template>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
+                        <v-btn elevation="1" class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
                         </v-btn>
@@ -59,7 +59,7 @@
                                 <v-icon v-if="deleteItemSelected == action" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
                             </div>
                             <div class="mr-2" v-if="deleteItemSelected == action">
-                                <v-btn color="removal" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
+                                <v-btn elevation="1" color="removal" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
                             </div>
                             <div>
                                 <span>{{ actionSummary(action) }}</span>
@@ -67,7 +67,7 @@
                         </v-container>
                     </div>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
+                        <v-btn elevation="1" class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
                             Add new action
                         </v-btn>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="mt-4 d-flex">
                         <v-text-field v-model="recipeStats.counter" class="recipe-stats-counter" type="number" label="Counter" min="0" max="9999" dense outlined rounded></v-text-field>
-                        <v-btn color="primary" class="ml-2 mt-1" title="Set new counter" :disabled="!changedCounter" @click="setCounter" outlined rounded>
+                        <v-btn elevation="1" color="primary" class="ml-2 mt-1" title="Set new counter" :disabled="!changedCounter" @click="setCounter" outlined rounded>
                             <v-icon left>mdi-check-bold</v-icon>
                             Set
                         </v-btn>
@@ -92,12 +92,12 @@
                 </v-card-text>
             </v-card>
             <div class="text-center text-md-left mt-4">
-                <v-btn color="primary" :disabled="!valid || overMaxRecipes" @click="save" rounded>
+                <v-btn elevation="1" color="primary" :disabled="!valid || overMaxRecipes" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
                 </v-btn>
                 <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="removal" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
+                <v-btn elevation="1" color="removal" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete automation
                 </v-btn>
@@ -114,7 +114,7 @@
                         <v-toolbar-title>Delete automation</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
-                            <v-btn icon @click.stop="hideDeleteDialog">
+                            <v-btn elevation="1" icon @click.stop="hideDeleteDialog">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </v-toolbar-items>
@@ -126,11 +126,11 @@
                         </p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>
+                            <v-btn elevation="1" class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>
+                            <v-btn elevation="1" color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>

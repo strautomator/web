@@ -5,7 +5,7 @@
                 <v-toolbar-title>Change email address</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
-                    <v-btn icon @click.stop="hideDialog">
+                    <v-btn elevation="1" icon @click.stop="hideDialog">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-toolbar-items>
@@ -19,11 +19,11 @@
                 </v-form>
                 <div class="text-right">
                     <v-spacer></v-spacer>
-                    <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideDialog" text rounded>
+                    <v-btn elevation="1" class="mr-1" color="grey" title="Stay here" @click.stop="hideDialog" text rounded>
                         <v-icon left>mdi-cancel</v-icon>
                         Cancel
                     </v-btn>
-                    <v-btn color="primary" title="Save email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>
+                    <v-btn elevation="1" color="primary" title="Save email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>
                         <v-icon left>mdi-check</v-icon>
                         Save email
                     </v-btn>
