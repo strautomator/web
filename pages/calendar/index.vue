@@ -227,7 +227,12 @@ export default {
             this.calendarTemplate[this.activeField] = before + "${" + tag + "}" + after
 
             this.$nextTick().then(() => {
-                textInput.selectionStart = pos + tag.length
+                textInput.focus()
+
+                if (textInput.setSelectionRange) {
+                    const range = pos + tag.length + 3
+                    textInput.setSelectionRange(range, range)
+                }
             })
         }
     }
