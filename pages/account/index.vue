@@ -7,7 +7,7 @@
                 <div class="mb-3">
                     <span class="mr-1" v-if="user.email">{{ user.email }}</span>
                     <br v-if="$breakpoint.mdAndDown" />
-                    <v-btn elevation="1" class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
+                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
                 <div>Account ID {{ user.id }}</div>
                 <div>Registered on {{ dateRegistered }}</div>
@@ -16,12 +16,12 @@
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
                 <div class="ml-n1 mt-3 text-center text-md-left">
-                    <v-btn elevation="1" class="ma-1" color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
+                    <v-btn class="ma-1" color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
                         <v-icon left>mdi-calendar-month</v-icon>
                         My calendar
                     </v-btn>
                     <br v-if="!$breakpoint.mdAndUp" />
-                    <v-btn elevation="1" class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
+                    <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
                         <v-icon left>mdi-bell</v-icon>
                         My notifications
                     </v-btn>
@@ -80,13 +80,13 @@
             <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
             <free-pro-table />
             <div class="mt-4 text-center text-md-left">
-                <v-btn elevation="1" color="primary" to="/billing" title="PRO Subscription" rounded nuxt>
+                <v-btn color="primary" to="/billing" title="PRO Subscription" rounded nuxt>
                     <v-icon left>mdi-credit-card-outline</v-icon>
                     {{ user.isPro ? "View my subscription" : "Subscribe to PRO" }}
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
-                <v-btn elevation="1" color="removal" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                <v-btn color="removal" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>

@@ -1,17 +1,17 @@
 <template>
     <div>
         <v-badge color="primary" offset-x="18" offset-y="18" v-if="unreadCount > 0" :content="unreadCount" bordered>
-            <v-btn elevation="1" @click="togglePanel()" title="View my notifications" icon>
+            <v-btn @click="togglePanel()" title="View my notifications" icon>
                 <v-icon>mdi-bell</v-icon>
             </v-btn>
         </v-badge>
         <v-snackbar v-model="visible" color="accent" elevation="24" timeout="-1" :max-width="960" :width="960" multi-line vertical rounded top>
             <template v-slot:action="{attrs}">
-                <v-btn elevation="1" v-if="unreadCount < 1" v-bind="attrs" color="primary" title="Close notifications" @click="hidePanel()" rounded text>
+                <v-btn v-if="unreadCount < 1" v-bind="attrs" color="primary" title="Close notifications" @click="hidePanel()" rounded text>
                     Close
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-btn elevation="1" v-else v-bind="attrs" color="primary" title="Go to next notification" @click="getNextUnread()" rounded text>
+                <v-btn v-else v-bind="attrs" color="primary" title="Go to next notification" @click="getNextUnread()" rounded text>
                     Next
                     <v-icon>mdi-arrow-right-bold</v-icon>
                 </v-btn>

@@ -3,7 +3,7 @@
         <v-container fluid>
             <h1 class="mb-4">
                 Hi {{ user ? user.profile.firstName : "guest" }}!
-                <v-btn elevation="1" class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
                     <v-icon small>mdi-poll</v-icon>
                 </v-btn>
             </h1>

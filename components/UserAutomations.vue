@@ -35,7 +35,7 @@
             </transition-group>
         </draggable>
         <div class="mt-5 text-center text-md-left">
-            <v-btn elevation="1" v-if="!needsProRecipes" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
+            <v-btn v-if="!needsProRecipes" color="primary" to="/automations/edit" title="Create a new automation" rounded nuxt>
                 <v-icon left>mdi-plus-circle</v-icon>
                 Create new automation
             </v-btn>
@@ -46,7 +46,7 @@
                         <br v-if="$breakpoint.mdAndUp" />
                         To have unlimited automations and access to all the features, you'll need a PRO account.
                     </p>
-                    <v-btn elevation="1" color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
                         Subscribe to PRO
                     </v-btn>

@@ -66,6 +66,49 @@ a {
     font-weight: bold;
 }
 
+.home-wrapper {
+    max-width: 660px;
+    margin: auto;
+    position: relative;
+    z-index: 99;
+}
+
+.home-panel {
+    box-shadow: 0 0 5px -1px #ffa000;
+}
+
+.home-chip {
+    background: rgb(33, 33, 33);
+    border-radius: 6px;
+    clear: both;
+    display: inline-block;
+    margin: 5px 0 5px 0;
+    min-width: 325px;
+    max-width: 490px;
+    padding: 8px 14px 8px 14px;
+    position: relative;
+}
+
+.home-chip .c-if,
+.home-chip .c-then {
+    font-weight: bold;
+}
+
+.home-faq h2 {
+    margin-left: -1px;
+    margin-bottom: 5px;
+}
+
+.home-faq div {
+    margin-bottom: 20px;
+}
+
+.home-screenshot {
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px #000000;
+    max-width: 300px;
+}
+
 .stripe {
     position: fixed;
     display: -webkit-box;

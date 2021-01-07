@@ -18,7 +18,7 @@
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
                                 <div v-for="plan in billingPlans" :key="plan.id">
-                                    <v-btn elevation="1" color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
+                                    <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
                                         <v-icon left>mdi-credit-card-outline</v-icon>
                                         ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
                                     </v-btn>
@@ -26,7 +26,7 @@
                             </v-col>
                             <v-col class="text-center mb-2">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
-                                    <v-btn elevation="1" color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
+                                    <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
                                         ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub
                                     </v-btn>
@@ -60,7 +60,7 @@
                             <div>Next payment: {{ nextPaymentDate }}</div>
                             <div>Last payment: {{ lastPaymentDate }}</div>
                             <div class="mt-6 text-center text-md-left">
-                                <v-btn elevation="1" color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
+                                <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
                                     Cancel subscription
                                 </v-btn>
@@ -84,7 +84,7 @@
                             <v-toolbar-title>Cancel subscription</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-toolbar-items>
-                                <v-btn elevation="1" icon @click.stop="hideUnsubDialog">
+                                <v-btn icon @click.stop="hideUnsubDialog">
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
                             </v-toolbar-items>
@@ -98,11 +98,11 @@
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
-                                <v-btn elevation="1" class="mr-1" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
+                                <v-btn class="mr-1" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
                                     <v-icon left>mdi-check</v-icon>
                                     Keep
                                 </v-btn>
-                                <v-btn elevation="1" color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>
+                                <v-btn color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
                                     Cancel subscription
                                 </v-btn>

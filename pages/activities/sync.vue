@@ -54,7 +54,7 @@
                                 {{ getDuration(activity.totalTime) }}
                             </td>
                             <td class="text-right">
-                                <v-btn elevation="1" color="primary" :title="`Try automations on activity ${activity.id}`" @click="syncActivity(activity.id)" icon>
+                                <v-btn color="primary" :title="`Try automations on activity ${activity.id}`" @click="syncActivity(activity.id)" icon>
                                     <v-icon>mdi-play-circle</v-icon>
                                 </v-btn>
                             </td>
@@ -69,7 +69,7 @@
                                 </div>
                             </td>
                             <td class="text-right">
-                                <v-btn elevation="1" color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Try automations on activity ${activityId}`" @click="syncActivity(activityId)" icon>
+                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Try automations on activity ${activityId}`" @click="syncActivity(activityId)" icon>
                                     <v-icon>mdi-play-circle</v-icon>
                                 </v-btn>
                             </td>
@@ -126,7 +126,7 @@
                     <div class="mt-6 text-center text-md-left">
                         Want to try with another activity?
                         <br v-if="!$breakpoint.mdAndUp" />
-                        <v-btn elevation="1" color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try again</v-btn>
+                        <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try again</v-btn>
                     </div>
                 </div>
             </template>

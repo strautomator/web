@@ -15,7 +15,7 @@
                     You don't have bikes or shoes registered on your Strava account. Please register them there first, and then refresh this page.
                     <div class="mt-4">
                         <a href="https://www.strava.com/settings/gear" target="strava">
-                            <v-btn elevation="1" color="primary" title="Manage my gear on Strava" rounded>
+                            <v-btn color="primary" title="Manage my gear on Strava" rounded>
                                 <v-icon left>mdi-open-in-new</v-icon>
                                 Manage gear on Strava
                             </v-btn>
@@ -26,7 +26,7 @@
             <template v-else>
                 <v-alert class="text-center text-md-left " v-if="!user.email">
                     <p>To get GearWear distance alerts, Strautomator needs to know your email address first.</p>
-                    <v-btn elevation="1" color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
+                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
                     <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
                 </v-alert>
                 <div class="mt-5 mb-2" v-if="isLoading">
@@ -46,7 +46,7 @@
                                 <tbody>
                                     <tr v-for="gear in gearWithoutConfig" :key="gear.id">
                                         <td class="pl-0 pr-0">
-                                            <v-btn elevation="1" color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="needsPro" nuxt text rounded small>
+                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="needsPro" nuxt text rounded small>
                                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
                                                 {{ gear.name }}
                                             </v-btn>
@@ -72,7 +72,7 @@
                         <br v-if="$breakpoint.mdAndUp" />
                         To use this feature with more bikes or shoes, you'll need a PRO account, or simply delete an existing configuration.
                     </p>
-                    <v-btn elevation="1" color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
                         Subscribe to PRO
                     </v-btn>
@@ -80,7 +80,7 @@
             </template>
             <div class="mt-5 text-center text-md-left" v-if="!needsPro && !noGear">
                 <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava">
-                    <v-btn elevation="1" color="primary" rounded>
+                    <v-btn color="primary" rounded>
                         <v-icon left>mdi-open-in-new</v-icon>
                         Manage gear on Strava
                     </v-btn>

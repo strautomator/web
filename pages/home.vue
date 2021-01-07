@@ -84,7 +84,7 @@
 
                         <h3 class="mt-4">Want to know more?</h3>
                         <div>
-                            <v-btn elevation="1" class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
+                            <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -103,56 +103,11 @@
         <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
             This website is using cookies!
             <template v-slot:action="{attrs}">
-                <v-btn elevation="1" v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+                <v-btn v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
             </template>
         </v-snackbar>
     </v-main>
 </template>
-
-<style>
-.home-wrapper {
-    max-width: 660px;
-    margin: auto;
-    position: relative;
-    z-index: 99;
-}
-
-.home-panel {
-    box-shadow: 0 0 5px -1px #ffa000;
-}
-
-.home-chip {
-    background: rgb(33, 33, 33);
-    border-radius: 6px;
-    clear: both;
-    display: inline-block;
-    margin: 5px 0 5px 0;
-    min-width: 325px;
-    max-width: 490px;
-    padding: 8px 14px 8px 14px;
-    position: relative;
-}
-
-.home-chip .c-if,
-.home-chip .c-then {
-    font-weight: bold;
-}
-
-.home-faq h2 {
-    margin-left: -1px;
-    margin-bottom: 5px;
-}
-
-.home-faq div {
-    margin-bottom: 20px;
-}
-
-.home-screenshot {
-    border-radius: 8px;
-    box-shadow: 0 0 0 1px #000000;
-    max-width: 300px;
-}
-</style>
 
 <script>
 import _ from "lodash"

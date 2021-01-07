@@ -4,7 +4,7 @@
             <v-toolbar-title>Action</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn elevation="1" icon @click="cancel">
+                <v-btn icon @click="cancel">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-toolbar-items>
@@ -54,7 +54,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn elevation="1" color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>
+                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save action
                             </v-btn>

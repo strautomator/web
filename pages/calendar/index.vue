@@ -21,7 +21,7 @@
                     </p>
                     <div class="text-center text-md-left">
                         <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                        <v-btn elevation="1" class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
+                        <v-btn class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
@@ -82,11 +82,11 @@
                         <v-chip class="mr-1 mb-2" @click="addTag('temperature')" small>temperature**</v-chip>
                     </div>
                     <div class="mt-2 text-center text-md-left">
-                        <v-btn elevation="1" color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
+                        <v-btn color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
                             <v-icon left>mdi-content-save</v-icon>
                             Save template
                         </v-btn>
-                        <v-btn elevation="1" class="ml-2" color="accent" title="Save your custom calendar template" @click="setSampleTemplate" rounded nuxt>
+                        <v-btn class="ml-2" color="accent" title="Save your custom calendar template" @click="setSampleTemplate" rounded nuxt>
                             <v-icon left>mdi-text-box-outline</v-icon>
                             Sample
                         </v-btn>

@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="mt-10 mb-4 text-center" title="Back to Strautomator home..." v-if="!loggedIn">
-                    <v-btn elevation="1" color="primary" @click="backHome" rounded>Back to home...</v-btn>
+                    <v-btn color="primary" @click="backHome" rounded>Back to home...</v-btn>
                 </div>
             </div>
         </v-container>

@@ -4,7 +4,7 @@
             <v-toolbar-title>{{ component && component.name ? "Edit" : "New" }} component</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn elevation="1" icon @click.stop="cancel">
+                <v-btn icon @click.stop="cancel">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-toolbar-items>
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <v-btn elevation="1" color="primary" :disabled="!hasAlert" @click="save" title="Save component details" rounded>
+                    <v-btn color="primary" :disabled="!hasAlert" @click="save" title="Save component details" rounded>
                         <v-icon left>mdi-check</v-icon>
                         Save component
                     </v-btn>

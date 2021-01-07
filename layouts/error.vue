@@ -33,7 +33,7 @@
                     </div>
                 </v-alert>
                 <div class="mt-6">
-                    <v-btn elevation="1" color="primary" title="Go back home..." @click="backHome" rounded small>Back home</v-btn>
+                    <v-btn color="primary" title="Go back home..." @click="backHome" rounded small>Back home</v-btn>
                 </div>
             </div>
         </div>

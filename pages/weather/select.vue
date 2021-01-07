@@ -7,7 +7,7 @@
                     The full selection of weather providers is available to PRO accounts only.
                 </p>
                 <div class="mt-6 text-center text-md-left">
-                    <v-btn elevation="1" color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
+                    <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
                         <v-icon left>mdi-credit-card-outline</v-icon>
                         Subscribe to PRO
                     </v-btn>
@@ -18,7 +18,7 @@
                     Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, and then you can select the provider with the most accurate results.
                 </p>
                 <div :class="{'text-center mt-6': !$breakpoint.mdAndUp}">
-                    <v-btn elevation="1" class="mr-2" color="primary" title="Get weather for my current location" v-if="!loading" @click="getPosition" rounded>
+                    <v-btn class="mr-2" color="primary" title="Get weather for my current location" v-if="!loading" @click="getPosition" rounded>
                         <v-icon left>mdi-weather-sunset-down</v-icon>
                         Get weather
                     </v-btn>
@@ -88,7 +88,7 @@
                     </div>
                 </v-radio-group>
                 <div class="mt-2">
-                    <v-btn elevation="1" color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
+                    <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
                         Use {{ weatherProvider }}
                     </v-btn>
