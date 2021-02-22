@@ -70,7 +70,7 @@
                             <h3 class="secondary--text ma-0 mb-2">Oops!</h3>
                             Seems like your subscription is missing some details on our end.
                             <br v-if="$breakpoint.mdAndUp" />
-                            Don't worry, your PRO account is still safe and I will troubleshoot this issue ASAP.
+                            Don't worry, your PRO account is safe and this issue will magically disappear in a few days.
                         </template>
                         <div class="mt-8 text-center text-md-left">
                             <n-link to="/account" title="Back to my account">Back to my account...</n-link>
