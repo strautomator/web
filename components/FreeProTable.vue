@@ -42,7 +42,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>Webhooks</td>
+                            <td>FTP auto update</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
@@ -51,6 +51,12 @@
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
+                        <tr>
+                            <td>Webhooks</td>
+                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                        </tr>
+
                         <tr>
                             <td>Price</td>
                             <td class="text-center">Free</td>

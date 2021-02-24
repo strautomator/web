@@ -47,6 +47,20 @@
                         </n-link>
                     </div>
                     <div class="mt-n1">
+                        <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
+                        <div class="body-2">
+                            Strautomator can automatically update your cycling FTP power based on your rides with power from the past 16 weeks.
+                        </div>
+                        <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
+                    </div>
+                    <div class="mb-8 mt-n2 text-center text-md-left">
+                        <v-btn v-if="ftpResult === null" class="ma-1" color="primary" title="Estimate my FTP" :disabled="ftpLoading" @click="estimateFTP" outlined rounded small>
+                            <v-icon left>mdi-flash</v-icon>
+                            {{ ftpLoading ? "Calculating, please wait..." : "What's my estimated FTP?" }}
+                        </v-btn>
+                        <v-chip color="primary" outlined v-else>{{ ftpResult ? `Estimated FTP: ${ftpResult.ftpWatts} watts` : "Not enough data to estimate your FTP" }}</v-chip>
+                    </div>
+                    <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
@@ -126,6 +140,7 @@ export default {
         const linksOn = user && user.preferences ? user.preferences.linksOn : defaultLinksOn
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
+        const ftpAutoUpdate = user && user.preferences ? user.preferences.ftpAutoUpdate : false
         const weatherProvider = user && user.preferences ? user.preferences.weatherProvider || null : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
@@ -146,6 +161,9 @@ export default {
             linksOn: linksOn || defaultLinksOn,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
+            ftpAutoUpdate: ftpAutoUpdate,
+            ftpResult: null,
+            ftpLoading: false,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             listWeatherProviders: listWeatherProviders,
@@ -164,6 +182,12 @@ export default {
         }
     },
     watch: {
+        ftpAutoUpdate(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
         linksOn(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
@@ -207,11 +231,29 @@ export default {
             this.emailDialog = false
             this.emailSaved = emailSaved
         },
+        async estimateFTP() {
+            this.ftpLoading = true
+
+            try {
+                const result = await this.$axios.$get(`/api/strava/ftp-estimate`)
+
+                if (!result) {
+                    this.ftpResult = false
+                } else {
+                    this.ftpResult = result
+                }
+            } catch (ex) {
+                this.$webError("Account.estimateFTP", ex)
+            }
+
+            this.ftpLoading = false
+        },
         async savePreferences() {
             this.savePending = false
 
             try {
                 const data = {
+                    ftpAutoUpdate: this.ftpAutoUpdate,
                     linksOn: this.linksOn,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,

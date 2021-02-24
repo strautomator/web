@@ -79,6 +79,7 @@ export default {
             {tag: "about", title: "About"},
             {tag: "automations", title: "Automations"},
             {tag: "gearwear", title: "GearWear"},
+            {tag: "ftp", title: "FTP autp update"},
             {tag: "calendar", title: "Calendar"},
             {tag: "subscription", title: "Free vs. PRO"},
             {tag: "security", title: "Security and privacy"},
