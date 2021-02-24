@@ -169,6 +169,31 @@ router.get("/process-activity/:activityId", async (req, res) => {
     }
 })
 
+// FTP ESTIMATOR
+// --------------------------------------------------------------------------
+
+/**
+ * Get estimated FTP based on activities during the past weeks.
+ */
+router.get("/ftp-estimate", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Weeks passed as a parameter?
+        const weeks: number = req.query.weeks ? parseInt(req.query.weeks as any) : null
+
+        // Estimate the athlete's FTP.
+        const data = await strava.activities.ftpFromActivities(user, weeks)
+        webserver.renderJson(req, res, data || false)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
 // WEBHOOKS
 // --------------------------------------------------------------------------
 
