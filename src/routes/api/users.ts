@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences, strava} from "strautomator-core"
+import {paypal, recipes, strava, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -160,6 +160,12 @@ router.post("/:userId/preferences", async (req, res) => {
         if (preferences.linksOn == 0 && !user.isPro) {
             preferences.linksOn = settings.plans.free.linksOn
             logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, linksOn changed from 0 to ${settings.plans.free.linksOn}`)
+        }
+
+        // Only PRO users can enable the FTP auto update.
+        if (preferences.ftpAutoUpdate && !user.isPro) {
+            preferences.ftpAutoUpdate = false
+            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, FTP auto update force disabled`)
         }
 
         // Make sure weather unit is valid.
