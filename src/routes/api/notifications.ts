@@ -17,8 +17,6 @@ router.get("/unread", async (req, res) => {
         if (!user) return
 
         const result = await notifications.getForUser(user, false)
-
-        logger.info("Routes", req.method, req.originalUrl, `Got ${result.length} unread notifications`)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -35,8 +33,6 @@ router.get("/all", async (req, res) => {
         if (!user) return
 
         const result = await notifications.getForUser(user, true)
-
-        logger.info("Routes", req.method, req.originalUrl, `Got ${result.length} notifications`)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -65,7 +61,7 @@ router.post("/read", async (req, res) => {
             if (read) result.push(id)
         }
 
-        logger.info("Routes", req.method, req.originalUrl, `Notifications read: ${result.join(", ")}`)
+        logger.info("Routes", req.method, req.originalUrl, `User ${user.id}, notifications read: ${result.join(", ")}`)
         webserver.renderJson(req, res, {read: result})
     } catch (ex) {
         const status = ex.message && ex.message.indexOf("not found") > 0 ? 404 : 400

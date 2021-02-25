@@ -67,14 +67,18 @@ export class Auth {
                 // User token is valid on Strava? Update previous token saved on the database.
                 if (athlete) {
                     user = await users.getById(athlete.id)
-                    user.stravaTokens.accessToken = token
-                    const newUserData = {
-                        id: user.id,
-                        stravaTokens: {previousAccessToken: token}
-                    }
 
-                    await users.update(newUserData)
-                    logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} - ${user.displayName}`)
+                    // Athlete found by ID Proceed updating the previous access token.
+                    if (user) {
+                        user.stravaTokens.accessToken = token
+                        const newUserData = {
+                            id: user.id,
+                            stravaTokens: {previousAccessToken: token}
+                        }
+
+                        await users.update(newUserData)
+                        logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} - ${user.displayName}`)
+                    }
                 }
             }
 

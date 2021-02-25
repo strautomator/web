@@ -190,7 +190,7 @@ router.post("/:userId/preferences", async (req, res) => {
         }
         await users.update(data)
 
-        logger.info("Routes", req.method, req.originalUrl, _.toPairs(preferences).join(" | "))
+        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, preferences)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

@@ -60,7 +60,8 @@ router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
     try {
         const user = await users.getById(req.params.userId)
 
-        // Validate user URL token.
+        // Validate user and URL token.
+        if (!user) throw new Error(`User ${user.id} not found`)
         if (!user.urlToken) throw new Error(`User ${user.id} has no URL token assigned`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
