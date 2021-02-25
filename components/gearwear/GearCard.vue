@@ -23,7 +23,7 @@
                             <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
                         </v-col>
                         <v-col class="pt-2 pt-md-0" cols="12" :sm="12" :md="7">
-                            <v-chip class="mr-3 ml-n1 mb-2" :class="getChipClass(comp)" :color="getChipColor(comp)" v-for="comp in gearwearConfig.components" :key="gear.id + comp.name + 'sm'">
+                            <v-chip class="mr-3 ml-n1 mb-2" v-for="comp in gearwearConfig.components" :class="getChipClass(comp)" :color="getChipColor(comp)" :to="getChipLink(comp)" :key="gear.id + comp.name + 'sm'" nuxt>
                                 <v-icon class="mr-1" v-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync-alert</v-icon>
                                 {{ getChipText(comp) }}
                             </v-chip>
@@ -104,6 +104,10 @@ export default {
         getChipText(comp) {
             if (this.$breakpoint.mdAndUp) return `${comp.name} - ${comp.currentDistance} ${this.units}`
             return comp.name
+        },
+        getChipLink(comp) {
+            const query = comp.currentDistance >= comp.alertDistance ? "reset" : "comp"
+            return `/gear/edit?id=${this.gear.id}&${query}=${comp.name}`
         }
     }
 }
