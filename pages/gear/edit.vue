@@ -99,7 +99,8 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-4">Confirm reset of "{{ gearwearComponent.name }}" back to 0?</p>
+                        <p class="mt-4">Confirm tracking reset for "{{ gearwearComponent.name }}"?</p>
+                        <p>Current usage: {{ gearwearComponent.currentDistance }} {{ distanceUnits }}, {{ getHours(gearwearComponent.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</p>
                         <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
@@ -296,20 +297,25 @@ export default {
                     }
                 }
             }
+
+            if (this.$route.query.reset) {
+                const component = _.find(this.gearwearConfig.components, {name: this.$route.query.reset})
+
+                if (component) {
+                    this.showResetDialog(component)
+                }
+            } else if (this.$route.query.comp) {
+                const component = _.find(this.gearwearConfig.components, {name: this.$route.query.comp})
+
+                if (component) {
+                    this.showComponentDialog(component)
+                }
+            }
         } catch (ex) {
             this.$webError("GearEdit.fetch", ex)
         }
 
         this.isLoading = false
-    },
-    mounted() {
-        if (this.$route.query.reset) {
-            const component = _.find(this.gearwearConfig.components, {name: this.$route.query.reset})
-
-            if (component) {
-                this.showResetDialog(component)
-            }
-        }
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges) {
