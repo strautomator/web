@@ -175,7 +175,7 @@ router.get("/process-activity/:activityId", async (req, res) => {
 /**
  * Get estimated FTP based on activities during the past weeks.
  */
-router.get("/ftp-estimate", async (req, res) => {
+router.get("/ftp/estimate", async (req, res) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -188,6 +188,34 @@ router.get("/ftp-estimate", async (req, res) => {
         // Estimate the athlete's FTP.
         const data = await strava.activities.ftpFromActivities(user, weeks)
         webserver.renderJson(req, res, data || false)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Update the user's FTP on Strava.
+ */
+router.post("/ftp/estimate", async (req, res) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        let ftp = req.body && req.body.ftp ? parseInt(req.body.ftp) : null
+
+        // Calculate the estimated FTP, if no value was passed.
+        if (!ftp) {
+            const data = await strava.activities.ftpFromActivities(user)
+            ftp = data.ftpWatts
+        }
+
+        // Update the user's FTP.
+        const updated = await strava.athletes.setAthleteFtp(user, ftp)
+        const result = updated ? {ftp: ftp} : false
+        webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)
@@ -294,7 +322,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         if (processed && !processed.error) user.dateLastProcessedActivity = now
 
         // Update user.
-        const updatedUser = {id: user.id, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
+        const updatedUser = {id: user.id, displayName: user.displayName, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
         await users.update(updatedUser)
 
         webserver.renderJson(req, res, {ok: true})
