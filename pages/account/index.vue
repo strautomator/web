@@ -49,7 +49,7 @@
                     <div class="mt-n1">
                         <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
                         <div class="body-2">
-                            Strautomator can automatically update your cycling FTP power based on your rides with power from the past few weeks.
+                            Strautomator can automatically update your cycling FTP based on your recent rides with a power meter.
                         </div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
@@ -137,7 +137,7 @@
                             <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $moment(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
                         <v-alert color="accent" v-if="ftpResult.recentlyUpdated">
-                            Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature again.
+                            Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature.
                         </v-alert>
                     </template>
 
