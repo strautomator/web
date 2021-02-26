@@ -128,6 +128,12 @@ export default {
 
             // Get all questions and answers.
             this.faq = await this.$axios.$get("/api/faq")
+
+            // Search uery passed via the URL?
+            if (this.$route.query && this.$route.query.q) {
+                this.searchValue = decodeURIComponent(this.$route.query.q)
+                this.searchQuery = this.searchValue
+            }
         } catch (ex) {
             this.$webError("Help.fetch", ex)
         }
