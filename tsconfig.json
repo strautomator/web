@@ -15,9 +15,9 @@
         }
     },
     "typedocOptions": {
+        "entryPoints": ["./src/"],
         "excludeExternals": true,
         "excludePrivate": true,
-        "mode": "modules",
         "name": "Strautomator Web",
         "out": "docs"
     }
