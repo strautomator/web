@@ -49,16 +49,15 @@
                     <div class="mt-n1">
                         <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
                         <div class="body-2">
-                            Strautomator can automatically update your cycling FTP power based on your rides with power from the past 16 weeks.
+                            Strautomator can automatically update your cycling FTP power based on your rides with power from the past few weeks.
                         </div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
                     <div class="mb-8 mt-n2 text-center text-md-left">
-                        <v-btn v-if="ftpResult === null" class="ma-1" color="primary" title="Estimate my FTP" :disabled="ftpLoading" @click="estimateFTP" outlined rounded small>
+                        <v-btn class="ma-1" color="primary" title="Estimate my FTP" @click="showFtpDialog" outlined rounded small>
                             <v-icon left>mdi-flash</v-icon>
-                            {{ ftpLoading ? "Calculating, please wait..." : "What's my estimated FTP?" }}
+                            What's my estimated FTP?
                         </v-btn>
-                        <v-chip color="primary" outlined v-else>{{ ftpResult ? `Estimated FTP: ${ftpResult.ftpWatts} watts` : "Not enough data to estimate your FTP" }}</v-chip>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
@@ -113,6 +112,49 @@
                 </template>
             </v-snackbar>
         </v-container>
+
+        <v-dialog v-model="ftpDialog" max-width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Estimated FTP</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideFtpDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4" v-if="!ftpResult">
+                        <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
+                        Estimating your FTP, please wait...
+                    </p>
+                    <template v-else>
+                        <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
+                        <p>
+                            Current FTP set on Strava: {{ ftpResult.ftpCurrentWatts ? `${ftpResult.ftpCurrentWatts} watts` : "not set" }}<br />
+                            Estimation based on {{ ftpResult.activityCount }} activities, with a highest calculated FTP of {{ ftpResult.bestWatts }} watts.<br />
+                            <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $moment(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
+                        </p>
+                        <v-alert color="accent" v-if="ftpResult.recentlyUpdated">
+                            Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature again.
+                        </v-alert>
+                    </template>
+
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="hideFtpDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Close
+                        </v-btn>
+                        <v-btn color="primary" title="Save the estimated FTP on Strava" :disabled="!ftpResult || ftpResult.recentlyUpdated" @click="saveEstimatedFtp" rounded>
+                            <v-icon left>mdi-cloud-upload</v-icon>
+                            Save to Strava
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-layout>
 </template>
 
@@ -163,7 +205,7 @@ export default {
             twitterShare: twitterShare,
             ftpAutoUpdate: ftpAutoUpdate,
             ftpResult: null,
-            ftpLoading: false,
+            ftpDialog: false,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             listWeatherProviders: listWeatherProviders,
@@ -231,11 +273,18 @@ export default {
             this.emailDialog = false
             this.emailSaved = emailSaved
         },
-        async estimateFTP() {
-            this.ftpLoading = true
+        showFtpDialog() {
+            this.ftpDialog = true
+            this.estimateFtp()
+        },
+        hideFtpDialog() {
+            this.ftpDialog = false
+        },
+        async estimateFtp() {
+            if (this.ftpResult) return
 
             try {
-                const result = await this.$axios.$get(`/api/strava/ftp-estimate`)
+                const result = await this.$axios.$get(`/api/strava/ftp/estimate`)
 
                 if (!result) {
                     this.ftpResult = false
@@ -243,10 +292,21 @@ export default {
                     this.ftpResult = result
                 }
             } catch (ex) {
-                this.$webError("Account.estimateFTP", ex)
+                this.$webError("Account.estimateFtp", ex)
             }
+        },
+        async saveEstimatedFtp() {
+            try {
+                const result = await this.$axios.$post(`/api/strava/ftp/estimate`, {ftp: this.ftpResult.ftpWatts})
 
-            this.ftpLoading = false
+                if (!result) {
+                    this.ftpResult.recentlyUpdated = true
+                } else {
+                    this.hideFtpDialog()
+                }
+            } catch (ex) {
+                this.$webError("Account.saveFtp", ex)
+            }
         },
         async savePreferences() {
             this.savePending = false
