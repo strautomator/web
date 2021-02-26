@@ -40,7 +40,8 @@ router.post("/:userId/template", async (req, res) => {
 
         // Set user calendar template and save to the database.
         const data: Partial<UserData> = {
-            id: userId,
+            id: user.id,
+            displayName: user.displayName,
             calendarTemplate: calendarTemplate
         }
         await users.update(data)

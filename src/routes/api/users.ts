@@ -52,7 +52,8 @@ router.get("/:userId", async (req, res) => {
             // Save updated profile on the database.
             const data: Partial<UserData> = {
                 id: userId,
-                profile: profile
+                profile: profile,
+                displayName: profile.username || profile.firstName || profile.lastName || "strava-user"
             }
             users.update(data)
 
@@ -185,7 +186,8 @@ router.post("/:userId/preferences", async (req, res) => {
 
         // Set user data and save to the database.
         const data: Partial<UserData> = {
-            id: userId,
+            id: user.id,
+            displayName: user.displayName,
             preferences: preferences
         }
         await users.update(data)

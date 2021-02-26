@@ -73,6 +73,7 @@ export class Auth {
                         user.stravaTokens.accessToken = token
                         const newUserData = {
                             id: user.id,
+                            displayName: user.displayName,
                             stravaTokens: {previousAccessToken: token}
                         }
 
