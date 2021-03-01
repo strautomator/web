@@ -157,16 +157,9 @@ router.post("/:userId/preferences", async (req, res) => {
             preferences.linksOn = req.body.linksOn
         }
 
-        // Only PRO users can disable the linkback.
-        if (preferences.linksOn == 0 && !user.isPro) {
-            preferences.linksOn = settings.plans.free.linksOn
-            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, linksOn changed from 0 to ${settings.plans.free.linksOn}`)
-        }
-
-        // Only PRO users can enable the FTP auto update.
-        if (preferences.ftpAutoUpdate && !user.isPro) {
-            preferences.ftpAutoUpdate = false
-            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, FTP auto update force disabled`)
+        // Make sure ftpAutoUpdate is valid.
+        if (!_.isNil(req.body.ftpAutoUpdate)) {
+            preferences.ftpAutoUpdate = req.body.ftpAutoUpdate ? true : false
         }
 
         // Make sure weather unit is valid.
@@ -182,6 +175,18 @@ router.post("/:userId/preferences", async (req, res) => {
         // Set twitter share preference?
         if (!_.isNil(req.body.twitterShare)) {
             preferences.twitterShare = req.body.twitterShare ? true : false
+        }
+
+        // Only PRO users can disable the linkback.
+        if (preferences.linksOn == 0 && !user.isPro) {
+            preferences.linksOn = settings.plans.free.linksOn
+            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, linksOn changed from 0 to ${settings.plans.free.linksOn}`)
+        }
+
+        // Only PRO users can enable the FTP auto update.
+        if (preferences.ftpAutoUpdate && !user.isPro) {
+            preferences.ftpAutoUpdate = false
+            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, FTP auto update force disabled`)
         }
 
         // Set user data and save to the database.
