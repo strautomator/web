@@ -7,6 +7,7 @@ export const state = () => ({
     recipeMaxLength: null,
     weatherProviders: null,
     linksOnPercent: null,
+    ftpWeeks: null,
     sportTypes: [],
     freePlanDetails: {},
     proPlanDetails: {}
@@ -39,6 +40,9 @@ export const mutations = {
     setPlanDetails(state, data) {
         state.freePlanDetails = data.free
         state.proPlanDetails = data.pro
+    },
+    setFtpWeeks(state, data) {
+        state.ftpWeeks = data
     },
     setUser(state, data) {
         state.user = data
@@ -102,6 +106,9 @@ export const actions = {
 
             // Set free / PRO plan details.
             commit("setPlanDetails", settings.plans)
+
+            // Set the FTP weeks default.
+            commit("setFtpWeeks", settings.strava.ftp.weeks)
         }
 
         let user = state.user
