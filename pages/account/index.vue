@@ -116,7 +116,7 @@
         <v-dialog v-model="ftpDialog" max-width="540" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
-                    <v-toolbar-title>Estimated FTP</v-toolbar-title>
+                    <v-toolbar-title>Estimate my FTP</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
                         <v-btn icon @click.stop="hideFtpDialog">
@@ -136,7 +136,8 @@
                             Estimation based on {{ ftpResult.activityCount }} activities, with a highest calculated FTP of {{ ftpResult.bestWatts }} watts.<br />
                             <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $moment(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
-                        <v-alert color="accent" v-if="ftpResult.recentlyUpdated">
+                        <p v-if="!ftpResult.recentlyUpdated">Do you want to save that value ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
+                        <v-alert color="accent" v-else>
                             Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature.
                         </v-alert>
                     </template>

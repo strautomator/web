@@ -14,6 +14,12 @@
                     <a class="secondary--text" href="https://status.strava.com" title="Strava API status">status.strava.com.</a>
                 </div>
             </v-alert>
+            <v-alert color="primary" border="top" v-if="!checkAnnouncement('ftp-estimation')" class="mb-4" colored-border>
+                <div class="font-weight-bold">NEW! FTP auto update</div>
+                <div>
+                    Testing...
+                </div>
+            </v-alert>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
             </div>
@@ -124,6 +130,7 @@ export default {
     },
     data() {
         return {
+            announcements: null,
             activities: null
         }
     },
@@ -134,6 +141,7 @@ export default {
     },
     async fetch() {
         try {
+            this.announcements = await this.$axios.$get(`/api/announcements/active`)
             this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=10`)
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
@@ -157,6 +165,15 @@ export default {
             const arr = Object.keys(fields)
             arr.sort()
             return arr.join(", ")
+        },
+        checkAnnouncement(key) {
+            return this.$cookies.get(`announcement-${key}`)
+        },
+        readAnnouncement(key) {
+            this.$cookies.set(`announcement-${key}`, true, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 365 * 10
+            })
         }
     }
 }

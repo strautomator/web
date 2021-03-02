@@ -94,13 +94,13 @@
                                 Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).
                             </p>
                             <div>
-                                <v-textarea label="I'm cancelling my PRO subscription because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
+                                <v-textarea label="I'm cancelling my subscription because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
                                 <v-btn class="mr-1" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
                                     <v-icon left>mdi-check</v-icon>
-                                    Keep
+                                    Keep it
                                 </v-btn>
                                 <v-btn color="removal" title="Confirm and unsubscribe" @click="unsubscribe" rounded>
                                     <v-icon left>mdi-cancel</v-icon>

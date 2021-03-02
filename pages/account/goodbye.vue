@@ -5,11 +5,11 @@
             <v-card>
                 <v-card-text>
                     <div v-if="!accountDeleted">
-                        <p>
-                            We hope this was just a mistake, so to double check: are you sure?
+                        <p class="font-weight-bold">
+                            Are you sure?
                         </p>
                         <p>
-                            Once you hit that button there's no way back, we'll delete your automations and the connection to your Strava account.
+                            Once you hit that button there's no way back. ALl your data will be deleted, and Strautomator will cancel its connection with your Strava account.
                         </p>
                         <div class="text-center mt-8">
                             <v-btn color="gray" class="mr-3" to="/account" title="Back to my account" text rounded nuxt>
