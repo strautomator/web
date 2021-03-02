@@ -13,15 +13,36 @@
 
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
-                        <p>
-                            Details coming soon...
-                        </p>
+                        <div class="text-left">
+                            <p>
+                                You can now have your Strava activities displayed on your favourite calendar app. Calendars are exported using the .ics format, and is compatible with most popular calendar applications and services (Google, Apple,
+                                Outlook, Thunderbird etc).
+                            </p>
+
+                            <h2 class="mb-2">How can I subscribe?</h2>
+                            <v-img class="mb-2" src="/images/feature/calendar-subscribe.png"></v-img>
+                            <div class="mb-8">
+                                <ul class="ml-n2 mb-4">
+                                    <li>Go to My Account, then My Calendar</li>
+                                    <li>Use the "Subscribe to calendar" button, or copy the URL directly from the text field</li>
+                                </ul>
+                                <p>
+                                    PRO users can export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities on their calendar, while free accounts are limited to the last
+                                    {{ $store.state.freePlanDetails.maxCalendarDays }} days.
+                                </p>
+                            </div>
+
+                            <h2 class="mt-4 mb-2">Customizing the calendar details</h2>
+                            <div class="mb-2">
+                                <p>PRO users can fully customize the template of the exported calendar, by setting their own calendar template. Speed, time, elevation, distance, temperature, device... use whatever you want!</p>
+                            </div>
+                        </div>
                     </v-card-text>
                 </v-card>
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/calendar" title="Calendar" rounded nuxt>
+                        <v-btn color="primary" to="/calendar" title="My Calendar" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
                             Go to My Calendar
                         </v-btn>
@@ -30,14 +51,19 @@
                         <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                     </div>
                 </div>
+
+                <feature-links />
             </div>
         </v-container>
     </v-main>
 </template>
 
 <script>
+import FeatureLinks from "~/components/FeatureLinks.vue"
+
 export default {
     layout: "landing",
+    components: {FeatureLinks},
     head() {
         return {
             title: "Export your Strava calendar"
