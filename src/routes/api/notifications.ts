@@ -44,16 +44,15 @@ router.get("/all", async (req, res) => {
  * When user opens a notifications, mark it as read.
  */
 router.post("/read", async (req, res) => {
+    const result = []
+
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const result = []
+        // Validate notification IDs.
         const notificationIds = req.body
-
-        if (!_.isArray(notificationIds)) {
-            throw new Error("Invalid notifications body")
-        }
+        if (!_.isArray(notificationIds)) throw new Error("Invalid notifications body")
 
         // Iterate notifications to make them as read.
         for (let id of notificationIds) {
@@ -62,12 +61,11 @@ router.post("/read", async (req, res) => {
         }
 
         logger.info("Routes", req.method, req.originalUrl, `User ${user.id}, notifications read: ${result.join(", ")}`)
-        webserver.renderJson(req, res, {read: result})
     } catch (ex) {
-        const status = ex.message && ex.message.indexOf("not found") > 0 ? 404 : 400
         logger.error("Routes", req.method, req.originalUrl, ex)
-        return webserver.renderError(req, res, ex, status)
     }
+
+    webserver.renderJson(req, res, {read: result})
 })
 
 export = router
