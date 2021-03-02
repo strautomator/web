@@ -15,7 +15,7 @@
                     <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                 </div>
 
-                <v-card color="black" class="mb-4 home-panel">
+                <v-card color="black" class="mb-2 home-panel">
                     <v-card-text>
                         <div class="home-faq mt-2 px-1 text-left">
                             <h2>How does it work?</h2>
@@ -81,13 +81,15 @@
                                 <img class="home-screenshot" src="/images/screenshot-5.jpg" />
                             </v-carousel-item>
                         </v-carousel>
-
-                        <h3 class="mt-4">Want to know more?</h3>
-                        <div>
-                            <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
-                        </div>
                     </v-card-text>
                 </v-card>
+
+                <feature-links />
+
+                <h3 class="mt-8">Want to know more?</h3>
+                <div>
+                    <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
+                </div>
             </div>
         </v-container>
         <div id="cookie-panel" class="hidden">
@@ -111,9 +113,11 @@
 
 <script>
 import _ from "lodash"
+import FeatureLinks from "~/components/FeatureLinks.vue"
 
 export default {
     layout: "landing",
+    components: {FeatureLinks},
     head() {
         return {
             title: "Automate your Strava"
@@ -212,6 +216,10 @@ export default {
             {
                 condition: "short rides to work",
                 action: "mark as commute and add a counter to the activity name"
+            },
+            {
+                condition: "no hard efforts during the past weeks",
+                action: "decrease my FTP setting on Strava"
             }
         ]
 
