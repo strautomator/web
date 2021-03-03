@@ -193,7 +193,13 @@ export default {
             arr.sort()
             return arr.join(", ")
         },
-        readAnnouncement() {
+        async readAnnouncement() {
+            try {
+                await this.$axios.$post(`/api/announcements/read`, {id: this.lastAnnouncement.id})
+            } catch (ex) {
+                console.error("Dashboard.readAnnouncement", ex)
+            }
+
             this.$cookies.set(`announcement-${this.lastAnnouncement.id}`, true, {
                 path: "/",
                 maxAge: 60 * 60 * 24 * 365 * 1
