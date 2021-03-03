@@ -16,6 +16,8 @@ router.get("/active", async (req, res) => {
         if (!user) return
 
         const result = await announcements.getActive()
+        result.forEach((a) => delete a.readCount)
+
         webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
