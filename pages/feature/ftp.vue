@@ -20,14 +20,19 @@
                             <div class="mb-8">
                                 <v-alert class="font-weight-bold">eFTP = (C<sup>+20%</sup> + H) / 2</v-alert>
                                 <ul class="mt-n1 ml-n2">
-                                    <li>C = current FTP on Strava, with a weight of +20%</li>
+                                    <li>C = current FTP on Strava, weighted to 120%</li>
                                     <li>H = estimated FTP for your highest power effort during the past {{ $store.state.ftpWeeks }} weeks</li>
                                 </ul>
-                                <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas, depending on the activity's total time:</div>
+                                <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas, depending on the activity's total time.</div>
                                 <ul class="ml-n2">
-                                    <li>95% of the average power if between 20 and 30 minutes</li>
-                                    <li>96% to 101% of the average power if betwen 30 minutes and 2 hours</li>
-                                    <li>100% + 2% of the average power for each hour above 1 hour</li>
+                                    <li>95% to 100% of the average power if betwen 20 minutes and 1 hour</li>
+                                    <li>102.5% of the average power for each extra hour after the first hour</li>
+                                </ul>
+                                <div class="mt-4 mb-2">Examples:</div>
+                                <ul class="ml-n2">
+                                    <li>200W for 20 minutes, FTP = 190W</li>
+                                    <li>200W for 1 hour, FTP = 200W</li>
+                                    <li>200W for 4 hours, FTP = 215W</li>
                                 </ul>
                             </div>
 
@@ -37,7 +42,7 @@
                                 <ul class="ml-n2">
                                     <li>Go to My Account</li>
                                     <li>Toggle the "FTP auto update" on</li>
-                                    <li>Your FTP will be automatically updated every week</li>
+                                    <li>Your FTP will be automatically updated every week (on Wednesdays)</li>
                                 </ul>
                                 <div class="mt-4">
                                     The FTP auto update is available to PRO accounts only. Users with a free account can still estimate and save their FTP to Strava manually, by using the "What's my estimated FTP" button.
@@ -46,7 +51,11 @@
 
                             <h2 class="mb-2">How accurate is the estimation?</h2>
                             <div class="mb-2">
-                                The estimation is quite conservative towards your current FTP. So if you're taking it easy on the bike for some weeks, it won't drastically underestimate your current threshold.
+                                The calculation of the FTP based on the activity power and time is using well known formulas.
+                            </div>
+                            <div class="mb-2">
+                                The final estimation of your FTP is quite conservative, as it gives more weight to your current FTP set on Strava. So if you're taking it easy on the bike for some weeks, it won't drastically underestimate your current
+                                threshold.
                             </div>
                         </div>
                     </v-card-text>
