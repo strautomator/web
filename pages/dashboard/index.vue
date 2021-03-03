@@ -7,17 +7,24 @@
                     <v-icon small>mdi-poll</v-icon>
                 </v-btn>
             </h1>
-            <v-alert color="error" border="top" v-if="stravaStatus" class="mb-4">
+            <v-alert v-if="stravaStatus" color="error" border="top" class="mb-4">
                 <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
                 <div>
                     Please note that some of the automations might fail to run during this incident. For more information please check
                     <a class="secondary--text" href="https://status.strava.com" title="Strava API status">status.strava.com.</a>
                 </div>
             </v-alert>
-            <v-alert color="primary" border="top" v-if="!checkAnnouncement('ftp-estimation')" class="mb-4" colored-border>
-                <div class="font-weight-bold">NEW! FTP auto update</div>
+            <v-alert v-else-if="lastAnnouncement" v-model="alertAnnouncement" color="accent" border="top" class="mb-4" dismissible>
+                <v-icon v-if="lastAnnouncement.newFeature" class="float-left mr-1">mdi-new-box</v-icon>
+                <div class="font-weight-bold mb-1">
+                    {{ lastAnnouncement.title }}
+                </div>
                 <div>
-                    Testing...
+                    {{ lastAnnouncement.body }}
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>
+                        More details...
+                    </n-link>
                 </div>
             </v-alert>
             <div v-if="!recipes || recipes.length == 0">
@@ -130,8 +137,10 @@ export default {
     },
     data() {
         return {
+            activities: null,
             announcements: null,
-            activities: null
+            lastAnnouncement: null,
+            alertAnnouncement: false
         }
     },
     computed: {
@@ -139,10 +148,28 @@ export default {
             return Object.values(this.user.recipes)
         }
     },
+    watch: {
+        alertAnnouncement: function(newVal, oldVal) {
+            if (oldVal && !newVal) {
+                this.readAnnouncement()
+            }
+        }
+    },
     async fetch() {
         try {
-            this.announcements = await this.$axios.$get(`/api/announcements/active`)
             this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=10`)
+            this.announcements = await this.$axios.$get(`/api/announcements/active`)
+
+            if (this.announcements.length > 0) {
+                while (this.announcements.length > 0 && !this.lastAnnouncement) {
+                    const ann = this.announcements.pop()
+
+                    if (!this.$cookies.get(`announcement-${ann.id}`)) {
+                        this.lastAnnouncement = ann
+                        this.alertAnnouncement = true
+                    }
+                }
+            }
         } catch (ex) {
             this.$webError("Dashboard.fetch", ex)
         }
@@ -166,14 +193,13 @@ export default {
             arr.sort()
             return arr.join(", ")
         },
-        checkAnnouncement(key) {
-            return this.$cookies.get(`announcement-${key}`)
-        },
-        readAnnouncement(key) {
-            this.$cookies.set(`announcement-${key}`, true, {
+        readAnnouncement() {
+            this.$cookies.set(`announcement-${this.lastAnnouncement.id}`, true, {
                 path: "/",
-                maxAge: 60 * 60 * 24 * 365 * 10
+                maxAge: 60 * 60 * 24 * 365 * 1
             })
+
+            this.lastAnnouncement = null
         }
     }
 }
