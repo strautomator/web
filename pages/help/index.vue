@@ -32,6 +32,8 @@
                     <v-btn color="primary" @click="backHome" rounded>Back to home...</v-btn>
                 </div>
             </div>
+
+            <feature-links />
         </v-container>
     </v-layout>
 </template>
@@ -59,9 +61,11 @@
 
 <script>
 import _ from "lodash"
+import FeatureLinks from "~/components/FeatureLinks.vue"
 
 export default {
     authenticated: false,
+    components: {FeatureLinks},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"
