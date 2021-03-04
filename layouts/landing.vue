@@ -8,10 +8,9 @@
             <img src="/images/strava-powered.svg" width="130" />
         </div>
         <div class="mb-6 text-center">
-            <n-link to="/help" title="Need help?"><v-icon>mdi-help-circle</v-icon></n-link>
-            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-4 ml-md-3">mdi-github</v-icon></a>
-            <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-4 ml-md-3">mdi-twitter</v-icon></a>
-            <a href="https://t.me/strautomator" title="Strautomator @ Telegram"><v-icon class="ml-4 ml-md-3">mdi-telegram</v-icon></a>
+            <n-link to="/help" title="Need help?"><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
+            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-2 mr-2">mdi-github</v-icon></a>
+            <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2 mr-2">mdi-twitter</v-icon></a>
         </div>
         <v-footer class="justify-center" color="#292929" height="100">
             <div class="title font-weight-light grey--text text--lighten-1 text-center">
