@@ -363,6 +363,9 @@ router.get("/:userId/recipes/stats", async (req, res) => {
 
         const arrStats = (await recipes.stats.getStats(user)) as RecipeStatsData[]
 
+        // We don't need full list of activity IDs sent to the client.
+        arrStats.forEach((s) => delete s.activities)
+
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, arrStats)
     } catch (ex) {
