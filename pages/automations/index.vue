@@ -27,8 +27,8 @@
             <div v-else>
                 <user-automations />
                 <v-alert class="mt-6 text-center text-md-left">
-                    Want to test your automations with a specific activity? You can
-                    <n-link to="/activities/sync" title="Try your automations" nuxt>try a manual sync.</n-link>
+                    Want to test your automations with a specific activity?
+                    <n-link to="/activities/sync" title="Manual automation trigger" nuxt>Try a manual sync.</n-link>
                 </v-alert>
             </div>
         </v-container>

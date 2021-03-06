@@ -86,11 +86,10 @@
                     </v-btn>
                 </a>
             </div>
-            <div class="mt-5 caption text-center text-md-left" v-if="!noGear">
-                Please note that tracking happens with a {{ previousDays }} days delay, so you have enough time to set the correct gear on recent activities.
-                <br v-if="$breakpoint.mdAndUp" />
-                Today's activities will be counted on {{ trackingDay }}.
-            </div>
+            <v-alert class="mt-6 text-center text-md-left text-caption" v-if="!noGear">
+                Please note that the activity tracking happens with a {{ previousDays }} days delay, so you have plenty of time to set the correct bike or shoes on recent activities.
+                <div class="mt-1">Today's activities will be counted on {{ trackingDay }}.</div>
+            </v-alert>
         </v-container>
         <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
             Your email was set to {{ $store.state.user.email }}!

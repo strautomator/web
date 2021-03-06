@@ -16,14 +16,13 @@
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
                 </p>
                 <div class="ml-n1 mt-3 text-center text-md-left">
-                    <v-btn class="ma-1" color="primary" to="/calendar" title="Calendar subscription" nuxt rounded>
+                    <v-btn class="ma-1" color="primary" to="/calendar" title="My calendar" nuxt rounded>
                         <v-icon left>mdi-calendar-month</v-icon>
-                        My calendar
+                        Calendar
                     </v-btn>
-                    <br v-if="!$breakpoint.mdAndUp" />
                     <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
                         <v-icon left>mdi-bell</v-icon>
-                        My notifications
+                        Notifications
                     </v-btn>
                 </div>
             </div>
@@ -64,13 +63,13 @@
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
                             <span v-else-if="linksOn > 0">A linkback {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
-                            <span v-else>A linkback won't be added to any of your activities.</span>
-                            <v-radio-group v-model="linksOn" row>
+                            <span v-else>A linkback won't be added to your activities.</span>
+                            <v-radio-group v-model="linksOn" :row="$breakpoint.mdAndUp">
                                 <v-radio label="100%" :value="1"></v-radio>
                                 <v-radio label="50%" :value="2"></v-radio>
                                 <v-radio label="20%" :value="5"></v-radio>
                                 <v-radio label="10%" :value="10"></v-radio>
-                                <v-radio class="mt-2 mt-md-0" :value="0" :label="user.isPro ? 'No links' : 'No links (PRO only)'" :disabled="!user.isPro"></v-radio>
+                                <v-radio :label="user.isPro ? 'No links' : 'No links (PRO only)'" :value="0" :disabled="!user.isPro"></v-radio>
                             </v-radio-group>
                         </div>
                     </div>
@@ -79,14 +78,14 @@
                         <div class="body-2">
                             Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?
                         </div>
-                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, use a hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Twitter sharing</h3>
                         <div class="body-2">
                             Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.
                         </div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share any of my activities'"></v-switch>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'"></v-switch>
                     </div>
                 </v-card-text>
             </v-card>
