@@ -49,6 +49,7 @@
                                 <v-chip @click="addTag('weather.humidity')" small>Humidity</v-chip>
                                 <v-chip @click="addTag('weather.pressure')" small>Pressure</v-chip>
                                 <v-chip @click="addTag('weather.windSpeed')" small>Wind speed</v-chip>
+                                <v-chip @click="addTag('weather.windDirection')" small>Wind dir.</v-chip>
                             </div>
                         </v-col>
                     </v-row>
