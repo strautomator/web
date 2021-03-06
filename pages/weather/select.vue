@@ -15,7 +15,7 @@
             </template>
             <template v-else-if="weatherSummaries.length == 0">
                 <p>
-                    Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, and then you can select the provider with the most accurate results.
+                    Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, so then you can select the one presenting the most accurate results.
                 </p>
                 <div :class="{'text-center mt-6': !$breakpoint.mdAndUp}">
                     <v-btn class="mr-2" color="primary" title="Get weather for my current location" v-if="!loading" @click="getPosition" rounded>
@@ -27,7 +27,7 @@
             </template>
             <template v-else>
                 <p>
-                    So, which provider has the most accurate conditions?
+                    So, which provider has the most accurate conditions on your location?
                 </p>
                 <v-radio-group v-model="weatherProvider">
                     <v-simple-table v-if="$breakpoint.mdAndUp">
@@ -45,7 +45,7 @@
                         <tbody>
                             <tr :class="{'primary--text': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
                                 <td>{{ summary.name }}</td>
-                                <td>{{ summary.icon }}</td>
+                                <td class="text-h5">{{ summary.icon }}</td>
                                 <td>{{ summary.temperature }}</td>
                                 <td>{{ summary.humidity }}</td>
                                 <td>{{ summary.windSpeed }}</td>
@@ -58,15 +58,12 @@
                         <v-card class="mb-2" v-for="summary in weatherSummaries" :key="summary.id">
                             <v-card-text>
                                 <div class="subtitle-1">
-                                    <span :class="{'primary--text': weatherProvider == summary.id}">{{ summary.name }}</span>
+                                    <span class="text-body-1 white--text" :class="{'primary--text': weatherProvider == summary.id}">{{ summary.icon }} {{ summary.name }}</span>
                                     <div class="float-right mt-1">
                                         <v-radio :value="summary.id"></v-radio>
                                     </div>
                                 </div>
                                 <div class="d-flex pa-0">
-                                    <div class="mr-3">
-                                        {{ summary.icon }}
-                                    </div>
                                     <div class="mr-3">
                                         <v-icon small>mdi-thermometer</v-icon>
                                         {{ summary.temperature }}
@@ -114,7 +111,7 @@ export default {
         return {
             loading: false,
             saved: false,
-            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "darksky" : "darksky",
+            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "climacell" : "climacell",
             weatherSummaries: []
         }
     },
@@ -138,6 +135,7 @@ export default {
                 const longitude = position.coords.longitude
 
                 const result = await this.$axios.$get(`/api/weather/${latitude.toFixed(4)},${longitude.toFixed(4)}`)
+                console.dir(result)
 
                 // Iterate weather summaries to set the provider name and append to the weatherSummaries list.
                 for (let id of Object.keys(result)) {
