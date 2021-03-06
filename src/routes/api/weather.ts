@@ -27,7 +27,7 @@ router.get("/:coordinates", async (req, res) => {
 
         for (let provider of weather.providers) {
             try {
-                const summary = await provider.getCurrentWeather(coordinates.split(","), user.preferences)
+                const summary = await provider.getWeather(coordinates.split(","), new Date(), user.preferences)
                 result[provider.name] = summary
             } catch (innerEx) {
                 logger.error("Routes", req.method, req.originalUrl, `Provider: ${provider.name}`, innerEx)
