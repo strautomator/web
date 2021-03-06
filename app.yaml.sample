@@ -34,6 +34,5 @@ env_variables:
     SMU_strava_api_clientId: "xxx"
     SMU_strava_api_clientSecret: "xxx"
     SMU_strava_api_verifyToken: "xxx"
-    SMU_weather_darksky_secret: "xxx"
     SMU_weather_openweathermap_secret: "xxx"
     SMU_weather_weatherbit_secret: "xxx"
