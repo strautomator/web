@@ -39,9 +39,9 @@
                         </div>
                     </template>
                     <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor || isMaxConditions()" @click.stop="showConditionDialog" rounded text small>
+                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                            Add new condition {{ isMaxConditions() ? " (max 3)" : "" }}
+                            Add new condition
                         </v-btn>
                     </div>
                     <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
@@ -273,9 +273,6 @@ export default {
         checkValid() {
             const hasConditions = this.recipe.defaultFor || this.recipe.conditions.length > 0
             this.valid = hasConditions && this.recipe.actions.length > 0
-        },
-        isMaxConditions() {
-            return !this.user.isPro && this.recipe.conditions.length >= this.$store.state.freePlanDetails.maxConditions
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")
