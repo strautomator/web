@@ -36,9 +36,10 @@ vue
                                 <ul class="ml-n2 mb-2">
                                     <li>ClimaCell</li>
                                     <li>OpenWeatherMap</li>
+                                    <li>Storm Glass</li>
+                                    <li>Visual Crossing</li>
                                     <li>Weatherbit</li>
                                     <li>Weather API</li>
-                                    <li>Dark Sky (phasing out)</li>
                                 </ul>
                                 <p>
                                     PRO users can choose their preferred weather provider, while free accounts are limited to the default provider for their current location.
