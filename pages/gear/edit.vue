@@ -23,7 +23,7 @@
                             <tbody>
                                 <tr v-for="comp of gearwearConfig.components" :key="comp.name">
                                     <td width="1" class="pl-3 pr-0">
-                                        <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-circle-edit-outline</v-icon>
+                                        <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-pencil-outline</v-icon>
                                     </td>
                                     <td width="2" class="pl-1 pr-1 pr-md-3 nowrap">
                                         <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
@@ -100,7 +100,7 @@
                     </v-toolbar>
                     <v-card-text>
                         <p class="mt-4">Confirm tracking reset for "{{ gearwearComponent.name }}"?</p>
-                        <p>Current usage: {{ gearwearComponent.currentDistance }} {{ distanceUnits }}, {{ getHours(gearwearComponent.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</p>
+                        <p>Current usage: {{ gearwearComponent.currentDistance }} {{ distanceUnits }}, {{ getHours(gearwearComponent.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</p>
                         <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
@@ -385,16 +385,16 @@ export default {
                     this.gearwearConfig.id = this.gear.id
                 }
 
-                if (this.gearwearComponent.name) {
-                    _.assign(this.gearwearComponent, component)
-                } else {
-                    this.gearwearConfig.components.push(component)
-                }
-
                 // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
                 const wasNotResetToday = component.lastResetDate != this.$moment().format("ll")
                 if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
                     this.resetDialog = true
+                } else {
+                    if (this.gearwearComponent.name) {
+                        _.assign(this.gearwearComponent, component)
+                    } else {
+                        this.gearwearConfig.components.push(component)
+                    }
                 }
 
                 this.hasChanges = true
