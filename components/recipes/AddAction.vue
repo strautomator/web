@@ -45,11 +45,13 @@
                                 <h3 class="mt-3 mb-2">Weather tags</h3>
                                 <v-chip @click="addTag('weather.icon')" small>Icon</v-chip>
                                 <v-chip @click="addTag('weather.summary')" small>Summary</v-chip>
-                                <v-chip @click="addTag('weather.temperature')" small>Temperature</v-chip>
+                                <v-chip @click="addTag('weather.temperature')" small>Temp. (real)</v-chip>
+                                <v-chip @click="addTag('weather.feelsLike')" small>Temp. (feels like)</v-chip>
                                 <v-chip @click="addTag('weather.humidity')" small>Humidity</v-chip>
                                 <v-chip @click="addTag('weather.pressure')" small>Pressure</v-chip>
                                 <v-chip @click="addTag('weather.windSpeed')" small>Wind speed</v-chip>
-                                <v-chip @click="addTag('weather.windDirection')" small>Wind dir.</v-chip>
+                                <v-chip @click="addTag('weather.windDirection')" small>Wind direction</v-chip>
+                                <v-chip @click="addTag('weather.precipitation')" small>Precipitation</v-chip>
                             </div>
                         </v-col>
                     </v-row>
