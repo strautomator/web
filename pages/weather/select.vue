@@ -49,7 +49,7 @@
                                 <td>{{ summary.temperature }}</td>
                                 <td>{{ summary.humidity }}</td>
                                 <td>{{ summary.windSpeed }}</td>
-                                <td>{{ summary.precipType || "-" }}</td>
+                                <td>{{ summary.precipitation || "-" }}</td>
                                 <td><v-radio :title="`Click to select ${summary.name}`" :value="summary.id"></v-radio></td>
                             </tr>
                         </tbody>
@@ -77,7 +77,7 @@
                                         {{ summary.windSpeed }}
                                     </div>
                                     <div>
-                                        {{ summary.precipType || "" }}
+                                        {{ summary.precipitation || "" }}
                                     </div>
                                 </div>
                             </v-card-text>
