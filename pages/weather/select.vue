@@ -43,10 +43,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr :class="{'primary--text': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
+                            <tr :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
                                 <td>{{ summary.name }}</td>
                                 <td class="text-h5">{{ summary.icon }}</td>
-                                <td>{{ summary.temperature }}</td>
+                                <td>{{ summary.temperature }} (feels {{ summary.feelsLike }})</td>
                                 <td>{{ summary.humidity }}</td>
                                 <td>{{ summary.windSpeed }}</td>
                                 <td>{{ summary.precipitation || "-" }}</td>
@@ -58,15 +58,15 @@
                         <v-card class="mb-2" v-for="summary in weatherSummaries" :key="summary.id">
                             <v-card-text>
                                 <div class="subtitle-1">
-                                    <span class="text-body-1 white--text" :class="{'primary--text': weatherProvider == summary.id}">{{ summary.icon }} {{ summary.name }}</span>
+                                    <span class="text-body-1" :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}">{{ summary.icon }} {{ summary.name }}</span>
                                     <div class="float-right mt-1">
                                         <v-radio :value="summary.id"></v-radio>
                                     </div>
                                 </div>
-                                <div class="d-flex pa-0">
+                                <div class="d-flex pa-0 mt-2">
                                     <div class="mr-3">
                                         <v-icon small>mdi-thermometer</v-icon>
-                                        {{ summary.temperature }}
+                                        {{ summary.temperature }} ({{ summary.feelsLike }})
                                     </div>
                                     <div class="mr-3">
                                         <v-icon small>mdi-water-percent</v-icon>
