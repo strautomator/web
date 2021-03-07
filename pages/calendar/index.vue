@@ -167,7 +167,7 @@ export default {
             },
             sampleTemplate: {
                 eventSummary: "${name} ${icon}",
-                eventDetails: "${distance} - ${elevationGain}\n${speedAvg}\n${calories}\n${hrAvg} - ${wattsAvg}\nGear: ${gear}\n{description}"
+                eventDetails: "${distance} - ${elevationGain}\n${speedAvg}\n${calories}\n${hrAvg} - ${wattsAvg}\nGear: ${gear}\n${description}"
             }
         }
     },
