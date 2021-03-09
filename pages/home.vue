@@ -21,12 +21,15 @@
                             <h2>How does it work?</h2>
                             <div>
                                 <p>
-                                    First you connect Strautomator to your Strava account. Then you create automations to automagically update your activities based on its properties like distance, speed, time, location, weather, and many more.
+                                    First you connect Strautomator to your Strava account. Then you create automations to automagically update your activities based on its properties like distance, speed, heart rate, time, location, weather, and many
+                                    more.
                                 </p>
                                 <p>
-                                    You can also register your shoes and bike components, to get an email alert letting you know when it's about time to change them. Never forget to swap a chain again!
+                                    You can also register your bike components to get an email letting you know when it's time to replace them. Never forget to swap a chain again!
                                 </p>
-                                <p><strong>NEW!</strong> Export your Strava activities to an iCalendar (.ics format).</p>
+                                <p>
+                                    New features and automation possibilities are being constantly added!
+                                </p>
                             </div>
                         </div>
 
@@ -41,50 +44,45 @@
                             </div>
                         </v-responsive>
 
-                        <div class="home-faq mt-6 px-1 text-left">
+                        <div class="home-faq mt-8 px-1 text-left">
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
-                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation recipes and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users.
-                                    Unlimited recipes, GearWear and extra features can be unlocked with a PRO subscription for ${{ $store.state.proPlanDetails.price.year }}
+                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users. Unlimited
+                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for ${{ $store.state.proPlanDetails.price.year }}
                                     / year, paid via PayPal.
                                 </p>
                             </div>
-                            <h2>Ready?</h2>
-                            <div>
-                                <p>
-                                    Start by connecting Strautomator with your Strava...
-                                </p>
-                            </div>
+                            <free-pro-table />
                         </div>
 
                         <div class="mt-6 mb-6">
                             <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
                         </div>
-
-                        <h2 class="display-1 font-weight-light mt-6 mb-4">Screenshots</h2>
-
-                        <v-carousel height="600" :interval="5500" cycle continuous hide-delimiter-background show-arrows-on-hover>
-                            <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-1.jpg" />
-                            </v-carousel-item>
-                            <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-2.jpg" />
-                            </v-carousel-item>
-                            <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-3.jpg" />
-                            </v-carousel-item>
-                            <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-4.jpg" />
-                            </v-carousel-item>
-                            <v-carousel-item>
-                                <img class="home-screenshot" src="/images/screenshot-5.jpg" />
-                            </v-carousel-item>
-                        </v-carousel>
                     </v-card-text>
                 </v-card>
 
                 <feature-links />
+
+                <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
+
+                <v-carousel height="600" :interval="5500" cycle continuous hide-delimiter-background show-arrows-on-hover>
+                    <v-carousel-item>
+                        <img class="home-screenshot" src="/images/screenshot-1.jpg" />
+                    </v-carousel-item>
+                    <v-carousel-item>
+                        <img class="home-screenshot" src="/images/screenshot-2.jpg" />
+                    </v-carousel-item>
+                    <v-carousel-item>
+                        <img class="home-screenshot" src="/images/screenshot-3.jpg" />
+                    </v-carousel-item>
+                    <v-carousel-item>
+                        <img class="home-screenshot" src="/images/screenshot-4.jpg" />
+                    </v-carousel-item>
+                    <v-carousel-item>
+                        <img class="home-screenshot" src="/images/screenshot-5.jpg" />
+                    </v-carousel-item>
+                </v-carousel>
 
                 <h3 class="mt-8">Want to know more?</h3>
                 <div>
@@ -114,10 +112,11 @@
 <script>
 import _ from "lodash"
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import FreeProTable from "~/components/FreeProTable.vue"
 
 export default {
     layout: "landing",
-    components: {FeatureLinks},
+    components: {FeatureLinks, FreeProTable},
     head() {
         return {
             title: "Automate your Strava"

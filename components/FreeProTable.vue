@@ -42,7 +42,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>No linkbacks</td>
+                            <td>No linkbacks *</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
@@ -56,7 +56,7 @@
                             <td>Price</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">
-                                <n-link to="/billing" v-if="!$store.state.user.isPro" nuxt>${{ $store.state.proPlanDetails.price.year }} / year</n-link>
+                                <n-link to="/billing" v-if="$store.state.user && !$store.state.user.isPro" nuxt>${{ $store.state.proPlanDetails.price.year }} / year</n-link>
                                 <span v-else>${{ $store.state.proPlanDetails.price.year }} / year</span>
                             </td>
                         </tr>
@@ -64,11 +64,8 @@
                 </v-simple-table>
             </v-card-text>
         </v-card>
-        <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
-            <li class="free-list-title">Free accounts are free forever, but...</li>
-            <li>Limited to {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations.</li>
-            <li>Exported calendars are limited to activities from the last {{ $store.state.freePlanDetails.maxCalendarDays }} days, using a standard template.</li>
-            <li>Will have a link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
+        <ul class="caption mt-1 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
+            <li>A link to Strautomator added to around {{ $store.state.linksOnPercent }}% of processed activities by default.</li>
         </ul>
     </div>
 </template>
