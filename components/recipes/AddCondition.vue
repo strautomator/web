@@ -17,9 +17,12 @@
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a condition..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-select>
                             <div v-if="selectedProperty.value">
-                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor" :hint="selectedOperator.description" :items="selectedProperty.operators" dense outlined rounded return-object></v-select>
+                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor && !isBoolean" :hint="selectedOperator.description" :items="selectedProperty.operators" dense outlined rounded return-object></v-select>
                                 <div v-if="isDefaultFor">
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="defaultSportTypes" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="isBoolean">
+                                    <v-select label="Yes or No?" v-model="selectedBoolean" :items="booleans" :rules="booleanInputRules" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isSportType">
                                     <v-select label="Sport types" v-model="selectedSportTypes" :items="sportTypes" :rules="sportInputRules" multiple dense outlined rounded return-object></v-select>
@@ -109,6 +112,9 @@ export default {
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
+        isBoolean() {
+            return this.selectedProperty.value && this.selectedProperty.type == "boolean"
+        },
         isLocation() {
             if (this.selectedProperty.value) {
                 return this.selectedProperty.value == "polyline" || this.selectedProperty.value.indexOf("location") >= 0
@@ -144,6 +150,10 @@ export default {
             if (!this.isSportType) return false
             return [() => this.selectedSportTypes.length > 0]
         },
+        booleanInputRules() {
+            if (!this.isBoolean) return false
+            return [() => this.selectedBoolean.value === false || this.selectedBoolean.value === true]
+        },
         weekdayInputRules() {
             if (!this.isWeekday) return false
             return [() => this.selectedWeekdays.length > 0]
@@ -173,6 +183,12 @@ export default {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
             }
 
+            // Boolean mapping.
+            const booleans = [
+                {value: true, text: "Yes"},
+                {value: false, text: "No"}
+            ]
+
             // Weekdays mapping.
             const weekdays = [
                 {value: 0, text: "Sunday"},
@@ -191,9 +207,11 @@ export default {
                 recipeProperties: recipeProperties,
                 defaultSportTypes: defaultSportTypes,
                 sportTypes: sportTypes,
+                booleans: booleans,
                 weekdays: weekdays,
-                selectedWeekdays: [],
                 selectedSportTypes: [],
+                selectedWeekdays: [],
+                selectedBoolean: {},
                 selectedProperty: {},
                 selectedOperator: {},
                 selectedDefaultFor: {},
@@ -223,7 +241,11 @@ export default {
                     }
 
                     // Get correct values for special conditions.
-                    if (this.isSportType) {
+                    if (this.isBoolean) {
+                        result.operator = "="
+                        result.value = this.selectedBoolean.value
+                        result.friendlyValue = this.selectedBoolean.text
+                    } else if (this.isSportType) {
                         result.value = _.map(this.selectedSportTypes, "value").join(",")
                         result.friendlyValue = _.map(this.selectedSportTypes, "text").join(" or ")
                     } else if (this.isWeekday) {

@@ -65,13 +65,19 @@ export default {
                 return `!!! ERROR !!! Invalid property: ${condition.property}`
             }
 
-            const fieldText = property.text
-            const operatorText = _.find(property.operators, {value: condition.operator}).text
+            let fieldText = property.text
+            let operatorText = _.find(property.operators, {value: condition.operator}).text
             let valueText = condition.friendlyValue || condition.value
 
+            // Has a suffix?
             const suffix = this.$store.state.user.profile.units == "imperial" ? property.impSuffix || property.suffix : property.suffix
             if (suffix) {
                 valueText += ` ${suffix}`
+            }
+
+            // Boolean do not need the "is" text.
+            if (property.type == "boolean") {
+                return `${fieldText}: ${valueText}`
             }
 
             return `${fieldText} ${operatorText} ${valueText}`
