@@ -4,6 +4,7 @@ import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "
 import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
+import moment = require("moment")
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
@@ -74,10 +75,12 @@ router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
+        const expires = moment.utc().add(settings.calendar.ttl, "seconds")
 
         logger.info("Routes", req.method, req.originalUrl)
         res.setHeader("Content-Type", "text/calendar")
-        res.setHeader("Cache-Control", `max-age=${settings.calendar.ttl}`)
+        res.setHeader("Cache-Control", `public, max-age=${settings.calendar.ttl}`)
+        res.setHeader("Expires", expires.format("ddd, DD MMM YYYY HH:mm:ss [GMT]"))
         return res.send(cal)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
