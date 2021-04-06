@@ -69,7 +69,7 @@
                 </v-card-text>
             </v-card>
 
-            <past-usage-panel :gearwear-config="gearwearConfig" v-if="isNew && gearwearConfig.components.length > 0" />
+            <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
             <div class="text-center text-md-left mt-5">
                 <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>

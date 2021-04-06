@@ -1,8 +1,14 @@
 <template>
     <v-card class="mt-4" outlined>
         <v-card-text class="pb-md-0">
-            <p>
-                If you don't know the current distance of the components, Strautomator can calculate it for you based on your past activities. Enter the date when you last swapped (at least some) of the components, up to 2 years ago.
+            <h3 v-if="isNew">
+                Don't know the current usage of the components above?
+            </h3>
+            <h3 4v-else>
+                Lost track of the current usage for this gear?
+            </h3>
+            <p class="mt-1">
+                Strautomator can calculate it for you! Enter the date when you last swapped the component(s), up to 2 years. ago.
             </p>
             <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
                 <div class="flex-grow-0">
@@ -14,11 +20,16 @@
                     </v-menu>
                 </div>
                 <div class="flex-grow-0">
-                    <v-btn color="primary" class="ml-2" title="Get distance from Strava activities" @click="getPastUsage" :disabled="pastLoading || !dateSince" rounded>
+                    <v-btn color="primary" class="ml-2" title="Get distance and hours from Strava activities" @click="getPastUsage" :disabled="pastLoading || !dateSince" rounded>
+                        <v-icon left>mdi-calculator</v-icon>
                         Get expected usage
                     </v-btn>
                 </div>
             </div>
+            <v-alert border="top" color="accent" v-if="!isNew && pastActivities > 0">
+                Since {{ formatDateSince }} this gear has been used for {{ pastUsage }}.<br />
+                You can manually update the relevant components with these values now.
+            </v-alert>
         </v-card-text>
 
         <v-snackbar v-model="pastUsageAlert" class="text-left" color="success" :timeout="5000" rounded bottom>
@@ -36,10 +47,10 @@
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
-    props: ["gearwear-config"],
+    props: ["gearwear-config", "is-new"],
     mixins: [userMixin],
     data() {
-        const dateSinceMin = this.$moment().subtract(1, "year")
+        const dateSinceMin = this.$moment().subtract(2, "years")
         const dateSinceMax = this.$moment()
 
         return {
@@ -84,20 +95,22 @@ export default {
                 distance = Math.round(distance)
                 hours = Math.round(elapsedTime / 3600)
 
-                if (distance > 0) {
-                    for (let comp of this.gearwearConfig.components) {
-                        comp.currentDistance = distance
+                // Only update if it's a new GearWear config.
+                if (this.isNew) {
+                    if (distance > 0) {
+                        for (let comp of this.gearwearConfig.components) {
+                            comp.currentDistance = distance
+                        }
                     }
-                }
-
-                if (hours > 0) {
-                    for (let comp of this.gearwearConfig.components) {
-                        comp.currentTime = elapsedTime
+                    if (hours > 0) {
+                        for (let comp of this.gearwearConfig.components) {
+                            comp.currentTime = elapsedTime
+                        }
                     }
                 }
 
                 this.pastActivities = activities.length
-                this.pastUsage = `${distance} ${this.distanceUnits}, ${hours} hours`
+                this.pastUsage = `${distance} ${this.distanceUnits} and ${hours} hours`
                 this.pastUsageAlert = true
             } catch (ex) {
                 this.$webError("GearPastUsagePanel.getPastUsage", ex)
