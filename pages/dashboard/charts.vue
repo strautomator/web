@@ -29,8 +29,9 @@
 </template>
 
 <script>
+import Chart from "chart.js/auto"
+import "chartjs-adapter-moment"
 import _ from "lodash"
-import Chart from "chart.js"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 
@@ -159,36 +160,37 @@ export default {
                 this.populateDatapoints(datasets, activities, now)
             }
 
+            // Canvas object.
+            const ctx = document.getElementById("main-chart")
+
             // Destroy existing chart.
             if (this.$data.chart) {
                 this.$data.chart.destroy()
+                ctx.innerHTML = ""
             }
 
             // Create Chart.js on canvas.
-            const ctx = document.getElementById("main-chart")
             this.$data.chart = new Chart(ctx, {
                 type: this.chartType,
                 options: {
                     responsive: true,
                     lineTension: 1,
                     scales: {
-                        xAxes: [
-                            {
-                                type: "time",
-                                time: {
-                                    unit: timeUnit,
-                                    tooltipFormat: "YYYY-MM-DD"
-                                }
+                        x: {
+                            axis: "x",
+                            type: "time",
+                            time: {
+                                unit: timeUnit,
+                                tooltipFormat: "YYYY-MM-DD"
                             }
-                        ],
-                        yAxes: [
-                            {
-                                ticks: {
-                                    precision: 0,
-                                    suggestedMax: this.suggestedMax
-                                }
+                        },
+                        y: {
+                            axis: "y",
+                            suggestedMax: this.suggestedMax,
+                            ticks: {
+                                precision: 0
                             }
-                        ]
+                        }
                     },
                     tooltips: {
                         callbacks: {
