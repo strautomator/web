@@ -132,10 +132,13 @@
                         <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
                         <p>
                             Current FTP set on Strava: {{ ftpResult.ftpCurrentWatts ? `${ftpResult.ftpCurrentWatts} watts` : "not set" }}<br />
-                            Estimation based on {{ ftpResult.activityCount }} activities, with a highest calculated FTP of {{ ftpResult.bestWatts }} watts.<br />
+                            Estimation based on {{ ftpResult.activityCount }} activities, and the highest effort of {{ ftpResult.bestWatts }} watts on
                             <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $moment(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
-                        <p v-if="!ftpResult.recentlyUpdated">Do you want to save that value ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
+                        <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">
+                            Keep up the good work!
+                        </p>
+                        <p v-else-if="!ftpResult.recentlyUpdated">Do you want to save that value ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
                         <v-alert color="accent" v-else>
                             Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature.
                         </v-alert>
@@ -147,7 +150,7 @@
                             <v-icon left>mdi-cancel</v-icon>
                             Close
                         </v-btn>
-                        <v-btn color="primary" title="Save the estimated FTP on Strava" :disabled="!ftpResult || ftpResult.recentlyUpdated" @click="saveEstimatedFtp" rounded>
+                        <v-btn color="primary" title="Save the estimated FTP on Strava" :disabled="!ftpResult || ftpResult.recentlyUpdated || ftpResult.ftpWatts == ftpResult.ftpCurrentWatts" @click="saveEstimatedFtp" rounded>
                             <v-icon left>mdi-cloud-upload</v-icon>
                             Save to Strava
                         </v-btn>
