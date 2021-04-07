@@ -4,7 +4,7 @@
             <h3 v-if="isNew">
                 Don't know the current usage of the components above?
             </h3>
-            <h3 4v-else>
+            <h3 v-else>
                 Lost track of the current usage for this gear?
             </h3>
             <p class="mt-1">
