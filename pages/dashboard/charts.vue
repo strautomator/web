@@ -30,7 +30,7 @@
 
 <script>
 import Chart from "chart.js/auto"
-import "chartjs-adapter-moment"
+import "chartjs-adapter-dayjs-3"
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
@@ -109,7 +109,7 @@ export default {
                 this.loading = false
             }
 
-            const now = this.$dayjs()
+            let now = this.$dayjs()
             const datasets = []
 
             // Default colours.
@@ -142,19 +142,19 @@ export default {
             this.suggestedMax = 1
 
             // Removed older activities.
-            now.subtract(this.period, "days")
+            now = now.subtract(this.period, "days")
             _.remove(activities, this.getActivityDateFilter(now))
 
             // Iterate to create the data points.
             for (let i = this.period; i > 0; i--) {
                 if (this.period > 180) {
                     i -= 14
-                    now.add(15, "days")
+                    now = now.add(15, "days")
                 } else if (this.period > 90) {
                     i -= 6
-                    now.add(7, "days")
+                    now = now.add(7, "days")
                 } else {
-                    now.add(1, "days")
+                    now = now.add(1, "days")
                 }
 
                 this.populateDatapoints(datasets, activities, now)
@@ -221,7 +221,7 @@ export default {
             })
         },
         getActivityDateFilter(maxMoment) {
-            return (a) => this.$dayjs(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxdayjs.utc().unix()
+            return (a) => this.$dayjs(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.utc().unix()
         },
         populateDatapoints(datasets, activities, maxMoment) {
             const periodActivities = _.remove(activities, this.getActivityDateFilter(maxMoment))

@@ -11,7 +11,7 @@ import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
 
-// Extends dayjs with UTC.
+// Extends dayjs with required plugins.
 dayjs.extend(dayjsUTC)
 
 // USER DATA

@@ -13,7 +13,7 @@ const settings = require("setmeup").settings
 const router = express.Router()
 const packageVersion = require("../../../package.json").version
 
-// Extends dayjs with UTC.
+// Extends dayjs with required plugins.
 dayjs.extend(dayjsUTC)
 
 /**
