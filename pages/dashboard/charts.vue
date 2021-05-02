@@ -109,7 +109,7 @@ export default {
                 this.loading = false
             }
 
-            const now = this.$moment()
+            const now = this.$dayjs()
             const datasets = []
 
             // Default colours.
@@ -199,18 +199,18 @@ export default {
                                 const tDate = tti.label.toString()
 
                                 if (this.period > 180) {
-                                    const fromDate = this.$moment(tDate).subtract(15, "days")
-                                    const toDate = this.$moment(tDate)
+                                    const fromDate = this.$dayjs(tDate).subtract(15, "days")
+                                    const toDate = this.$dayjs(tDate)
                                     return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
                                 }
 
                                 if (this.period > 90) {
-                                    const fromDate = this.$moment(tDate).subtract(7, "days")
-                                    const toDate = this.$moment(tDate)
+                                    const fromDate = this.$dayjs(tDate).subtract(7, "days")
+                                    const toDate = this.$dayjs(tDate)
                                     return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
                                 }
 
-                                return this.$moment(tti.label).format(this.dayFormat)
+                                return this.$dayjs(tti.label).format(this.dayFormat)
                             }
                         }
                     }
@@ -221,7 +221,7 @@ export default {
             })
         },
         getActivityDateFilter(maxMoment) {
-            return (a) => this.$moment(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.utc().unix()
+            return (a) => this.$dayjs(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxdayjs.utc().unix()
         },
         populateDatapoints(datasets, activities, maxMoment) {
             const periodActivities = _.remove(activities, this.getActivityDateFilter(maxMoment))

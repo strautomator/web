@@ -184,10 +184,10 @@ export default {
     },
     methods: {
         getDate(date) {
-            return this.$moment(date)
+            return this.$dayjs(date)
         },
         getDuration(seconds) {
-            const duration = this.$moment.duration(seconds, "seconds")
+            const duration = this.$dayjs.duration(seconds, "seconds")
             let hours = duration.hours()
             let minutes = duration.minutes()
             if (hours < 10) hours = `0${hours}`

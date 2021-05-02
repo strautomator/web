@@ -40,7 +40,7 @@
                     <div>Total distance ≈ {{ gear.distance }} {{ units }}</div>
                     <div v-if="gear.lastUpdate">
                         Last update:
-                        {{ $moment(gear.lastUpdate.date).format("MMM Do") }}
+                        {{ $dayjs(gear.lastUpdate.date).format("MMM Do") }}
                         -
                         {{ gear.lastUpdate.distance }} {{ units }}, {{ getHours(gear.lastUpdate.time) }}h
                     </div>
@@ -85,7 +85,7 @@ export default {
             }
 
             if (lastHistory) {
-                const date = this.$moment(lastHistory.date).format("ll")
+                const date = this.$dayjs(lastHistory.date).format("ll")
                 return `${lastComp.name} on ${date}`
             }
 

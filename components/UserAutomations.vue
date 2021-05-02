@@ -105,7 +105,7 @@ export default {
             for (let stats of arrStats) {
                 const recipeId = stats.id.split("-")[1]
                 if (stats.dateLastTrigger) {
-                    stats.dateLastTrigger = this.$moment(stats.dateLastTrigger).format("ll")
+                    stats.dateLastTrigger = this.$dayjs(stats.dateLastTrigger).format("ll")
                 }
                 recipeStats[recipeId] = stats
             }

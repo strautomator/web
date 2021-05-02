@@ -293,7 +293,7 @@ export default {
             if (this.gearwearConfig.components.length > 0) {
                 for (let comp of config.components) {
                     if (comp.history && comp.history.length > 0) {
-                        comp.lastResetDate = this.$moment(comp.history[comp.history.length - 1].date).format("YYYY-MM-DD")
+                        comp.lastResetDate = this.$dayjs(comp.history[comp.history.length - 1].date).format("YYYY-MM-DD")
                     }
                 }
             }
@@ -386,7 +386,7 @@ export default {
                 }
 
                 // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
-                const wasNotResetToday = component.lastResetDate != this.$moment().format("ll")
+                const wasNotResetToday = component.lastResetDate != this.$dayjs().format("ll")
                 if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
                     this.resetDialog = true
                 } else {
@@ -427,7 +427,7 @@ export default {
                 this.gearwearComponent.currentDistance = 0
                 this.gearwearComponent.currentTime = 0
                 this.gearwearComponent.dateAlertSent = null
-                this.gearwearComponent.lastResetDate = this.$moment().format("ll")
+                this.gearwearComponent.lastResetDate = this.$dayjs().format("ll")
             } catch (ex) {
                 this.$webError("GearEdit.resetTracking", ex)
             }

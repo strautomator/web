@@ -133,7 +133,7 @@
                         <p>
                             Current FTP set on Strava: {{ ftpResult.ftpCurrentWatts ? `${ftpResult.ftpCurrentWatts} watts` : "not set" }}<br />
                             Estimation based on {{ ftpResult.activityCount }} activities, and the highest effort of {{ ftpResult.bestWatts }} watts on
-                            <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $moment(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
+                            <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $dayjs(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
                         <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">
                             Keep up the good work!
@@ -220,7 +220,7 @@ export default {
     },
     computed: {
         dateRegistered() {
-            return this.$moment(this.user.dateRegistered).format("ll")
+            return this.$dayjs(this.user.dateRegistered).format("ll")
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`

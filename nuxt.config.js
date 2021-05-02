@@ -28,16 +28,25 @@ module.exports = {
 
     // Additional build config.
     build: {
+        babel: {
+            plugins: [["@babel/plugin-proposal-private-methods", {loose: true}]]
+        },
         optimization: {
             runtimeChunk: true
         }
     },
 
     // Additional builders.
-    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/moment", "@nuxtjs/google-analytics"],
+    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/dayjs", "@nuxtjs/google-analytics"],
 
     // Append global styles.
     css: ["@/assets/styles.scss"],
+
+    // Day.js options.
+    dayjs: {
+        locales: ["en"],
+        plugins: ["duration", "utc"]
+    },
 
     // Forced environment variables.
     env: {

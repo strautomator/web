@@ -129,7 +129,7 @@ export default {
         }
     },
     data() {
-        const now = this.$moment()
+        const now = this.$dayjs()
         const previousDays = 2
 
         return {

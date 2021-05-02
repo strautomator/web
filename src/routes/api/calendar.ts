@@ -4,10 +4,14 @@ import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "
 import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
-import moment = require("moment")
+import dayjs from "dayjs"
+import dayjsUTC from "dayjs/plugin/utc"
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
+
+// Extends dayjs with UTC.
+dayjs.extend(dayjsUTC)
 
 /**
  * Update the user calendar template.
@@ -75,7 +79,7 @@ router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
-        const expires = moment.utc().add(settings.calendar.ttl, "seconds")
+        const expires = dayjs.utc().add(settings.calendar.ttl, "seconds")
 
         logger.info("Routes", req.method, req.originalUrl)
         res.setHeader("Content-Type", "text/calendar")

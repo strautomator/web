@@ -5,12 +5,16 @@ import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
-import moment = require("moment")
+import dayjs from "dayjs"
+import dayjsUTC from "dayjs/plugin/utc"
 import webserver = require("../../webserver")
 const axios = require("axios").default
 const settings = require("setmeup").settings
 const router = express.Router()
 const packageVersion = require("../../../package.json").version
+
+// Extends dayjs with UTC.
+dayjs.extend(dayjsUTC)
 
 /**
  * Helper to validate incoming webhook events sent by Strava.
@@ -68,8 +72,8 @@ router.get("/activities/recent", async (req, res) => {
         if (limit > 50) limit = 50
 
         // Get activities for the past 21 days by default, with a hard limit of 30 days.
-        let timestamp = req.query.since ? moment.unix(parseInt(req.query.since as string)) : moment().subtract(21, "days")
-        let minTimestamp = moment().subtract(30, "days")
+        let timestamp = req.query.since ? dayjs.unix(parseInt(req.query.since as string)) : dayjs().subtract(21, "days")
+        let minTimestamp = dayjs().subtract(30, "days")
         if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
 
         // Fetch recent activities.
@@ -108,8 +112,8 @@ router.get("/activities/since/:timestamp", async (req, res) => {
         }
 
         // Hard limit of 2 years on the minimum timestamp.
-        let timestamp = moment.unix(parseInt(req.params.timestamp as string))
-        let minTimestamp = moment().subtract(731, "days")
+        let timestamp = dayjs.unix(parseInt(req.params.timestamp as string))
+        let minTimestamp = dayjs().subtract(731, "days")
         if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
 
         // Fetch activities since the specified timestamp.
@@ -300,7 +304,7 @@ router.get("/:urlToken/:userId/:activityId", async (req, res) => {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
 
-        const now = moment.utc().toDate()
+        const now = dayjs.utc().toDate()
         const userId = req.params.userId
         const user = await users.getById(userId)
 

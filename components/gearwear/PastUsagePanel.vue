@@ -50,8 +50,8 @@ export default {
     props: ["gearwear-config", "is-new"],
     mixins: [userMixin],
     data() {
-        const dateSinceMin = this.$moment().subtract(2, "years")
-        const dateSinceMax = this.$moment()
+        const dateSinceMin = this.$dayjs().subtract(2, "years")
+        const dateSinceMax = this.$dayjs()
 
         return {
             dateSince: null,
@@ -66,7 +66,7 @@ export default {
     },
     computed: {
         formatDateSince() {
-            return this.$moment(this.dateSince).format("ll")
+            return this.$dayjs(this.dateSince).format("ll")
         }
     },
     methods: {
@@ -74,7 +74,7 @@ export default {
             try {
                 this.pastLoading = true
 
-                const timestamp = this.$moment(this.dateSince).unix()
+                const timestamp = this.$dayjs(this.dateSince).unix()
                 const activities = await this.$axios.$get(`/api/strava/activities/since/${timestamp}?gear=${this.gearwearConfig.id}`)
 
                 let distance = 0

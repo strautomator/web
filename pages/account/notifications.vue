@@ -5,7 +5,7 @@
             <div v-if="unreadNotifications.length > 0">
                 <v-alert class="mb-4" v-for="notification in unreadNotifications" :key="notification.id">
                     <div class="text-body-1 font-weight-bold secondary--text">{{ notification.title }}</div>
-                    <div class="caption">{{ $moment(notification.dateCreated).format("lll") }}</div>
+                    <div class="caption">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
                     <div class="mt-2">{{ notification.body }}</div>
                 </v-alert>
             </div>
@@ -21,7 +21,7 @@
                             <div class="mt-4 mb-2" v-for="notification in readNotifications" :key="notification.id">
                                 <v-divider class="mb-2" />
                                 <div class="secondary--text">{{ notification.title }}</div>
-                                <div class="caption">{{ $moment(notification.dateCreated).format("lll") }}</div>
+                                <div class="caption">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
                                 <div class="mt-2">{{ notification.body }}</div>
                             </div>
                         </div>

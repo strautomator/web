@@ -179,7 +179,7 @@ export default {
     },
     methods: {
         getDate(activity) {
-            const aDate = this.$moment(activity.dateStart)
+            const aDate = this.$dayjs(activity.dateStart)
 
             // Always display local activity times!
             if (activity.utcStartOffset) {

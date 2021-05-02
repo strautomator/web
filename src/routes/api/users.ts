@@ -4,11 +4,15 @@ import {paypal, recipes, strava, users, weather, RecipeData, RecipeStatsData, Us
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
-import moment = require("moment")
+import dayjs from "dayjs"
+import dayjsUTC from "dayjs/plugin/utc"
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
+
+// Extends dayjs with UTC.
+dayjs.extend(dayjsUTC)
 
 // USER DATA
 // --------------------------------------------------------------------------
@@ -275,7 +279,7 @@ const routeUserRecipe = async (req: any, res: any) => {
                 throw new Error(`User ${user.id} is not PRO and has reached the free acccount limit`)
             }
 
-            const now = moment.utc().toDate()
+            const now = dayjs.utc().toDate()
             const hex = Math.round(now.getTime() / 1000).toString(16)
             recipe.id = "r" + hex.toLowerCase()
 
