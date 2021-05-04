@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "21.182.11727",
+    "version": "21.182.11742",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -46,6 +46,10 @@
         "nodemon": "^2.0.7",
         "ts-node": "^9.1.1",
         "typedoc": "^0.20.36"
+    },
+    "peerDependencies": {
+        "anyhow": "^2.2.1",
+        "setmeup": "^1.7.0"
     },
     "nodemonConfig": {
         "ignore": [
