@@ -11,7 +11,7 @@
         "noUnusedLocals": true,
         "declaration": true,
         "skipLibCheck": true,
-        "typeRoots": ["node_modules/@types", "lib"],
+        "typeRoots": ["node_modules/@types"],
         "paths": {
             "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
         }
