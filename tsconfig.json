@@ -10,6 +10,8 @@
         "noUnusedParameters": true,
         "noUnusedLocals": true,
         "declaration": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@types", "lib"],
         "paths": {
             "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
         }
