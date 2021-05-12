@@ -26,7 +26,7 @@
                                 <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas, depending on the activity's total time.</div>
                                 <ul class="ml-n2">
                                     <li>95% to 100% of the average power if betwen 20 minutes and 1 hour</li>
-                                    <li>103% of the average power for each extra hour after the first hour</li>
+                                    <li>103.5% of the average power for each extra hour after the first hour</li>
                                 </ul>
                                 <div class="mt-4 mb-2">Examples:</div>
                                 <ul class="ml-n2">
