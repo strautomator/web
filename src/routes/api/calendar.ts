@@ -1,7 +1,8 @@
 // Strautomator API: Calendar
 
-import {CalendarOptions, UserData, UserCalendarTemplate, calendar, dayjs, users} from "strautomator-core"
+import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "strautomator-core"
 import auth from "../auth"
+import dayjs from "../../dayjs"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")

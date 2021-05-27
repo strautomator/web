@@ -1,7 +1,8 @@
 // Strautomator API: Strava routes
 
-import {dayjs, strava, users, UserData} from "strautomator-core"
+import {strava, users, UserData} from "strautomator-core"
 import auth from "../auth"
+import dayjs from "../../dayjs"
 import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
