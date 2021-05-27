@@ -21,10 +21,15 @@ Vue.prototype.$webError = async (method, ex) => {
             const logger = require("anyhow")
             logger.error("Vue", method, `Status ${status}`, `${title || "Error"} - ${message}`)
         } else {
-            this.$ga.exception(message)
+            try {
+                if (this.$ga) this.$ga.exception(message)
+            } catch (gaEx) {
+                console.error(gaEx)
+            }
+
             document.location.href = `/error?status=${encodeURIComponent(status)}&message=${encodeURIComponent(message)}&title=${encodeURIComponent(title)}`
         }
-    } catch (ex2) {
-        console.error("Vue.webError", ex, ex2)
+    } catch (innerEx) {
+        console.error("Vue.webError", ex, innerEx)
     }
 }
