@@ -1,20 +1,15 @@
 // Strautomator API: Strava routes
 
-import {strava, users, UserData} from "strautomator-core"
+import {dayjs, strava, users, UserData} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
-import dayjs from "dayjs"
-import dayjsUTC from "dayjs/plugin/utc"
 import webserver = require("../../webserver")
 const axios = require("axios").default
 const settings = require("setmeup").settings
 const router = express.Router()
 const packageVersion = require("../../../package.json").version
-
-// Extends dayjs with required plugins.
-dayjs.extend(dayjsUTC)
 
 /**
  * Helper to validate incoming webhook events sent by Strava.

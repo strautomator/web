@@ -1,21 +1,12 @@
 // Strautomator API: Calendar
 
-import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "strautomator-core"
+import {CalendarOptions, UserData, UserCalendarTemplate, calendar, dayjs, users} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
-import dayjs from "dayjs"
-import dayjsAdvancedFormat from "dayjs/plugin/advancedFormat"
-import dayjsLocalizedFormat from "dayjs/plugin/localizedFormat"
-import dayjsUTC from "dayjs/plugin/utc"
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
-
-// Extends dayjs with required plugins.
-dayjs.extend(dayjsAdvancedFormat)
-dayjs.extend(dayjsLocalizedFormat)
-dayjs.extend(dayjsUTC)
 
 /**
  * Update the user calendar template.

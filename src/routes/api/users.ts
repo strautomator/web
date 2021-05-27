@@ -1,18 +1,13 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, strava, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {dayjs, paypal, recipes, strava, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
-import dayjs from "dayjs"
-import dayjsUTC from "dayjs/plugin/utc"
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router = express.Router()
 const settings = require("setmeup").settings
-
-// Extends dayjs with required plugins.
-dayjs.extend(dayjsUTC)
 
 // USER DATA
 // --------------------------------------------------------------------------
