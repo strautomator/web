@@ -5,7 +5,7 @@
                 Don't know the current usage of the components above?
             </h3>
             <h3 v-else>
-                Lost track of the current usage for this gear?
+                Lost track of the usage for this gear?
             </h3>
             <p class="mt-1">
                 Strautomator can calculate it for you! Enter the date when you last swapped the component(s), up to 2 years. ago.

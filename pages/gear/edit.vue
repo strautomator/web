@@ -22,13 +22,15 @@
                         <v-simple-table v-if="gearwearConfig.components.length > 0">
                             <tbody>
                                 <tr v-for="comp of gearwearConfig.components" :key="comp.name">
-                                    <td width="1" class="pl-3 pr-0">
-                                        <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-pencil-outline</v-icon>
-                                    </td>
-                                    <td width="2" class="pl-1 pr-1 pr-md-3 nowrap">
-                                        <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
-                                            {{ comp.name }}
-                                        </a>
+                                    <td width="2" class="pl-4 pr-1 pr-md-3 nowrap">
+                                        <div class="mt-6">
+                                            <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
+                                                {{ comp.name }}
+                                            </a>
+                                        </div>
+                                        <div class="mt-3">
+                                            <v-switch class="mt-0 mb-0" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
+                                        </div>
                                     </td>
                                     <td class="pb-3 pt-3">
                                         <div>
@@ -41,10 +43,12 @@
                                             {{ getHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
                                             <span class="float-right" v-if="comp.alertTime">{{ getHours(comp.alertTime) }}</span>
                                         </div>
-                                    </td>
-                                    <td class="text-center pr-3" :width="$breakpoint.mdAndUp ? '10%' : '1'">
-                                        <v-icon color="primary" :title="'Reset ' + gear.name + ' usage'" @click="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew">mdi-refresh</v-icon>
-                                        <v-icon color="removal" class="mt-4 mt-md-0 ml-md-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
+                                        <div class="float-right mt-n5">
+                                            <v-chip color="error" class="mr-2" v-if="comp.disabled" outlined x-small>disabled</v-chip>
+                                            <v-icon color="primary" :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">mdi-pencil-outline</v-icon>
+                                            <v-icon color="primary" class="ml-2" :title="'Reset ' + gear.name + ' usage'" @click="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew">mdi-refresh</v-icon>
+                                            <v-icon color="removal" class="ml-2" title="Delete the component" @click="showDeleteComponentDialog(comp)">mdi-minus-circle</v-icon>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -68,6 +72,10 @@
                     </template>
                 </v-card-text>
             </v-card>
+
+            <v-alert color="accent" class="mt-4 mb-4" v-if="hasDisabledComponents()">
+                Components marked as disabled will not have their usage updated automatically.
+            </v-alert>
 
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
@@ -373,8 +381,16 @@ export default {
         canReset(component) {
             return component.currentDistance > 0 || component.currentTime > 0
         },
+        hasDisabledComponents() {
+            const found = this.gearwearConfig.components.find((c) => c.disabled)
+            return found ? true : false
+        },
         // EDIT COMPONENTS
         // --------------------------------------------------------------------------
+        setComponentState(component) {
+            component.disabled = component.disabled ? false : true
+            this.$forceUpdate()
+        },
         showComponentDialog(component) {
             this.gearwearComponent = component
             this.componentDialog = true
