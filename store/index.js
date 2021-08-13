@@ -60,6 +60,7 @@ export const mutations = {
     },
     setUserSubscription(state, data) {
         state.user.subscription = data
+        if (data.enabled === false) state.user.isPro = false
     },
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
