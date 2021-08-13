@@ -9,9 +9,35 @@ export default {
             if (!this.user) return ""
             return this.user.profile.units == "imperial" ? "mi" : "km"
         },
-        needsProRecipes() {
-            if (!this.user) return false
-            return !this.user.isPro && Object.keys(this.user.recipes).length >= this.$store.state.freePlanDetails.maxRecipes
+        recipesMaxAllowed() {
+            if (!this.user) return this.$store.state.freePlanDetails.maxRecipes
+            return this.user.isPro ? this.$store.state.proPlanDetails.maxRecipes : this.$store.state.freePlanDetails.maxRecipes
+        },
+        recipesRemaining() {
+            if (!this.user) return this.$store.state.freePlanDetails.maxRecipes
+
+            let maxRecipes = this.user.isPro ? this.$store.state.proPlanDetails.maxRecipes : this.$store.state.freePlanDetails.maxRecipes
+            let recipeCount = Object.keys(this.user.recipes).length
+            let remaining = maxRecipes - recipeCount
+
+            // At the moment only 2 plans, and PRO should have unlimited.
+            if (this.user.isPro && remaining < 1) return (remaining = 1)
+            else return remaining
+        },
+        gearwearMaxAllowed() {
+            if (!this.user) return this.$store.state.freePlanDetails.maxGearWear
+            return this.user.isPro ? this.$store.state.proPlanDetails.maxGearWear : this.$store.state.freePlanDetails.maxGearWear
+        },
+        gearwearRemaining() {
+            if (!this.user || !this.gearwearConfigs) return this.$store.state.freePlanDetails.maxGearWear
+
+            let maxRecipes = this.user.isPro ? this.$store.state.proPlanDetails.maxGearWear : this.$store.state.freePlanDetails.maxGearWear
+            let recipeCount = Object.keys(this.gearwearConfigs).length
+            let remaining = maxRecipes - recipeCount
+
+            // At the moment only 2 plans, and PRO should have unlimited.
+            if (this.user.isPro && remaining < 1) return (remaining = 1)
+            else return remaining
         }
     },
     async fetch() {
