@@ -35,7 +35,7 @@
                     <div>
                         No GearWear configuration for this gear yet.
                         <br v-if="!$breakpoint.mdAndUp" />
-                        <n-link v-if="!needsPro" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
+                        <n-link v-if="gearwearRemaining > 0" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
                     </div>
                     <div>Total distance ≈ {{ gear.distance }} {{ units }}</div>
                     <div v-if="gear.lastUpdate">
@@ -56,13 +56,13 @@ import gearwearMixin from "~/mixins/gearwearMixin.js"
 
 export default {
     mixins: [userMixin, gearwearMixin],
-    props: ["gear", "gearwear-config", "needs-pro"],
+    props: ["gear", "gearwear-config"],
     computed: {
         units() {
             return this.user && this.user.profile.units == "imperial" ? "mi" : "km"
         },
         canEdit() {
-            return !this.needsPro || this.gearwearConfig
+            return this.gearwearRemaining > 0 || this.gearwearConfig
         },
         gearIcon() {
             if (this.gear.id.substring(0, 1) == "b") return "mdi-bike"

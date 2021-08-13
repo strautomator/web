@@ -35,7 +35,7 @@
                 </div>
                 <template v-else>
                     <div v-for="gear in gearWithConfig" :key="gear.id">
-                        <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" :needs-pro="needsPro" />
+                        <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
                     </div>
                     <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" outlined>
                         <v-card-title>
@@ -46,7 +46,7 @@
                                 <tbody>
                                     <tr v-for="gear in gearWithoutConfig" :key="gear.id">
                                         <td class="pl-0 pr-0">
-                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="needsPro" nuxt text rounded small>
+                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="gearwearRemaining < 1" nuxt text rounded small>
                                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
                                                 {{ gear.name }}
                                             </v-btn>
@@ -65,12 +65,24 @@
                         </v-card-text>
                     </v-card>
                 </template>
-                <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="needsPro" colored-border>
+                <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="gearwearRemaining == 0" colored-border>
                     <p>
                         You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
                         GearWear configurations on your free account.
                         <br v-if="$breakpoint.mdAndUp" />
                         To use this feature with more bikes or shoes, you'll need a PRO account, or simply delete an existing configuration.
+                    </p>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                        <v-icon left>mdi-credit-card</v-icon>
+                        Subscribe to PRO
+                    </v-btn>
+                </v-alert>
+                <v-alert class="mt-5 text-center text-md-left" border="top" color="error" v-if="gearwearRemaining < 0" colored-border>
+                    <p>
+                        You are over the limit of {{ $store.state.freePlanDetails.maxGearWear }}
+                        GearWear configurations on your free account.
+                        <br v-if="$breakpoint.mdAndUp" />
+                        Please upgrade your account, or remove the exceeding configurations to keep a maximum of {{ $store.state.freePlanDetails.maxGearWear }}, as some might not be updated.
                     </p>
                     <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
@@ -147,10 +159,7 @@ export default {
         }
     },
     computed: {
-        needsPro() {
-            if (!this.user || !this.gearwearConfigs) return false
-            return !this.user.isPro && Object.keys(this.gearwearConfigs).length >= this.$store.state.freePlanDetails.maxGearWear
-        },
+        needsPro() {},
         noGear() {
             return this.gearWithConfig.length == 0 && this.gearWithoutConfig.length == 0
         }

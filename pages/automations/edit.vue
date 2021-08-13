@@ -92,7 +92,7 @@
                 </v-card-text>
             </v-card>
             <div class="text-center text-md-left mt-4">
-                <v-btn color="primary" :disabled="!valid || overMaxRecipes" @click="save" rounded>
+                <v-btn color="primary" :disabled="!valid" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
                 </v-btn>
@@ -102,12 +102,6 @@
                     Delete automation
                 </v-btn>
             </div>
-            <v-alert color="error" class="mt-5" v-if="overMaxRecipes">
-                <p>
-                    You are over the limit of {{ $store.state.freePlanDetails.maxRecipes }} automations on free accounts. Please delete some of your automations, down to a maximum of {{ $store.state.freePlanDetails.maxRecipes }}, before editing
-                    existing automations.
-                </p>
-            </v-alert>
             <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
