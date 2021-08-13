@@ -1,6 +1,6 @@
 // Strautomator API: PayPal routes
 
-import {paypal, UserData} from "strautomator-core"
+import {mailer, paypal, UserData} from "strautomator-core"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
@@ -11,7 +11,7 @@ const router = express.Router()
 /**
  * Process webhooks dispatched by PayPal.
  */
-const routeWebhook = async (req, res) => {
+const routeWebhook = async (req: express.Request, res: express.Response) => {
     const data = req.body
 
     try {
@@ -45,7 +45,7 @@ router.post("/webhook/:urlToken", routeWebhook)
 /**
  * Get available billing plans.
  */
-router.get("/billingplans", async (req, res) => {
+router.get("/billingplans", async (req: express.Request, res: express.Response) => {
     try {
         webserver.renderJson(req, res, paypal.currentBillingPlans)
     } catch (ex) {
@@ -57,7 +57,7 @@ router.get("/billingplans", async (req, res) => {
 /**
  * Create a new PayPal subscription.
  */
-router.post("/subscribe/:billingPlanId", async (req, res) => {
+router.post("/subscribe/:billingPlanId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -106,7 +106,7 @@ router.post("/subscribe/:billingPlanId", async (req, res) => {
 /**
  * Cancel an existing PayPal subscription.
  */
-router.post("/unsubscribe", async (req, res) => {
+router.post("/unsubscribe", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -127,6 +127,15 @@ router.post("/unsubscribe", async (req, res) => {
         // Force set user ID on subscription and request cancellation on PayPal.
         subscription.userId = user.id
         await paypal.subscriptions.cancelSubscription(subscription)
+
+        // User provided a reason? Notify it.
+        if (req.body && req.body.reason) {
+            mailer.send({
+                to: settings.mailer.from,
+                subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
+                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br />Reason: ${req.body.reason.toString()}`
+            })
+        }
 
         webserver.renderJson(req, res, subscription)
     } catch (ex) {

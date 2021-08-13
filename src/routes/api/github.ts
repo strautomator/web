@@ -57,7 +57,7 @@ const validateWebhook = (req, res): boolean => {
 /**
  * Webhooks posted by GitHub Sponsors.
  */
-router.post("/webhook", async (req, res) => {
+router.post("/webhook", async (req: express.Request, res: express.Response) => {
     try {
         if (!validateWebhook(req, res)) return
         webserver.renderJson(req, res, {ok: true})

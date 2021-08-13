@@ -8,7 +8,7 @@ const packageVersion = require("../../../package.json").version
 /**
  * Heartbeat data.
  */
-router.get("/", async (req, res) => {
+router.get("/", async (req: express.Request, res: express.Response) => {
     try {
         const result = {
             version: packageVersion

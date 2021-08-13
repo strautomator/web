@@ -5,6 +5,7 @@ import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
 import express = require("express")
+import jaul = require("jaul")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const axios = require("axios").default
@@ -15,7 +16,7 @@ const packageVersion = require("../../../package.json").version
 /**
  * Helper to validate incoming webhook events sent by Strava.
  */
-const webhookValidator = (req, res): boolean => {
+const webhookValidator = (req: express.Request, res: express.Response): boolean => {
     try {
         const obj = req.body
         const method = req.method.toUpperCase()
@@ -58,7 +59,7 @@ const webhookValidator = (req, res): boolean => {
  * Get logged user's recent activities from Strava.
  * By default, return only 10 results.
  */
-router.get("/activities/recent", async (req, res) => {
+router.get("/activities/recent", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -95,7 +96,7 @@ router.get("/activities/recent", async (req, res) => {
  * Get logged user's activities from Strava since the specified timestamp.
  * Maximum of 2 years.
  */
-router.get("/activities/since/:timestamp", async (req, res) => {
+router.get("/activities/since/:timestamp", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -131,7 +132,7 @@ router.get("/activities/since/:timestamp", async (req, res) => {
 /**
  * Get logged user's latest activities that were processed by Strautomator.
  */
-router.get("/activities/processed", async (req, res) => {
+router.get("/activities/processed", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -151,7 +152,7 @@ router.get("/activities/processed", async (req, res) => {
 /**
  * Logged user can trigger a forced processing of a particular activity.
  */
-router.get("/process-activity/:activityId", async (req, res) => {
+router.get("/process-activity/:activityId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -175,7 +176,7 @@ router.get("/process-activity/:activityId", async (req, res) => {
 /**
  * Get estimated FTP based on activities during the past weeks.
  */
-router.get("/ftp/estimate", async (req, res) => {
+router.get("/ftp/estimate", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -197,7 +198,7 @@ router.get("/ftp/estimate", async (req, res) => {
 /**
  * Update the user's FTP on Strava.
  */
-router.post("/ftp/estimate", async (req, res) => {
+router.post("/ftp/estimate", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -229,12 +230,13 @@ router.post("/ftp/estimate", async (req, res) => {
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the verification token is invalid.
  */
-router.get("/:urlToken", async (req, res) => {
+router.get("/:urlToken", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
         const challenge = req.query["hub.challenge"] as string
         const verifyToken = req.query["hub.verify_token"] as string
+        const clientIP = jaul.network.getClientIP(req)
 
         // Validate webhook URL token.
         if (req.params.urlToken != settings.strava.api.urlToken) {
@@ -256,7 +258,7 @@ router.get("/:urlToken", async (req, res) => {
 
         // Echo hub challenge back to Strava.
         webserver.renderJson(req, res, {"hub.challenge": challenge})
-        logger.info("Routes", `Subscription challenge by Strava: ${challenge}`)
+        logger.info("Routes", `Subscription challenge by Strava: ${challenge}`, `IP ${clientIP}`)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
     }
@@ -266,7 +268,7 @@ router.get("/:urlToken", async (req, res) => {
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the URL token or POST data is invalid.
  */
-router.post("/:urlToken", async (req, res) => {
+router.post("/:urlToken", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
@@ -295,7 +297,7 @@ router.post("/:urlToken", async (req, res) => {
 /**
  * Called by the route above, this will effectively process the activity sent by Strava.
  */
-router.get("/:urlToken/:userId/:activityId", async (req, res) => {
+router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return

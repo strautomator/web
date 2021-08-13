@@ -11,7 +11,7 @@ const router = express.Router()
 /**
  * Return unread notifications for the logged user.
  */
-router.get("/unread", async (req, res) => {
+router.get("/unread", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -27,7 +27,7 @@ router.get("/unread", async (req, res) => {
 /**
  * Return all (including expired) notifications for the logged user.
  */
-router.get("/all", async (req, res) => {
+router.get("/all", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -43,7 +43,7 @@ router.get("/all", async (req, res) => {
 /**
  * When user opens a notifications, mark it as read.
  */
-router.post("/read", async (req, res) => {
+router.post("/read", async (req: express.Request, res: express.Response) => {
     const result = []
 
     try {

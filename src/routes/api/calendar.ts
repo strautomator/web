@@ -12,7 +12,7 @@ const settings = require("setmeup").settings
 /**
  * Update the user calendar template.
  */
-router.post("/:userId/template", async (req, res) => {
+router.post("/:userId/template", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -58,7 +58,7 @@ router.post("/:userId/template", async (req, res) => {
 /**
  * Return the Strava activities calendar for the specified user.
  */
-router.get("/:userId/:urlToken/activities.ics", async (req, res) => {
+router.get("/:userId/:urlToken/activities.ics", async (req: express.Request, res: express.Response) => {
     try {
         const user = await users.getById(req.params.userId)
 

@@ -10,7 +10,7 @@ const router = express.Router()
 /**
  * Heartbeat data.
  */
-router.get("/:coordinates", async (req, res) => {
+router.get("/:coordinates", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 

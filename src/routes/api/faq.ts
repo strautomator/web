@@ -9,7 +9,7 @@ const router = express.Router()
 /**
  * Search for answers from the FAQ.
  */
-router.get("/", async (req, res) => {
+router.get("/", async (req: express.Request, res: express.Response) => {
     try {
         const query = req.query && req.query.q ? req.query.q.toString() : ""
         const results = await faq.search(query)

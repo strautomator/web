@@ -15,7 +15,7 @@ const settings = require("setmeup").settings
 /**
  * Get GearWear configurations for the user.
  */
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -42,7 +42,7 @@ router.get("/:userId", async (req, res) => {
 /**
  * Get the specified GearWear configuration.
  */
-router.get("/:userId/:gearId", async (req, res) => {
+router.get("/:userId/:gearId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -71,7 +71,7 @@ router.get("/:userId/:gearId", async (req, res) => {
 /**
  * Updated gearwear configuration for the specified GearWear.
  */
-router.post("/:userId/:gearId", async (req, res) => {
+router.post("/:userId/:gearId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -128,7 +128,7 @@ router.post("/:userId/:gearId", async (req, res) => {
 /**
  * Delete the specified GearWear configuration.
  */
-router.delete("/:userId/:gearId", async (req, res) => {
+router.delete("/:userId/:gearId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
