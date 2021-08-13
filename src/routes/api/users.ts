@@ -16,7 +16,7 @@ const settings = require("setmeup").settings
 /**
  * Get user by ID.
  */
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -72,7 +72,7 @@ router.get("/:userId", async (req, res) => {
 /**
  * Get subscription details for the passed user.
  */
-router.get("/:userId/subscription", async (req, res) => {
+router.get("/:userId/subscription", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -86,15 +86,15 @@ router.get("/:userId/subscription", async (req, res) => {
             return webserver.renderJson(req, res, "User has no valid subscription", 404)
         }
 
-        // Subscribed as a friend, via PayPal, or via GitHub?
-        if (user.subscription.source == "friend") {
-            webserver.renderJson(req, res, {friend: user.subscription.enabled})
-        } else if (user.subscription.source == "paypal") {
+        // Subscribed via PayPal, GitHub, or just a friend?
+        if (user.subscription.source == "paypal") {
             const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
             subscription.userId = userId
             webserver.renderJson(req, res, {paypal: subscription})
-        } else if (user.subscription.source == "github") {
-            webserver.renderJson(req, res, {github: true})
+        } else {
+            const subscription = {}
+            subscription[user.subscription.source] = user.subscription
+            webserver.renderJson(req, res, subscription)
         }
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -105,7 +105,7 @@ router.get("/:userId/subscription", async (req, res) => {
 /**
  * Delete user and cancel its pending jobs / webhooks.
  */
-router.delete("/:userId", async (req, res) => {
+router.delete("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -130,7 +130,7 @@ router.delete("/:userId", async (req, res) => {
 /**
  * Update user preferences.
  */
-router.post("/:userId/preferences", async (req, res) => {
+router.post("/:userId/preferences", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -208,7 +208,7 @@ router.post("/:userId/preferences", async (req, res) => {
 /**
  * Set user email address.
  */
-router.post("/:userId/email", async (req, res) => {
+router.post("/:userId/email", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -331,7 +331,7 @@ router.delete("/:userId/recipes/:recipeId", routeUserRecipe)
 /**
  * Update the ordering of recipes for a user.
  */
-router.post("/:userId/recipes/order", async (req, res) => {
+router.post("/:userId/recipes/order", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -353,7 +353,7 @@ router.post("/:userId/recipes/order", async (req, res) => {
 /**
  * Get all the recipe stats for the user.
  */
-router.get("/:userId/recipes/stats", async (req, res) => {
+router.get("/:userId/recipes/stats", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -377,7 +377,7 @@ router.get("/:userId/recipes/stats", async (req, res) => {
 /**
  * Get a single recipe stats for the user.
  */
-router.get("/:userId/recipes/stats/:recipeId", async (req, res) => {
+router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -403,7 +403,7 @@ router.get("/:userId/recipes/stats/:recipeId", async (req, res) => {
 /**
  * Update the counter for the specified recipe stats.
  */
-router.post("/:userId/recipes/stats/:recipeId", async (req, res) => {
+router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!req.body || !req.body.counter) throw new Error("Missing counter")
