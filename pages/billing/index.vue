@@ -1,45 +1,27 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1 v-if="!user.isPro">Billing</h1>
-            <div v-else class="mt-4 mb-8 text-center display-3 font-weight-black">Thank you!</div>
+            <div v-if="unsubscribed" class="mt-4 mb-8 text-center display-3 font-weight-black"><v-icon x-large>mdi-emoticon-sad</v-icon></div>
+            <div v-else-if="user.isPro" class="mt-4 mb-8 text-center display-3 font-weight-black">Thank you!</div>
+            <h1 v-else>Billing</h1>
             <p>Hi {{ user.profile.firstName }}!</p>
-            <div v-if="!user.isPro">
-                <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
-                    and give me the motivation to keep adding new features.
-                </p>
-                <div class="mt-4 mb-6">
-                    You can subscribe via PayPal or GitHub.
-                </div>
-                <v-card class="mb-6" outlined>
-                    <v-card-title class="accent">PRO subscription</v-card-title>
-                    <v-card-text class="pb-2 pb-md-0">
-                        <v-row class="mt-6" no-gutters>
-                            <v-col class="text-center mb-6">
-                                <div v-for="plan in billingPlans" :key="plan.id">
-                                    <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
-                                        <v-icon left>mdi-credit-card-outline</v-icon>
-                                        ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
-                                    </v-btn>
-                                </div>
-                            </v-col>
-                            <v-col class="text-center mb-2">
-                                <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
-                                    <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
-                                        <v-icon left>mdi-github</v-icon>
-                                        ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub
-                                    </v-btn>
-                                </a>
-                            </v-col>
-                        </v-row>
+
+            <div v-if="unsubscribed">
+                <v-card outlined>
+                    <v-card-text>
+                        <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
+                        <div>
+                            Your account will be downgraded back to the free version. Thanks for your previous support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator.
+                        </div>
+                        <div class="mt-4">
+                            <n-link to="/account" title="Back to my account">Back to my account...</n-link>
+                        </div>
                     </v-card-text>
                 </v-card>
-                <free-pro-table />
             </div>
-            <div v-else>
-                <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
 
+            <div v-else-if="user.isPro">
+                <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
                 <v-card outlined>
                     <v-card-text>
                         <template v-if="loading">
@@ -49,7 +31,7 @@
                         <template v-else-if="unsubscribed">
                             <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
                             <div>
-                                Your account was now downgraded back to the Free version.
+                                Your account will be downgraded back to the free version.
                             </div>
                             <div class="text-center mt-8 mb-6">
                                 <v-icon x-large>mdi-emoticon-sad</v-icon>
@@ -111,6 +93,40 @@
                     </v-card>
                 </v-dialog>
             </div>
+
+            <div v-else>
+                <p>
+                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
+                    and give me the motivation to keep adding new features.
+                </p>
+                <div class="mt-4 mb-6">
+                    You can subscribe via PayPal or GitHub.
+                </div>
+                <v-card class="mb-6" outlined>
+                    <v-card-title class="accent">PRO subscription</v-card-title>
+                    <v-card-text class="pb-2 pb-md-0">
+                        <v-row class="mt-6" no-gutters>
+                            <v-col class="text-center mb-6">
+                                <div v-for="plan in billingPlans" :key="plan.id">
+                                    <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
+                                        <v-icon left>mdi-credit-card-outline</v-icon>
+                                        ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
+                                    </v-btn>
+                                </div>
+                            </v-col>
+                            <v-col class="text-center mb-2">
+                                <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
+                                    <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
+                                        <v-icon left>mdi-github</v-icon>
+                                        ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub
+                                    </v-btn>
+                                </a>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+                <free-pro-table />
+            </div>
         </v-container>
     </v-layout>
 </template>
@@ -143,12 +159,12 @@ export default {
     computed: {
         lastPaymentDate() {
             if (!this.subscription) return ""
-            if (this.subscriptionSource == "friend") return "never"
+            if (this.subscriptionSource == "Friend") return "never"
             return this.$dayjs(this.subscription.lastPayment.date).format("ll")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
-            if (this.subscriptionSource == "friend") return "maybe a beer?"
+            if (this.subscriptionSource == "Friend") return "maybe a beer?"
             return this.$dayjs(this.subscription.dateNextPayment).format("ll")
         }
     },
@@ -169,7 +185,8 @@ export default {
                 this.loading = false
 
                 if (subscription.friend) {
-                    this.subscriptionSource = "Just a friend :-)"
+                    this.subscriptionSource = "Friend"
+                    this.subscription = subscription.friend
                 } else if (subscription.paypal) {
                     this.subscriptionSource = "PayPal"
                     this.subscription = subscription.paypal
@@ -208,9 +225,8 @@ export default {
                 await this.$axios.$post(`/api/${this.user.subscription.source}/unsubscribe`, {reason: this.unsubReason || "Default reason"})
                 this.loading = false
                 this.unsubscribed = true
-                const subscription = JSON.parse(JSON.stringify(this.user.subscription))
+                const subscription = JSON.parse(JSON.stringify(this.user.subscription, null, 0))
                 subscription.enabled = false
-
                 this.$store.commit("setUserSubscription", subscription)
             } catch (ex) {
                 ex.title = "Error trying to unsubscribe your account"
