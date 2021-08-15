@@ -222,7 +222,7 @@ export default {
             try {
                 this.loading = true
                 if (this.unsubReason) this.unsubReason = this.unsubReason.trim()
-                await this.$axios.$post(`/api/${this.user.subscription.source}/unsubscribe`, {reason: this.unsubReason || "Default reason"})
+                await this.$axios.$post(`/api/${this.user.subscription.source}/unsubscribe`, {reason: this.unsubReason || null})
                 this.loading = false
                 this.unsubscribed = true
                 const subscription = JSON.parse(JSON.stringify(this.user.subscription, null, 0))
