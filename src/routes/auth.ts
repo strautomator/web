@@ -78,7 +78,7 @@ export class Auth {
                         }
 
                         await users.update(newUserData)
-                        logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} - ${user.displayName}`)
+                        logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} ${user.displayName}`)
                     }
                 }
             }
