@@ -16,6 +16,9 @@
                     </v-hover>
                     <v-card-text class="white--text pb-1 pb-md-2">
                         <div class="mb-2" v-if="recipesRemaining + recipeIndex > 1">
+                            <v-chip class="mb-0 ml-1" color="error" outlined small>DISABLED, NEEDS PRO</v-chip>
+                        </div>
+                        <div class="mb-2" v-else-if="recipe.disabled">
                             <v-chip class="mb-0 ml-1" color="error" outlined small>DISABLED</v-chip>
                         </div>
                         <ul class="mt-0 pl-4 condition-list">

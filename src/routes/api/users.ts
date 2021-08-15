@@ -271,10 +271,6 @@ const routeUserRecipe = async (req: any, res: any) => {
 
         // Creating a new recipe?
         if (!recipe.id && method == "POST") {
-            if (!user.isPro && user.recipes.length >= settings.plans.free.maxRecipes) {
-                throw new Error(`User ${user.id} is not PRO and has reached the free acccount limit`)
-            }
-
             const now = dayjs.utc().toDate()
             const hex = Math.round(now.getTime() / 1000).toString(16)
             recipe.id = "r" + hex.toLowerCase()

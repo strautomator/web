@@ -6,7 +6,7 @@
                 <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" outlined rounded></v-text-field>
             </v-form>
             <v-card outlined>
-                <v-card-title>Conditions</v-card-title>
+                <v-card-title>Conditions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
                 <v-card-text>
                     <div class="mb-3" v-if="recipe.defaultFor">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
@@ -50,7 +50,7 @@
                 </v-card-text>
             </v-card>
             <v-card class="mt-4" outlined>
-                <v-card-title>Actions</v-card-title>
+                <v-card-title>Actions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
                 <v-card-text>
                     <div class="mb-3" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
                         <v-container class="ma-0 pa-0 d-flex align-start" fluid>
@@ -91,7 +91,10 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <div class="text-center text-md-left mt-4">
+            <div class="mt-2">
+                <v-switch title="Automation state" v-model="recipe.disabled" label="Disable this automation"></v-switch>
+            </div>
+            <div class="text-center text-md-left mt-2">
                 <v-btn color="primary" :disabled="!valid" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
@@ -239,6 +242,10 @@ export default {
 
                     if (this.recipe.defaultFor == null) {
                         delete this.recipe.defaultFor
+                    }
+
+                    if (!this.recipe.disabled) {
+                        delete this.recipe.disabled
                     }
 
                     const user = this.$store.state.user
