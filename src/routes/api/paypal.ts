@@ -71,7 +71,7 @@ router.post("/subscribe/:billingPlanId", async (req: express.Request, res: expre
         }
 
         // User already has a subscription running? Try getting its details.
-        if (user.subscription && user.subscription.id) {
+        if (user.subscription && user.subscription.id && user.subscription.source == "paypal") {
             const existingSub = await paypal.subscriptions.getSubscription(user.subscription.id)
 
             // Subscription expired? Log and continue with the subscription creation further below.
