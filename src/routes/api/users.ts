@@ -271,6 +271,11 @@ const routeUserRecipe = async (req: any, res: any) => {
 
         // Creating a new recipe?
         if (!recipe.id && method == "POST") {
+            if (!user.isPro && user.recipeCount >= settings.plans.free.maxRecipes) {
+                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, `Can't create recipe, reached free plan maximum`)
+                return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed`, 429)
+            }
+
             const now = dayjs.utc().toDate()
             const hex = Math.round(now.getTime() / 1000).toString(16)
             recipe.id = "r" + hex.toLowerCase()
