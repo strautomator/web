@@ -116,7 +116,7 @@
                     </div>
                 </v-alert>
 
-                <ads-panel />
+                <ads-panel v-if="recipes && recipes.length > 0" />
             </div>
         </v-container>
     </v-layout>
