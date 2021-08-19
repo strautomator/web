@@ -350,7 +350,11 @@ export default {
 
                 await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {components: this.gearwearConfig.components})
 
-                this.$router.push({path: `/gear?new=${this.gear.id}`})
+                if (this.isNew) {
+                    this.$router.push({path: `/gear?new=${this.gear.id}`})
+                } else {
+                    this.$router.push({path: "/gear"})
+                }
             } catch (ex) {
                 this.$webError("GearEdit.saveConfig", ex)
             }
