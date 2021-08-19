@@ -19,7 +19,7 @@
                         Loading gear details...
                     </div>
                     <template v-else>
-                        <v-simple-table v-if="gearwearConfig.components.length > 0">
+                        <v-simple-table v-if="gearwearConfig && gearwearConfig.components.length > 0">
                             <tbody>
                                 <tr v-for="comp of gearwearConfig.components" :key="comp.name">
                                     <td width="2" class="pl-4 pr-1 pr-md-3 nowrap">
@@ -265,7 +265,7 @@ export default {
             isLoading: true,
             imperial: imperial,
             gear: gear,
-            gearwearConfig: null,
+            gearwearConfig: {components: []},
             gearwearComponent: {},
             isNew: false,
             hasChanges: false,
@@ -294,8 +294,14 @@ export default {
             }
 
             const config = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
-            this.gearwearConfig = config || {components: []}
-            this.isNew = !config
+
+            if (config) {
+                this.gearwearConfig = config
+                this.isNew = false
+            } else {
+                this.gearwearConfig = {components: []}
+                this.isNew = true
+            }
 
             // Add friendly last reset date to components.
             if (this.gearwearConfig.components.length > 0) {

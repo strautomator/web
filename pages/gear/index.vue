@@ -37,6 +37,7 @@
                     <div v-for="gear in gearWithConfig" :key="gear.id">
                         <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
                     </div>
+
                     <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" outlined>
                         <v-card-title>
                             <span>{{ gearWithConfig.length > 0 ? "Gear with no configuration" : "Your Strava gear" }}</span>
@@ -62,8 +63,18 @@
                                     </tr>
                                 </tbody>
                             </v-simple-table>
+                            <div class="mt-4 mb-4 ml-md-4 text-center text-md-left">
+                                <v-btn color="primary" href="https://www.strava.com/settings/gear" target="strava" title="Manage my gear on Strava" small rounded>
+                                    <v-icon left>mdi-open-in-new</v-icon>
+                                    Manage gear on Strava
+                                </v-btn>
+                            </div>
                         </v-card-text>
                     </v-card>
+                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
+                        Please note that the activity tracking happens with a {{ previousDays }} days delay, so you have plenty of time to set the correct bike or shoes on your recent activities.
+                        <div class="mt-1">Today's activities will be counted on {{ trackingDay }}.</div>
+                    </v-alert>
                 </template>
                 <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="gearwearRemaining == 0" colored-border>
                     <p>
@@ -90,18 +101,21 @@
                     </v-btn>
                 </v-alert>
             </template>
-            <div class="mt-5 text-center text-md-left" v-if="!needsPro && !noGear">
-                <a href="https://www.strava.com/settings/gear" title="Manage my gear on Strava" target="strava">
-                    <v-btn color="primary" rounded>
-                        <v-icon left>mdi-open-in-new</v-icon>
-                        Manage gear on Strava
-                    </v-btn>
-                </a>
-            </div>
-            <v-alert class="mt-6 text-center text-md-left text-caption" v-if="!noGear">
-                Please note that the activity tracking happens with a {{ previousDays }} days delay, so you have plenty of time to set the correct bike or shoes on recent activities.
-                <div class="mt-1">Today's activities will be counted on {{ trackingDay }}.</div>
-            </v-alert>
+
+            <v-card class="affiliates-card mt-6" v-if="hasManyBikes" outlined>
+                <v-card-title>Looking for new wheels?</v-card-title>
+                <v-card-text>
+                    <p>
+                        ICAN Cycling has a vast selection of aero and lightweight carbon wheels for road, gravel and MTB. Great quality at a great price, with fast shipping all around the globe.
+                    </p>
+                    <div class="text-center text-md-left">
+                        <v-btn color="primary" href="https://links.devv.com/l/ican" target="ican" rounded>
+                            <v-icon left>mdi-open-in-new</v-icon>
+                            Go to ICAN Cycling
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
         </v-container>
         <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
             Your email was set to {{ $store.state.user.email }}!
@@ -128,12 +142,12 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import gearwearMixin from "~/mixins/gearwearMixin.js"
-import GearCard from "~/components/gearwear/GearCard.vue"
 import EmailDialog from "~/components/account/EmailDialog.vue"
+import GearCard from "~/components/gearwear/GearCard.vue"
 
 export default {
     authenticated: true,
-    components: {GearCard, EmailDialog},
+    components: {EmailDialog, GearCard},
     mixins: [userMixin, gearwearMixin],
     head() {
         return {
@@ -147,6 +161,7 @@ export default {
         return {
             previousDays: previousDays,
             isLoading: true,
+            hasManyBikes: false,
             emailDialog: false,
             emailSaved: false,
             alertNew: false,
@@ -189,6 +204,7 @@ export default {
             const gearWithoutConfig = _.remove(gearWithConfig, (g) => !this.gearwearConfigs[g.id])
             this.gearWithConfig = gearWithConfig
             this.gearWithoutConfig = gearWithoutConfig
+            this.hasManyBikes = bikes.length > 1
         } catch (ex) {
             this.$webError("Gear.fetch", ex)
         }
