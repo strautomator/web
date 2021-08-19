@@ -102,20 +102,7 @@
                 </v-alert>
             </template>
 
-            <v-card class="affiliates-card mt-6" v-if="hasManyBikes" outlined>
-                <v-card-title>Looking for new wheels?</v-card-title>
-                <v-card-text>
-                    <p>
-                        ICAN Cycling has a vast selection of aero and lightweight carbon wheels for road, gravel and MTB. Great quality at a great price, with fast shipping all around the globe.
-                    </p>
-                    <div class="text-center text-md-left">
-                        <v-btn color="primary" href="https://links.devv.com/l/ican" target="ican" rounded>
-                            <v-icon left>mdi-open-in-new</v-icon>
-                            Go to ICAN Cycling
-                        </v-btn>
-                    </div>
-                </v-card-text>
-            </v-card>
+            <ads-panel />
         </v-container>
         <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
             Your email was set to {{ $store.state.user.email }}!
@@ -142,12 +129,13 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import gearwearMixin from "~/mixins/gearwearMixin.js"
+import AdsPanel from "~/components/AdsPanel.vue"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import GearCard from "~/components/gearwear/GearCard.vue"
 
 export default {
     authenticated: true,
-    components: {EmailDialog, GearCard},
+    components: {AdsPanel, EmailDialog, GearCard},
     mixins: [userMixin, gearwearMixin],
     head() {
         return {

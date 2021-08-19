@@ -104,16 +104,19 @@
                     </v-card-text>
                 </v-card>
                 <v-alert class="mt-4 text-center text-md-left">
-                    Missing something?
-                    <br v-if="!$breakpoint.mdAndUp" />
-                    <n-link to="/activities/sync" title="Try your automations" nuxt>Try a manual sync</n-link>
-                    to test your automations.
+                    <div class="mb-2 mb-md-0">
+                        Missing something?
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        Try a <n-link to="/activities/sync" title="Try your automations" nuxt>manual sync</n-link>
+                        now.
+                    </div>
+                    <div>
+                        Want to see your activities on your favourite calendar app?
+                        <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link> now.
+                    </div>
                 </v-alert>
-                <v-alert class="mt-4 text-center text-md-left">
-                    Want your Strava activities on your device's calendar?
-                    <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link>
-                    to your iCalendar now.
-                </v-alert>
+
+                <ads-panel />
             </div>
         </v-container>
     </v-layout>
@@ -121,14 +124,15 @@
 
 <script>
 import _ from "lodash"
-import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
+import AdsPanel from "~/components/AdsPanel.vue"
+import CreateFirst from "~/components/recipes/CreateFirst.vue"
 
 export default {
     authenticated: true,
-    components: {CreateFirst},
+    components: {AdsPanel, CreateFirst},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
