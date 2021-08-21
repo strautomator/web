@@ -152,7 +152,7 @@
                         </v-btn>
                         <v-btn color="primary" title="Save the estimated FTP on Strava" :disabled="!ftpResult || ftpResult.recentlyUpdated || ftpResult.ftpWatts == ftpResult.ftpCurrentWatts" @click="saveEstimatedFtp" rounded>
                             <v-icon left>mdi-cloud-upload</v-icon>
-                            Save to Strava
+                            Update
                         </v-btn>
                     </div>
                 </v-card-text>

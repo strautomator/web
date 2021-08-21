@@ -9,10 +9,10 @@
                             Are you sure?
                         </p>
                         <p>
-                            Once you hit that button there's no way back. ALl your data will be deleted, and Strautomator will cancel its connection with your Strava account.
+                            Once you hit that button there's no way back. All your data will be deleted, and Strautomator will cancel its connection with your Strava account.
                         </p>
                         <div class="text-center mt-8">
-                            <v-btn color="gray" class="mr-3" to="/account" title="Back to my account" text rounded nuxt>
+                            <v-btn color="gray" class="mr-md-3 mb-3 mb-md-0" to="/account" title="Back to my account" text rounded nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
                                 Back
                             </v-btn>
