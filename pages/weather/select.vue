@@ -27,7 +27,7 @@
             </template>
             <template v-else>
                 <p>
-                    So, which provider has the most accurate conditions on your location?
+                    Which weather provider has the most accurate readings on your location?
                 </p>
                 <v-radio-group v-model="weatherProvider">
                     <v-simple-table v-if="$breakpoint.mdAndUp">
@@ -35,6 +35,7 @@
                             <tr>
                                 <th>Provider</th>
                                 <th></th>
+                                <th>Conditions</th>
                                 <th>Temperature</th>
                                 <th>Humidity</th>
                                 <th>Wind</th>
@@ -44,8 +45,9 @@
                         </thead>
                         <tbody>
                             <tr :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
-                                <td>{{ summary.name }}</td>
+                                <td @click="setProvider(summary.id)">{{ summary.name }}</td>
                                 <td class="text-h5">{{ summary.icon }}</td>
+                                <td>{{ summary.summary }}</td>
                                 <td>{{ summary.temperature }} (feels {{ summary.feelsLike }})</td>
                                 <td>{{ summary.humidity }}</td>
                                 <td>{{ summary.windSpeed }}</td>
@@ -58,12 +60,13 @@
                         <v-card class="mb-2" v-for="summary in weatherSummaries" :key="summary.id">
                             <v-card-text>
                                 <div class="subtitle-1">
-                                    <span class="text-body-1" :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}">{{ summary.icon }} {{ summary.name }}</span>
-                                    <div class="float-right mt-1">
+                                    <span :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}" @click="setProvider(summary.id)">{{ summary.name }}</span>
+                                    <div class="float-right mt-1 mr-n2">
                                         <v-radio :value="summary.id"></v-radio>
                                     </div>
                                 </div>
-                                <div class="d-flex pa-0 mt-2">
+                                <div class="d-flex pa-0 mt-2">{{ summary.icon }} {{ summary.summary }}</div>
+                                <div class="d-flex pa-0 mt-1">
                                     <div class="mr-3">
                                         <v-icon small>mdi-thermometer</v-icon>
                                         {{ summary.temperature }} ({{ summary.feelsLike }})
@@ -84,7 +87,7 @@
                         </v-card>
                     </div>
                 </v-radio-group>
-                <div class="mt-2">
+                <div class="mt-2 text-center text-md-left">
                     <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
                         Use {{ weatherProvider }}
@@ -111,7 +114,7 @@ export default {
         return {
             loading: false,
             saved: false,
-            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "climacell" : "climacell",
+            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "climacell" : "stormglass",
             weatherSummaries: []
         }
     },
@@ -121,6 +124,9 @@ export default {
         }
     },
     methods: {
+        setProvider(id) {
+            this.weatherProvider = id
+        },
         getPosition() {
             this.loading = true
             navigator.geolocation.getCurrentPosition(this.getWeather, this.positionError)
@@ -135,7 +141,6 @@ export default {
                 const longitude = position.coords.longitude
 
                 const result = await this.$axios.$get(`/api/weather/${latitude.toFixed(4)},${longitude.toFixed(4)}`)
-                console.dir(result)
 
                 // Iterate weather summaries to set the provider name and append to the weatherSummaries list.
                 for (let id of Object.keys(result)) {
