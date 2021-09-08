@@ -190,6 +190,7 @@ export default {
             const shoes = this.$store.state.user.profile.shoes || []
             const gearWithConfig = _.concat(bikes, shoes)
             const gearWithoutConfig = _.remove(gearWithConfig, (g) => !this.gearwearConfigs[g.id])
+
             this.gearWithConfig = gearWithConfig
             this.gearWithoutConfig = gearWithoutConfig
             this.hasManyBikes = bikes.length > 1

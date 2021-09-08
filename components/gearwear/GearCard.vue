@@ -4,6 +4,7 @@
             <n-link :to="canEdit ? '/gear/edit?id=' + gear.id : '/gear'" :title="`Edit GearWear for ${gear.name}`" nuxt>
                 <v-card-title class="accent">
                     <v-icon class="ml-n1 mr-2" color="primary">{{ gearIcon }}</v-icon>
+                    <v-icon class="ml-n1 mr-2" color="primary" v-if="gear.primary">mdi-bookmark</v-icon>
                     <span>{{ gear.name }}</span>
                     <v-spacer></v-spacer>
                     <v-icon v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
@@ -15,10 +16,7 @@
                 <v-container class="ma-0 pa-0" v-if="gearwearConfig" fluid>
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="5">
-                            <div class="font-weight-bold" v-if="gear.brand || gear.model">
-                                {{ gear.brand }} {{ gear.model }}
-                                <span class="text-lowercase" v-if="gear.primary">(Primary {{ getGearType(gear) }})</span>
-                            </div>
+                            <div class="font-weight-bold" v-if="gear.brand || gear.model">{{ gear.brand }} {{ gear.model }}</div>
                             <div>Total distance: {{ gear.distance }} {{ units }}</div>
                             <div v-if="lastResetDatails">Last replacement: {{ lastResetDatails }}</div>
                         </v-col>

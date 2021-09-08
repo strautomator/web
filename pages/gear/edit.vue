@@ -1,6 +1,20 @@
 <template>
     <v-layout column>
-        <v-container v-if="gear" fluid>
+        <v-container v-if="invalidGear" fluid>
+            <v-card outlined>
+                <v-card-title class="accent">
+                    <span>Invalid or deprecated gear</span>
+                </v-card-title>
+                <v-card-text class="pt-2">The gear ID "{{ gearId }}" could not be found on your profile. It was probably deleted from your Strava account, and if that's the case, it will also be deleted from Strautomator soon.</v-card-text>
+            </v-card>
+            <div class="mt-4 text-center text-md-left">
+                <v-btn color="primary" to="/gear" nuxt rounded>
+                    <v-icon left>mdi-arrow-left</v-icon>
+                    Back to My Gear
+                </v-btn>
+            </div>
+        </v-container>
+        <v-container v-else-if="gear" fluid>
             <h1>
                 <v-icon class="mr-1 mt-n1">{{ getGearIcon(gear) }}</v-icon>
                 {{ gear.name }}
@@ -209,62 +223,62 @@ export default {
         const user = this.$store.state.user
         const imperial = user.profile.units == "imperial"
         const gear = _.find(user.profile.bikes, {id: gearId}) || _.find(user.profile.shoes, {id: gearId})
+        const invalidGear = !gear
         let defaultComponents
 
-        // Abort here if gear does not exist on the user.
-        if (!gear) {
-            this.$webError("GearEdit.data", {status: 404, message: `Invalid gear ID: ${gearId}`})
-        }
-
-        // Set defaults for bikes and shoes.
-        if (this.getGearType(gear) == "Bike") {
-            defaultComponents = [
-                {
-                    name: "Chain",
-                    currentDistance: 0,
-                    currentTime: 0,
-                    alertDistance: imperial ? 2200 : 3500,
-                    alertTime: 0
-                },
-                {
-                    name: "Cassette",
-                    currentDistance: 0,
-                    currentTime: 0,
-                    alertDistance: imperial ? 6600 : 10500,
-                    alertTime: 0
-                },
-                {
-                    name: "Rear tire",
-                    currentDistance: 0,
-                    currentTime: 0,
-                    alertDistance: imperial ? 3100 : 5000,
-                    alertTime: 0
-                },
-                {
-                    name: "Front tire",
-                    currentDistance: 0,
-                    currentTime: 0,
-                    alertDistance: imperial ? 3700 : 6000,
-                    alertTime: 0
-                }
-            ]
-        } else {
-            defaultComponents = [
-                {
-                    name: "Shoes",
-                    currentDistance: 0,
-                    currentTime: 0,
-                    alertDistance: imperial ? 500 : 800,
-                    alertTime: 0
-                }
-            ]
+        // Only proceed if the gear was found.
+        if (gear) {
+            if (this.getGearType(gear) == "Bike") {
+                defaultComponents = [
+                    {
+                        name: "Chain",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 2200 : 3500,
+                        alertTime: 0
+                    },
+                    {
+                        name: "Cassette",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 6600 : 10500,
+                        alertTime: 0
+                    },
+                    {
+                        name: "Rear tire",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 3100 : 5000,
+                        alertTime: 0
+                    },
+                    {
+                        name: "Front tire",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 3700 : 6000,
+                        alertTime: 0
+                    }
+                ]
+            } else {
+                defaultComponents = [
+                    {
+                        name: "Shoes",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 500 : 800,
+                        alertTime: 0
+                    }
+                ]
+            }
         }
 
         return {
             defaultComponents: defaultComponents,
             isLoading: true,
+            invalidGear: invalidGear,
             imperial: imperial,
             gear: gear,
+            gearId: gearId,
             gearwearConfig: {components: []},
             gearwearComponent: {},
             isNew: false,
