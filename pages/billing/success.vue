@@ -17,7 +17,7 @@
                 </v-card-text>
             </v-card>
             <div class="mt-8 text-center">
-                <v-btn color="primary" to="/account" rounded nuxt>Back to my account...</v-btn>
+                <v-btn color="primary" to="/account" rounded nuxt>Back to my account</v-btn>
             </div>
         </v-container>
     </v-layout>
