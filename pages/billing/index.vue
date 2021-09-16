@@ -160,11 +160,13 @@ export default {
         lastPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "never"
+            if (this.subscriptionSource == "Revolut") return "never"
             return this.$dayjs(this.subscription.lastPayment.date).format("ll")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
+            if (this.subscriptionSource == "Revolut") return "when the universe ends"
             return this.$dayjs(this.subscription.dateNextPayment).format("ll")
         }
     },
@@ -187,12 +189,15 @@ export default {
                 if (subscription.friend) {
                     this.subscriptionSource = "Friend"
                     this.subscription = subscription.friend
-                } else if (subscription.paypal) {
-                    this.subscriptionSource = "PayPal"
-                    this.subscription = subscription.paypal
                 } else if (subscription.github) {
                     this.subscriptionSource = "GitHub"
                     this.subscription = subscription.github
+                } else if (subscription.paypal) {
+                    this.subscriptionSource = "PayPal"
+                    this.subscription = subscription.paypal
+                } else if (subscription.revolut) {
+                    this.subscriptionSource = "Revolut"
+                    this.subscription = subscription.revolut
                 }
             }
         } catch (ex) {
