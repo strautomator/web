@@ -167,9 +167,9 @@ export default {
                 return text
             }
 
-            const iQuery = new RegExp(this.searchQuery, "ig")
+            const iQuery = new RegExp("\\b " + this.searchQuery + " \\b", "ig")
             return text.replace(iQuery, function(matchedTxt, a, b) {
-                return "<span class='search-highlight'>" + matchedTxt + "</span>"
+                return " <span class='search-highlight'>" + matchedTxt.trim() + "</span> "
             })
         },
         debounceSearch: _.debounce(async function() {
