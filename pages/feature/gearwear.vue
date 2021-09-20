@@ -51,7 +51,7 @@
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/gearwear" title="GearWear" rounded nuxt>
+                        <v-btn color="primary" to="/gear" title="GearWear" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
                             Go to GearWear
                         </v-btn>
