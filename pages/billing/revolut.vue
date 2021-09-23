@@ -62,6 +62,10 @@
                         <br />
                         Igor
                     </v-alert>
+
+                    <div class="mt-4">
+                        <free-pro-table :no-price="true" />
+                    </div>
                 </v-card-text>
             </v-card>
         </v-container>
@@ -83,10 +87,12 @@
 
 <script>
 import _ from "lodash"
+import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
+    components: {FreeProTable},
     mixins: [userMixin],
     head() {
         return {
