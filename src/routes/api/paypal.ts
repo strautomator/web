@@ -133,7 +133,7 @@ router.post("/unsubscribe", async (req: express.Request, res: express.Response) 
             mailer.send({
                 to: settings.mailer.from,
                 subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
-                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br />Reason: ${req.body.reason.toString()}`
+                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${req.body.reason.toString()}`
             })
         }
 
