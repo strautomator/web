@@ -3,7 +3,6 @@ const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
 const {parse} = require("qs")
-const settings = require("setmeup").settings
 
 function Handler(opts) {
     this.init(opts)
