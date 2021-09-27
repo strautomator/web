@@ -1,6 +1,11 @@
 <template>
     <v-layout column>
-        <v-container v-if="subscriptionSource == 'revolut'" fluid>
+        <v-container v-if="loading" fluid>
+            <div class="text-center">
+                <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+            </div>
+        </v-container>
+        <v-container v-else-if="subscriptionSource == 'revolut'" fluid>
             <v-card>
                 <v-card-text class="text-center">
                     <p>Thanks for participating! You already have a lifetime PRO account ☺</p>
@@ -27,7 +32,7 @@
                         To be eligible, you'll need to complete these steps by <strong>{{ $dayjs(dateEnd).format("lll") }}</strong>
                     </p>
                     <ul class="ml-n2">
-                        <li>Sign up to Revolut with our link</li>
+                        <li class="font-weight-bold">Sign up to Revolut with our link</li>
                         <li>Verify your identity with Revolut</li>
                         <li>Add money to your new account</li>
                         <li>Request a physical Revolut card</li>
@@ -56,8 +61,7 @@
                         </div>
                         Please note that Revolut has no direct affiliation to Strautomator!
                         <br v-if="$breakpoint.mdAndUp" />
-                        For more details about the "Lifetime PRO with Revolut" campaign, please check the <n-link to="/help?q=revolut" nuxt>help</n-link> section.
-                        <br />
+                        For more details about the "Lifetime PRO with Revolut" campaign, please check the <n-link to="/help?q=revolut" nuxt>help</n-link> section. <br /><br />
                         Best regards,
                         <br />
                         Igor
@@ -126,6 +130,8 @@ export default {
                     this.dateSwitch = this.$dayjs(a.dateExpiry).add(9, "days")
                 }
             }
+
+            this.loading = false
         } catch (ex) {
             this.$webError("Revolut.fetch", ex)
         }
