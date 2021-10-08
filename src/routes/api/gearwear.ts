@@ -82,7 +82,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         const max = settings.plans.free.maxGearWear
         let configs = await gearwear.getForUser(user)
-        let existingConfig: GearWearConfig = _.remove(configs, {id: gearId})
+        let existingConfig: GearWearConfig[] = _.remove(configs, {id: gearId})
 
         // Check if user has reached the limit of gearwear configs on free accounts.
         if (!user.isPro && configs.length >= max) {
