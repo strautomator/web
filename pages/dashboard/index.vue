@@ -167,8 +167,9 @@ export default {
             if (this.announcements.length > 0) {
                 while (this.announcements.length > 0 && !this.lastAnnouncement) {
                     const ann = this.announcements.pop()
+                    const aCookie = this.$cookies.get(`announcement-${ann.id}`)
 
-                    if (!this.$cookies.get(`announcement-${ann.id}`)) {
+                    if (!aCookie) {
                         this.lastAnnouncement = ann
                         this.alertAnnouncement = true
                     }
@@ -204,9 +205,9 @@ export default {
                 console.error("Dashboard.readAnnouncement", ex)
             }
 
-            this.$cookies.set(`announcement-${this.lastAnnouncement.id}`, true, {
+            this.$cookies.set(`announcement-${this.lastAnnouncement.id}`, new Date().getTime(), {
                 path: "/",
-                maxAge: 60 * 60 * 24 * 365 * 1
+                maxAge: 60 * 60 * 24 * 30
             })
 
             this.lastAnnouncement = null
