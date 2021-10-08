@@ -65,7 +65,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         // Check for existing user and create a new one if necessary.
-        await core.users.upsert(athlete, stravaTokens)
+        await core.users.upsert(athlete, stravaTokens, true)
         await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
 
         logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
