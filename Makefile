@@ -36,7 +36,7 @@ update:
 	-rm -rf ./node_modules/strautomator-core
 	-ncu -u
 	npm version $(shell date '+%y.%-V%u.1%H%M') --force --allow-same-version --no-git-tag-version
-	npm install
+	npm install --prefer-online
 
 # Deploy to Google App Engine
 deploy-app-engine:
