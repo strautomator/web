@@ -177,6 +177,22 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.twitterShare = req.body.twitterShare ? true : false
         }
 
+        // Set counter reset date?
+        if (!_.isNil(req.body.dateResetCounter)) {
+            if (req.body.dateResetCounter) {
+                const dateResetCounter = dayjs(`2000-${req.body.dateResetCounter}`)
+
+                if (!dateResetCounter.isValid()) {
+                    logger.error("Routes", req.method, req.originalUrl, `Invalid counter reset date: ${req.body.dateResetCounter}`)
+                    return webserver.renderError(req, res, "Invalid counter reset date", 400)
+                }
+
+                preferences.dateResetCounter = req.body.dateResetCounter
+            } else {
+                preferences.dateResetCounter = false
+            }
+        }
+
         // Only PRO users can disable the linkback.
         if (preferences.linksOn == 0 && !user.isPro) {
             preferences.linksOn = settings.plans.free.linksOn

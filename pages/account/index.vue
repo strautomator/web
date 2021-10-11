@@ -59,6 +59,23 @@
                         </v-btn>
                     </div>
                     <div class="mt-4">
+                        <h3 class="mb-2">Yearly counter reset</h3>
+                        <div class="body-2">
+                            Do you want to have your automation counters automatically reset every year?
+                        </div>
+                        <v-switch class="mt-2" title="Yearly automation counter reset" v-model="resetCounter" :label="resetCounter ? 'Yes, reset counters every year' : 'No, do not reset counters'"></v-switch>
+                        <v-row no-gutters>
+                            <v-col xs="12" md="3" v-if="resetCounter">
+                                <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" min-width="290px" offset-y>
+                                    <template v-slot:activator="{on, attrs}">
+                                        <v-text-field v-model="dateResetCounterFormatted" v-bind="attrs" v-on="on" label="Reset date" type="text" prepend-icon="mdi-calendar" outlined readonly rounded dense></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="dateResetCounter" @input="dateMenu = false" no-title></v-date-picker>
+                                </v-menu>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
@@ -186,9 +203,11 @@ export default {
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const ftpAutoUpdate = user && user.preferences ? user.preferences.ftpAutoUpdate : false
+        const dateResetCounter = user && user.preferences ? user.preferences.dateResetCounter : null
         const weatherProvider = user && user.preferences ? user.preferences.weatherProvider || null : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
+        const now = this.$dayjs()
 
         if (!user.isPro) {
             for (let wp of listWeatherProviders) {
@@ -209,6 +228,9 @@ export default {
             ftpAutoUpdate: ftpAutoUpdate,
             ftpResult: null,
             ftpDialog: false,
+            resetCounter: dateResetCounter != null,
+            dateResetCounter: dateResetCounter || now.add(1, "year").format(`YYYY-01-01`),
+            dateMenu: false,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             listWeatherProviders: listWeatherProviders,
@@ -224,6 +246,10 @@ export default {
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
+        },
+        dateResetCounterFormatted() {
+            const result = this.$dayjs(this.dateResetCounter)
+            return result.format("MMM DD")
         }
     },
     watch: {
@@ -258,6 +284,18 @@ export default {
             }
         },
         twitterShare(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        resetCounter(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        dateResetCounter(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()
@@ -315,13 +353,17 @@ export default {
             this.savePending = false
 
             try {
+                const arrDate = this.dateResetCounter.split("-")
+                arrDate.shift()
+
                 const data = {
                     ftpAutoUpdate: this.ftpAutoUpdate,
                     linksOn: this.linksOn,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
                     weatherProvider: this.weatherProvider,
-                    weatherUnit: this.weatherUnit
+                    weatherUnit: this.weatherUnit,
+                    dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 
                 this.$store.commit("setUserPreferences", data)
