@@ -12,7 +12,7 @@
             </p>
             <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
                 <div class="flex-grow-0">
-                    <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                    <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" min-width="290px" offset-y>
                         <template v-slot:activator="{on, attrs}">
                             <v-text-field v-model="dateSince" v-bind="attrs" v-on="on" width="200px" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" outlined readonly rounded dense></v-text-field>
                         </template>
