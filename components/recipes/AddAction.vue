@@ -22,7 +22,7 @@
                             <div v-else-if="actionIsDescription">
                                 <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
-                            <div v-else-if="selectedAction.value && selectedAction.value != 'commute'">
+                            <div v-else-if="selectedAction.value && selectedAction.value != 'commute' && selectedAction.value != 'hideHome'">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
                             <div class="action-activity-tags" v-if="actionIsText">
@@ -164,6 +164,12 @@ export default {
             if (arr.indexOf("appendDescription") >= 0) {
                 arr.push("description")
                 arr.push("prependDescription")
+            }
+            if (arr.indexOf("commute") >= 0) {
+                arr.push("commute")
+            }
+            if (arr.indexOf("hideHome") >= 0) {
+                arr.push("hideHome")
             }
 
             arr = _.uniq(arr)
