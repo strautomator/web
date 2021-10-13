@@ -32,6 +32,11 @@
                             <td class="text-center">{{ $store.state.proPlanDetails.maxCalendarDays }}</td>
                         </tr>
                         <tr>
+                            <td>iCalendar club events</td>
+                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                        </tr>
+                        <tr>
                             <td>iCalendar template</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
