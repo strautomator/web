@@ -27,8 +27,9 @@ export default {
         let tagAmazon = "sports"
 
         try {
-            const bikeCount = (this.$store.state.user.profile.bikes || []).length
-            const shoeCount = (this.$store.state.user.profile.shoes || []).length
+            const user = this.$store.state.user || {profile: {}}
+            const bikeCount = (user.profile.bikes || []).length
+            const shoeCount = (user.profile.shoes || []).length
 
             if (bikeCount > shoeCount) tagAmazon = "cycling"
             else if (shoeCount > bikeCount) tagAmazon = "running"

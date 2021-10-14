@@ -31,11 +31,11 @@
                 <div class="mt-10 mb-4 text-center" title="Back to Strautomator home..." v-if="!loggedIn">
                     <v-btn color="primary" @click="backHome" rounded>Back to home...</v-btn>
                 </div>
+
+                <feature-links />
+
+                <ads-panel :pro-hide="true" />
             </div>
-
-            <feature-links />
-
-            <ads-panel :pro-hide="true" />
         </v-container>
     </v-layout>
 </template>
