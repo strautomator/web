@@ -116,7 +116,7 @@
                     </div>
                 </v-alert>
 
-                <ads-panel v-if="recipes && recipes.length > 0" />
+                <ads-panel v-if="recipes && recipes.length > 0" :pro-hide="true" />
             </div>
         </v-container>
     </v-layout>

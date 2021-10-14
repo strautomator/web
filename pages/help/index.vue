@@ -34,6 +34,8 @@
             </div>
 
             <feature-links />
+
+            <ads-panel :pro-hide="true" />
         </v-container>
     </v-layout>
 </template>
@@ -61,11 +63,12 @@
 
 <script>
 import _ from "lodash"
+import AdsPanel from "~/components/AdsPanel.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 
 export default {
     authenticated: false,
-    components: {FeatureLinks},
+    components: {AdsPanel, FeatureLinks},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"

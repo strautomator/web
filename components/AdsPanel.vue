@@ -1,7 +1,7 @@
 <template>
-    <v-card class="affiliates-card mt-6" v-if="!hidden" outlined>
+    <v-card class="affiliates-card mt-12" v-if="!hidden" outlined>
         <v-card-text class="white">
-            <div class="mb-4 white black--text text-center text-h6">Looking for some new gear?</div>
+            <div class="mb-5 white black--text text-center text-h6">Looking for some new gear?</div>
             <v-row>
                 <v-col cols="4">
                     <a :href="linkAmazon" target="amazon" title="Sports gear @ Amazon"><v-img src="/images/affiliates/amazon.png" max-height="100px"/></a>
@@ -22,8 +22,8 @@
 
 <script>
 export default {
+    props: ["pro-hide"],
     data() {
-        let hidden = false
         let tagAmazon = "sports"
 
         try {
@@ -32,17 +32,19 @@ export default {
 
             if (bikeCount > shoeCount) tagAmazon = "cycling"
             else if (shoeCount > bikeCount) tagAmazon = "running"
-
-            hidden = this.$store.state.user && this.$store.state.user.isPro
         } catch (ex) {
             console.error(ex)
         }
 
         return {
-            hidden: hidden,
             linkAmazon: `https://links.devv.com/l/amazon-${tagAmazon}`,
             linkIcan: `https://links.devv.com/l/ican`,
             linkWiggle: `https://links.devv.com/l/wiggle`
+        }
+    },
+    computed: {
+        hidden() {
+            return this.$store.state.user && this.$store.state.user.isPro && this.proHide
         }
     }
 }
