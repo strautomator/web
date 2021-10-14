@@ -104,14 +104,14 @@
                     </v-card-text>
                 </v-card>
                 <v-alert class="mt-4 text-center text-md-left">
-                    <div class="mb-2 mb-md-0">
+                    <div class="mb-3 mb-md-0">
                         Missing something?
                         <br v-if="!$breakpoint.mdAndUp" />
                         Try a <n-link to="/activities/sync" title="Try your automations" nuxt>manual sync</n-link>
                         now.
                     </div>
                     <div>
-                        Want to see your activities on your favourite calendar app?
+                        Want to see activities and club events on your calendar app?
                         <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link> now.
                     </div>
                 </v-alert>
