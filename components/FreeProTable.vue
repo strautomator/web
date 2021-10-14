@@ -27,17 +27,19 @@
                             <td class="text-center">6</td>
                         </tr>
                         <tr>
-                            <td>iCalendar days</td>
-                            <td class="text-center">{{ $store.state.freePlanDetails.maxCalendarDays }}</td>
-                            <td class="text-center">{{ $store.state.proPlanDetails.maxCalendarDays }}</td>
+                            <td>Calendar range</td>
+                            <td class="text-center">
+                                -{{ $store.state.freePlanDetails.pastCalendarDays }}{{ dayText }}<br />
+                                +{{ $store.state.freePlanDetails.futureCalendarDays }}{{ dayText }}
+                            </td>
+                            <td class="text-center">
+                                -{{ $store.state.proPlanDetails.pastCalendarDays }}{{ dayText }}<br />
+                                +{{ $store.state.proPlanDetails.futureCalendarDays }}{{ dayText }}
+                            </td>
                         </tr>
+
                         <tr>
-                            <td>iCalendar club events</td>
-                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
-                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
-                        </tr>
-                        <tr>
-                            <td>iCalendar template</td>
+                            <td>Calendar template</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
@@ -70,13 +72,18 @@
             </v-card-text>
         </v-card>
         <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
-            <li>A link to strautomator.com is added to {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links.</li>
+            <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
         </ul>
     </div>
 </template>
 
 <script>
 export default {
-    props: ["no-price"]
+    props: ["no-price"],
+    computed: {
+        dayText() {
+            return this.$breakpoint.mdAndUp ? " days" : "d"
+        }
+    }
 }
 </script>
