@@ -5,29 +5,48 @@
             <v-alert v-if="user && !user.isPro" border="top" color="primary" colored-border>
                 <div class="mt-1 text-center text-md-left">
                     Calendars on free accounts are limited to the last
-                    {{ $store.state.freePlanDetails.maxCalendarDays }} days only.
+                    {{ $store.state.freePlanDetails.pastCalendarDays }} days only.
                     <br v-if="$breakpoint.mdAndUp" />
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
-                    to export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities and enable a custom events template on your Calendar.
+                    to export up to {{ $store.state.proPlanDetails.pastCalendarDays }} days of activities and enable a custom events template on your Calendar.
                 </div>
             </v-alert>
             <v-card class="mt-5" outlined>
                 <v-card-text>
                     <p>
-                        Strautomator can export your Strava activities using the iCalendar format, allowing you to view your activities as events on the calendar service of your choice.
+                        Strautomator can export your Strava activities and club events using the iCal format.
                     </p>
-                    <p class="mt-2">
-                        Use the following URL to subscribe directly on your Calendar client:
-                    </p>
-                    <div class="text-center text-md-left">
-                        <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                        <v-btn class="mt-4" color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
+                    <div>
+                        <h3>What to export</h3>
+                        <v-radio-group class="mt-1" v-model="calendarType" :row="$breakpoint.mdAndUp">
+                            <v-radio label="Activities and club events" value="all"></v-radio>
+                            <v-radio label="Only activities" value="activities"></v-radio>
+                            <v-radio label="Only club events" value="clubs"></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div>
+                        <h3>Sport types</h3>
+                        <v-radio-group class="mt-1" v-model="calendarSports" :row="$breakpoint.mdAndUp">
+                            <v-radio label="All sports" value="all"></v-radio>
+                            <v-radio label="Rides" value="Ride,EBikeRide,VirtualRide"></v-radio>
+                            <v-radio label="Runs" value="Run,Walk"></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div>
+                        <h3>Other options</h3>
+                        <v-checkbox class="mt-1" v-model="excludeCommutes" label="Exclude commutes" :disabled="calendarType == 'clubs'" />
+                    </div>
+                    <div class="text-center text-md-left mt-1">
+                        <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
-                        <div class="caption mt-3">
-                            * The button above might not work on some devices. If that happens, subscribe manually by copying the link.
-                        </div>
+                    </div>
+                    <div class="text-center text-md-left caption mt-3">
+                        If the button above does not work, please subscribe manually using the link below:
+                    </div>
+                    <div class="mt-4">
+                        <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
                     </div>
                 </v-card-text>
             </v-card>
@@ -37,7 +56,7 @@
                 </v-card-title>
                 <v-card-text>
                     <p class="mt-4">
-                        As a PRO user, you can customize the summary and details of events on exported calendars. Simply edit the fields below adding your desired tags, or leave blank to use the defaults.
+                        As a PRO user, you can customize the details of your activities (not club events) on exported calendars. Simply edit the fields below or leave them blank to use the defaults.
                     </p>
                     <div>
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
@@ -84,7 +103,7 @@
                     <div class="mt-2 text-center text-md-left">
                         <v-btn color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
                             <v-icon left>mdi-content-save</v-icon>
-                            Save template
+                            Save
                         </v-btn>
                         <v-btn class="ml-2" color="accent" title="Save your custom calendar template" @click="setSampleTemplate" rounded nuxt>
                             <v-icon left>mdi-text-box-outline</v-icon>
@@ -154,10 +173,11 @@ export default {
         const calendarTemplate = this.$store.state.user.calendarTemplate || {}
 
         return {
+            calendarType: "all",
+            calendarSports: "all",
             location: null,
             excludeCommutes: false,
             templateWarning: false,
-            sportTypes: [],
             activeField: "eventDetails",
             currentEventSummary: calendarTemplate.eventSummary || "",
             currentEventDetails: calendarTemplate.eventDetails || "",
@@ -180,12 +200,15 @@ export default {
         urlCalendar() {
             if (!this.location) return ""
 
+            const timestamp = Math.round(new Date().valueOf() / 1000 / 60 / 60)
             const location = this.location
             const port = location.port == "80" || location.port == "" ? "" : `:${location.port}`
             const userId = this.$store.state.user.id
             const urlToken = this.$store.state.user.urlToken
+            const sports = this.calendarSports != "all" ? `&sports=${this.calendarSports}` : ""
+            const commutes = this.excludeCommutes ? `&commutes=0` : ""
 
-            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/activities.ics`
+            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics?ts=${timestamp}${sports}${commutes}`
         },
         changedTemplate() {
             return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails

@@ -15,8 +15,8 @@
                     <v-card-text>
                         <div class="text-left">
                             <p>
-                                You can now have your Strava activities displayed on your favourite calendar app. Calendars are exported using the .ics format, and is compatible with most popular calendar applications and services (Google, Apple,
-                                Outlook, Thunderbird etc).
+                                You can now have your Strava activities and upcoming club events displayed on your favourite calendar app. Calendars are exported using the .ics format and compatible with most popular calendar applications and
+                                services (Google, Apple, Outlook, Thunderbird etc).
                             </p>
 
                             <h2 class="mb-2">How can I subscribe?</h2>
@@ -24,11 +24,12 @@
                             <div class="mb-8">
                                 <ul class="ml-n2 mb-4">
                                     <li>Go to My Account, then My Calendar</li>
+                                    <li>Choose your desired calendar options</li>
                                     <li>Use the "Subscribe to calendar" button, or copy the URL directly from the text field</li>
                                 </ul>
                                 <p>
-                                    PRO users can export up to {{ $store.state.proPlanDetails.maxCalendarDays }} days of activities on their calendar, while free accounts are limited to the last
-                                    {{ $store.state.freePlanDetails.maxCalendarDays }} days.
+                                    PRO users can export up to {{ $store.state.proPlanDetails.pastCalendarDays }} days of activities on their calendar, while free accounts are limited to the past
+                                    {{ $store.state.freePlanDetails.pastCalendarDays }} and next {{ $store.state.freePlanDetails.futureCalendarDays }} days.
                                 </p>
                             </div>
 

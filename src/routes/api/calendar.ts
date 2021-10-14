@@ -58,28 +58,35 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
 /**
  * Return the Strava activities calendar for the specified user.
  */
-router.get("/:userId/:urlToken/activities.ics", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: express.Response) => {
     try {
         const user = await users.getById(req.params.userId)
+        const calType = req.params.calType
 
         // Validate user and URL token.
+        if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
         if (!user) throw new Error(`User ${user.id} not found`)
         if (!user.urlToken) throw new Error(`User ${user.id} has no URL token assigned`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
         // Get calendar options from query parameters.
         const options: CalendarOptions = {
-            excludeCommutes: req.query.commutes === "0",
-            sportTypes: req.query.sports ? req.query.sports.toString().split(",") : null
+            activities: calType == "all" || calType == "activities",
+            clubs: calType == "all" || calType == "clubs"
         }
+
+        // Additional options.
+        if (req.query.commutes === "0") options.excludeCommutes = true
+        if (req.query.sports) options.sportTypes = req.query.sports.toString().split(",")
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
-        const expires = dayjs.utc().add(settings.calendar.ttl, "seconds")
+        const cacheAge = settings.calendar.ttl * 2
+        const expires = dayjs.utc().add(cacheAge, "seconds")
 
         logger.info("Routes", req.method, req.originalUrl)
         res.setHeader("Content-Type", "text/calendar")
-        res.setHeader("Cache-Control", `public, max-age=${settings.calendar.ttl}`)
+        res.setHeader("Cache-Control", `public, max-age=${cacheAge}`)
         res.setHeader("Expires", expires.format("ddd, DD MMM YYYY HH:mm:ss [GMT]"))
         return res.send(cal)
     } catch (ex) {
