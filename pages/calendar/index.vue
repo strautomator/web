@@ -35,14 +35,15 @@
                     <div>
                         <h3>Other options</h3>
                         <v-checkbox class="mt-1" v-model="excludeCommutes" label="Exclude commutes" :disabled="calendarType == 'clubs'" />
+                        <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" :disabled="calendarType == 'activities'" />
                     </div>
-                    <div class="text-center text-md-left mt-1">
+                    <div class="text-center text-md-left mt-2">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
                     </div>
-                    <div class="text-center text-md-left caption mt-3">
+                    <div class="text-center text-md-left caption mt-4">
                         If the button above does not work, please subscribe manually using the link below:
                     </div>
                     <div class="mt-4">
@@ -177,6 +178,7 @@ export default {
             calendarSports: "all",
             location: null,
             excludeCommutes: false,
+            excludeNotJoined: false,
             templateWarning: false,
             activeField: "eventDetails",
             currentEventSummary: calendarTemplate.eventSummary || "",
@@ -206,9 +208,10 @@ export default {
             const userId = this.$store.state.user.id
             const urlToken = this.$store.state.user.urlToken
             const sports = this.calendarSports != "all" ? `&sports=${this.calendarSports}` : ""
-            const commutes = this.excludeCommutes ? `&commutes=0` : ""
+            const commutes = this.excludeCommutes && this.calendarType != "clubs" ? "&commutes=0" : ""
+            const joined = this.excludeNotJoined && this.calendarType != "activities" ? "&joined=1" : ""
 
-            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics?ts=${timestamp}${sports}${commutes}`
+            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics?ts=${timestamp}${sports}${commutes}${joined}`
         },
         changedTemplate() {
             return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails
