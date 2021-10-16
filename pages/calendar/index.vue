@@ -11,7 +11,7 @@
                     to export up to {{ $store.state.proPlanDetails.pastCalendarDays }} days of activities and enable a custom events template on your Calendar.
                 </div>
             </v-alert>
-            <v-card class="mt-5" outlined>
+            <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <p>
                         Strautomator can export your Strava activities and club events using the iCal format.
@@ -36,6 +36,7 @@
                         <h3>Other options</h3>
                         <v-checkbox class="mt-1" v-model="excludeCommutes" label="Exclude commutes" :disabled="calendarType == 'clubs'" />
                         <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" :disabled="calendarType == 'activities'" />
+                        <v-checkbox class="mt-n4" v-model="includeAllCountries" :label="'Include events outside ' + user.profile.country" :disabled="calendarType == 'activities'" />
                     </div>
                     <div class="text-center text-md-left mt-2">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
@@ -47,7 +48,7 @@
                         If the button above does not work, please subscribe manually using the link below:
                     </div>
                     <div class="mt-4">
-                        <v-text-field label="URL" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                        <v-text-field label="URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
                     </div>
                 </v-card-text>
             </v-card>
@@ -179,6 +180,7 @@ export default {
             location: null,
             excludeCommutes: false,
             excludeNotJoined: false,
+            includeAllCountries: false,
             templateWarning: false,
             activeField: "eventDetails",
             currentEventSummary: calendarTemplate.eventSummary || "",
@@ -202,16 +204,19 @@ export default {
         urlCalendar() {
             if (!this.location) return ""
 
-            const timestamp = Math.round(new Date().valueOf() / 1000 / 60 / 60)
             const location = this.location
             const port = location.port == "80" || location.port == "" ? "" : `:${location.port}`
             const userId = this.$store.state.user.id
             const urlToken = this.$store.state.user.urlToken
-            const sports = this.calendarSports != "all" ? `&sports=${this.calendarSports}` : ""
-            const commutes = this.excludeCommutes && this.calendarType != "clubs" ? "&commutes=0" : ""
-            const joined = this.excludeNotJoined && this.calendarType != "activities" ? "&joined=1" : ""
 
-            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics?ts=${timestamp}${sports}${commutes}${joined}`
+            const params = []
+            if (this.calendarSports != "all") params.push(`sports=${this.calendarSports}`)
+            if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
+            if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
+            if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            const querystring = params.length > 0 ? `?${params.join("&")}` : ""
+
+            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics${querystring}`
         },
         changedTemplate() {
             return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails

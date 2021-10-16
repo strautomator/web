@@ -78,6 +78,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Additional options.
         if (req.query.commutes === "0") options.excludeCommutes = true
         if (req.query.joined === "1") options.excludeNotJoined = true
+        if (req.query.countries === "1") options.includeAllCountries = true
         if (req.query.sports) options.sportTypes = req.query.sports.toString().split(",")
 
         // Generate and render Strava activities as an iCalendar.
