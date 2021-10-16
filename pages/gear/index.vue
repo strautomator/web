@@ -72,7 +72,7 @@
                         </v-card-text>
                     </v-card>
                     <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
-                        Please note that the activity tracking happens with a {{ previousDays }} days delay, so you have plenty of time to set the correct bike or shoes on your recent activities.
+                        Please note that the gear tracking happens with a {{ previousDays }} days delay, so you have plenty of time to set the correct bike or shoes on your recent activities.
                         <div class="mt-1">Today's activities will be counted on {{ trackingDay }}.</div>
                     </v-alert>
                 </template>
@@ -158,7 +158,7 @@ export default {
             gearWithConfig: [],
             gearWithoutConfig: [],
             gearwearConfigs: {},
-            trackingDay: now.add(previousDays, "days").format("dddd Do")
+            trackingDay: now.add(previousDays, "days").format("ddd Do")
         }
     },
     computed: {
