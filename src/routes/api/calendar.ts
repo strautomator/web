@@ -83,7 +83,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
-        const cacheAge = settings.calendar.ttl * 2
+        const cacheAge = settings.calendar.cacheDuration
         const expires = dayjs.utc().add(cacheAge, "seconds")
 
         logger.info("Routes", req.method, req.originalUrl)
