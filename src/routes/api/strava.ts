@@ -36,6 +36,14 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
                 return false
             }
 
+            // User has deauthorized Strautomator?
+            if (obj.object_type == "athlete" && obj.updates && obj.updates.authorized == "false") {
+                strava.athletes.deauthCheck(obj.owner_id.toString())
+                logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Deauthorized")
+                webserver.renderJson(req, res, {authorized: false})
+                return false
+            }
+
             // Only want to process new activities, so skip the rest.
             if (obj.aspect_type != "create" || obj.object_type != "activity") {
                 logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Skipped")
