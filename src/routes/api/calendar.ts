@@ -62,6 +62,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
     try {
         const user = await users.getById(req.params.userId)
         const calType = req.params.calType
+        const now = dayjs()
 
         // Validate user and URL token.
         if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
@@ -80,6 +81,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.joined === "1") options.excludeNotJoined = true
         if (req.query.countries === "1") options.includeAllCountries = true
         if (req.query.sports) options.sportTypes = req.query.sports.toString().split(",")
+        if (req.query.daysfrom) options.dateFrom = now.subtract(parseInt(req.query.daysfrom as string), "days").toDate()
+        if (req.query.daysto) options.dateTo = now.subtract(parseInt(req.query.daysto as string), "days").toDate()
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)

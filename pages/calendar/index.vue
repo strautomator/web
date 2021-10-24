@@ -2,15 +2,6 @@
     <v-layout column>
         <v-container fluid>
             <h1>Calendar</h1>
-            <v-alert v-if="user && !user.isPro" border="top" color="primary" colored-border>
-                <div class="mt-1 text-center text-md-left">
-                    Calendars on free accounts are limited to the last
-                    {{ $store.state.freePlanDetails.pastCalendarDays }} days only.
-                    <br v-if="$breakpoint.mdAndUp" />
-                    <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
-                    to export up to {{ $store.state.proPlanDetails.pastCalendarDays }} days of activities and enable a custom events template on your Calendar.
-                </div>
-            </v-alert>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <p>
@@ -33,12 +24,20 @@
                         </v-radio-group>
                     </div>
                     <div>
-                        <h3>Other options</h3>
-                        <v-checkbox class="mt-1" v-model="excludeCommutes" label="Exclude commutes" :disabled="calendarType == 'clubs'" />
-                        <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" :disabled="calendarType == 'activities'" />
-                        <v-checkbox class="mt-n4" v-model="includeAllCountries" :label="'Include events outside ' + user.profile.country" :disabled="calendarType == 'activities'" />
+                        <h3 class="mb-4">Other options</h3>
+                        <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="calendarType != 'clubs'" dense />
+                        <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="calendarType != 'activities'" dense />
+                        <v-checkbox class="mt-n4" v-model="includeAllCountries" :label="'Include events outside ' + user.profile.country" v-if="calendarType != 'activities'" dense />
                     </div>
-                    <div class="text-center text-md-left mt-2">
+                    <div v-if="calendarType != 'clubs'">
+                        <h3>Days of activities</h3>
+                        <v-row no-gutters>
+                            <v-col cols="6" md="2" class="mt-1">
+                                <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" outlined rounded dense></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div class="text-center text-md-left mt-1">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
@@ -52,9 +51,18 @@
                     </div>
                 </v-card-text>
             </v-card>
+            <v-alert v-if="user && !user.isPro" border="top" color="primary" class="mt-4" colored-border>
+                <div class="mt-1 text-center text-md-left">
+                    Free accounts are limited to activities from the past
+                    {{ $store.state.freePlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.freePlanDetails.futureCalendarDays }}
+                    days, using the default template.
+                    <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
+                    to export activities from the past {{ $store.state.proPlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.freePlanDetails.pastCalendarDays }} days, using a custom template.
+                </div>
+            </v-alert>
             <v-card v-if="user && user.isPro" class="mt-5" outlined>
                 <v-card-title class="accent">
-                    Events template
+                    Activities template
                 </v-card-title>
                 <v-card-text>
                     <p class="mt-4">
@@ -173,6 +181,8 @@ export default {
     },
     data() {
         const calendarTemplate = this.$store.state.user.calendarTemplate || {}
+        const freePlan = this.$store.state.freePlanDetails
+        const proPlan = this.$store.state.proPlanDetails
 
         return {
             calendarType: "all",
@@ -183,6 +193,8 @@ export default {
             includeAllCountries: false,
             templateWarning: false,
             activeField: "eventDetails",
+            daysFrom: freePlan.pastCalendarDays,
+            maxDaysFrom: this.$store.state.user.isPro ? proPlan.pastCalendarDays : freePlan.pastCalendarDays,
             currentEventSummary: calendarTemplate.eventSummary || "",
             currentEventDetails: calendarTemplate.eventDetails || "",
             calendarTemplate: {
@@ -214,6 +226,8 @@ export default {
             if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
             if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
             if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            if (this.daysFrom != this.$store.state.freePlanDetails.pastCalendarDays) params.push(`daysfrom=${this.daysFrom}`)
+
             const querystring = params.length > 0 ? `?${params.join("&")}` : ""
 
             return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics${querystring}`
