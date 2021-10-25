@@ -19,6 +19,9 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
+                            <div v-if="selectedAction.value == 'mapStyle'">
+                                <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
+                            </div>
                             <div v-else-if="actionIsDescription">
                                 <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
@@ -125,6 +128,10 @@ export default {
                 _.remove(recipeActions, {value: "gear"})
             }
 
+            // Map styles dropdown.
+            const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
+            console.dir(mapStyles)
+
             return {
                 action: {},
                 loading: false,
@@ -133,6 +140,8 @@ export default {
                 selectedAction: {},
                 gears: gears,
                 selectedGear: {},
+                selectedMapStyle: {},
+                mapStyles: mapStyles,
                 valueInput: ""
             }
         },
@@ -141,35 +150,38 @@ export default {
             arr = _.cloneDeep(arr)
 
             // Make sure we disable related actions that were already set.
-            if (arr.indexOf("name") >= 0) {
+            if (arr.includes("name")) {
                 arr.push("prependName")
                 arr.push("appendName")
             }
-            if (arr.indexOf("prependName") >= 0) {
+            if (arr.includes("prependName")) {
                 arr.push("name")
                 arr.push("appendName")
             }
-            if (arr.indexOf("appendName") >= 0) {
+            if (arr.includes("appendName")) {
                 arr.push("name")
                 arr.push("prependName")
             }
-            if (arr.indexOf("description") >= 0) {
+            if (arr.includes("description")) {
                 arr.push("prependDescription")
                 arr.push("appendDescription")
             }
-            if (arr.indexOf("prependDescription") >= 0) {
+            if (arr.includes("prependDescription")) {
                 arr.push("description")
                 arr.push("appendDescription")
             }
-            if (arr.indexOf("appendDescription") >= 0) {
+            if (arr.includes("appendDescription")) {
                 arr.push("description")
                 arr.push("prependDescription")
             }
-            if (arr.indexOf("commute") >= 0) {
+            if (arr.includes("commute")) {
                 arr.push("commute")
             }
-            if (arr.indexOf("hideHome") >= 0) {
+            if (arr.includes("hideHome")) {
                 arr.push("hideHome")
+            }
+            if (arr.includes("mapStyle")) {
+                arr.push("mapStyle")
             }
 
             arr = _.uniq(arr)
@@ -209,6 +221,9 @@ export default {
                 if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
+                } else if (result.type == "mapStyle") {
+                    result.value = this.selectedMapStyle.value
+                    result.friendlyValue = this.selectedMapStyle.text
                 } else {
                     result.value = this.valueInput || true
                 }
