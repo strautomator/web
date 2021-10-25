@@ -9,6 +9,7 @@ export const state = () => ({
     linksOnPercent: null,
     ftpWeeks: null,
     sportTypes: [],
+    mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {}
 })
@@ -36,6 +37,9 @@ export const mutations = {
     },
     setSportTypes(state, data) {
         state.sportTypes = data
+    },
+    setMapStyles(state, data) {
+        state.mapStyles = data
     },
     setPlanDetails(state, data) {
         state.freePlanDetails = data.free
@@ -104,6 +108,12 @@ export const actions = {
             // Set sport types.
             const sportTypes = Object.keys(core.StravaSport).map((s) => core.StravaSport[s])
             commit("setSportTypes", sportTypes)
+
+            // Set map styles.
+            const mapStyles = Object.keys(core.StravaMapStyle).map((s) => {
+                return {text: s.replace(/([A-Z])/g, " $1").trim(), value: core.StravaMapStyle[s]}
+            })
+            commit("setMapStyles", mapStyles)
 
             // Set free / PRO plan details.
             commit("setPlanDetails", settings.plans)
