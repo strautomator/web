@@ -90,6 +90,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         const expires = dayjs.utc().add(cacheAge, "seconds")
 
         logger.info("Routes", req.method, req.originalUrl)
+
+        // Update cache headers and send response.
         res.setHeader("Content-Type", "text/calendar")
         res.setHeader("Cache-Control", `public, max-age=${cacheAge}`)
         res.setHeader("Expires", expires.format("ddd, DD MMM YYYY HH:mm:ss [GMT]"))
