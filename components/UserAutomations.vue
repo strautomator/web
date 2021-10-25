@@ -14,7 +14,7 @@
                             </v-card-title>
                         </n-link>
                     </v-hover>
-                    <v-card-text class="white--text pb-1 pb-md-2">
+                    <v-card-text class="white--text pb-2">
                         <div class="mb-2" v-if="recipesRemaining < 0 && recipeIndex >= recipesMaxAllowed">
                             <v-chip class="mb-0 ml-1" color="error" outlined small>DISABLED, NEEDS PRO</v-chip>
                         </div>
