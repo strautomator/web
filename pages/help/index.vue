@@ -5,7 +5,11 @@
             <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
                 <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
-                <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Search" class="mt-2" rounded outlined></v-text-field>
+                <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
+
+                <div class="text-center text-caption mb-6 mt-n4">
+                    Use the field above to search by keywords. The most common questions (not all) are listed below.
+                </div>
 
                 <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 class="mb-1 ml-1">{{ group.title }}</h2>
