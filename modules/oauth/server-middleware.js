@@ -30,7 +30,10 @@ module.exports = (options) => async (req, res, next) => {
 
     // Start the OAuth dance.
     if (handler.isRoute("login")) {
-        const redirectUrl = parse(req.url.split("?")[1])["redirect-url"] || "/"
+        const arrUrl = req.url.split("?")
+        arrUrl.shift()
+
+        const redirectUrl = parse(arrUrl.join("?"))["redirect-url"] || "/"
         return handler.redirectToOAuth(redirectUrl)
     }
 

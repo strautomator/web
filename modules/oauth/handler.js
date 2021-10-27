@@ -53,7 +53,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         const stravaTokens = await core.strava.getToken(this.req.query.code)
 
         if (!stravaTokens || !stravaTokens.accessToken) {
-            return this.redirectToOAuth()
+            return this.redirectToOAuth(redirectUrl)
         }
 
         const {accessToken, refreshToken, expiresAt} = stravaTokens
@@ -73,7 +73,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         return this.redirect(redirectUrl)
     } catch (ex) {
         logger.error("OAuth.authenticateCallbackToken", ex)
-        return this.redirectToOAuth()
+        return this.redirectToOAuth(redirectUrl)
     }
 }
 
