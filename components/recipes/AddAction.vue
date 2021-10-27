@@ -23,7 +23,7 @@
                                 <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                             </div>
                             <div v-else-if="actionIsDescription">
-                                <v-textarea label="Description..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
+                                <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
                             <div v-else-if="selectedAction.value && selectedAction.value != 'commute' && selectedAction.value != 'hideHome'">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
@@ -36,10 +36,13 @@
                                 <v-chip @click="addTag('speedMax')" small>Max speed</v-chip>
                                 <v-chip @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
                                 <v-chip @click="addTag('wattsAvg')" small>Avg watts</v-chip>
+                                <v-chip @click="addTag('wattsWeighted')" small>Weighted watts</v-chip>
                                 <v-chip @click="addTag('wattsMax')" small>Max watts</v-chip>
                                 <v-chip @click="addTag('hrAvg')" small>Avg HR</v-chip>
                                 <v-chip @click="addTag('hrMax')" small>Max HR</v-chip>
                                 <v-chip @click="addTag('calories')" small>Calories</v-chip>
+                                <v-chip @click="addTag('relativeEffort')" small>Relative effort</v-chip>
+                                <v-chip @click="addTag('perceivedExertion')" small>Perceived Exertion</v-chip>
                                 <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
                                 <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
@@ -97,10 +100,10 @@ export default {
             return [this.recipeRules.required]
         },
         actionIsDescription() {
-            return this.selectedAction.value == "description" || this.selectedAction.value == "prependDescription" || this.selectedAction.value == "appendDescription"
+            return ["description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
         },
         actionIsText() {
-            return ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription"].indexOf(this.selectedAction.value) >= 0
+            return ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
         }
     },
     watch: {
@@ -150,6 +153,9 @@ export default {
             arr = _.cloneDeep(arr)
 
             // Make sure we disable related actions that were already set.
+            if (arr.includes("commute")) {
+                arr.push("commute")
+            }
             if (arr.includes("name")) {
                 arr.push("prependName")
                 arr.push("appendName")
@@ -174,14 +180,14 @@ export default {
                 arr.push("description")
                 arr.push("prependDescription")
             }
-            if (arr.includes("commute")) {
-                arr.push("commute")
-            }
-            if (arr.includes("hideHome")) {
-                arr.push("hideHome")
+            if (arr.includes("privateNote")) {
+                arr.push("privateNote")
             }
             if (arr.includes("mapStyle")) {
                 arr.push("mapStyle")
+            }
+            if (arr.includes("hideHome")) {
+                arr.push("hideHome")
             }
 
             arr = _.uniq(arr)

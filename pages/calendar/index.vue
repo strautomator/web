@@ -87,28 +87,33 @@
                             no-resize
                         ></v-textarea>
                     </div>
-                    <div class="mt-2">
+                    <div class="mt-2 text-center text-md-left">
                         <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
-                        <v-chip class="mr-1 mb-2" @click="addTag('icon')" small>icon</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('gear')" small>gear</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('distance')" small>distance</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('elevationGain')" small>elevationGain</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('elevationMax')" small>elevationMax</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('climbingRatio')" small>climbingRatio</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('speedAvg')" small>speedAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('speedMax')" small>speedMax</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>cadenceAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>hasPower*</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsAvg')" small>wattsAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsWeighted')" small>wattsWeighted</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsMax')" small>wattsMax</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hrAvg')" small>hrAvg</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hrMax')" small>hrMax</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('calories')" small>calories</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('device')" small>device</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('commute')" small>commute*</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('manual')" small>manual*</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('temperature')" small>temperature**</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('icon')" small>Icon</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('name')" small>Name</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('description')" small>Description</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('gear')" small>Gear</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('distance')" small>Distance</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('elevationGain')" small>Elevation gain</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('elevationMax')" small>Max elevation</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('climbingRatio')" small>Climbing ratio</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('speedAvg')" small>Avg speed</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('speedMax')" small>Max speed</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('calories')" small>Calories</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>Has power</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsAvg')" small>Avg watts</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsWeighted')" small>Weighted watts</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('wattsMax')" small>Max watts</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hrAvg')" small>Avg HR</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hrMax')" small>Max HR</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('perceivedExertion')" small>Perceived exertion</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('relativeEffort')" small>Relative effort</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('device')" small>Device</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('commute')" small>Is commute</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('manual')" small>Is manual</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('hasPhotos')" small>Has photos</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('temperature')" small>Temperature *</v-chip>
                     </div>
                     <div class="mt-2 text-center text-md-left">
                         <v-btn color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
@@ -121,8 +126,7 @@
                         </v-btn>
                     </div>
                     <ul class="caption mt-4 pl-4">
-                        <li>The "hasPower", "commute" and "manual" tags are boolean (yes or no)</li>
-                        <li>The "temperature" tag is the value measured by the GPS device</li>
+                        <li>The temperature tag is the value measured by the GPS device itself</li>
                     </ul>
                     <v-alert v-model="templateWarning" color="secondary" class="mt-4" icon="mdi-alert" rounded outlined dense>The new template will be applied once your calendar gets refreshed with new activities from Strava.</v-alert>
                 </v-card-text>
@@ -133,26 +137,18 @@
                 </v-card-title>
                 <v-card-text>
                     <p class="mt-3">
-                        Subscribing to .ics calendars should be fairly simple, but the steps are slightly different depending on which service or client you use.
-                    </p>
-                    <p>
-                        Here are the official support pages for some:
+                        Subscribing to .ics calendars should be fairly simple, but the steps are slightly different depending on which service or client you use. For help, please check
+                        <a class="font-weight-medium" href="https://www.webcal.guru/en-GB/help?question_id=subscribe" target="helpOthers">WebCal.Guru</a> or...
                     </p>
                     <ul class="pl-4">
                         <li>
                             <a class="font-weight-medium" href="https://support.google.com/calendar/answer/37100?hl=en" target="helpGoogle">Google</a>
-                            &gt;
-                            <span class="caption">Ways to add someone else's calendar &gt; Add using a link</span>
                         </li>
                         <li>
                             <a class="font-weight-medium" href="https://help.yahoo.com/kb/unfollow-calendars-yahoo-mail-sln28066.html" target="helpYahoo">Yahoo Mail</a>
-                            &gt;
-                            <span class="caption">Follow other calendars</span>
                         </li>
                         <li>
                             <a class="font-weight-medium" href="https://support.microsoft.com/en-us/office/import-or-subscribe-to-a-calendar-in-outlook-on-the-web-503ffaf6-7b86-44fe-8dd6-8099d95f38df" target="helpOutlook">Outlook</a>
-                            &gt;
-                            <span class="caption">Subscribe to a calendar</span>
                         </li>
                         <li>
                             <a class="font-weight-medium" href="https://support.apple.com/en-gb/guide/calendar/icl1022/mac" target="helpMac">Mac OS</a>
