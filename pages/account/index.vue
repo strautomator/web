@@ -27,9 +27,7 @@
                 </div>
             </div>
             <v-card class="mt-5" outlined>
-                <v-card-title class="accent">
-                    My preferences
-                </v-card-title>
+                <v-card-title class="accent"> My preferences </v-card-title>
                 <v-card-text>
                     <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-1">
@@ -47,9 +45,7 @@
                     </div>
                     <div class="mt-n1">
                         <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
-                        <div class="body-2">
-                            Strautomator can automatically update your cycling FTP based on your recent rides with a power meter.
-                        </div>
+                        <div class="body-2">Strautomator can automatically update your cycling FTP based on your recent rides with a power meter.</div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
                     <div class="mb-8 mt-n2 text-center text-md-left">
@@ -59,10 +55,16 @@
                         </v-btn>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">Yearly counter reset</h3>
+                        <h3 class="mb-2">Delayed processing</h3>
                         <div class="body-2">
-                            Do you want to have your automation counters automatically reset every year?
+                            Do you want Strautomator to wait around 10 minutes before processing your activities? Useful if you have other services updating your Strava as well, or if you want to have some time to change details / add photos before
+                            your automations are executed.
                         </div>
+                        <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Yearly counter reset</h3>
+                        <div class="body-2">Do you want to have your automation counters automatically reset every year?</div>
                         <v-switch class="mt-2" title="Yearly automation counter reset" v-model="resetCounter" :label="resetCounter ? 'Yes, reset counters every year' : 'No, do not reset counters'"></v-switch>
                         <v-row no-gutters>
                             <v-col xs="12" md="3" v-if="resetCounter">
@@ -74,6 +76,11 @@
                                 </v-menu>
                             </v-col>
                         </v-row>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Twitter sharing</h3>
+                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
@@ -92,17 +99,8 @@
                     </div>
                     <div class="mt-4" v-if="linksOn > 0">
                         <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="body-2">
-                            Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?
-                        </div>
+                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="mb-2">Twitter sharing</h3>
-                        <div class="body-2">
-                            Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.
-                        </div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'"></v-switch>
                     </div>
                 </v-card-text>
             </v-card>
@@ -152,13 +150,9 @@
                             Estimation based on {{ ftpResult.activityCount }} activities, and the highest effort of {{ ftpResult.bestWatts }} watts on
                             <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $dayjs(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
-                        <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">
-                            Keep up the good work!
-                        </p>
+                        <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">Keep up the good work!</p>
                         <p v-else-if="!ftpResult.recentlyUpdated">Do you want to save that value ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
-                        <v-alert color="accent" v-else>
-                            Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature.
-                        </v-alert>
+                        <v-alert color="accent" v-else> Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature. </v-alert>
                     </template>
 
                     <div class="text-right mt-1">
@@ -200,6 +194,7 @@ export default {
         const user = this.$store.state.user
         const defaultLinksOn = user && user.isPro ? 0 : this.$store.state.linksOnPercent
         const linksOn = user && user.preferences ? user.preferences.linksOn : defaultLinksOn
+        const delayedProcessing = user & user.preferences ? user.preferences.delayedProcessing : false
         const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const ftpAutoUpdate = user && user.preferences ? user.preferences.ftpAutoUpdate : false
@@ -223,6 +218,7 @@ export default {
             emailDialog: false,
             emailSaved: false,
             linksOn: linksOn || defaultLinksOn,
+            delayedProcessing: delayedProcessing,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
             ftpAutoUpdate: ftpAutoUpdate,
@@ -260,6 +256,12 @@ export default {
             }
         },
         linksOn(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        delayedProcessing(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()
@@ -359,6 +361,7 @@ export default {
                 const data = {
                     ftpAutoUpdate: this.ftpAutoUpdate,
                     linksOn: this.linksOn,
+                    delayedProcessing: this.delayedProcessing,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
                     weatherProvider: this.weatherProvider,
