@@ -7,15 +7,11 @@
 
                 <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
 
-                <div class="text-center text-caption mb-6 mt-n4">
-                    Use the field above to search by keywords. The most common questions (not all) are listed below.
-                </div>
+                <div class="text-center text-caption mb-6 mt-n4">Use the field above to search by keywords. The most common questions (not all) are listed below.</div>
 
                 <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 class="mb-1 ml-1">{{ group.title }}</h2>
-                    <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0">
-                        No results found.
-                    </v-alert>
+                    <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0"> No results found. </v-alert>
                     <v-expansion-panels class="mb-4" :value="expandedPanels" multiple hover>
                         <v-expansion-panel v-for="(item, index) in group.questions" :key="'faq-' + index">
                             <v-expansion-panel-header>
@@ -29,7 +25,7 @@
                 </div>
 
                 <div class="mt-10 text-center" v-if="!loggedIn">
-                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                 </div>
 
                 <div class="mt-10 mb-4 text-center" title="Back to Strautomator home..." v-if="!loggedIn">
@@ -90,8 +86,8 @@ export default {
             {tag: "about", title: "About"},
             {tag: "automations", title: "Automations"},
             {tag: "gearwear", title: "GearWear"},
-            {tag: "ftp", title: "FTP autp update"},
             {tag: "calendar", title: "Calendar"},
+            {tag: "ftp", title: "FTP autp update"},
             {tag: "subscription", title: "Free vs. PRO"},
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
@@ -175,11 +171,11 @@ export default {
             }
 
             const iQuery = new RegExp("\\b " + this.searchQuery + " \\b", "ig")
-            return text.replace(iQuery, function(matchedTxt, a, b) {
+            return text.replace(iQuery, function (matchedTxt, a, b) {
                 return " <span class='search-highlight'>" + matchedTxt.trim() + "</span> "
             })
         },
-        debounceSearch: _.debounce(async function() {
+        debounceSearch: _.debounce(async function () {
             this.loading = true
             this.searchQuery = this.searchValue
             this.expandedPanels = []
