@@ -29,6 +29,9 @@
                 <v-alert class="mt-6 text-center text-md-left">
                     Want to test your automations with a specific activity?
                     <n-link to="/activities/sync" title="Manual automation trigger" nuxt>Try a manual sync.</n-link>
+                    <br />
+                    Want to check what Strautomator has updated in the past? Go to the
+                    <n-link to="/automations/history" title="Automation history" nuxt>automation history.</n-link>
                 </v-alert>
             </div>
         </v-container>
