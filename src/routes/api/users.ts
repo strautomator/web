@@ -177,6 +177,11 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.twitterShare = req.body.twitterShare ? true : false
         }
 
+        // Set delayed processing preference?
+        if (!_.isNil(req.body.delayedProcessing)) {
+            preferences.delayedProcessing = req.body.delayedProcessing ? true : false
+        }
+
         // Set counter reset date?
         if (!_.isNil(req.body.dateResetCounter)) {
             if (req.body.dateResetCounter) {
