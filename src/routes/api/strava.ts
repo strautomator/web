@@ -147,7 +147,10 @@ router.get("/activities/processed", async (req: express.Request, res: express.Re
 
         // Limit number of activites returned?
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
-        const activities = await strava.activities.getProcessedActivites(user, limit)
+        let dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).toDate() : null
+        let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).toDate() : null
+
+        const activities = await strava.activities.getProcessedActivites(user, dateFrom, dateTo, limit)
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
@@ -329,14 +332,37 @@ router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: e
 
         user.dateLastActivity = now
 
-        // Process and set last processed activity date if the activity was update by any automation recipe.
-        const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
-        if (processed && !processed.error) user.dateLastProcessedActivity = now
+        // Process the passed activity now, or queue later, depending on user preferences.
+        if (user.preferences.delayedProcessing) {
+            await strava.activities.queueActivity(user, parseInt(req.params.activityId))
+            user.dateLastProcessedActivity = now
+        } else {
+            const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+            if (processed && !processed.error) user.dateLastProcessedActivity = now
+        }
 
         // Update user.
         const updatedUser = {id: user.id, displayName: user.displayName, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
         await users.update(updatedUser)
 
+        // Check if there are activities on the queue waiting to be processed.
+        strava.activities.checkQueuedActivities()
+
+        webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderJson(req, res, {error: ex.toString()})
+    }
+})
+
+/**
+ * Process queued activities (delayed processing).
+ */
+router.get("/:urlToken/process-activity-queue", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        await strava.activities.processQueuedActivities()
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
