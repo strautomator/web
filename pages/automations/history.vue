@@ -5,7 +5,7 @@
 
             <v-card outlined>
                 <v-card-text class="pa-0">
-                    <v-row class="pt-6 pb-2 pb-md-0">
+                    <v-row class="pt-7 pb-2 pb-md-0">
                         <v-col cols="6" md="3" class="text-center text-md-left pb-0 pt-0 pl-6">
                             <v-menu v-model="dateFromMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" min-width="290px" offset-y>
                                 <template v-slot:activator="{on, attrs}">
@@ -64,7 +64,7 @@
                                         <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
                                         <ul class="mt-1 ml-n2">
                                             <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rs-${id}`">
-                                                <span :class="{'removal--text': !user.recipes[id]}">{{ recipe.title }}</span>
+                                                <span :class="{'removal--text font-italic': !user.recipes[id]}">{{ recipe.title }}</span>
                                             </li>
                                         </ul>
                                         <div class="mt-1 ml-n2">
@@ -80,7 +80,7 @@
                                 </td>
                                 <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
                                     <div v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
-                                        <span :class="{'removal--text': !user.recipes[id]}">{{ recipe.title }}</span>
+                                        <span :class="{'removal--text font-italic': !user.recipes[id]}">{{ recipe.title }}</span>
                                     </div>
                                 </td>
                                 <td v-if="$breakpoint.mdAndUp" class="pt-2 pb-2">
@@ -114,19 +114,22 @@ export default {
         }
     },
     data() {
-        const dateFrom = this.$dayjs().subtract(10, "days").format("YYYY-MM-DD")
         const dateTo = this.$dayjs().format("YYYY-MM-DD")
 
         return {
             loading: true,
             activities: null,
             dateFromMenu: false,
-            dateFrom: dateFrom,
+            dateFrom: null,
             dateToMenu: false,
             dateTo: dateTo
         }
     },
     async fetch() {
+        if (!this.dateFrom) {
+            this.dateFrom = this.$dayjs(this.user.dateLastProcessedActivity).subtract(30, "days").format("YYYY-MM-DD")
+        }
+
         await this.fetchHistory()
     },
     mounted() {

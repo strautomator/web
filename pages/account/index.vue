@@ -57,8 +57,8 @@
                     <div class="mt-4">
                         <h3 class="mb-2">Delayed processing</h3>
                         <div class="body-2">
-                            Do you want Strautomator to wait around 10 minutes before processing your activities? Useful if you have other services updating your Strava as well, or if you want to have some time to change details / add photos before
-                            your automations are executed.
+                            Do you want Strautomator to wait a few minutes before processing your activities? Useful if you have other services updating your Strava as well, or if you want to have some time to change details / add photos before your
+                            automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
                     </div>

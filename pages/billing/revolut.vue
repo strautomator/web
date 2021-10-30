@@ -5,7 +5,7 @@
                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
             </div>
         </v-container>
-        <v-container v-else-if="subscriptionSource == 'revolut'" fluid>
+        <v-container v-else-if="subscriptionSource == 'revoluta'" fluid>
             <v-card>
                 <v-card-text class="text-center">
                     <p>Thanks for participating! You already have a lifetime PRO account ☺</p>
@@ -25,8 +25,13 @@
                 <v-card-text>
                     <p>Hi {{ user.profile.firstName }}!</p>
                     <p>
-                        Do you know Revolut? One app, all things money, in their words. In my words, it's one of the most innovative neobanks out there. Every now and then they run affiliate campaigns, and I'm taking the opportunity to offer a free
-                        lifetime PRO subscription to people who sign up to Revolut using my <a href="https://links.devv.com/l/revolut" title="Sign up to Revolut" target="revolut">affiliate link</a>.
+                        Do you know Revolut? One app, all things money, in their words. In my words, it's one of the most innovative neobanks out there. Revolut is available in more than 35 countries worldwide, and it's possibly the most
+                        feature-complete bank in most of these countries.
+                    </p>
+
+                    <p>
+                        Every now and then they run affiliate campaigns, and I'm taking the opportunity to offer a free lifetime PRO subscription to people who sign up to Revolut using my
+                        <a href="https://links.devv.com/l/revolut" title="Sign up to Revolut" target="revolut">affiliate link</a>.
                     </p>
                     <p>
                         To be eligible, you'll need to complete these steps by <strong>{{ $dayjs(dateEnd).format("lll") }}</strong>
@@ -61,10 +66,7 @@
                         </div>
                         Please note that Revolut has no direct affiliation to Strautomator!
                         <br v-if="$breakpoint.mdAndUp" />
-                        For more details about the "Lifetime PRO with Revolut" campaign, please check the <n-link to="/help?q=revolut" nuxt>help</n-link> section. <br /><br />
-                        Best regards,
-                        <br />
-                        Igor
+                        For more details about the "Lifetime PRO with Revolut" campaign, please check the <n-link to="/help?q=revolut" nuxt>help</n-link> section.
                     </v-alert>
 
                     <div class="mt-4">
