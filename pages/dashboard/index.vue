@@ -98,7 +98,7 @@
                         <div class="ml-md-4 mt-4 text-center text-md-left">
                             <v-btn color="primary" title="Go to my automations history" to="/automations/history" small nuxt rounded>
                                 <v-icon left>mdi-history</v-icon>
-                                Go to automations history
+                                Go to automation history
                             </v-btn>
                         </div>
                         <div class="caption mt-4 ml-5">Please note that the list above does not show activities that weren't updated by Strautomator.</div>
