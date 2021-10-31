@@ -317,23 +317,20 @@ router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: e
         const userId = req.params.userId
         const user = await users.getById(userId)
 
-        // User not found or suspended? Stop here.
+        // User not found, suspended or missing tokens? Stop here.
         if (!user) {
             return webserver.renderError(req, res, "User not found", 404)
-        } else if (user.suspended) {
-            return webserver.renderError(req, res, `User ${user.id} is suspended`, 400)
-        }
-
-        // User has no valid tokens? Stop here.
-        if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
+        } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
             logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} has no access tokens`)
             return webserver.renderError(req, res, "User has no access tokens", 400)
+        } else if (user.suspended) {
+            return webserver.renderJson(req, res, {ok: false, message: `User ${user.id} is suspended`})
         }
 
         user.dateLastActivity = now
 
         // Process the passed activity now, or queue later, depending on user preferences.
-        if (user.preferences.delayedProcessing) {
+        if (user.preferences && user.preferences.delayedProcessing) {
             await strava.activities.queueActivity(user, parseInt(req.params.activityId))
             user.dateLastProcessedActivity = now
         } else {
