@@ -1,7 +1,12 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Automation history</h1>
+            <h1>
+                Automation history
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="Go to automations chart" x-small fab rounded nuxt>
+                    <v-icon small>mdi-poll</v-icon>
+                </v-btn>
+            </h1>
 
             <v-card outlined>
                 <v-card-text class="pa-0">

@@ -1,7 +1,12 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1 class="mb-4">Charts</h1>
+            <h1 class="mb-4">
+                Charts
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
+                    <v-icon small>mdi-history</v-icon>
+                </v-btn>
+            </h1>
             <v-card outlined>
                 <v-card-text>
                     <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
