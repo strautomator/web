@@ -4,9 +4,7 @@
             <h1>Calendar</h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
-                    <p>
-                        Strautomator can export your Strava activities and club events using the iCal format.
-                    </p>
+                    <p>Strautomator can export your Strava activities and club events using the iCal format.</p>
                     <div>
                         <h3>What to export</h3>
                         <v-radio-group class="mt-1" v-model="calendarType" :row="$breakpoint.mdAndUp">
@@ -43,9 +41,7 @@
                             Subscribe to calendar
                         </v-btn>
                     </div>
-                    <div class="text-center text-md-left caption mt-4">
-                        If the button above does not work, please subscribe manually using the link below:
-                    </div>
+                    <div class="text-center text-md-left caption mt-4">If the button above does not work, please subscribe manually using the link below:</div>
                     <div class="mt-4">
                         <v-text-field label="URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
                     </div>
@@ -57,17 +53,13 @@
                     {{ $store.state.freePlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.freePlanDetails.futureCalendarDays }}
                     days, using the default template.
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
-                    to export activities from the past {{ $store.state.proPlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.freePlanDetails.pastCalendarDays }} days, using a custom template.
+                    to export activities from the past {{ $store.state.proPlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.proPlanDetails.nextCalendarDays }} days, using a custom template.
                 </div>
             </v-alert>
             <v-card v-if="user && user.isPro" class="mt-5" outlined>
-                <v-card-title class="accent">
-                    Activities template
-                </v-card-title>
+                <v-card-title class="accent"> Activities template </v-card-title>
                 <v-card-text>
-                    <p class="mt-4">
-                        As a PRO user, you can customize the details of your activities (not club events) on exported calendars. Simply edit the fields below or leave them blank to use the defaults.
-                    </p>
+                    <p class="mt-4">As a PRO user, you can customize the details of your activities (not club events) on exported calendars. Simply edit the fields below or leave them blank to use the defaults.</p>
                     <div>
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
@@ -132,9 +124,7 @@
                 </v-card-text>
             </v-card>
             <v-card class="mt-5" outlined>
-                <v-card-title class="accent">
-                    Need help?
-                </v-card-title>
+                <v-card-title class="accent"> Need help? </v-card-title>
                 <v-card-text>
                     <p class="mt-3">
                         Subscribing to .ics calendars should be fairly simple, but the steps are slightly different depending on which service or client you use. For help, please check
