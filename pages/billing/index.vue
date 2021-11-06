@@ -10,11 +10,12 @@
                 <v-card outlined>
                     <v-card-text>
                         <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
-                        <div>
-                            Your account will be downgraded back to the free version. Thanks for your previous support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator.
-                        </div>
+                        <div>Your account will be downgraded back to the free version. Thanks for your previous support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator.</div>
                         <div class="mt-4">
-                            <n-link to="/account" title="Back to my account">Back to my account...</n-link>
+                            <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
+                                <v-icon left>mdi-arrow-left</v-icon>
+                                Back to my account
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -30,9 +31,7 @@
                         </template>
                         <template v-else-if="unsubscribed">
                             <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
-                            <div>
-                                Your account will be downgraded back to the free version.
-                            </div>
+                            <div>Your account will be downgraded back to the free version.</div>
                             <div class="text-center mt-8 mb-6">
                                 <v-icon x-large>mdi-emoticon-sad</v-icon>
                             </div>
@@ -55,7 +54,10 @@
                             Don't worry, your PRO account is safe and this issue will magically disappear in a few days.
                         </template>
                         <div class="mt-8 text-center text-md-left">
-                            <n-link to="/account" title="Back to my account">Back to my account...</n-link>
+                            <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
+                                <v-icon left>mdi-arrow-left</v-icon>
+                                Back to my account
+                            </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -72,9 +74,7 @@
                             </v-toolbar-items>
                         </v-toolbar>
                         <v-card-text>
-                            <p class="mt-3">
-                                Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).
-                            </p>
+                            <p class="mt-3">Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).</p>
                             <div>
                                 <v-textarea label="I'm cancelling my subscription because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
                             </div>
@@ -99,9 +99,7 @@
                     Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
                     and give me the motivation to keep adding new features.
                 </p>
-                <div class="mt-4 mb-6">
-                    You can subscribe via PayPal or GitHub.
-                </div>
+                <div class="mt-4 mb-6">You can subscribe via PayPal or GitHub.</div>
                 <v-card class="mb-6" outlined>
                     <v-card-title class="accent">PRO subscription</v-card-title>
                     <v-card-text class="pb-2 pb-md-0">

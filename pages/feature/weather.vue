@@ -6,18 +6,14 @@ vue
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Weather data on your activities
-                </h1>
+                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Weather data on your activities</h1>
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
                         <div class="text-left">
-                            <p>
-                                Strautomator allows you to automatically add icons, temperature, humidity, wind and other weather conditions to your activity details.
-                            </p>
+                            <p>Strautomator allows you to automatically add icons, temperature, humidity, wind and other weather conditions to your activity details.</p>
 
                             <h2 class="mb-2">1. First, create a condition</h2>
                             <v-img class="mb-2" src="/images/feature/condition-passes-on.png"></v-img>
@@ -34,16 +30,14 @@ vue
                             <h2 class="mb-2">Multiple weather providers</h2>
                             <div class="mb-2">
                                 <ul class="ml-n2 mb-2">
-                                    <li>ClimaCell</li>
+                                    <li>Tomorrow</li>
                                     <li>OpenWeatherMap</li>
                                     <li>Storm Glass</li>
                                     <li>Visual Crossing</li>
                                     <li>Weatherbit</li>
                                     <li>Weather API</li>
                                 </ul>
-                                <p>
-                                    PRO users can choose their preferred weather provider, while free accounts are limited to the default provider for their current location.
-                                </p>
+                                <p>PRO users can choose their preferred weather provider, while free accounts are limited to the default provider for their current location.</p>
                             </div>
                         </div>
                     </v-card-text>
@@ -57,7 +51,7 @@ vue
                         </v-btn>
                     </div>
                     <div v-else>
-                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                     </div>
                 </div>
 

@@ -5,11 +5,10 @@
             <v-card>
                 <v-card-text>
                     <div v-if="!accountDeleted">
-                        <p class="font-weight-bold">
-                            Are you sure?
-                        </p>
+                        <h2 class="mb-6">Danger zone</h2>
                         <p>
-                            Once you hit that button there's no way back. All your data will be deleted, and Strautomator will cancel its connection with your Strava account.
+                            <span class="font-weight-bold">Are you really sure?</span>
+                            Once you hit that button, there's no way back. All your data will be deleted straight away, and Strautomator will drop its connection to your Strava account.
                         </p>
                         <div class="text-center mt-8">
                             <v-btn color="gray" class="mr-md-3 mb-3 mb-md-0" to="/account" title="Back to my account" text rounded nuxt>
@@ -23,12 +22,8 @@
                         </div>
                     </div>
                     <div v-else>
-                        <p class="title mb-2">
-                            Sad to see you go &#x1F615;
-                        </p>
-                        <p>
-                            If you change your mind in the future you can always come back and connect Strautomator to your Strava account again.
-                        </p>
+                        <p class="title mb-2">Sad to see you go &#x1F615;</p>
+                        <p>If you change your mind in the future you can always come back and connect Strautomator to your Strava account again.</p>
                         <p class="mt-12">
                             <n-link to="/home" title="Back to the homepage..." class="caption" nuxt>Back to the homepage...</n-link>
                         </p>

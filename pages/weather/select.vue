@@ -3,9 +3,7 @@
         <v-container fluid>
             <h1>Weather comparison</h1>
             <template v-if="user && !user.isPro">
-                <p>
-                    The full selection of weather providers is available to PRO accounts only.
-                </p>
+                <p>The full selection of weather providers is available to PRO accounts only.</p>
                 <div class="mt-6 text-center text-md-left">
                     <v-btn color="primary" to="/billing" title="Subscribe and become a PRO!" rounded nuxt>
                         <v-icon left>mdi-credit-card-outline</v-icon>
@@ -14,9 +12,7 @@
                 </div>
             </template>
             <template v-else-if="weatherSummaries.length == 0">
-                <p>
-                    Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, so then you can select the one presenting the most accurate results.
-                </p>
+                <p>Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, so then you can select the one presenting the most accurate results.</p>
                 <div :class="{'text-center mt-6': !$breakpoint.mdAndUp}">
                     <v-btn class="mr-2" color="primary" title="Get weather for my current location" v-if="!loading" @click="getPosition" rounded>
                         <v-icon left>mdi-weather-sunset-down</v-icon>
@@ -26,9 +22,7 @@
                 </div>
             </template>
             <template v-else>
-                <p>
-                    Which weather provider has the most accurate readings on your location?
-                </p>
+                <p>Which weather provider has the most accurate readings on your location?</p>
                 <v-radio-group v-model="weatherProvider">
                     <v-simple-table v-if="$breakpoint.mdAndUp">
                         <thead>
@@ -114,7 +108,7 @@ export default {
         return {
             loading: false,
             saved: false,
-            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "climacell" : "stormglass",
+            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "tomorrow" : "stormglass",
             weatherSummaries: []
         }
     },
