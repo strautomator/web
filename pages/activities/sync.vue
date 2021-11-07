@@ -2,10 +2,11 @@
     <v-layout column>
         <v-container fluid>
             <h1>Activity sync</h1>
-            <template v-if="processedActivity === false">
-                <div>
-                    Want to try out your automations with one of your recent Strava activities?
-                </div>
+            <template v-if="recipes.length == 0">
+                <create-first />
+            </template>
+            <template v-else-if="processedActivity === false">
+                <div>Want to try out your automations with one of your recent Strava activities?</div>
                 <div class="mt-4" v-if="loading">
                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
                     Loading recent activities from Strava...
@@ -22,29 +23,29 @@
                     </thead>
                     <tbody>
                         <tr v-if="recentActivities.length == 0">
-                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-10">
-                                No recent activities found.
-                            </td>
+                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-10">No recent activities found.</td>
                         </tr>
                         <tr v-for="activity in recentActivities" :key="activity.id">
                             <td>
                                 <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
                             </td>
                             <td>
-                                <template v-if="!$breakpoint.mdAndUp">
-                                    {{ activity.name }}
+                                <div class="mt-2 mb-2">
+                                    <template v-if="!$breakpoint.mdAndUp">
+                                        {{ activity.name }}
 
-                                    <div class="caption">
-                                        {{ getDate(activity.dateStart).format("ll") }}
-                                        {{ activity.distance }}
-                                        {{ user.profile.units == "imperial" ? "mi" : "km" }}
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    {{ activity.name }}
-                                    <br />
-                                    {{ getDate(activity.dateStart).format("lll") }}
-                                </template>
+                                        <div class="caption">
+                                            {{ getDate(activity.dateStart).format("ll") }}
+                                            {{ activity.distance }}
+                                            {{ user.profile.units == "imperial" ? "mi" : "km" }}
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        {{ activity.name }}
+                                        <br />
+                                        {{ getDate(activity.dateStart).format("lll") }}
+                                    </template>
+                                </div>
                             </td>
                             <td v-if="$breakpoint.mdAndUp">
                                 {{ activity.distance }}
@@ -61,21 +62,20 @@
                         </tr>
                         <tr>
                             <td :colspan="$breakpoint.mdAndUp ? 4 : 2" class="pt-4">
-                                <div class="caption ml-6 mb-1">
-                                    Older activity? Enter its ID below.
-                                </div>
+                                <div class="caption ml-6 mb-1">Older activity? Enter its ID below.</div>
                                 <div>
-                                    <v-text-field v-model="activityId" label="Numeric activity ID" maxlength="12" type="number" outlined rounded dense></v-text-field>
+                                    <v-text-field v-model="activityId" label="Activity ID or URL" outlined rounded dense></v-text-field>
                                 </div>
                             </td>
                             <td class="text-right">
-                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Try automations on activity ${activityId}`" @click="syncActivity(activityId)" icon>
+                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Enter the activity ID or URL`" @click="syncActivity()" icon>
                                     <v-icon>mdi-play-circle</v-icon>
                                 </v-btn>
                             </td>
                         </tr>
                     </tbody>
                 </v-simple-table>
+                <v-alert class="mt-4 text-caption text-center text-md-left" border="top">Please note that weather tags can't be added to activities that happened more than a week ago.</v-alert>
             </template>
             <template v-else>
                 <div v-if="loading">
@@ -89,9 +89,7 @@
                     <v-card v-else outlined>
                         <v-card-title class="accent"> Activity {{ activityId }} </v-card-title>
                         <v-card-text>
-                            <div class="mt-4" v-if="!processedActivity || recipeKeys.length == 0">
-                                No automations were triggered for this activity.
-                            </div>
+                            <div class="mt-4" v-if="!processedActivity || recipeKeys.length == 0">No automations were triggered for this activity.</div>
                             <div class="mt-4" v-else>
                                 <v-alert color="error" v-if="processedActivity.error" class="mt-4 mb-4">
                                     <div class="font-weight-bold">Sync error!</div>
@@ -101,18 +99,14 @@
                                 </v-alert>
                                 <div class="font-weight-bold">Name: {{ processedActivity.name }}</div>
                                 <div>Date: {{ getDate(processedActivity.dateStart).format("lll") }}</div>
-                                <div class="mt-4">
-                                    Updated fields:
-                                </div>
+                                <div class="mt-4">Updated fields:</div>
                                 <ul class="mt-1 pl-4 action-list">
                                     <li class="font-weight-medium" v-for="(field, index) in updatedFieldsKeys" :key="`ufield-${index}`">
                                         <span class="text-capitalize">{{ field }}:</span>
                                         {{ processedActivity.updatedFields[field] }}
                                     </li>
                                 </ul>
-                                <div class="mt-4">
-                                    Triggered automations:
-                                </div>
+                                <div class="mt-4">Triggered automations:</div>
                                 <ul class="mt-1 pl-4 action-list">
                                     <li class="font-weight-medium" v-for="recipeId in recipeKeys" :key="recipeId">
                                         <n-link :to="'/automations/edit?id=' + recipeId" :title="processedActivity.recipes[recipeId].title">
@@ -128,6 +122,8 @@
                         <br v-if="!$breakpoint.mdAndUp" />
                         <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try again</v-btn>
                     </div>
+
+                    <ads-panel />
                 </div>
             </template>
         </v-container>
@@ -138,9 +134,12 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import AdsPanel from "~/components/AdsPanel.vue"
+import CreateFirst from "~/components/recipes/CreateFirst.vue"
 
 export default {
     authenticated: true,
+    components: {AdsPanel, CreateFirst},
     mixins: [userMixin, recipeMixin],
     head() {
         return {
@@ -157,6 +156,9 @@ export default {
         }
     },
     computed: {
+        recipes() {
+            return Object.values(this.user.recipes)
+        },
         recipeKeys() {
             if (!this.processedActivity) {
                 return []
@@ -195,6 +197,22 @@ export default {
             return `${hours}:${minutes}`
         },
         async syncActivity(id) {
+            if (!id) {
+                if (isNaN(this.activityId)) {
+                    const arrUrl = this.activityId.replace("https://", "").split("/")
+
+                    if (arrUrl.length < 3) {
+                        this.processedActivity = null
+                        this.syncError = "Invalid activity URL"
+                        return
+                    }
+
+                    this.activityId = arrUrl[2]
+                }
+
+                id = this.activityId
+            }
+
             try {
                 this.syncError = null
                 this.activityId = id
