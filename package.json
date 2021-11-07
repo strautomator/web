@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "21.446.11205",
+    "version": "21.447.11426",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
