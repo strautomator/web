@@ -31,10 +31,13 @@
                 <v-card-text>
                     <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-1">
-                            <v-select label="Preferred weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
-                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                        </div>
+                        <div class="flex-grow-1">
+                            <v-select label="Language" v-model="language" :items="listLanguages" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                     </div>
                     <div v-if="user.isPro" class="mb-8 mt-n2 text-center text-md-left">
@@ -199,7 +202,8 @@ export default {
         const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
         const ftpAutoUpdate = user && user.preferences ? user.preferences.ftpAutoUpdate : false
         const dateResetCounter = user && user.preferences ? user.preferences.dateResetCounter : null
-        const weatherProvider = user && user.preferences ? user.preferences.weatherProvider || null : null
+        const language = user && user.preferences ? user.preferences.language || "en" : "en"
+        const weatherProvider = user && user.isPro && user.preferences ? user.preferences.weatherProvider || null : null
         const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
         const now = this.$dayjs()
@@ -227,12 +231,20 @@ export default {
             resetCounter: dateResetCounter != null,
             dateResetCounter: dateResetCounter || now.add(1, "year").format(`YYYY-01-01`),
             dateMenu: false,
+            language: language,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             listWeatherProviders: listWeatherProviders,
             listWeatherUnits: [
                 {value: "c", text: "Celsius"},
                 {value: "f", text: "Fahrenheit"}
+            ],
+            listLanguages: [
+                {value: "en", text: "English"},
+                {value: "de", text: "Deutsch"},
+                {value: "es", text: "Español"},
+                {value: "fr", text: "Français"},
+                {value: "pt", text: "Português"}
             ]
         }
     },
@@ -280,6 +292,12 @@ export default {
             }
         },
         weatherUnit(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        language(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()
@@ -366,6 +384,7 @@ export default {
                     twitterShare: this.twitterShare,
                     weatherProvider: this.weatherProvider,
                     weatherUnit: this.weatherUnit,
+                    language: this.language,
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 
