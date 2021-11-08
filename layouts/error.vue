@@ -8,11 +8,8 @@
                     <div class="headline">{{ errorDetails.message }}</div>
                 </div>
                 <div class="mt-8" v-if="showLogin">
-                    <p>
-                        Please try connecting to Strava again.
-                    </p>
-                    <div class="mt-4">
-                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                    <div class="mt-4 mb-4">
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                     </div>
                 </div>
                 <div class="mt-8" v-else>
@@ -25,9 +22,7 @@
                 </div>
                 <v-alert color="error" border="top" v-if="stravaStatus" class="mt-4 mb-4">
                     <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
-                    <p>
-                        Please note that outages and issues on the Strava website might possibly affect Strautomator.
-                    </p>
+                    <p>Please note that outages and issues on the Strava website might possibly affect Strautomator.</p>
                     <div>
                         <a class="secondary--text" href="https://status.strava.com" title="Strava API status">https://status.strava.com</a>
                     </div>
@@ -68,17 +63,17 @@ export default {
             if (status == 401 || status == 403) {
                 return {
                     title: this.error.title || "Access denied",
-                    message: message || "We're not entirely sure if you should be viewing this page."
+                    message: "Please try connecting to Strava again, allowing all the requested permissions."
                 }
             } else if (status == 404) {
                 return {
                     title: this.error.title || "Lost GPS signal",
-                    message: message || "This is the infamous error 404. We can't find this route."
+                    message: "This is the infamous error 404. We can't find this route."
                 }
             } else {
                 return {
                     title: this.error.title || "Crashed while sprinting",
-                    message: message || "Something went very wrong."
+                    message: message || "Something went very, very wrong."
                 }
             }
         },
@@ -89,6 +84,10 @@ export default {
     },
     mounted() {
         this.getStravaStatus()
+
+        if (this.error.description.includes("status code 401")) {
+            this.error.status = 401
+        }
     },
     methods: {
         login() {
