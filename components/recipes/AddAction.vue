@@ -25,7 +25,7 @@
                             <div v-else-if="actionIsDescription">
                                 <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
-                            <div v-else-if="selectedAction.value && selectedAction.value != 'commute' && selectedAction.value != 'hideHome'">
+                            <div v-else-if="selectedAction.value && !['commute', 'generateName', 'hideHome'].includes(selectedAction.value)">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
                             <div class="action-activity-tags" v-if="actionIsText">
@@ -58,6 +58,10 @@
                                 <v-chip @click="addTag('weather.windSpeed')" small>Wind speed</v-chip>
                                 <v-chip @click="addTag('weather.windDirection')" small>Wind direction</v-chip>
                                 <v-chip @click="addTag('weather.precipitation')" small>Precipitation</v-chip>
+                            </div>
+                            <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
+                                You can try some auto-generated names
+                                <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
                             </div>
                         </v-col>
                     </v-row>

@@ -46,7 +46,7 @@ export default {
             const actionType = _.find(this.$store.state.recipeActions, {value: action.type}).text
             const valueText = action.friendlyValue || action.value
 
-            if (action.value && action.type != "commute") {
+            if (action.value && !["commute", "generateName", "hideHome"].includes(action.type)) {
                 return `${actionType}: ${valueText}`
             } else {
                 return `${actionType}`
