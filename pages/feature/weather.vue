@@ -30,7 +30,7 @@ vue
                             <h2 class="mb-2">Multiple weather providers</h2>
                             <div class="mb-2">
                                 <ul class="ml-n2 mb-2">
-                                    <li>Tomorrow</li>
+                                    <li>Tomorrow.io</li>
                                     <li>OpenWeatherMap</li>
                                     <li>Storm Glass</li>
                                     <li>Visual Crossing</li>
