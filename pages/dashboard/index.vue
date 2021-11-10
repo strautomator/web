@@ -11,7 +11,7 @@
                 <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
                 <div>
                     Please note that some of the automations might fail to run during this incident. For more information please check
-                    <a class="secondary--text" href="https://status.strava.com" title="Strava API status">status.strava.com.</a>
+                    <a class="secondary--text" href="https://status.strava.com" title="Strava API status" target="strava">status.strava.com.</a>
                 </div>
             </v-alert>
             <v-alert v-else-if="lastAnnouncement" v-model="alertAnnouncement" color="accent" border="top" class="mb-4" dismissible>
@@ -22,7 +22,7 @@
                 <div>
                     {{ lastAnnouncement.body }}
                     <br v-if="!$breakpoint.mdAndUp" />
-                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt> More details... </n-link>
+                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>Open...</n-link>
                 </div>
             </v-alert>
             <div v-if="!recipes || recipes.length == 0">
