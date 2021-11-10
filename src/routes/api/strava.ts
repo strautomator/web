@@ -1,6 +1,6 @@
 // Strautomator API: Strava routes
 
-import {strava, users, UserData} from "strautomator-core"
+import {getActivityFortune, strava, users, UserData} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -161,6 +161,27 @@ router.get("/activities/processed", async (req: express.Request, res: express.Re
 })
 
 /**
+ * Get the details for the specified activity.
+ */
+router.get("/activities/:id/details", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!req.params.id) throw new Error("Missing activity ID")
+
+        const activity = await strava.activities.getActivity(user, req.params.id.toString())
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, activity)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        const errorMessage = ex.toString()
+        const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
+        webserver.renderError(req, res, {error: errorMessage}, status)
+    }
+})
+
+/**
  * Logged user can trigger a forced processing of a particular activity.
  */
 router.get("/process-activity/:activityId", async (req: express.Request, res: express.Response) => {
@@ -178,6 +199,28 @@ router.get("/process-activity/:activityId", async (req: express.Request, res: ex
         const errorMessage = ex.toString()
         const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
+    }
+})
+
+// FORTUNE
+// --------------------------------------------------------------------------
+
+/**
+ * Get the fortune (auto generated name or quote) for the specified activity details.
+ */
+router.post("/activity-fortune", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!req.body || Object.keys(req.body).length == 0) throw new Error("Missing activity details")
+
+        const name = getActivityFortune(user, req.body)
+
+        logger.info("Routes", req.method, req.originalUrl, `Activity ${req.body.id}`)
+        webserver.renderJson(req, res, {name: name})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 400)
     }
 })
 
