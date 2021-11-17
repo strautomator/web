@@ -44,7 +44,7 @@
                             Add new condition
                         </v-btn>
                     </div>
-                    <v-dialog v-model="conditionDialog" max-width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="conditionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
                     </v-dialog>
                 </v-card-text>
@@ -72,16 +72,14 @@
                             Add new action
                         </v-btn>
                     </div>
-                    <v-dialog v-model="actionDialog" max-width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
+                    <v-dialog v-model="actionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-action :disabled-actions="disabledActions" @closed="setAction" />
                     </v-dialog>
                 </v-card-text>
             </v-card>
             <v-card class="mt-4" v-if="hasCounter" outlined>
                 <v-card-text class="mb-0 pb-0">
-                    <div>
-                        This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.
-                    </div>
+                    <div>This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.</div>
                     <div class="mt-4 d-flex">
                         <v-text-field v-model="recipeStats.counter" class="recipe-stats-counter" type="number" label="Counter" min="0" max="9999" dense outlined rounded></v-text-field>
                         <v-btn color="primary" class="ml-2 mt-1" title="Set new counter" :disabled="!changedCounter" @click="setCounter" outlined rounded>
@@ -118,9 +116,7 @@
                     </v-toolbar>
                     <v-card-text>
                         <h3 class="mt-4">{{ recipe.title }}</h3>
-                        <p class="mt-2">
-                            Are you sure you want to delete this automation?
-                        </p>
+                        <p class="mt-2">Are you sure you want to delete this automation?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>
