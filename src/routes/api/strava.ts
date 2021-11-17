@@ -214,7 +214,7 @@ router.post("/activity-fortune", async (req: express.Request, res: express.Respo
         if (!user) return
         if (!req.body || Object.keys(req.body).length == 0) throw new Error("Missing activity details")
 
-        const name = getActivityFortune(user, req.body)
+        const name = await getActivityFortune(user, req.body)
 
         logger.info("Routes", req.method, req.originalUrl, `Activity ${req.body.id}`)
         webserver.renderJson(req, res, {name: name})
