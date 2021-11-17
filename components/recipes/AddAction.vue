@@ -19,6 +19,9 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
+                            <div v-else-if="selectedAction.value == 'workoutType'">
+                                <v-select label="Select a workout type..." v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
+                            </div>
                             <div v-else-if="selectedAction.value == 'mapStyle'">
                                 <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                             </div>
@@ -135,9 +138,9 @@ export default {
                 _.remove(recipeActions, {value: "gear"})
             }
 
-            // Map styles dropdown.
+            // Workout types and map styles.
+            const workoutTypes = _.cloneDeep(this.$store.state.workoutTypes)
             const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
-            console.dir(mapStyles)
 
             return {
                 action: {},
@@ -145,9 +148,11 @@ export default {
                 valid: true,
                 recipeActions: recipeActions,
                 selectedAction: {},
-                gears: gears,
                 selectedGear: {},
+                selectedWorkoutType: {},
                 selectedMapStyle: {},
+                gears: gears,
+                workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
                 valueInput: ""
             }
@@ -183,6 +188,9 @@ export default {
             if (arr.includes("appendDescription")) {
                 arr.push("description")
                 arr.push("prependDescription")
+            }
+            if (arr.includes("workoutType")) {
+                arr.push("workoutType")
             }
             if (arr.includes("privateNote")) {
                 arr.push("privateNote")
@@ -231,6 +239,9 @@ export default {
                 if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
+                } else if (result.type == "workoutType") {
+                    result.value = this.selectedWorkoutType.value
+                    result.friendlyValue = this.selectedWorkoutType.text
                 } else if (result.type == "mapStyle") {
                     result.value = this.selectedMapStyle.value
                     result.friendlyValue = this.selectedMapStyle.text

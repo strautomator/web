@@ -9,6 +9,7 @@ export const state = () => ({
     linksOnPercent: null,
     ftpWeeks: null,
     sportTypes: [],
+    workoutTypes: [],
     mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {}
@@ -37,6 +38,9 @@ export const mutations = {
     },
     setSportTypes(state, data) {
         state.sportTypes = data
+    },
+    setWorkoutTypes(state, data) {
+        state.workoutTypes = data
     },
     setMapStyles(state, data) {
         state.mapStyles = data
@@ -108,6 +112,18 @@ export const actions = {
             // Set sport types.
             const sportTypes = Object.keys(core.StravaSport).map((s) => core.StravaSport[s])
             commit("setSportTypes", sportTypes)
+
+            // Set workout types.
+            const rideWorkoutKeys = Object.keys(core.StravaRideType).filter((s) => isNaN(s))
+            const rideWorkoutTypes = rideWorkoutKeys.map((s) => {
+                return {text: "Ride: " + s.replace(/([A-Z])/g, " $1").trim(), value: core.StravaRideType[s]}
+            })
+            const runWorkoutKeys = Object.keys(core.StravaRunType).filter((s) => isNaN(s))
+            const runWorkoutTypes = runWorkoutKeys.map((s) => {
+                return {text: "Run: " + s.replace(/([A-Z])/g, " $1").trim(), value: core.StravaRunType[s]}
+            })
+            const workoutTypes = rideWorkoutTypes.concat(runWorkoutTypes)
+            commit("setWorkoutTypes", workoutTypes)
 
             // Set map styles.
             const mapStyles = Object.keys(core.StravaMapStyle).map((s) => {
