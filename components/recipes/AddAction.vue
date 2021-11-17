@@ -19,7 +19,7 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
-                            <div v-if="selectedAction.value == 'mapStyle'">
+                            <div v-else-if="selectedAction.value == 'mapStyle'">
                                 <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                             </div>
                             <div v-else-if="actionIsDescription">
