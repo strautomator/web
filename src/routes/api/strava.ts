@@ -175,7 +175,7 @@ router.get("/activities/:id/details", async (req: express.Request, res: express.
         webserver.renderJson(req, res, activity)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
-        const errorMessage = ex.toString()
+        const errorMessage = ex.toString().toLowerCase()
         const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
     }
