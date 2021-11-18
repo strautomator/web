@@ -43,6 +43,11 @@ a {
     white-space: nowrap;
 }
 
+.nobreak {
+    overflow-wrap: normal;
+    word-break: normal !important;
+}
+
 .strautologo {
     vertical-align: middle;
 }
