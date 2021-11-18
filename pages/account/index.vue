@@ -130,7 +130,7 @@
             </v-snackbar>
         </v-container>
 
-        <v-dialog v-model="ftpDialog" max-width="540" overlay-opacity="0.95">
+        <v-dialog v-model="ftpDialog" width="540" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Estimate my FTP</v-toolbar-title>
@@ -142,10 +142,11 @@
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <p class="mt-4" v-if="!ftpResult">
+                    <p class="mt-4" v-if="ftpResult === null">
                         <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
                         Estimating your FTP, please wait...
                     </p>
+                    <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
                         <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
                         <p>

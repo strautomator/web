@@ -70,7 +70,7 @@
             </v-btn>
         </v-bottom-navigation>
 
-        <v-dialog v-model="logoutDialog" max-width="440" overlay-opacity="0.95">
+        <v-dialog v-model="logoutDialog" width="440" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="accent">
                     <v-toolbar-title>Logout</v-toolbar-title>
@@ -82,9 +82,7 @@
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <p class="mt-3">
-                        Do you want to logout from Strautomator?
-                    </p>
+                    <p class="mt-3">Do you want to logout from Strautomator?</p>
                     <p>To log back in please use the <strong>Connect with Strava</strong> button again on the homepage.</p>
                     <div class="text-right">
                         <v-spacer></v-spacer>

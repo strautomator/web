@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="visible" max-width="440" overlay-opacity="0.95">
+    <v-dialog v-model="visible" width="440" overlay-opacity="0.95">
         <v-card>
             <v-toolbar color="primary">
                 <v-toolbar-title>Change email address</v-toolbar-title>

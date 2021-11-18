@@ -68,9 +68,7 @@
                             </tbody>
                         </v-simple-table>
                         <div class="mt-3 mb-3 pl-4 pr-4" v-else>
-                            <p>
-                                You haven't registered components for this gear yet. If you want you can kickstart with the defaults:
-                            </p>
+                            <p>You haven't registered components for this gear yet. If you want you can kickstart with the defaults:</p>
                             <ul class="pl-4 mb-4">
                                 <li v-for="comp in defaultComponents" :key="comp.name">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
                             </ul>
@@ -87,9 +85,7 @@
                 </v-card-text>
             </v-card>
 
-            <v-alert color="accent" class="mt-4 mb-4" v-if="hasDisabledComponents()">
-                Components marked as disabled will not have their usage updated automatically.
-            </v-alert>
+            <v-alert color="accent" class="mt-4 mb-4" v-if="hasDisabledComponents()"> Components marked as disabled will not have their usage updated automatically. </v-alert>
 
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
@@ -107,11 +103,11 @@
 
             <ads-panel :pro-hide="true" />
 
-            <v-dialog v-model="componentDialog" max-width="540" overlay-opacity="0.95">
+            <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
             </v-dialog>
 
-            <v-dialog v-model="resetDialog" max-width="440" overlay-opacity="0.95">
+            <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="primary">
                         <v-toolbar-title>Reset: {{ gearwearComponent.name }}</v-toolbar-title>
@@ -141,7 +137,7 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog v-model="deleteComponentDialog" max-width="440" overlay-opacity="0.95">
+            <v-dialog v-model="deleteComponentDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete: {{ gearwearComponent.name }}</v-toolbar-title>
@@ -170,7 +166,7 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog v-model="deleteGearWearDialog" max-width="440" overlay-opacity="0.95">
+            <v-dialog v-model="deleteGearWearDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete GearWear configuration</v-toolbar-title>
@@ -183,9 +179,7 @@
                     </v-toolbar>
                     <v-card-text>
                         <h3 class="mt-4">{{ gear.name }}</h3>
-                        <p class="mt-2">
-                            Sure you want to delete this GearWear configuration?
-                        </p>
+                        <p class="mt-2">Sure you want to delete this GearWear configuration?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>

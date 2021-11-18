@@ -103,7 +103,7 @@
                     Delete automation
                 </v-btn>
             </div>
-            <v-dialog v-model="deleteDialog" max-width="440" overlay-opacity="0.95">
+            <v-dialog v-model="deleteDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete automation</v-toolbar-title>
