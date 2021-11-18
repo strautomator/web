@@ -85,7 +85,8 @@ export default {
     mounted() {
         this.getStravaStatus()
 
-        if (this.error.description.includes("status code 401")) {
+        const errMessage = this.error.description || this.error.message || ""
+        if (errMessage.includes("status code 401")) {
             this.error.status = 401
         }
     },
