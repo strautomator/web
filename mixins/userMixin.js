@@ -38,6 +38,9 @@ export default {
             // At the moment only 2 plans, and PRO should have unlimited.
             if (this.user.isPro && remaining < 1) return (remaining = 1)
             else return remaining
+        },
+        isPrivacyMode() {
+            return this.user && this.user.preferences.privacyMode
         }
     },
     async fetch() {

@@ -25,8 +25,11 @@ export default {
         // Returns the material icon for the specified sport type.
         getSportIcon(sportType) {
             if (!sportType) return "mdi-incognito"
-            if (sportType == "Ride" || sportType == "VirtualRide") return "mdi-bike"
-            if (sportType == "Run" || sportType == "VirtualRun") return "mdi-run"
+            if (sportType == "Ride") return "mdi-bike"
+            if (sportType == "VirtualRide") return "mdi-bike-fast"
+            if (sportType == "EBikeRide") return "mdi-bicycle-electric"
+            if (sportType == "Run") return "mdi-run"
+            if (sportType == "VirtualRun") return "mdi-run-fast"
             if (sportType == "Walk") return "mdi-walk"
             if (sportType == "Golf") return "mdi-golf"
             if (sportType == "Skateboard") return "mdi-skateboard"
@@ -42,6 +45,35 @@ export default {
         // Convert sport type enum to readable text (with spaces).
         getSportName(enumValue) {
             return enumValue.replace(/([A-Z])/g, " $1").trim()
+        },
+        // Get map of all record icons and their keys.
+        getAllRecordIcons() {
+            return {
+                distance: "mdi-map-marker-distance",
+                movingTime: "mdi-clock-outline",
+                elevationGain: "mdi-slope-uphill",
+                speedMax: "mdi-speedometer",
+                speedAvg: "mdi-speedometer-medium",
+                hrMax: "mdi-heart-plus",
+                hrAvg: "mdi-heart",
+                wattsMax: "mdi-lightning-bolt",
+                wattsAvg: "mdi-lightning-bolt-outline",
+                calories: "mdi-nutrition"
+            }
+        },
+        // Get record icon for the specified field.
+        getRecordIcon(field) {
+            const icons = this.getAllRecordIcons()
+            return icons[field]
+        },
+        // Check if the passed activity has broken a personal record, and returns
+        // an array with the record key (field) and its details.
+        isActivityRecord(activity) {
+            const records = this.$store.state.athleteRecords
+            if (!records) return false
+
+            // Find a record with a matching activity ID.
+            return records[activity.type] ? Object.entries(records[activity.type]).find((e) => e[1].activityId == activity.id) : null
         }
     }
 }
