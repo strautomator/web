@@ -87,7 +87,8 @@ export default {
             {tag: "automations", title: "Automations"},
             {tag: "gearwear", title: "GearWear"},
             {tag: "calendar", title: "Calendar"},
-            {tag: "ftp", title: "FTP autp update"},
+            {tag: "records", title: "Personal records"},
+            {tag: "ftp", title: "FTP estimation"},
             {tag: "subscription", title: "Free vs. PRO"},
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
@@ -112,8 +113,9 @@ export default {
 
             if (query.length >= 2) {
                 const regex = new RegExp(this.searchQuery, "i")
-                const filter = (item) => item.tags.indexOf(query) >= 0 || item.question.search(regex) >= 0 || item.answer.search(regex) >= 0
-                const questions = _.filter(this.faq, filter)
+                const filterTitle = (item) => item.question.search(regex) >= 0
+                const filterContent = (item) => item.tags.indexOf(query) >= 0 || item.answer.search(regex) >= 0
+                const questions = _.filter(this.faq, filterTitle).concat(_.filter(this.faq, filterContent))
                 results.push({title: `Search results: ${query}`, questions: questions})
             } else {
                 for (let category of this.categories) {
