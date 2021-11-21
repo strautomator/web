@@ -102,24 +102,70 @@
                             </v-btn>
                         </div>
                         <div class="caption mt-4 ml-5">Please note that the list above does not show activities that weren't updated by Strautomator.</div>
-                        <div class="caption mt-2 mt-md-0 ml-5" v-if="user && user.preferences.privacyMode">Privacy mode is enabled, some details about processed activities are not saved.</div>
                     </v-card-text>
                 </v-card>
+            </div>
+
+            <v-card class="mt-4" outlined>
+                <v-card-title class="accent">Personal records</v-card-title>
+                <v-card-text class="pl-0 pr-0">
+                    <template v-if="records">
+                        <v-simple-table :class="{'mt-2': !$breakpoint.mdAndUp}">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center" v-for="recordField in visibleRecordFields" :title="recordField" :key="'th-' + recordField">
+                                        <v-icon>{{ getRecordIcon(recordField) }}</v-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="recordEntry in records" :key="recordEntry[0]">
+                                    <td class="text-center">
+                                        <v-icon>{{ getSportIcon(recordEntry[0]) }}</v-icon>
+                                    </td>
+                                    <td class="text-center" v-for="recordField in visibleRecordFields" :key="'td-' + recordField">
+                                        {{ recordEntry[1][recordField] ? getRecordValue(recordEntry[1], recordField) : "-" }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-simple-table>
+                        <v-divider />
+                        <div class="ml-md-4 mt-4 text-center text-md-left">
+                            <v-btn color="primary" title="View all my personal records" to="/dashboard/records" small nuxt rounded>
+                                <v-icon left>mdi-medal</v-icon>
+                                Go to my personal records
+                            </v-btn>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="ml-md-4 mt-4 text-center text-md-left">No personal records were found. Want to start tracking your personal records?</div>
+                        <div class="ml-md-4 mt-4 text-center text-md-left">
+                            <v-btn color="primary" title="Calculate my personal records" to="/dashboard/records" small nuxt rounded>
+                                <v-icon left>mdi-medal</v-icon>
+                                Start tracking my records
+                            </v-btn>
+                        </div>
+                    </template>
+                </v-card-text>
+            </v-card>
+
+            <template v-if="recipes && recipes.length > 0">
                 <v-alert class="mt-4 text-center text-md-left">
+                    <div class="mb-3 mb-md-2" v-if="user && user.preferences.privacyMode">Privacy mode is enabled, some details about your processed activities and personal records won't be saved!</div>
                     <div class="mb-3 mb-md-0">
                         Missing something?
                         <br v-if="!$breakpoint.mdAndUp" />
-                        Try a <n-link to="/activities/sync" title="Try your automations" nuxt>manual sync</n-link>
-                        now.
+                        Try a <n-link to="/activities/sync" title="Try your automations" nuxt>manual sync</n-link>.
                     </div>
                     <div>
                         Want to see activities and club events on your calendar app?
-                        <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link> now.
+                        <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link>.
                     </div>
                 </v-alert>
 
-                <ads-panel v-if="recipes && recipes.length > 0" :pro-hide="true" />
-            </div>
+                <ads-panel :pro-hide="true" />
+            </template>
         </v-container>
     </v-layout>
 </template>
@@ -152,6 +198,17 @@ export default {
     computed: {
         recipes() {
             return Object.values(this.user.recipes)
+        },
+        records() {
+            const records = this.$store.state.athleteRecords
+            return records ? _.sortBy(Object.entries(records), (r) => r[0].replace("Virtual", "")) : null
+        },
+        visibleRecordFields() {
+            if (this.$breakpoint.mdAndUp) {
+                return ["distance", "movingTime", "elevationGain", "wattsMax", "hrMax", "calories"]
+            }
+
+            return ["distance", "elevationGain", "wattsMax", "hrMax"]
         }
     },
     watch: {
@@ -163,7 +220,7 @@ export default {
     },
     async fetch() {
         try {
-            this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=10`)
+            this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=5`)
             this.announcements = await this.$axios.$get(`/api/announcements/active`)
 
             if (this.announcements.length > 0) {
@@ -199,6 +256,25 @@ export default {
             const arr = Object.keys(fields)
             arr.sort()
             return arr.join(", ")
+        },
+        getRecordValue(recordDetails, field) {
+            let result = field.includes("Time") ? (recordDetails[field].value / 3600).toFixed(1) : recordDetails[field].value
+
+            // On mobile we do not add the suffix due to space.
+            if (!this.$breakpoint.mdAndUp) {
+                return result
+            }
+
+            const property = _.find(this.$store.state.recipeProperties, {value: field})
+
+            if (property) {
+                const suffix = this.$store.state.user.profile.units == "imperial" ? property.impSuffix || property.suffix : property.suffix
+                if (suffix) {
+                    result += ` ${suffix}`
+                }
+            }
+
+            return result
         },
         async readAnnouncement() {
             try {
