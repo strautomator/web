@@ -58,6 +58,11 @@
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
+                        <tr>
+                            <td>Test new features *</td>
+                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                        </tr>
 
                         <tr v-if="!noPrice">
                             <td>Price</td>
@@ -73,6 +78,7 @@
         </v-card>
         <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
             <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
+            <li>Some features might be released first to PRO users so they can give their feedback.</li>
         </ul>
     </div>
 </template>

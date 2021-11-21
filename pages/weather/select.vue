@@ -108,7 +108,7 @@ export default {
         return {
             loading: false,
             saved: false,
-            weatherProvider: this.$store.state.user.preferences ? this.$store.state.user.preferences.weatherProvider || "tomorrow" : "stormglass",
+            weatherProvider: this.$store.state.user.preferences.weatherProvider || "stormglass",
             weatherSummaries: []
         }
     },

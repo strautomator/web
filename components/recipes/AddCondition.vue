@@ -87,7 +87,7 @@ export default {
             if (this.selectedProperty.type == "time") {
                 return ""
             }
-            if (this.user.preferences && this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
+            if (this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
                 return this.selectedProperty.fSuffix
             }
             if (this.user.profile.units == "imperial" && this.selectedProperty.impSuffix) {
