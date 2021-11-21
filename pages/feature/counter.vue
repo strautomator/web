@@ -5,18 +5,12 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Auto-incrementing activity counter
-                </h1>
-                <div>with</div>
-                <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
+                <feature-title header="Auto-incrementing activity counter" />
 
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
                         <div class="text-left">
-                            <p>
-                                Strautomator can automatically add a counter to your regular or repeating activities. For instance you could name your regular bakery rides as "Cake ride #1" and "#2, #3, #4" and so on.
-                            </p>
+                            <p>Strautomator can automatically add a counter to your regular or repeating activities. For instance you could name your regular bakery rides as "Cake ride #1" and "#2, #3, #4" and so on.</p>
 
                             <h2 class="mb-2">1. First, define the conditions</h2>
                             <v-img class="mb-2" src="/images/feature/condition-end-location.png"></v-img>
@@ -35,13 +29,13 @@
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/automations" title="My Automations" rounded nuxt>
+                        <v-btn color="primary" to="/automations" title="My automations" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
-                            Go to My Automations
+                            Go to my automations
                         </v-btn>
                     </div>
                     <div v-else>
-                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                     </div>
                 </div>
 
@@ -53,10 +47,11 @@
 
 <script>
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import FeatureTitle from "~/components/FeatureTitle.vue"
 
 export default {
     layout: "landing",
-    components: {FeatureLinks},
+    components: {FeatureLinks, FeatureTitle},
     head() {
         return {
             title: "Auto-incrementing activity counter"

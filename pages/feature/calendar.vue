@@ -5,11 +5,7 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Export your Strava calendar
-                </h1>
-                <div>with</div>
-                <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
+                <feature-title header="Export your Strava calendar" />
 
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
@@ -43,13 +39,13 @@
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/calendar" title="My Calendar" rounded nuxt>
+                        <v-btn color="primary" to="/calendar" title="My calendar" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
-                            Go to My Calendar
+                            Go to my calendar
                         </v-btn>
                     </div>
                     <div v-else>
-                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                     </div>
                 </div>
 
@@ -61,10 +57,11 @@
 
 <script>
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import FeatureTitle from "~/components/FeatureTitle.vue"
 
 export default {
     layout: "landing",
-    components: {FeatureLinks},
+    components: {FeatureLinks, FeatureTitle},
     head() {
         return {
             title: "Export your Strava calendar"

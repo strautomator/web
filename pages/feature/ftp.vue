@@ -5,11 +5,7 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Auto update your Strava FTP
-                </h1>
-                <div>with</div>
-                <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
+                <feature-title header="Auto-update your Strava FTP" />
 
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
@@ -44,15 +40,11 @@
                                     <li>Toggle the "FTP auto update" on</li>
                                     <li>Your FTP will be automatically updated every week (on Wednesdays)</li>
                                 </ul>
-                                <div class="mt-4">
-                                    The FTP auto update is available to PRO accounts only. Users with a free account can still estimate and save their FTP to Strava manually, by using the "What's my estimated FTP" button.
-                                </div>
+                                <div class="mt-4">The FTP auto update is available to PRO accounts only. Users with a free account can still estimate and save their FTP to Strava manually, by using the "What's my estimated FTP" button.</div>
                             </div>
 
                             <h2 class="mb-2">How accurate is the estimation?</h2>
-                            <div class="mb-2">
-                                The calculation of the FTP based on the activity power and time is using well known formulas.
-                            </div>
+                            <div class="mb-2">The calculation of the FTP based on the activity power and time is using well known formulas.</div>
                             <div class="mb-2">
                                 The final estimation of your FTP is quite conservative, as it gives more weight to your current FTP set on Strava. So if you're taking it easy on the bike for some weeks, it won't drastically underestimate your current
                                 threshold.
@@ -63,13 +55,13 @@
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/account" title="My Account" rounded nuxt>
+                        <v-btn color="primary" to="/account" title="My account" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
-                            Go to My Account
+                            Go to my account
                         </v-btn>
                     </div>
                     <div v-else>
-                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                        <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                     </div>
                 </div>
 
@@ -81,13 +73,14 @@
 
 <script>
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import FeatureTitle from "~/components/FeatureTitle.vue"
 
 export default {
     layout: "landing",
-    components: {FeatureLinks},
+    components: {FeatureLinks, FeatureTitle},
     head() {
         return {
-            title: "Auto update your Strava FTP"
+            title: "Auto-update your Strava FTP"
         }
     },
     methods: {

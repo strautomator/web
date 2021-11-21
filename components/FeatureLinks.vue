@@ -8,9 +8,10 @@
                     <li><n-link to="/feature/commute" nuxt>Automatically tag your commutes</n-link></li>
                     <li><n-link to="/feature/mute" nuxt>Automatically mute your activities</n-link></li>
                     <li><n-link to="/feature/counter" nuxt>Auto-incrementing activity counter</n-link></li>
+                    <li><n-link to="/feature/ftp" nuxt>Auto-update your FTP</n-link></li>
                     <li><n-link to="/feature/gearwear" nuxt>Track your equipment mileage</n-link></li>
                     <li><n-link to="/feature/calendar" nuxt>Export your Strava calendar</n-link></li>
-                    <li><n-link to="/feature/ftp" nuxt>Auto update your FTP</n-link></li>
+                    <li><n-link to="/feature/records" nuxt>Track your personal records</n-link></li>
                 </ul>
             </v-card-text>
         </v-card>

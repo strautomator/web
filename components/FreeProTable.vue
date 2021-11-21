@@ -27,6 +27,11 @@
                             <td class="text-center">6</td>
                         </tr>
                         <tr>
+                            <td>Personal records</td>
+                            <td class="text-center">Bike and Run</td>
+                            <td class="text-center">All sports</td>
+                        </tr>
+                        <tr>
                             <td>Calendar range</td>
                             <td class="text-center">
                                 -{{ $store.state.freePlanDetails.pastCalendarDays }}{{ dayText }}<br />
@@ -37,7 +42,6 @@
                                 +{{ $store.state.proPlanDetails.futureCalendarDays }}{{ dayText }}
                             </td>
                         </tr>
-
                         <tr>
                             <td>Calendar template</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
