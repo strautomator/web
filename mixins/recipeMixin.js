@@ -85,27 +85,6 @@ export default {
         // Returns the text for the specified condition.
         conditionPropertyText(condition) {
             return _.find(this.$store.state.recipeProperties, {value: condition.property}).text
-        },
-        // Returns the material icon for the specified sport type.
-        getSportIcon(sportType) {
-            if (!sportType) return "mdi-incognito"
-            if (sportType == "Ride" || sportType == "VirtualRide") return "mdi-bike"
-            if (sportType == "Run" || sportType == "VirtualRun") return "mdi-run"
-            if (sportType == "Walk") return "mdi-walk"
-            if (sportType == "Golf") return "mdi-golf"
-            if (sportType == "Skateboard") return "mdi-skateboard"
-            if (sportType == "Snowboard") return "mdi-snowboard"
-            if (sportType == "Swim") return "mdi-swim"
-            if (sportType == "Yoga") return "mdi-yoga"
-            if (sportType == "Sail") return "mdi-sail-boat"
-            if (sportType == "IceSkate") return "mdi-skate"
-            if (sportType == "CrossFit" || sportType == "WeightTraining") return "mdi-weight-lifter"
-            if (sportType.indexOf("Ski") > 0) return "mdi-ski"
-            return "mdi-dumbbell"
-        },
-        // Convert sport type enum to readable text (with spaces).
-        getSportName(enumValue) {
-            return enumValue.replace(/([A-Z])/g, " $1").trim()
         }
     }
 }

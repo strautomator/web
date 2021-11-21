@@ -95,10 +95,11 @@ import _ from "lodash"
 import draggable from "vuedraggable"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
     authenticated: true,
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     components: {draggable},
     data() {
         return {

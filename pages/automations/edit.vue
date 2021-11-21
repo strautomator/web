@@ -147,11 +147,12 @@ import AddCondition from "~/components/recipes/AddCondition.vue"
 import AddAction from "~/components/recipes/AddAction.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
     authenticated: true,
     components: {AddCondition, AddAction},
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
             title: "Automation"

@@ -49,7 +49,7 @@
                                     ></v-autocomplete>
                                 </div>
                             </div>
-                            <div class="text-center mb-6 " v-if="isDefaultFor">
+                            <div class="text-center mb-6" v-if="isDefaultFor">
                                 <v-icon color="grey" small>mdi-information-outline</v-icon>
                                 <span>This automation will run on <strong>all</strong> future "{{ selectedDefaultFor.value }}" activities!</span>
                             </div>
@@ -76,9 +76,10 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     data() {
         return this.initialData()
     },

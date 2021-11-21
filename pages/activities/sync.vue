@@ -134,13 +134,14 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 import AdsPanel from "~/components/AdsPanel.vue"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 
 export default {
     authenticated: true,
     components: {AdsPanel, CreateFirst},
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
             title: "Activity sync"
