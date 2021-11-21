@@ -2,6 +2,17 @@
 
 This is Strautomator's web frontend, built with Nuxt + Vuetify. It depends on the [Strautomator Core](https://github.com/strautomator/core) to run. Please make sure you read the docs for the Core first before proceeding with the Web setup.
 
+## Settings
+
+Strautomator is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its [docs](https://setmeup.devv.com). The settings are split as follows:
+
+-   **settings.json** - settings shared by all environments, targeting production by default
+-   **settings.development.json** - development settings, mostly when running on your dev machine
+-   **settings.production.json** - production-only settings, except credentials and secrets (optional)
+-   **settings.secret.json** - private credentials and secrets, excluded from the GIT repo
+
+Please note that the [Core](https://github.com/strautomator/core) also has its own collection of settings files as well.
+
 ## Local setup
 
 Download and install dependencies:
