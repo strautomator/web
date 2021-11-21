@@ -218,6 +218,38 @@ router.get("/athlete-records", async (req: express.Request, res: express.Respons
     }
 })
 
+/**
+ * Get athlete's personal records.
+ */
+router.get("/athlete-records/refresh", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const existing = await strava.athletes.getAthleteRecords(user)
+
+        if (existing) {
+            logger.warn("Routes", req.method, req.originalUrl, `Recently refreshed, will not proceed`)
+            webserver.renderJson(req, res, {recentlyRefreshed: true})
+        }
+
+        // First we prepare the baseline.
+        await strava.athletes.prepareAthleteRecords(user)
+
+        const tsAfter = new Date("2000-01-01").valueOf() / 1000
+        const tsBefore = new Date().valueOf() / 1000
+
+        // Now get all user activities and check their records.
+        const activities = await strava.activities.getActivities(user, {before: tsBefore, after: tsAfter})
+        const records = await strava.athletes.checkActivityRecords(user, activities)
+
+        webserver.renderJson(req, res, records)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
 // FORTUNE
 // --------------------------------------------------------------------------
 
