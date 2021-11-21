@@ -94,7 +94,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Update cache headers and send response.
         res.setHeader("Content-Type", "text/calendar")
         res.setHeader("Cache-Control", `public, max-age=${cacheAge}`)
-        res.setHeader("Expires", expires.format("ddd, DD MMM YYYY HH:mm:ss [GMT]"))
+        res.setHeader("Expires", `${expires.format("ddd, DD MMM YYYY HH:mm:ss")} GMT`)
         return res.send(cal)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
