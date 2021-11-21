@@ -187,6 +187,11 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.delayedProcessing = req.body.delayedProcessing ? true : false
         }
 
+        // Set privacy mode?
+        if (!_.isNil(req.body.privacyMode)) {
+            preferences.privacyMode = req.body.privacyMode ? true : false
+        }
+
         // Set counter reset date?
         if (!_.isNil(req.body.dateResetCounter)) {
             if (req.body.dateResetCounter) {
@@ -215,12 +220,20 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, FTP auto update force disabled`)
         }
 
-        // Set user data and save to the database.
+        // User details to be updated.
         const data: Partial<UserData> = {
             id: user.id,
             displayName: user.displayName,
             preferences: preferences
         }
+
+        // User has switched to privacy mode? Anonymize it.
+        if (!user.preferences.privacyMode && preferences.privacyMode) {
+            users.anonymize(data)
+        } else if (user.preferences.privacyMode && !preferences.privacyMode) {
+            user.profile = await strava.athletes.getAthlete(user.stravaTokens)
+        }
+
         await users.update(data)
 
         logger.info("Routes", req.method, req.originalUrl)

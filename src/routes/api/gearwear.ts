@@ -114,7 +114,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
             const compName = req.body.resetTracking
 
             // Reset distance for the specified component.
-            await gearwear.resetTracking(existingConfig[0], compName)
+            await gearwear.resetTracking(user, existingConfig[0], compName)
         }
 
         logger.info("Routes", req.method, req.originalUrl)
