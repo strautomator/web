@@ -1,6 +1,7 @@
 export const state = () => ({
     lastUserFetch: new Date().valueOf(),
     user: null,
+    athleteRecords: null,
     gearwearCount: null,
     recipeProperties: null,
     recipeActions: null,
@@ -10,6 +11,7 @@ export const state = () => ({
     ftpWeeks: null,
     sportTypes: [],
     workoutTypes: [],
+    recordFields: [],
     mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {}
@@ -18,6 +20,9 @@ export const state = () => ({
 export const getters = {
     user(state) {
         return state.user
+    },
+    athleteRecords(state) {
+        return state.athleteRecords
     },
     lastUserFetch(state) {
         return state.lastUserFetch
@@ -42,6 +47,9 @@ export const mutations = {
     setWorkoutTypes(state, data) {
         state.workoutTypes = data
     },
+    setRecordFields(state, data) {
+        state.recordFields = data
+    },
     setMapStyles(state, data) {
         state.mapStyles = data
     },
@@ -54,6 +62,9 @@ export const mutations = {
     },
     setUser(state, data) {
         state.user = data
+    },
+    setAthleteRecords(state, data) {
+        state.athleteRecords = data
     },
     setUserPreferences(state, data) {
         if (!state.user.preferences) state.user.preferences = {}
@@ -125,6 +136,10 @@ export const actions = {
             const workoutTypes = rideWorkoutTypes.concat(runWorkoutTypes)
             commit("setWorkoutTypes", workoutTypes)
 
+            // Tracked personal records fields.
+            const recordFields = core.StravaTrackedRecords.slice()
+            commit("setRecordFields", recordFields)
+
             // Set map styles.
             const mapStyles = Object.keys(core.StravaMapStyle).map((s) => {
                 return {text: s.replace(/([A-Z])/g, " $1").trim(), value: core.StravaMapStyle[s]}
@@ -149,8 +164,18 @@ export const actions = {
         try {
             if (state.oauth.userId) {
                 this.$axios.setToken(state.oauth.accessToken)
-                const user = await this.$axios.$get(`/api/users/${state.oauth.userId}`)
-                commit("setUser", user)
+
+                const urlUser = `/api/users/${state.oauth.userId}`
+                const urlRecords = "/api/strava/athlete-records"
+
+                await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
+                    .then((res) => {
+                        commit("setUser", res[0])
+                        commit("setAthleteRecords", res[1])
+                    })
+                    .catch((err) => {
+                        throw err
+                    })
             }
         } catch (ex) {
             if (process.server) {
