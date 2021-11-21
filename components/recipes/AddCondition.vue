@@ -9,7 +9,7 @@
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-title class="headline">If the activity's...</v-card-title>
+        <v-card-title class="headline">If the activity...</v-card-title>
         <v-card-text>
             <v-form v-model="valid" ref="form">
                 <v-container class="ma-0 pa-0" fluid>
@@ -182,6 +182,13 @@ export default {
 
             if (sportTypes.length > 0) {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
+            }
+
+            // Privacy mode disables new records.
+            if (this.$store.state.user.preferences.privacyMode) {
+                const newRecordsProp = recipeProperties.find((p) => p.value == "newRecords")
+                newRecordsProp.disabled = true
+                newRecordsProp.text += " (privacy mode)"
             }
 
             // Boolean mapping.
