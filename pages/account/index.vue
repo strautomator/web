@@ -3,10 +3,13 @@
         <v-container fluid>
             <h1>Account</h1>
             <div>
-                <div class="mt-3">{{ user.profile.firstName }} {{ user.profile.lastName }}</div>
+                <div class="mt-3">
+                    {{ user.profile.firstName }} {{ user.profile.lastName }}
+                    <span v-if="user.preferences.privacyMode">(anonymized)</span>
+                </div>
                 <div class="mb-3">
                     <span class="mr-1" v-if="user.email">{{ user.email }}</span>
-                    <br v-if="$breakpoint.mdAndDown" />
+                    <br v-if="user.email && $breakpoint.mdAndDown" />
                     <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
                 <div>Account ID {{ user.id }}</div>
@@ -81,11 +84,6 @@
                         </v-row>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">Twitter sharing</h3>
-                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'"></v-switch>
-                    </div>
-                    <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
@@ -104,6 +102,19 @@
                         <h3 class="mb-2">Hashtag preference</h3>
                         <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Privacy mode</h3>
+                        <div class="body-2">
+                            Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
+                            <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
+                        </div>
+                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Twitter sharing</h3>
+                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'" :disabled="privacyMode"></v-switch>
                     </div>
                 </v-card-text>
             </v-card>
@@ -155,7 +166,7 @@
                             <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $dayjs(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
                         </p>
                         <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">Keep up the good work!</p>
-                        <p v-else-if="!ftpResult.recentlyUpdated">Do you want to save that value ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
+                        <p v-else-if="!ftpResult.recentlyUpdated">Do you want to update your FTP ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
                         <v-alert color="accent" v-else> Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature. </v-alert>
                     </template>
 
@@ -197,15 +208,16 @@ export default {
     data() {
         const user = this.$store.state.user
         const defaultLinksOn = user && user.isPro ? 0 : this.$store.state.linksOnPercent
-        const linksOn = user && user.preferences ? user.preferences.linksOn : defaultLinksOn
+        const linksOn = user ? user.preferences.linksOn : defaultLinksOn
         const delayedProcessing = user & user.preferences ? user.preferences.delayedProcessing : false
-        const hashtag = user && user.preferences ? user.preferences.activityHashtag : false
-        const twitterShare = user && user.preferences ? user.preferences.twitterShare : false
-        const ftpAutoUpdate = user && user.preferences ? user.preferences.ftpAutoUpdate : false
-        const dateResetCounter = user && user.preferences ? user.preferences.dateResetCounter : null
-        const language = user && user.preferences ? user.preferences.language || "en" : "en"
+        const hashtag = user ? user.preferences.activityHashtag : false
+        const twitterShare = user ? user.preferences.twitterShare : false
+        const privacyMode = user ? user.preferences.privacyMode : false
+        const ftpAutoUpdate = user ? user.preferences.ftpAutoUpdate : false
+        const dateResetCounter = user ? user.preferences.dateResetCounter : null
+        const language = user ? user.preferences.language || "en" : "en"
         const weatherProvider = user && user.isPro && user.preferences ? user.preferences.weatherProvider || null : null
-        const weatherUnit = user && user.preferences ? user.preferences.weatherUnit || "c" : "c"
+        const weatherUnit = user ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
         const now = this.$dayjs()
 
@@ -226,6 +238,7 @@ export default {
             delayedProcessing: delayedProcessing,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
+            privacyMode: privacyMode,
             ftpAutoUpdate: ftpAutoUpdate,
             ftpResult: null,
             ftpDialog: false,
@@ -310,6 +323,12 @@ export default {
                 this.delaySavePreferences()
             }
         },
+        privacyMode(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
         resetCounter(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
@@ -383,6 +402,7 @@ export default {
                     delayedProcessing: this.delayedProcessing,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
+                    privacyMode: this.privacyMode,
                     weatherProvider: this.weatherProvider,
                     weatherUnit: this.weatherUnit,
                     language: this.language,

@@ -88,6 +88,7 @@ export default {
         },
         // Returns the material icon for the specified sport type.
         getSportIcon(sportType) {
+            if (!sportType) return "mdi-incognito"
             if (sportType == "Ride" || sportType == "VirtualRide") return "mdi-bike"
             if (sportType == "Run" || sportType == "VirtualRun") return "mdi-run"
             if (sportType == "Walk") return "mdi-walk"

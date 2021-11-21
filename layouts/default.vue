@@ -18,7 +18,8 @@
             <v-spacer></v-spacer>
             <top-notifications />
 
-            <v-avatar class="ml-4" v-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
+            <v-icon v-if="$store.state.user && $store.state.user.preferences.privacyMode" class="ml-1" large>mdi-incognito</v-icon>
+            <v-avatar class="ml-4" v-else-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
                 <img :src="$store.state.user.profile.urlAvatar" />
             </v-avatar>
             <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
@@ -114,6 +115,11 @@ export default {
         return {
             activeNavBtn: this.$route.path || null,
             logoutDialog: false
+        }
+    },
+    mounted() {
+        if (this.$store.state.user && this.$store.state.user.preferences.privacyMode) {
+            this.$ga.disable()
         }
     },
     methods: {

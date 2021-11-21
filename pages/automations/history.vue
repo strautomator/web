@@ -66,10 +66,10 @@
                                     <template v-if="!$breakpoint.mdAndUp">
                                         <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
                                         <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
-                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
+                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                                         <ul class="mt-1 ml-n2">
                                             <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rs-${id}`">
-                                                <span :class="{'removal--text font-italic': !user.recipes[id]}">{{ recipe.title }}</span>
+                                                <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                             </li>
                                         </ul>
                                         <div class="mt-1 ml-n2">
@@ -78,14 +78,14 @@
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
+                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                                         <br />
                                         {{ getDate(activity).format("lll") }}
                                     </template>
                                 </td>
                                 <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
                                     <div v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
-                                        <span :class="{'removal--text font-italic': !user.recipes[id]}">{{ recipe.title }}</span>
+                                        <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
                                     </div>
                                 </td>
                                 <td v-if="$breakpoint.mdAndUp" class="pt-2 pb-2">
@@ -100,6 +100,8 @@
                     </v-simple-table>
                 </v-card-text>
             </v-card>
+
+            <div class="caption ml-1 mt-3" v-if="user && user.preferences.privacyMode">* Privacy mode is enabled, some details about processed activities are not saved.</div>
         </v-container>
     </v-layout>
 </template>
@@ -137,12 +139,9 @@ export default {
 
         await this.fetchHistory()
     },
-    mounted() {
-        this.getStravaStatus()
-    },
     methods: {
         getDate(activity) {
-            const aDate = this.$dayjs(activity.dateStart)
+            const aDate = this.$dayjs(activity.dateStart || activity.dateProcessed)
 
             // Always display local activity times!
             if (activity.utcStartOffset) {

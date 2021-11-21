@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1 class="mb-4">
-                Hi {{ user ? user.profile.firstName : "guest" }}!
+                Hi {{ user && !user.preferences.privacyMode ? user.profile.firstName : "there" }}!
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
                     <v-icon small>mdi-poll</v-icon>
                 </v-btn>
@@ -30,7 +30,7 @@
             </div>
             <div v-else>
                 <v-card outlined>
-                    <v-card-title class="accent"> Last automated activities </v-card-title>
+                    <v-card-title class="accent">Last automated activities</v-card-title>
                     <v-card-text class="pl-0 pr-0">
                         <div class="mt-4 pl-4 pr-4" v-if="!activities">
                             <p>
@@ -67,7 +67,7 @@
                                         <template v-if="!$breakpoint.mdAndUp">
                                             <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
                                             <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
-                                            <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name }}</a>
+                                            <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                                             <ul>
                                                 <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rsd-${id}`">
                                                     <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
@@ -75,7 +75,7 @@
                                             </ul>
                                         </template>
                                         <template v-else>
-                                            <strong>{{ activity.name }}</strong>
+                                            <strong>{{ activity.name || "Activity *" }}</strong>
                                             <br />
                                             {{ getDate(activity).format("lll") }}
                                         </template>
@@ -102,6 +102,7 @@
                             </v-btn>
                         </div>
                         <div class="caption mt-4 ml-5">Please note that the list above does not show activities that weren't updated by Strautomator.</div>
+                        <div class="caption mt-2 mt-md-0 ml-5" v-if="user && user.preferences.privacyMode">Privacy mode is enabled, some details about processed activities are not saved.</div>
                     </v-card-text>
                 </v-card>
                 <v-alert class="mt-4 text-center text-md-left">
@@ -185,7 +186,7 @@ export default {
     },
     methods: {
         getDate(activity) {
-            const aDate = this.$dayjs(activity.dateStart)
+            const aDate = this.$dayjs(activity.dateStart || activity.dateProcessed)
 
             // Always display local activity times!
             if (activity.utcStartOffset) {
