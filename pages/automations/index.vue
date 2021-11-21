@@ -3,8 +3,7 @@
         <v-container fluid>
             <h1>
                 Automations
-                <v-badge v-if="recipes.length > 0" color="accent" offset-x="-2" offset-y="1" :content="recipes.length"></v-badge>
-                <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-4 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
+                <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
                     <v-icon small>mdi-history</v-icon>
                 </v-btn>

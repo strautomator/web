@@ -140,7 +140,6 @@ export default {
     },
     mounted() {
         this.setOrderedRecipes(_.cloneDeep(Object.values(this.user.recipes)))
-        console.warn(this.recipesRemaining, this.recipesMaxAllowed)
     },
     methods: {
         hasCounter(recipe) {

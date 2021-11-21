@@ -73,6 +73,7 @@
                                             </li>
                                         </ul>
                                         <div class="mt-1 ml-n2">
+                                            <v-icon class="mr-2 mb-1" v-if="isActivityRecord(activity)" small>mdi-medal</v-icon>
                                             <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" small outlined>{{ propName }}</v-chip>
                                             <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>linkback</v-chip>
                                         </div>
@@ -89,6 +90,7 @@
                                     </div>
                                 </td>
                                 <td v-if="$breakpoint.mdAndUp" class="pt-2 pb-2">
+                                    <v-icon class="mr-2 mb-1" v-if="isActivityRecord(activity)">mdi-medal</v-icon>
                                     <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fm-${propName}`" small>{{ propName }}</v-chip>
                                     <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>link to strautomator</v-chip>
                                 </td>
