@@ -60,7 +60,7 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
     return true
 }
 
-// USER ACTIVITIES
+// ACTIVITIES AND RECORDS
 // --------------------------------------------------------------------------
 
 /**
@@ -199,6 +199,22 @@ router.get("/process-activity/:activityId", async (req: express.Request, res: ex
         const errorMessage = ex.toString()
         const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
+    }
+})
+
+/**
+ * Get athlete's personal records.
+ */
+router.get("/athlete-records", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const records = await strava.athletes.getAthleteRecords(user)
+        webserver.renderJson(req, res, records)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
     }
 })
 
@@ -378,7 +394,7 @@ router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: e
         user.dateLastActivity = now
 
         // Process the passed activity now, or queue later, depending on user preferences.
-        if (user.preferences && user.preferences.delayedProcessing) {
+        if (user.preferences.delayedProcessing) {
             await strava.activities.queueActivity(user, parseInt(req.params.activityId))
             user.dateLastProcessedActivity = now
         } else {
