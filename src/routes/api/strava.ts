@@ -1,6 +1,6 @@
 // Strautomator API: Strava routes
 
-import {getActivityFortune, strava, users, UserData} from "strautomator-core"
+import {getActivityFortune, strava, users, UserData, StravaAthleteRecords, StravaSport} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -219,7 +219,7 @@ router.get("/athlete-records", async (req: express.Request, res: express.Respons
 })
 
 /**
- * Get athlete's personal records.
+ * Prepar and refresh athlete's personal records based on all Strava activities.
  */
 router.get("/athlete-records/refresh", async (req: express.Request, res: express.Response) => {
     try {
@@ -243,6 +243,51 @@ router.get("/athlete-records/refresh", async (req: express.Request, res: express
         const activities = await strava.activities.getActivities(user, {before: tsBefore, after: tsAfter})
         const records = await strava.athletes.checkActivityRecords(user, activities)
 
+        webserver.renderJson(req, res, records)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Update an athlete record manually.
+ */
+router.post("/athlete-records/:sport", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!req.body) throw new Error("Missing request body")
+
+        // Record parameters.
+        const sportsList = Object.keys(StravaSport)
+        const sport = req.params.sport
+        const field = req.body.field
+        const value = req.body.value
+        const previous = req.body.previous
+
+        // Validate request body.
+        if (!field) throw new Error("Missing record field")
+        if (!value || isNaN(value)) throw new Error("Missing or invalid record value")
+        if (!sportsList.includes(sport)) throw new Error("Invalid sport")
+
+        // Update record and save to the database.
+        const records: StravaAthleteRecords = {
+            [sport]: {
+                [field]: {
+                    value: parseFloat(value),
+                    activityId: null,
+                    date: new Date()
+                }
+            }
+        }
+
+        // Also update the previous value?
+        if (previous && !isNaN(previous)) {
+            records[sport][field].previous = previous
+        }
+
+        await strava.athletes.setAthleteRecords(user, records)
         webserver.renderJson(req, res, records)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
