@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1 class="mb-4">
-                Hi {{ user && !user.preferences.privacyMode ? user.profile.firstName : "there" }}!
+                Hi {{ user && !user.preferences.privacyMode && user.profile.firstName.length < 13 ? user.profile.firstName : "there" }}!
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" x-small fab rounded nuxt>
                     <v-icon small>mdi-poll</v-icon>
                 </v-btn>
@@ -55,7 +55,7 @@
                                     <th>Original activity</th>
                                     <th>Automation(s)</th>
                                     <th>Updated fields</th>
-                                    <th>Strava</th>
+                                    <th class="text-center">Strava</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,7 +88,7 @@
                                     <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
                                         {{ getUpdatedFields(activity.updatedFields) }}
                                     </td>
-                                    <td v-if="$breakpoint.mdAndUp">
+                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
                                         <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava"><v-icon color="primary" class="mt-n1">mdi-open-in-new</v-icon></a>
                                     </td>
                                 </tr>

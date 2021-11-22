@@ -65,7 +65,6 @@ export default {
             return [rules.required, rules.email]
         }
     },
-
     methods: {
         hideDialog() {
             this.$emit("closed", this.emailSaved)
