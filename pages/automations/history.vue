@@ -62,7 +62,7 @@
                                 <td class="text-center" v-if="$breakpoint.mdAndUp">
                                     <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
                                 </td>
-                                <td class="pt-2 pb-2">
+                                <td class="pt-2 pb-2" nowrap>
                                     <template v-if="!$breakpoint.mdAndUp">
                                         <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.type) }}</v-icon>
                                         <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
@@ -81,18 +81,22 @@
                                     <template v-else>
                                         <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                                         <br />
-                                        {{ getDate(activity).format("lll") }}
+                                        {{ getDate(activity).format("ll") }}
+                                        <br />
+                                        {{ getDate(activity).format("HH:mm") }}
                                     </template>
                                 </td>
-                                <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
-                                    <div v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
-                                        <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
-                                    </div>
+                                <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp" nowrap>
+                                    <ul class="pl-0">
+                                        <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
+                                            <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
+                                        </li>
+                                    </ul>
                                 </td>
                                 <td v-if="$breakpoint.mdAndUp" class="pt-2 pb-2">
                                     <v-icon class="mr-2 mb-1" v-if="isActivityRecord(activity)">mdi-medal</v-icon>
                                     <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fm-${propName}`" small>{{ propName }}</v-chip>
-                                    <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>link to strautomator</v-chip>
+                                    <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>linkback</v-chip>
                                 </td>
                             </tr>
                             <tr>
