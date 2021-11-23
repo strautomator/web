@@ -171,9 +171,6 @@ export default {
             const records = this.$store.state.athleteRecords
             if (!records) return null
 
-            delete records.id
-            delete records.dateRefreshed
-
             return records ? _.sortBy(Object.entries(records), (r) => r[0].replace("Virtual", "")) : null
         }
     },
