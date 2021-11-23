@@ -171,7 +171,12 @@ export const actions = {
                 await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
                     .then((res) => {
                         commit("setUser", res[0])
-                        commit("setAthleteRecords", res[1])
+
+                        const aRecords = res[1] || {}
+                        delete aRecords.id
+                        delete aRecords.dateRefreshed
+
+                        commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
                     })
                     .catch((err) => {
                         throw err
