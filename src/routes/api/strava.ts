@@ -309,7 +309,7 @@ router.post("/activity-fortune", async (req: express.Request, res: express.Respo
 
         // Activity dates must be transformed.
         const activity = req.body
-        if (activity.datetart) activity.dateStart = new Date(activity.dateStart)
+        if (activity.dateStart) activity.dateStart = new Date(activity.dateStart)
         if (activity.dateEnd) activity.dateEnd = new Date(activity.dateEnd)
 
         const name = await getActivityFortune(user, activity)
