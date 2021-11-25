@@ -28,7 +28,7 @@
                             <div v-else-if="actionIsDescription">
                                 <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
                             </div>
-                            <div v-else-if="selectedAction.value && !['commute', 'generateName', 'hideHome'].includes(selectedAction.value)">
+                            <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
                             <div class="action-activity-tags" v-if="actionIsText">
@@ -200,6 +200,21 @@ export default {
             }
             if (arr.includes("hideHome")) {
                 arr.push("hideHome")
+            }
+            if (arr.includes("hideStatPace")) {
+                arr.push("hideStatPace")
+            }
+            if (arr.includes("hideStatSpeed")) {
+                arr.push("hideStatSpeed")
+            }
+            if (arr.includes("hideStatCalories")) {
+                arr.push("hideStatCalories")
+            }
+            if (arr.includes("hideStatHeartRate")) {
+                arr.push("hideStatHeartRate")
+            }
+            if (arr.includes("hideStatPower")) {
+                arr.push("hideStatPower")
             }
 
             arr = _.uniq(arr)

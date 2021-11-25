@@ -3,6 +3,9 @@ import _ from "lodash"
 export default {
     // Share recipe rules used to validate conditions.
     computed: {
+        booleanActions() {
+            return ["commute", "generateName", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower"]
+        },
         recipeRules() {
             return {
                 required: (value) => {
@@ -46,7 +49,7 @@ export default {
             const actionType = _.find(this.$store.state.recipeActions, {value: action.type}).text
             const valueText = action.friendlyValue || action.value
 
-            if (action.value && !["commute", "generateName", "hideHome"].includes(action.type)) {
+            if (action.value && !this.booleanActions.includes(action.type)) {
                 return `${actionType}: ${valueText}`
             } else {
                 return `${actionType}`
