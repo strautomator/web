@@ -34,7 +34,7 @@ run: build
 # Update dependencies and set new version
 update:
 	-rm -rf ./node_modules/strautomator-core
-	-ncu -u
+	-ncu -u --target minor
 	npm version $(shell date '+%y.%-V%u.1%H%M') --force --allow-same-version --no-git-tag-version
 	npm install --prefer-online
 
