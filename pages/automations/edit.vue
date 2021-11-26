@@ -245,8 +245,7 @@ export default {
                         delete this.recipe.disabled
                     }
 
-                    const user = this.$store.state.user
-                    const url = `/api/users/${user.id}/recipes`
+                    const url = `/api/users/${this.user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
 
                     this.$store.commit("setUserRecipe", recipeData)
@@ -260,8 +259,7 @@ export default {
             try {
                 this.currentCounter = this.recipeStats.counter
 
-                const user = this.$store.state.user
-                const url = `/api/users/${user.id}/recipes/stats/${this.recipe.id}`
+                const url = `/api/users/${this.user.id}/recipes/stats/${this.recipe.id}`
                 const body = {id: this.recipe.id, counter: this.recipeStats.counter}
                 await this.$axios.$post(url, body)
             } catch (ex) {
@@ -338,8 +336,7 @@ export default {
             const recipeTitle = this.recipe.title
 
             try {
-                const userId = this.$store.state.user.id
-                this.$axios.$delete(`/api/users/${userId}/recipes/${this.recipe.id}`)
+                this.$axios.$delete(`/api/users/${this.user.id}/recipes/${this.recipe.id}`)
             } catch (ex) {
                 this.$webError("AutomationEdit.deleteRecipe", ex)
             }

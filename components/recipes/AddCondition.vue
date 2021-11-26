@@ -145,7 +145,7 @@ export default {
                 zoom = 14
             }
 
-            return `/api/maps/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
+            return `/api/maps/${this.user.id}/image?latlong=${this.locationInput.value}&circle=${circle}&zoom=${zoom}`
         },
         sportInputRules() {
             if (!this.isSportType) return false
@@ -304,7 +304,7 @@ export default {
                 }
 
                 this.loading = true
-                const data = await this.$axios.$get(`/api/maps/geocode?address=${value}`)
+                const data = await this.$axios.$get(`/api/maps/${this.user.id}/geocode?address=${value}`)
 
                 for (let loc of data) {
                     loc.value = [loc.latitude, loc.longitude]

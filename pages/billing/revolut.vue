@@ -123,7 +123,7 @@ export default {
     },
     async fetch() {
         try {
-            const announcements = await this.$axios.$get("/api/announcements/active")
+            const announcements = await this.$axios.$get(`/api/announcements/${this.user.id}/active`)
 
             for (let a of announcements) {
                 if (a.id == "revolut-pro") {

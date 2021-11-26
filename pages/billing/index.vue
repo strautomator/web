@@ -170,18 +170,16 @@ export default {
     },
     async fetch() {
         try {
-            const billingPlans = await this.$axios.$get("/api/paypal/billingplans")
+            const billingPlans = await this.$axios.$get(`/api/paypal/${this.user.id}/billingplans`)
             this.billingPlans = Object.values(billingPlans)
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }
 
         try {
-            const user = this.$store.state.user
-
-            if (user && user.isPro && user.subscription) {
+            if (this.user.isPro && this.user.subscription) {
                 this.loading = true
-                const subscription = await this.$axios.$get(`/api/users/${user.id}/subscription`)
+                const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
                 this.loading = false
 
                 if (subscription.friend) {
@@ -207,7 +205,7 @@ export default {
     methods: {
         async prepareSubscription(planId) {
             try {
-                const subscription = await this.$axios.$post(`/api/paypal/subscribe/${planId}`)
+                const subscription = await this.$axios.$post(`/api/paypal/${this.user.id}/subscribe/${planId}`)
 
                 if (subscription && subscription.approvalUrl) {
                     document.location.href = subscription.approvalUrl
@@ -224,12 +222,16 @@ export default {
         async unsubscribe() {
             try {
                 this.loading = true
+
                 if (this.unsubReason) this.unsubReason = this.unsubReason.trim()
-                await this.$axios.$post(`/api/${this.user.subscription.source}/unsubscribe`, {reason: this.unsubReason || null})
+                await this.$axios.$post(`/api/${this.user.subscription.source}/${this.user.id}/unsubscribe`, {reason: this.unsubReason || null})
+
                 this.loading = false
                 this.unsubscribed = true
+
                 const subscription = JSON.parse(JSON.stringify(this.user.subscription, null, 0))
                 subscription.enabled = false
+
                 this.$store.commit("setUserSubscription", subscription)
             } catch (ex) {
                 ex.title = "Error trying to unsubscribe your account"

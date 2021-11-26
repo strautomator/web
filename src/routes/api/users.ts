@@ -21,7 +21,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         if (!req.params) throw new Error("Missing request params")
 
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // DEPRECATED! Recipes with no order must have a default set now.
@@ -77,7 +77,7 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
         if (!req.params) throw new Error("Missing request params")
 
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // User has no subscription? Stop here.
@@ -109,8 +109,7 @@ router.delete("/:userId", async (req: express.Request, res: express.Response) =>
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // Delete the user from the database.
@@ -135,7 +134,7 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
         if (!req.params) throw new Error("Missing request params")
 
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const preferences: UserPreferences = {}
@@ -251,8 +250,7 @@ router.post("/:userId/email", async (req: express.Request, res: express.Response
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const email = req.body.email ? req.body.email.trim() : null
@@ -282,7 +280,7 @@ const routeUserRecipe = async (req: any, res: any) => {
 
         const method = req.method.toUpperCase()
         const userId = req.params.userId
-        const validated = await auth.requestValidator(req, res, {userId: userId})
+        const validated = await auth.requestValidator(req, res)
         if (!validated) return
 
         let recipe: RecipeData = req.body
@@ -376,7 +374,7 @@ router.post("/:userId/recipes/order", async (req: express.Request, res: express.
         if (!req.params) throw new Error("Missing request params")
 
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const recipesOrder = req.body
@@ -397,8 +395,7 @@ router.get("/:userId/recipes/stats", async (req: express.Request, res: express.R
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const arrStats = (await recipes.stats.getStats(user)) as RecipeStatsData[]
@@ -422,8 +419,7 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
         if (!req.params) throw new Error("Missing request params")
 
         const recipeId = req.params.recipeId
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         if (!user.recipes[recipeId]) {
@@ -450,8 +446,7 @@ router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res
 
         const counter = req.body.counter
         const recipeId = req.params.recipeId
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         if (!user.recipes[recipeId]) {

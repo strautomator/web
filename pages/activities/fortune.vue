@@ -75,7 +75,7 @@ export default {
             this.activity = null
 
             if (this.activityId.trim() == "") {
-                const activities = await this.$axios.$get(`/api/strava/activities/processed?limit=10`)
+                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=10`)
 
                 if (activities.length > 0) {
                     this.activityId = _.sample(activities).id
@@ -103,7 +103,7 @@ export default {
                 this.loading = true
                 this.syncError = null
                 this.activityName = null
-                this.activity = await this.$axios.$get(`/api/strava/activities/${this.activityId}/details`)
+                this.activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
 
                 if (this.activity) {
                     await this.getFortune()
@@ -126,7 +126,7 @@ export default {
                 this.syncError = null
 
                 const timestamp = Math.round(new Date().valueOf() / 1000)
-                const result = await this.$axios.$post(`/api/strava/activity-fortune?ts=${timestamp}`, this.activity)
+                const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-fortune?ts=${timestamp}`, this.activity)
 
                 this.activityName = result.name
                 this.loading = false

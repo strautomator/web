@@ -43,14 +43,13 @@ export default {
     },
     async fetch() {
         try {
-            this.notifications = await this.$axios.$get(`/api/notifications/unread`)
-            this.unreadCount = this.notifications.length
-
-            const user = this.$store.state.user
-            const bikes = _.map(user.profile.bikes, "id")
-            const shoes = _.map(user.profile.shoes, "id")
+            const bikes = _.map(this.user.profile.bikes, "id")
+            const shoes = _.map(this.user.profile.shoes, "id")
             const gearIds = _.concat(bikes, shoes)
-            const recipes = Object.entries(user.recipes)
+            const recipes = Object.entries(this.user.recipes)
+
+            this.notifications = await this.$axios.$get(`/api/notifications/${this.user.id}/unread`)
+            this.unreadCount = this.notifications.length
 
             for (let [id, recipe] of recipes) {
                 for (let action of recipe.actions) {

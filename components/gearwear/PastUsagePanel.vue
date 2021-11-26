@@ -1,15 +1,9 @@
 <template>
     <v-card class="mt-4" outlined>
         <v-card-text class="pb-md-0">
-            <h3 v-if="isNew">
-                Don't know the current usage of the components above?
-            </h3>
-            <h3 v-else>
-                Lost track of the usage for this gear?
-            </h3>
-            <p class="mt-1">
-                Strautomator can calculate it for you! Enter the date when you last swapped the component(s), up to 2 years. ago.
-            </p>
+            <h3 v-if="isNew">Don't know the current usage of the components above?</h3>
+            <h3 v-else>Lost track of the usage for this gear?</h3>
+            <p class="mt-1">Strautomator can calculate it for you! Enter the date when you last swapped the component(s), up to 2 years. ago.</p>
             <div class="d-flex text-center text-md-left" :class="{'flex-column': !$breakpoint.mdAndUp}">
                 <div class="flex-grow-0">
                     <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" min-width="290px" offset-y>
@@ -75,7 +69,7 @@ export default {
                 this.pastLoading = true
 
                 const timestamp = this.$dayjs(this.dateSince).unix()
-                const activities = await this.$axios.$get(`/api/strava/activities/since/${timestamp}?gear=${this.gearwearConfig.id}`)
+                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/since/${timestamp}?gear=${this.gearwearConfig.id}`)
 
                 let distance = 0
                 let elapsedTime = 0

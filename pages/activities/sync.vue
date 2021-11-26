@@ -178,7 +178,7 @@ export default {
     async fetch() {
         try {
             this.loading = true
-            this.recentActivities = await this.$axios.$get(`/api/strava/activities/recent`)
+            this.recentActivities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/recent`)
             this.loading = false
         } catch (ex) {
             this.loading = false
@@ -220,7 +220,7 @@ export default {
                 this.processedActivity = null
                 this.loading = true
 
-                const processedActivity = await this.$axios.$get(`/api/strava/process-activity/${id}`)
+                const processedActivity = await this.$axios.$get(`/api/strava/${this.user.id}/process-activity/${id}`)
                 this.processedActivity = processedActivity
                 this.loading = false
             } catch (ex) {

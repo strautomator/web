@@ -91,7 +91,7 @@ export class Auth {
             }
 
             // User ID does not match the one passed with the options?
-            if (options.userId && user.id != options.userId) {
+            if (req.params.userId && req.params.userId != user.id) {
                 logger.error("Auth.requestValidator", req.originalUrl, "User not authorized", `From ${req.ip}`)
                 webserver.renderError(req, res, "User not authorized", 401)
                 return false
@@ -111,10 +111,6 @@ export class Auth {
  * Request validation options.
  */
 export interface RequestOptions {
-    /** Requires admin permissions (check bearer and the strautomator admin header). */
-    admin?: boolean
-    /** Passed token is owned by the user that particular ID. */
-    userId?: string
     /** Requesting an image? Accept requests only from the Strautomator referer. */
     image?: boolean
 }

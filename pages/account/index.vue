@@ -365,7 +365,7 @@ export default {
             if (this.ftpResult) return
 
             try {
-                const result = await this.$axios.$get(`/api/strava/ftp/estimate`)
+                const result = await this.$axios.$get(`/api/strava/${this.user.id}/ftp/estimate`)
 
                 if (!result) {
                     this.ftpResult = false
@@ -378,7 +378,7 @@ export default {
         },
         async saveEstimatedFtp() {
             try {
-                const result = await this.$axios.$post(`/api/strava/ftp/estimate`, {ftp: this.ftpResult.ftpWatts})
+                const result = await this.$axios.$post(`/api/strava/${this.user.id}/ftp/estimate`, {ftp: this.ftpResult.ftpWatts})
 
                 if (!result) {
                     this.ftpResult.recentlyUpdated = true

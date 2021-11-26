@@ -220,8 +220,8 @@ export default {
     },
     async fetch() {
         try {
-            this.activities = await this.$axios.$get(`/api/strava/activities/processed?limit=5`)
-            this.announcements = await this.$axios.$get(`/api/announcements/active`)
+            this.activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=5`)
+            this.announcements = await this.$axios.$get(`/api/announcements/${this.user.id}/active`)
 
             if (this.announcements.length > 0) {
                 while (this.announcements.length > 0 && !this.lastAnnouncement) {
@@ -278,7 +278,7 @@ export default {
         },
         async readAnnouncement() {
             try {
-                await this.$axios.$post(`/api/announcements/read`, {id: this.lastAnnouncement.id})
+                await this.$axios.$post(`/api/announcements/${this.user.id}/read`, {id: this.lastAnnouncement.id})
             } catch (ex) {
                 console.error("Dashboard.readAnnouncement", ex)
             }

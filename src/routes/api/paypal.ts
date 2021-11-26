@@ -55,9 +55,21 @@ router.get("/billingplans", async (req: express.Request, res: express.Response) 
 })
 
 /**
+ * Get available billing plans (for the user).
+ */
+router.get("/:userId/billingplans", async (req: express.Request, res: express.Response) => {
+    try {
+        webserver.renderJson(req, res, paypal.currentBillingPlans)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
  * Create a new PayPal subscription.
  */
-router.post("/subscribe/:billingPlanId", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -106,7 +118,7 @@ router.post("/subscribe/:billingPlanId", async (req: express.Request, res: expre
 /**
  * Cancel an existing PayPal subscription.
  */
-router.post("/unsubscribe", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return

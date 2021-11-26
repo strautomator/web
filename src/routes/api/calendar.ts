@@ -17,7 +17,7 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
         if (!req.params) throw new Error("Missing request params")
 
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // Template is only available for PRO users.

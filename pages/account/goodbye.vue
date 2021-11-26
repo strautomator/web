@@ -35,8 +35,11 @@
 </template>
 
 <script>
+import userMixin from "~/mixins/userMixin.js"
+
 export default {
     authenticated: true,
+    mixins: [userMixin],
     head() {
         return {
             title: "Goodbye?"
@@ -53,9 +56,7 @@ export default {
     methods: {
         async cancelAccount() {
             try {
-                const userId = this.$store.state.user.id
-
-                this.$axios.$delete(`/api/users/${userId}`)
+                this.$axios.$delete(`/api/users/${this.user.id}`)
                 this.accountDeleted = true
 
                 const logout = () => this.$logout()

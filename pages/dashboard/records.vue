@@ -212,7 +212,7 @@ export default {
                 this.refreshing = true
                 this.refreshError = null
 
-                const records = await this.$axios.$get("/api/strava/athlete-records/refresh")
+                const records = await this.$axios.$get(`/api/strava/${this.user.id}/athlete-records/refresh`)
 
                 if (!records) {
                     this.noRecords = true
@@ -263,7 +263,7 @@ export default {
                     data.previous = value
                 }
 
-                const result = await this.$axios.$post(`/api/strava/athlete-records/${this.editRecordSport}`, data)
+                const result = await this.$axios.$post(`/api/strava/${this.user.id}/athlete-records/${this.editRecordSport}`, data)
                 this.$store.commit("setAthleteRecords", _.defaultsDeep(result, records))
 
                 this.hideEditDialog()

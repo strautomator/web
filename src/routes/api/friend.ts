@@ -11,7 +11,7 @@ const router = express.Router()
 /**
  * Cancel an existing Friend subscription.
  */
-router.post("/unsubscribe", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return

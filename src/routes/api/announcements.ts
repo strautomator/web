@@ -10,7 +10,7 @@ const router = express.Router()
 /**
  * Return active announcements. Please note that the read count will always come zeroed.
  */
-router.get("/active", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/active", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -29,7 +29,7 @@ router.get("/active", async (req: express.Request, res: express.Response) => {
  * When user closes an announcement, increase its read count.
  * This route will never trigger an exception.
  */
-router.post("/read", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/read", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return

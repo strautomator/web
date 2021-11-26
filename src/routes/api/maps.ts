@@ -10,7 +10,7 @@ const router = express.Router()
 /**
  * Get geocode for specified address.
  */
-router.get("/geocode", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/geocode", async (req: express.Request, res: express.Response) => {
     try {
         const validated = await auth.requestValidator(req, res)
         if (!validated) return
@@ -29,7 +29,7 @@ router.get("/geocode", async (req: express.Request, res: express.Response) => {
  * Get static image for specified coordinates. This won't check for the auth token,
  * but for HTTP origin instead.
  */
-router.get("/image", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/image", async (req: express.Request, res: express.Response) => {
     try {
         const validated = await auth.requestValidator(req, res, {image: true})
         if (!validated) return

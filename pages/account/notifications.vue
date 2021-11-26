@@ -71,7 +71,7 @@ export default {
     },
     async fetch() {
         try {
-            const notifications = await this.$axios.$get(`/api/notifications/all`)
+            const notifications = await this.$axios.$get(`/api/notifications/${this.user.id}/all`)
 
             this.unreadNotifications = _.remove(notifications, {read: false})
             this.readNotifications = _.remove(notifications, {read: true})
@@ -85,7 +85,7 @@ export default {
             const ids = _.map(this.unreadNotifications, "id")
 
             try {
-                await this.$axios.$post(`/api/notifications/read`, ids)
+                await this.$axios.$post(`/api/notifications/${this.user.id}/read`, ids)
             } catch (ex) {
                 console.error("NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`)
                 console.error(ex)

@@ -204,7 +204,6 @@ export default {
 
             const location = this.location
             const port = location.port == "80" || location.port == "" ? "" : `:${location.port}`
-            const userId = this.$store.state.user.id
             const urlToken = this.$store.state.user.urlToken
 
             const params = []
@@ -216,7 +215,7 @@ export default {
 
             const querystring = params.length > 0 ? `?${params.join("&")}` : ""
 
-            return `${location.hostname}${port}/api/calendar/${userId}/${urlToken}/${this.calendarType}.ics${querystring}`
+            return `${location.hostname}${port}/api/calendar/${this.user.id}/${urlToken}/${this.calendarType}.ics${querystring}`
         },
         changedTemplate() {
             return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails
@@ -225,13 +224,12 @@ export default {
     methods: {
         async saveTemplate() {
             try {
-                const user = this.$store.state.user
-                const url = `/api/calendar/${user.id}/template`
-
+                const url = `/api/calendar/${this.user.id}/template`
                 const data = {eventSummary: this.calendarTemplate.eventSummary.trim(), eventDetails: this.calendarTemplate.eventDetails.trim()}
-                await this.$axios.$post(url, data)
-                this.$store.commit("setUserCalendarTemplate", data)
 
+                await this.$axios.$post(url, data)
+
+                this.$store.commit("setUserCalendarTemplate", data)
                 this.currentEventSummary = data.eventSummary
                 this.currentEventDetails = data.eventDetails
                 this.templateWarning = true

@@ -67,7 +67,7 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
  * Get logged user's recent activities from Strava.
  * By default, return only 10 results.
  */
-router.get("/activities/recent", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/activities/recent", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -104,7 +104,7 @@ router.get("/activities/recent", async (req: express.Request, res: express.Respo
  * Get logged user's activities from Strava since the specified timestamp.
  * Maximum of 2 years.
  */
-router.get("/activities/since/:timestamp", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/activities/since/:timestamp", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -140,7 +140,7 @@ router.get("/activities/since/:timestamp", async (req: express.Request, res: exp
 /**
  * Get logged user's latest activities that were processed by Strautomator.
  */
-router.get("/activities/processed", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/activities/processed", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -163,7 +163,7 @@ router.get("/activities/processed", async (req: express.Request, res: express.Re
 /**
  * Get the details for the specified activity.
  */
-router.get("/activities/:id/details", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/activities/:id/details", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -184,7 +184,7 @@ router.get("/activities/:id/details", async (req: express.Request, res: express.
 /**
  * Logged user can trigger a forced processing of a particular activity.
  */
-router.get("/process-activity/:activityId", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/process-activity/:activityId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -205,7 +205,7 @@ router.get("/process-activity/:activityId", async (req: express.Request, res: ex
 /**
  * Get athlete's personal records.
  */
-router.get("/athlete-records", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/athlete-records", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -221,7 +221,7 @@ router.get("/athlete-records", async (req: express.Request, res: express.Respons
 /**
  * Prepar and refresh athlete's personal records based on all Strava activities.
  */
-router.get("/athlete-records/refresh", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/athlete-records/refresh", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -253,7 +253,7 @@ router.get("/athlete-records/refresh", async (req: express.Request, res: express
 /**
  * Update an athlete record manually.
  */
-router.post("/athlete-records/:sport", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/athlete-records/:sport", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -301,7 +301,7 @@ router.post("/athlete-records/:sport", async (req: express.Request, res: express
 /**
  * Get the fortune (auto generated name or quote) for the specified activity details.
  */
-router.post("/activity-fortune", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/activity-fortune", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -328,7 +328,7 @@ router.post("/activity-fortune", async (req: express.Request, res: express.Respo
 /**
  * Get estimated FTP based on activities during the past weeks.
  */
-router.get("/ftp/estimate", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/ftp/estimate", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -350,7 +350,7 @@ router.get("/ftp/estimate", async (req: express.Request, res: express.Response) 
 /**
  * Update the user's FTP on Strava.
  */
-router.post("/ftp/estimate", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
