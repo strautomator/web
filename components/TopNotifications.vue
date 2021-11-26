@@ -30,9 +30,11 @@
 
 <script>
 import _ from "lodash"
+import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
+    mixins: [userMixin],
     data() {
         return {
             currentNotification: null,
