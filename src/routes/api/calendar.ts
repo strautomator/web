@@ -16,7 +16,6 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 

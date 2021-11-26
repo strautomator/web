@@ -166,7 +166,7 @@ export const actions = {
                 this.$axios.setToken(state.oauth.accessToken)
 
                 const urlUser = `/api/users/${state.oauth.userId}`
-                const urlRecords = "/api/strava/athlete-records"
+                const urlRecords = `/api/strava/${state.oauth.userId}/athlete-records`
 
                 await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
                     .then((res) => {

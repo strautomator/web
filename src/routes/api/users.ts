@@ -133,7 +133,6 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
@@ -373,7 +372,6 @@ router.post("/:userId/recipes/order", async (req: express.Request, res: express.
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 

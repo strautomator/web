@@ -19,8 +19,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const gearwearConfigs = await gearwear.getForUser(user)
@@ -47,8 +46,7 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         if (!req.params) throw new Error("Missing request params")
 
         const gearId = req.params.gearId
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // Get GearWear config.
@@ -77,7 +75,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         const gearId = req.params.gearId
         const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const max = settings.plans.free.maxGearWear
@@ -133,8 +131,7 @@ router.delete("/:userId/:gearId", async (req: express.Request, res: express.Resp
         if (!req.params) throw new Error("Missing request params")
 
         const gearId = req.params.gearId
-        const userId = req.params.userId
-        const user: UserData = (await auth.requestValidator(req, res, {userId: userId})) as UserData
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // Get GearWear config and check its owner.
