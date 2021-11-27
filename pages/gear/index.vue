@@ -6,9 +6,7 @@
                 <v-badge v-if="gearWithConfig.length > 0" color="accent" offset-x="-2" offset-y="1" :content="gearWithConfig.length"></v-badge>
             </h1>
             <template v-if="!isLoading && gearWithConfig.length == 0">
-                <p>
-                    With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.
-                </p>
+                <p>With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.</p>
             </template>
             <template v-if="!isLoading && noGear">
                 <v-alert class="text-center text-md-left">
@@ -24,7 +22,7 @@
                 </v-alert>
             </template>
             <template v-else>
-                <v-alert class="text-center text-md-left " v-if="!user.email">
+                <v-alert class="text-center text-md-left" v-if="!user.email">
                     <p>To get GearWear distance alerts, Strautomator needs to know your email address first.</p>
                     <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
                     <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
@@ -49,12 +47,9 @@
                                         <td class="pl-0 pr-0">
                                             <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="gearwearRemaining < 1" nuxt text rounded small>
                                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                                                <v-icon class="mr-2" small>{{ getGearIcon(gear) }}</v-icon>
                                                 {{ gear.name }}
                                             </v-btn>
-                                        </td>
-                                        <td>
-                                            <v-icon small>{{ getGearIcon(gear) }}</v-icon>
-                                            <span class="ml-1" v-if="$breakpoint.mdAndUp">{{ gear.brand }} {{ gear.model }}</span>
                                         </td>
                                         <td v-if="$breakpoint.mdAndUp">
                                             <v-chip class="text-lowercase" v-if="gear.primary" outlined small>Primary {{ getGearType(gear) }}</v-chip>

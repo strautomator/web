@@ -1,6 +1,6 @@
 // Strautomator API: GearWear routes
 
-import {gearwear, GearWearConfig, UserData} from "strautomator-core"
+import {gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
 import auth from "../auth"
 import _ = require("lodash")
 import express = require("express")
@@ -49,8 +49,9 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Get GearWear config.
+        // Get GearWear config and gear details from Strava.
         const config = await gearwear.getById(gearId)
+        const gear = await strava.athletes.getGear(user, gearId)
 
         // Stop here if owner of the specified gear is not the logged user.
         if (config && config.userId != user.id) {
@@ -59,7 +60,7 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         }
 
         logger.info("Routes", req.method, req.originalUrl)
-        webserver.renderJson(req, res, config)
+        webserver.renderJson(req, res, {config: config, gear: gear})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)

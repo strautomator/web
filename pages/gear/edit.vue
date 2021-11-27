@@ -304,7 +304,15 @@ export default {
                 return this.$webError("GearEdit.fetch", {status: 404, message: "Missing gear ID on the URL"})
             }
 
-            const config = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
+            const gearDetails = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
+            const config = gearDetails.config
+
+            if (!gearDetails.gear) {
+                this.invalidGear = true
+                return
+            }
+
+            this.gear = gearDetails.gear
 
             if (config) {
                 this.gearwearConfig = config
