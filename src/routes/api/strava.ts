@@ -382,7 +382,7 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the verification token is invalid.
  */
-router.get("/:urlToken", async (req: express.Request, res: express.Response) => {
+router.get("/webhook/:urlToken", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -420,7 +420,7 @@ router.get("/:urlToken", async (req: express.Request, res: express.Response) => 
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the URL token or POST data is invalid.
  */
-router.post("/:urlToken", async (req: express.Request, res: express.Response) => {
+router.post("/webhook/:urlToken", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
@@ -434,7 +434,7 @@ router.post("/:urlToken", async (req: express.Request, res: express.Response) =>
         const options = {
             method: "GET",
             baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/${req.params.urlToken}/${obj.owner_id}/${obj.object_id}`,
+            url: `/strava/webhook/${req.params.urlToken}/${obj.owner_id}/${obj.object_id}`,
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
         axios(options).catch((err) => logger.debug("Routes", req.method, req.originalUrl, "Callback failed", err.toString()))
@@ -449,7 +449,7 @@ router.post("/:urlToken", async (req: express.Request, res: express.Response) =>
 /**
  * Called by the route above, this will effectively process the activity sent by Strava.
  */
-router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: express.Response) => {
+router.get("/webhook/:urlToken/:userId/:activityId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
@@ -496,7 +496,7 @@ router.get("/:urlToken/:userId/:activityId", async (req: express.Request, res: e
 /**
  * Process queued activities (delayed processing).
  */
-router.get("/:urlToken/process-activity-queue", async (req: express.Request, res: express.Response) => {
+router.get("/webhook/:urlToken/process-activity-queue", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 

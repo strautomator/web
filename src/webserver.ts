@@ -85,9 +85,8 @@ class WebServer {
             // Set API rate limiting (if defined on the settings).
             if (settings.api.rateLimit && settings.api.rateLimit.max) {
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
-                rateLimit.onLimitReached = (req) => {
-                    logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
-                }
+                rateLimit.onLimitReached = (req) => logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
+
                 this.app.use("/api/*", rateLimit)
 
                 logger.info("WebServer.init", `API rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
