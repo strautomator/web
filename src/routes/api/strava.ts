@@ -21,13 +21,6 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
         const obj = req.body
         const method = req.method.toUpperCase()
 
-        // First we check the URL token.
-        if (req.params.urlToken != settings.strava.api.urlToken) {
-            logger.error("Routes", req.method, req.originalUrl, "Invalid URL token")
-            webserver.renderError(req, res, "Invalid URL token", 401)
-            return false
-        }
-
         // Then we check if any data is missing.
         if (method == "POST") {
             if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
@@ -382,19 +375,13 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the verification token is invalid.
  */
-router.get("/webhook/:urlToken", async (req: express.Request, res: express.Response) => {
+router.get(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
         const challenge = req.query["hub.challenge"] as string
         const verifyToken = req.query["hub.verify_token"] as string
         const clientIP = jaul.network.getClientIP(req)
-
-        // Validate webhook URL token.
-        if (req.params.urlToken != settings.strava.api.urlToken) {
-            logger.error("Routes", req.method, req.originalUrl, "Invalid URL token")
-            return webserver.renderError(req, res, "Invalid URL", 401)
-        }
 
         // Validate token from Strava.
         if (verifyToken != settings.strava.api.verifyToken) {
@@ -420,7 +407,7 @@ router.get("/webhook/:urlToken", async (req: express.Request, res: express.Respo
  * Activity subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the URL token or POST data is invalid.
  */
-router.post("/webhook/:urlToken", async (req: express.Request, res: express.Response) => {
+router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
@@ -434,7 +421,7 @@ router.post("/webhook/:urlToken", async (req: express.Request, res: express.Resp
         const options = {
             method: "GET",
             baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/webhook/${req.params.urlToken}/${obj.owner_id}/${obj.object_id}`,
+            url: `/strava/webhook/${settings.strava.api.urlToken}/${obj.owner_id}/${obj.object_id}`,
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
         axios(options).catch((err) => logger.debug("Routes", req.method, req.originalUrl, "Callback failed", err.toString()))
@@ -449,7 +436,7 @@ router.post("/webhook/:urlToken", async (req: express.Request, res: express.Resp
 /**
  * Called by the route above, this will effectively process the activity sent by Strava.
  */
-router.get("/webhook/:urlToken/:userId/:activityId", async (req: express.Request, res: express.Response) => {
+router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
@@ -496,7 +483,7 @@ router.get("/webhook/:urlToken/:userId/:activityId", async (req: express.Request
 /**
  * Process queued activities (delayed processing).
  */
-router.get("/webhook/:urlToken/process-activity-queue", async (req: express.Request, res: express.Response) => {
+router.get(`/webhook/${settings.strava.api.urlToken}/process-activity-queue`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
