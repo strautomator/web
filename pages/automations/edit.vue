@@ -285,6 +285,9 @@ export default {
                 this.hasChanges = true
             }
 
+            // Reorder actions alphabetically.
+            this.recipe.actions = _.sortBy(this.recipe.actions, (a) => _.find(this.$store.state.recipeActions, {value: a.type}).text)
+
             this.checkValid()
             this.actionDialog = false
         },
