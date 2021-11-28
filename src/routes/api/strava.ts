@@ -1,6 +1,6 @@
 // Strautomator API: Strava routes
 
-import {getActivityFortune, strava, users, UserData, StravaAthleteRecords, StravaSport} from "strautomator-core"
+import {database, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -12,6 +12,12 @@ const axios = require("axios").default
 const settings = require("setmeup").settings
 const router = express.Router()
 const packageVersion = require("../../../package.json").version
+
+/**
+ * Cache list of ignored users.
+ */
+const ignoredUsers: string[] = []
+database.appState.get("users").then((data) => (data && data.ignored ? ignoredUsers.push.apply(ignoredUsers, data.ignored) : null))
 
 /**
  * Helper to validate incoming webhook events sent by Strava.
@@ -409,10 +415,16 @@ router.get(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Reque
  */
 router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Request, res: express.Response) => {
     try {
-        if (!req.params) throw new Error("Missing request params")
+        if (!req.params || !req.body) throw new Error("Missing request params")
         if (!webhookValidator(req, res)) return
 
         const obj = req.body
+
+        // Stop here if user is ignored.
+        if (ignoredUsers.includes(obj.owner_id.toString())) {
+            logger.warn("Routes", req.method, req.originalUrl, `User ${obj.owner_id} is ignored, won't proceed`, obj.aspect_type, obj.object_type, obj.object_id)
+            return webserver.renderJson(req, res, {ok: false})
+        }
 
         logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
 
@@ -447,6 +459,9 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
 
         // User not found, suspended or missing tokens? Stop here.
         if (!user) {
+            ignoredUsers.push(userId.toString())
+            await database.appState.set("users", {ignored: ignoredUsers})
+            logger.warn("Routes", req.method, req.originalUrl, `User ${userId} not found, added to list of ignored users`)
             return webserver.renderError(req, res, "User not found", 404)
         } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
             logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} has no access tokens`)
