@@ -28,12 +28,7 @@ vue
                             <h2 class="mb-2">Multiple weather providers</h2>
                             <div class="mb-2">
                                 <ul class="ml-n2 mb-2">
-                                    <li>Tomorrow.io</li>
-                                    <li>OpenWeatherMap</li>
-                                    <li>Storm Glass</li>
-                                    <li>Visual Crossing</li>
-                                    <li>Weatherbit</li>
-                                    <li>Weather API</li>
+                                    <li v-for="provider in providers" :key="provider">{{ provider }}</li>
                                 </ul>
                                 <p>PRO users can choose their preferred weather provider, while free accounts are limited to the default provider for their current location.</p>
                             </div>
@@ -69,6 +64,19 @@ export default {
     head() {
         return {
             title: "Weather data on your activities"
+        }
+    },
+    data() {
+        const providers = []
+
+        for (let p of this.$store.state.weatherProviders) {
+            if (p.value != null) {
+                providers.push(p.text)
+            }
+        }
+
+        return {
+            providers: providers
         }
     },
     methods: {
