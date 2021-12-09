@@ -11,6 +11,11 @@
                     </v-btn>
                 </div>
             </template>
+            <template v-else-if="positionFailed">
+                <v-alert border="top" color="error">
+                    Failed to get your current location. Please make sure you have authorized the Strautomator website to get your geolocation with this browser, and if necessary, try again with a different browser.
+                </v-alert>
+            </template>
             <template v-else-if="weatherSummaries.length == 0">
                 <p>Not sure which weather provider is the best on your area? Strautomator can query all of them for the current weather conditions on your location, so then you can select the one presenting the most accurate results.</p>
                 <div :class="{'text-center mt-6': !$breakpoint.mdAndUp}">
@@ -108,6 +113,7 @@ export default {
         return {
             loading: false,
             saved: false,
+            positionFailed: false,
             weatherProvider: this.$store.state.user.preferences.weatherProvider || "stormglass",
             weatherSummaries: []
         }
@@ -126,7 +132,9 @@ export default {
             navigator.geolocation.getCurrentPosition(this.getWeather, this.positionError)
         },
         positionError(err) {
-            this.$webError("Weather.getPosition", err)
+            this.loading = false
+            this.positionFailed = true
+            console.error(err)
         },
         async getWeather(position) {
             try {
