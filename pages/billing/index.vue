@@ -22,7 +22,9 @@
             </div>
 
             <div v-else-if="user.isPro">
-                <p>Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+                <p v-if="subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+                <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> on {{ nextPaymentDate }}.</p>
+
                 <v-card outlined>
                     <v-card-text>
                         <template v-if="loading">
@@ -38,9 +40,9 @@
                         </template>
                         <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
-                            <div>Next payment: {{ nextPaymentDate }}</div>
+                            <div>Next payment: {{ subscription.status == "CANCELLED" ? "cancelled" : nextPaymentDate }}</div>
                             <div>Last payment: {{ lastPaymentDate }}</div>
-                            <div class="mt-6 text-center text-md-left">
+                            <div class="mt-6 text-center text-md-left" v-if="subscription.status != 'CANCELLED'">
                                 <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
                                     Cancel subscription
@@ -165,7 +167,7 @@ export default {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
             if (this.subscriptionSource == "Revolut") return "when the universe ends"
-            return this.$dayjs(this.subscription.dateNextPayment).format("ll")
+            return this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll")
         }
     },
     async fetch() {
