@@ -334,11 +334,8 @@ router.get("/:userId/ftp/estimate", async (req: express.Request, res: express.Re
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Weeks passed as a parameter?
-        const weeks: number = req.query.weeks ? parseInt(req.query.weeks as any) : null
-
         // Estimate the athlete's FTP.
-        const data = await strava.activities.ftpFromActivities(user, weeks)
+        const data = await strava.ftp.estimateFtp(user)
         webserver.renderJson(req, res, data || false)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -360,12 +357,12 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
 
         // Calculate the estimated FTP, if no value was passed.
         if (!ftp) {
-            const data = await strava.activities.ftpFromActivities(user)
+            const data = await strava.ftp.estimateFtp(user)
             ftp = data.ftpWatts
         }
 
         // Update the user's FTP.
-        const updated = await strava.athletes.setAthleteFtp(user, ftp)
+        const updated = await strava.ftp.saveFtp(user, ftp)
         const result = updated ? {ftp: ftp} : false
         webserver.renderJson(req, res, result)
     } catch (ex) {
