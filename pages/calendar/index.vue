@@ -30,8 +30,11 @@
                     <div v-if="calendarType != 'clubs'">
                         <h3>Days of activities</h3>
                         <v-row no-gutters>
-                            <v-col cols="6" md="2" class="mt-1">
+                            <v-col cols="5" md="2" class="mt-1">
                                 <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" outlined rounded dense></v-text-field>
+                            </v-col>
+                            <v-col cols="5" v-if="daysFrom > maxDaysFrom">
+                                <div class="mt-3 ml-1 error--text">max {{ maxDaysFrom }}</div>
                             </v-col>
                         </v-row>
                     </div>
