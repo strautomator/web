@@ -65,7 +65,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
 
         // Validate user and URL token.
         if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
-        if (!user) throw new Error(`User ${user.id} not found`)
+        if (!user) throw new Error(`User ${req.params.userId} not found`)
         if (!user.urlToken) throw new Error(`User ${user.id} has no URL token assigned`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
@@ -96,8 +96,13 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         res.setHeader("Expires", `${expires.format("ddd, DD MMM YYYY HH:mm:ss")} GMT`)
         return res.send(cal)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        return webserver.renderError(req, res, ex, 500)
+        if (ex.toString().includes(" not found")) {
+            logger.warn("Routes", req.method, req.originalUrl, ex)
+            return webserver.renderError(req, res, ex, 404)
+        } else {
+            logger.error("Routes", req.method, req.originalUrl, ex)
+            return webserver.renderError(req, res, ex, 500)
+        }
     }
 })
 
