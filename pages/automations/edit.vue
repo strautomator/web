@@ -66,6 +66,14 @@
                             </div>
                         </v-container>
                     </div>
+                    <div class="mb-3" v-if="recipe.killSwitch">
+                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                            <div class="mr-2">
+                                <v-icon color="accent">mdi-stop-circle-outline</v-icon>
+                            </div>
+                            <span>Stop executing further automations</span>
+                        </v-container>
+                    </div>
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
@@ -89,8 +97,11 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <div class="mt-2">
-                <v-switch title="Automation state" v-model="recipe.disabled" label="Disable this automation"></v-switch>
+            <div class="mt-6">
+                <v-switch class="ma-0 pa-0" title="Automation kill switch" v-model="recipe.killSwitch" label="Stop executing further automations"></v-switch>
+            </div>
+            <div class="mt-n1">
+                <v-switch class="ma-0 pa-0" title="Automation status" v-model="recipe.disabled" label="Disable this automation"></v-switch>
             </div>
             <div class="text-center text-md-left mt-2">
                 <v-btn color="primary" :disabled="!valid" @click="save" rounded>
