@@ -423,7 +423,8 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
             return webserver.renderJson(req, res, {ok: false})
         }
 
-        logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
+        const clientIP = jaul.network.getClientIP(req)
+        logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, `IP ${clientIP}`)
 
         // Make a call back to the API to do the actual activity processing, so we can return
         // the response right now to Strava (within the 2 seconds max).
