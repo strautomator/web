@@ -19,6 +19,9 @@
                             <div v-if="selectedAction.value == 'gear'">
                                 <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                             </div>
+                            <div v-else-if="selectedAction.value == 'sportType'">
+                                <v-select label="Select a sport..." v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
+                            </div>
                             <div v-else-if="selectedAction.value == 'workoutType'">
                                 <v-select label="Select a workout type..." v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
                             </div>
@@ -92,9 +95,10 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     props: ["disabled-actions"],
     data() {
         return this.initialData()
@@ -131,14 +135,12 @@ export default {
             for (let shoe of shoes) {
                 shoe.name = `${shoe.name} (shoes)`
             }
-            const gears = _.concat(bikes, shoes)
+            const gears = _.concat([{id: "none", name: "None"}], bikes, shoes)
 
-            // User has no gears? Force disable the "Set gear" action.
-            if (gears.length == 0) {
-                _.remove(recipeActions, {value: "gear"})
-            }
-
-            // Workout types and map styles.
+            // Activity / sport, workout types and map styles.
+            const sportTypes = this.$store.state.sportTypes.map((st) => {
+                return {value: st, text: this.getSportName(st)}
+            })
             const workoutTypes = _.cloneDeep(this.$store.state.workoutTypes)
             const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
 
@@ -149,9 +151,11 @@ export default {
                 recipeActions: recipeActions,
                 selectedAction: {},
                 selectedGear: {},
+                selectedSportType: {},
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
                 gears: gears,
+                sportTypes: sportTypes,
                 workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
                 valueInput: ""
@@ -189,6 +193,9 @@ export default {
                 arr.push("description")
                 arr.push("prependDescription")
             }
+            if (arr.includes("sportType")) {
+                arr.push("sportType")
+            }
             if (arr.includes("workoutType")) {
                 arr.push("workoutType")
             }
@@ -225,11 +232,6 @@ export default {
                 item.disabled = true
             }
 
-            // User has no gears? Force disable the "Set gear" action.
-            if (this.gears && this.gears.length == 0) {
-                _.remove(recipeActions, {value: "gear"})
-            }
-
             // Webhook is enabled only on PRO accounts.
             if (!this.$store.state.user.isPro) {
                 const webhook = _.find(recipeActions, {value: "webhook"})
@@ -254,6 +256,9 @@ export default {
                 if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
+                } else if (result.type == "sportType") {
+                    result.value = this.selectedSportType.value
+                    result.friendlyValue = this.selectedSportType.text
                 } else if (result.type == "workoutType") {
                     result.value = this.selectedWorkoutType.value
                     result.friendlyValue = this.selectedWorkoutType.text

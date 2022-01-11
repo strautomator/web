@@ -161,14 +161,14 @@ export default {
             return Object.values(this.user.recipes)
         },
         recipeKeys() {
-            if (!this.processedActivity) {
+            if (!this.processedActivity || !this.processedActivity.recipes) {
                 return []
             }
 
             return Object.keys(this.processedActivity.recipes)
         },
         updatedFieldsKeys() {
-            if (!this.processedActivity) {
+            if (!this.processedActivity || !this.processedActivity.updatedFields) {
                 return []
             }
 
