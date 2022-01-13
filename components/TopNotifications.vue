@@ -47,7 +47,7 @@ export default {
         try {
             const bikes = _.map(this.user.profile.bikes, "id")
             const shoes = _.map(this.user.profile.shoes, "id")
-            const gearIds = _.concat(bikes, shoes)
+            const gearIds = _.concat(bikes, shoes, ["none"])
             const recipes = Object.entries(this.user.recipes)
 
             this.notifications = await this.$axios.$get(`/api/notifications/${this.user.id}/unread`)
