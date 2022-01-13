@@ -25,6 +25,11 @@
                     <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>Open...</n-link>
                 </div>
             </v-alert>
+            <div class="mb-4">
+                See something new? Check our
+                <n-link to="/changelog" title="Full changelog" nuxt>changelog</n-link>
+                to keep track of the new features and bug fixes.
+            </div>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
             </div>

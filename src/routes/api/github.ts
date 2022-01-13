@@ -1,5 +1,6 @@
 // Strautomator API: GitHub routes
 
+import {database} from "strautomator-core"
 import crypto = require("crypto")
 import express = require("express")
 import logger = require("anyhow")
@@ -61,6 +62,19 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
     try {
         if (!validateWebhook(req, res)) return
         webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderJson(req, res, {error: ex.toString()})
+    }
+})
+
+/**
+ * Application changelog.
+ */
+router.get("/changelog", async (req: express.Request, res: express.Response) => {
+    try {
+        const changelog = await database.appState.get("changelog")
+        webserver.renderJson(req, res, changelog)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderJson(req, res, {error: ex.toString()})
