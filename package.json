@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.22.11903",
+    "version": "22.24.11814",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -31,7 +31,7 @@
         "cross-env": "^7.0.3",
         "dayjs": "^1.10.7",
         "express": "^4.17.2",
-        "express-rate-limit": "^6.0.5",
+        "express-rate-limit": "^6.1.0",
         "nuxt": "^2.15.8",
         "qs": "^6.10.3",
         "strautomator-core": "strautomator/core",
