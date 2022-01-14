@@ -75,13 +75,15 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
             clubs: calType == "all" || calType == "clubs"
         }
 
+        const getQueryDate = (value) => now.subtract(parseInt(value), "days")
+
         // Additional options.
         if (req.query.commutes === "0") options.excludeCommutes = true
         if (req.query.joined === "1") options.excludeNotJoined = true
         if (req.query.countries === "1") options.includeAllCountries = true
         if (req.query.sports) options.sportTypes = req.query.sports.toString().split(",")
-        if (req.query.daysfrom) options.dateFrom = now.subtract(parseInt(req.query.daysfrom as string), "days").toDate()
-        if (req.query.daysto) options.dateTo = now.subtract(parseInt(req.query.daysto as string), "days").toDate()
+        if (req.query.daysfrom) options.dateFrom = getQueryDate(req.query.daysfrom).startOf("day").toDate()
+        if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day").toDate()
 
         // Generate and render Strava activities as an iCalendar.
         const cal = await calendar.generate(user, options)
