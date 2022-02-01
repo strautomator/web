@@ -72,7 +72,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 
         return this.redirect(redirectUrl)
     } catch (ex) {
-        logger.error("OAuth.authenticateCallbackToken", ex)
+        logger.warn("OAuth.authenticateCallbackToken", ex)
         return this.redirectToOAuth()
     }
 }
