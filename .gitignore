@@ -1,4 +1,5 @@
 .cache
+.cloudflared
 .DS_Store
 .grunt
 .history

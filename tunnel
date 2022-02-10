@@ -1,0 +1,3 @@
+#!/bin/sh
+
+cloudflared tunnel --config .cloudflared/config.yml run
