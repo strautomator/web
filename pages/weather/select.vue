@@ -118,10 +118,12 @@ export default {
             weatherSummaries: []
         }
     },
-    beforeDestroy() {
+    async beforeRouteLeave(to, from, next) {
         if (!this.saved) {
-            this.savePreferences()
+            await this.savePreferences()
         }
+
+        next()
     },
     methods: {
         setProvider(id) {
