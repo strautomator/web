@@ -52,6 +52,15 @@ async function start() {
             await builder.build()
         }
 
+        // Execute the tunnel file?
+        if (settings.app.tunnel) {
+            const {spawn} = require("child_process")
+            const tunnel = spawn("./tunnel")
+            tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString()))
+            tunnel.on("error", (err) => logger.error("Tunnel", err))
+            tunnel.on("close", (code) => logger.warn("Tunnel", `Closed with code ${code}`))
+        }
+
         // Start the web server.
         const webserver = require("./webserver")
         await webserver.init(nuxt.render)
