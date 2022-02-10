@@ -78,7 +78,7 @@
                                     <template v-slot:activator="{on, attrs}">
                                         <v-text-field v-model="dateResetCounterFormatted" v-bind="attrs" v-on="on" label="Reset date" type="text" prepend-icon="mdi-calendar" outlined readonly rounded dense></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="dateResetCounter" @input="dateMenu = false" no-title></v-date-picker>
+                                    <v-date-picker v-model="dateResetCounter" @input="dateMenu = false" :min="minDateReset" :max="maxDateReset" no-title></v-date-picker>
                                 </v-menu>
                             </v-col>
                         </v-row>
@@ -203,23 +203,36 @@ export default {
         }
     },
     created() {
-        this.delaySavePreferences = _.debounce(this.savePreferences, 3000)
+        this.delaySavePreferences = _.debounce(this.savePreferences, 1000)
     },
     data() {
         const user = this.$store.state.user
         const defaultLinksOn = user && user.isPro ? 0 : this.$store.state.linksOnPercent
         const linksOn = user ? user.preferences.linksOn : defaultLinksOn
-        const delayedProcessing = user & user.preferences ? user.preferences.delayedProcessing : false
+        const delayedProcessing = user ? user.preferences.delayedProcessing : false
         const hashtag = user ? user.preferences.activityHashtag : false
         const twitterShare = user ? user.preferences.twitterShare : false
         const privacyMode = user ? user.preferences.privacyMode : false
         const ftpAutoUpdate = user ? user.preferences.ftpAutoUpdate : false
-        const dateResetCounter = user ? user.preferences.dateResetCounter : null
         const language = user ? user.preferences.language || "en" : "en"
         const weatherProvider = user && user.isPro && user.preferences ? user.preferences.weatherProvider || null : null
         const weatherUnit = user ? user.preferences.weatherUnit || "c" : "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
+
         const now = this.$dayjs()
+        const dateFormat = "YYYY-MM-DD"
+        let dateResetCounter = user ? user.preferences.dateResetCounter : null
+        let resetCounter = dateResetCounter ? true : false
+        let arrDateReset = dateResetCounter ? dateResetCounter.split("-") : null
+
+        if (dateResetCounter) {
+            dateResetCounter = now.month(parseInt(arrDateReset[0]) - 1).date(arrDateReset[1])
+            if (dateResetCounter.isBefore(now)) {
+                dateResetCounter = dateResetCounter.add(1, "year")
+            }
+        } else {
+            dateResetCounter = now.add(1, "year")
+        }
 
         if (!user.isPro) {
             for (let wp of listWeatherProviders) {
@@ -242,9 +255,11 @@ export default {
             ftpAutoUpdate: ftpAutoUpdate,
             ftpResult: null,
             ftpDialog: false,
-            resetCounter: dateResetCounter != null,
-            dateResetCounter: dateResetCounter || now.add(1, "year").format(`YYYY-01-01`),
+            resetCounter: resetCounter,
+            dateResetCounter: dateResetCounter.format(dateFormat),
             dateMenu: false,
+            minDateReset: this.$dayjs().format(dateFormat),
+            maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
             language: language,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
@@ -342,12 +357,12 @@ export default {
             }
         }
     },
-    beforeDestroy() {
-        this.delaySavePreferences.cancel()
-
+    async beforeRouteLeave(to, from, next) {
         if (this.savePending) {
-            this.savePreferences()
+            await this.savePreferences()
         }
+
+        next()
     },
     methods: {
         hideEmailDialog(emailSaved) {
