@@ -24,15 +24,15 @@ Before you run on your local machine, you'll have to set your custom 3rd party c
 
 ### Setting the URL
 
-Please note that the default URL in development is `http://strautomator.local`, which should be manually set on your HOSTS file. This is fine if you only want to work on the web frontend and some of the API calls, but please note that Strava (and other 3rd party webhooks) won't be able to push data to the service using that URL.
+Please note that the default URL in development is `http://strautomator.local`, which should be manually set on your HOSTS file. This is fine if you only want to work on the web frontend and some of the API calls, but please note that Strava (and other 3rd party webhooks) won't be able to push data to the service using that URL. Authentication with Strava might also fail.
 
 To properly test all APIs and webhooks from Strava and PayPal, you'll need to change the `app.url` setting on your `settings.secret.json` file or via the `$SMU_app_url` environment variable, to a publicly accessible URL.
 
 ### Server ports
 
-When starting up, the service will look for the `strautomator.cert` and `strautomator.key` files on the application root. If found, it will create a HTTPS server listening on port 8443 by default. Otherwise it will create a HTTP server on port 8080. Please note that the actual port can be overwriten either via the PORT environment variable, or via `settings.app.port`.
+When starting up, the service will look for the `strautomator.cert` and `strautomator.key` files on the application root. If found, it will create a HTTPS server listening on port 8443 by default. Otherwise it will create a HTTP server on port 8080. Please note that the actual port can be overwritten either via the PORT environment variable, or via `settings.app.port`.
 
-### Running it locally
+## Running it locally
 
 Once you have set them up, then:
 
@@ -40,7 +40,13 @@ Once you have set them up, then:
 
 If anything's missing you'll see an alert on the console.
 
-## Deplopyment
+### Cloudflare Tunnel
+
+The easiest way to get the web frontend running and accessible with SSL is by using a tunnel. By default the app will try opening a tunnel with Cloudflare when running on dev, but you'll need to setup the tunnel manually first. Instructions can be found [here](https://developers.cloudflare.com/pages/how-to/preview-with-cloudflare-tunnel).
+
+To disable the tunnel execution, set the `app.tunnel` setting to false on the `settings.development.json` file.
+
+## Deployment
 
 Strautomator is targeting GCP and can be easily deployed as a standalone VM instance, as a Cloud Run service, or to App Engine. Although you could also run it on other providers (AWS for instance), please keep in mind that the database (Cloud Firestore) runs on Google.
 
