@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.64.11844",
+    "version": "22.67.12033",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -24,7 +24,7 @@
         "@nuxtjs/vuetify": "^1.12.3",
         "Base64": "^1.1.0",
         "body-parser": "^1.19.1",
-        "chart.js": "^3.7.0",
+        "chart.js": "^3.7.1",
         "chartjs-adapter-dayjs-3": "^1.2.3",
         "client-sessions": "^0.8.0",
         "cookie-universal-nuxt": "^2.1.5",
