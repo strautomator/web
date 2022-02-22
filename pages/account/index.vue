@@ -69,6 +69,15 @@
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
                     </div>
                     <div class="mt-4">
+                        <h3 class="mb-2">GearWear delay</h3>
+                        <div class="body-2">GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can change that delay, if you want.</div>
+                        <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
+                            <v-radio label="1 day (yesterday)" :value="1"></v-radio>
+                            <v-radio label="2 days" :value="2"></v-radio>
+                            <v-radio label="3 days" :value="3"></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div class="mt-4">
                         <h3 class="mb-2">Yearly counter reset</h3>
                         <div class="body-2">Do you want to have your automation counters automatically reset every year?</div>
                         <v-switch class="mt-2" title="Yearly automation counter reset" v-model="resetCounter" :label="resetCounter ? 'Yes, reset counters every year' : 'No, do not reset counters'"></v-switch>
@@ -207,21 +216,22 @@ export default {
     },
     data() {
         const user = this.$store.state.user
-        const defaultLinksOn = user && user.isPro ? 0 : this.$store.state.linksOnPercent
-        const linksOn = user ? user.preferences.linksOn : defaultLinksOn
-        const delayedProcessing = user ? user.preferences.delayedProcessing : false
-        const hashtag = user ? user.preferences.activityHashtag : false
-        const twitterShare = user ? user.preferences.twitterShare : false
-        const privacyMode = user ? user.preferences.privacyMode : false
-        const ftpAutoUpdate = user ? user.preferences.ftpAutoUpdate : false
-        const language = user ? user.preferences.language || "en" : "en"
-        const weatherProvider = user && user.isPro && user.preferences ? user.preferences.weatherProvider || null : null
-        const weatherUnit = user ? user.preferences.weatherUnit || "c" : "c"
+        const defaultLinksOn = user.isPro ? 0 : this.$store.state.linksOnPercent
+        const linksOn = user.preferences.linksOn || defaultLinksOn
+        const delayedProcessing = user.preferences.delayedProcessing || false
+        const gearwearDelayDays = user.preferences.gearwearDelayDays || 2
+        const hashtag = user.preferences.activityHashtag || false
+        const twitterShare = user.preferences.twitterShare || false
+        const privacyMode = user.preferences.privacyMode || false
+        const ftpAutoUpdate = user.preferences.ftpAutoUpdate || false
+        const language = user.preferences.language || "en"
+        const weatherProvider = user.isPro ? user.preferences.weatherProvider || null : null
+        const weatherUnit = user.preferences.weatherUnit || "c"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
 
         const now = this.$dayjs()
         const dateFormat = "YYYY-MM-DD"
-        let dateResetCounter = user ? user.preferences.dateResetCounter : null
+        let dateResetCounter = user.preferences.dateResetCounter || null
         let resetCounter = dateResetCounter ? true : false
         let arrDateReset = dateResetCounter ? dateResetCounter.split("-") : null
 
@@ -249,6 +259,7 @@ export default {
             emailSaved: false,
             linksOn: linksOn || defaultLinksOn,
             delayedProcessing: delayedProcessing,
+            gearwearDelayDays: gearwearDelayDays,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
             privacyMode: privacyMode,
@@ -303,6 +314,12 @@ export default {
             }
         },
         delayedProcessing(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
+        gearwearDelayDays(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()
@@ -415,6 +432,7 @@ export default {
                     ftpAutoUpdate: this.ftpAutoUpdate,
                     linksOn: this.linksOn,
                     delayedProcessing: this.delayedProcessing,
+                    gearwearDelayDays: this.gearwearDelayDays,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
                     privacyMode: this.privacyMode,
