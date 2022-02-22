@@ -22,16 +22,17 @@
             </div>
 
             <div v-else-if="user.isPro">
-                <p v-if="subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+                <template v-if="loading">
+                    <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
+                    <span class="ml-4">Fetching subscription details...</span>
+                </template>
+
+                <p v-else-if="subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
                 <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> on {{ nextPaymentDate }}.</p>
 
                 <v-card outlined>
                     <v-card-text>
-                        <template v-if="loading">
-                            <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
-                            <span class="ml-4">Fetching subscription details...</span>
-                        </template>
-                        <template v-else-if="unsubscribed">
+                        <template v-if="unsubscribed">
                             <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
                             <div>Your account will be downgraded back to the free version.</div>
                             <div class="text-center mt-8 mb-6">
@@ -41,7 +42,7 @@
                         <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
                             <div>Next payment: {{ subscription.status == "CANCELLED" ? "cancelled" : nextPaymentDate }}</div>
-                            <div>Last payment: {{ lastPaymentDate }}</div>
+                            <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDate }}</div>
                             <div class="mt-6 text-center text-md-left" v-if="subscription.status != 'CANCELLED'">
                                 <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
