@@ -86,7 +86,6 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day").toDate()
 
         // Generate and render Strava activities as an iCalendar.
-        const cal = await calendar.generate(user, options)
         const cacheAge = settings.calendar.cacheDuration
         const expires = dayjs.utc().add(cacheAge, "seconds")
 
@@ -96,15 +95,19 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         res.setHeader("Content-Type", "text/calendar")
         res.setHeader("Cache-Control", `public, max-age=${cacheAge}`)
         res.setHeader("Expires", `${expires.format("ddd, DD MMM YYYY HH:mm:ss")} GMT`)
-        return res.send(cal)
+
+        // Generate the calendar.
+        await calendar.generate(user, options, res)
     } catch (ex) {
         if (ex.toString().includes(" not found")) {
             logger.warn("Routes", req.method, req.originalUrl, ex)
-            return webserver.renderError(req, res, ex, 404)
+            res.status(404)
         } else {
             logger.error("Routes", req.method, req.originalUrl, ex)
-            return webserver.renderError(req, res, ex, 500)
+            res.status(500)
         }
+
+        return res.send(ex.toString())
     }
 })
 
