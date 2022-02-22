@@ -1,6 +1,6 @@
 // Strautomator API: User routes
 
-import {paypal, recipes, strava, users, weather, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -138,60 +138,61 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
 
         const preferences: UserPreferences = {}
 
+        // Helper to validate if preference has changed.
+        const preferenceChanged = (field: string) => !_.isNil(req.body[field]) && req.body[field] !== user.preferences[field]
+
         // Make sure weather provider is valid.
-        if (user.isPro && !_.isNil(req.body.weatherProvider)) {
-            const weatherProvider = req.body.weatherProvider
-
-            if (weatherProvider && _.map(weather.providers, "name").indexOf(weatherProvider) < 0) {
-                logger.error("Routes", req.method, req.originalUrl, `Invalid weatherProvider: ${weatherProvider}`)
-                return webserver.renderError(req, res, "Invalid weather provider", 400)
-            }
-
-            preferences.weatherProvider = weatherProvider
+        if (preferenceChanged("weatherProvider") && user.isPro) {
+            preferences.weatherProvider = req.body.weatherProvider
         }
 
         // Make sure linksOn is valid.
-        if (!_.isNil(req.body.linksOn)) {
+        if (preferenceChanged("linksOn")) {
             preferences.linksOn = req.body.linksOn
         }
 
         // Make sure ftpAutoUpdate is valid.
-        if (!_.isNil(req.body.ftpAutoUpdate)) {
+        if (preferenceChanged("ftpAutoUpdate") && user.isPro) {
             preferences.ftpAutoUpdate = req.body.ftpAutoUpdate ? true : false
         }
 
         // Make sure weather unit is valid.
-        if (!_.isNil(req.body.weatherUnit)) {
+        if (preferenceChanged("weatherUnit")) {
             preferences.weatherUnit = req.body.weatherUnit != "c" ? "f" : "c"
         }
 
         // Make sure language is valid.
-        if (!_.isNil(req.body.language)) {
+        if (preferenceChanged("language")) {
             preferences.language = req.body.language.toString().substring(0, 2)
         }
 
         // Set activity hashtag preference?
-        if (!_.isNil(req.body.activityHashtag)) {
+        if (preferenceChanged("activityHashtag")) {
             preferences.activityHashtag = req.body.activityHashtag ? true : false
         }
 
         // Set twitter share preference?
-        if (!_.isNil(req.body.twitterShare)) {
+        if (preferenceChanged("twitterShare")) {
             preferences.twitterShare = req.body.twitterShare ? true : false
         }
 
         // Set delayed processing preference?
-        if (!_.isNil(req.body.delayedProcessing)) {
+        if (preferenceChanged("delayedProcessing")) {
             preferences.delayedProcessing = req.body.delayedProcessing ? true : false
         }
 
+        // Set GearWear delay preference?
+        if (preferenceChanged("gearwearDelayDays")) {
+            preferences.gearwearDelayDays = req.body.gearwearDelayDays
+        }
+
         // Set privacy mode?
-        if (!_.isNil(req.body.privacyMode)) {
+        if (preferenceChanged("privacyMode")) {
             preferences.privacyMode = req.body.privacyMode ? true : false
         }
 
         // Set counter reset date?
-        if (!_.isNil(req.body.dateResetCounter)) {
+        if (preferenceChanged("dateResetCounter")) {
             if (req.body.dateResetCounter) {
                 const dateResetCounter = dayjs(`2000-${req.body.dateResetCounter}`)
 
@@ -206,24 +207,16 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             }
         }
 
-        // Only PRO users can disable the linkback.
-        if (preferences.linksOn == 0 && !user.isPro) {
-            preferences.linksOn = settings.plans.free.linksOn
-            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, linksOn changed from 0 to ${settings.plans.free.linksOn}`)
-        }
-
-        // Only PRO users can enable the FTP auto update.
-        if (preferences.ftpAutoUpdate && !user.isPro) {
-            preferences.ftpAutoUpdate = false
-            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} not a PRO, FTP auto update force disabled`)
-        }
-
         // User details to be updated.
         const data: Partial<UserData> = {
             id: user.id,
             displayName: user.displayName,
+            isPro: user.isPro,
             preferences: preferences
         }
+
+        // Validate user preferences.
+        users.validatePreferences(data)
 
         // User has switched to privacy mode? Anonymize it.
         if (!user.preferences.privacyMode && preferences.privacyMode) {
