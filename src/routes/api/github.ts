@@ -1,4 +1,4 @@
-// Strautomator API: GitHub routes
+// Strautomator API: GitHub
 
 import {database} from "strautomator-core"
 import crypto = require("crypto")

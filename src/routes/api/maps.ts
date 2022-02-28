@@ -1,4 +1,4 @@
-// Strautomator API: Maps routes
+// Strautomator API: Maps
 
 import {maps} from "strautomator-core"
 import auth from "../auth"

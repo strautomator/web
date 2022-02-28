@@ -1,4 +1,4 @@
-// Strautomator API: GearWear routes
+// Strautomator API: GearWear
 
 import {gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
 import auth from "../auth"

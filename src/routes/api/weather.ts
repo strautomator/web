@@ -8,7 +8,7 @@ import webserver = require("../../webserver")
 const router = express.Router()
 
 /**
- * Heartbeat data.
+ * Weather for the specified coordinates.
  */
 router.get("/:userId/:coordinates", async (req: express.Request, res: express.Response) => {
     try {

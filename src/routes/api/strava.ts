@@ -1,4 +1,4 @@
-// Strautomator API: Strava routes
+// Strautomator API: Strava
 
 import {database, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune} from "strautomator-core"
 import auth from "../auth"

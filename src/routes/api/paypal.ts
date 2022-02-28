@@ -1,4 +1,4 @@
-// Strautomator API: PayPal routes
+// Strautomator API: PayPal
 
 import {mailer, paypal, UserData} from "strautomator-core"
 import express = require("express")

@@ -1,4 +1,4 @@
-// Strautomator API: User routes
+// Strautomator API: Users
 
 import {paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
