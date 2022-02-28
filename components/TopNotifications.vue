@@ -21,7 +21,7 @@
                 <div class="caption">{{ $dayjs(currentNotification.dateCreated).format("lll") }}</div>
                 <div class="mt-2">
                     {{ currentNotification.body }}
-                    <n-link v-if="currentNotification.href" :to="currentNotification.href" title="Fix notification" nuxt><v-icon color="secondary" @click="hidePanel()" small>mdi-open-in-new</v-icon></n-link>
+                    <n-link v-if="currentNotification.href" :to="currentNotification.href" title="Open notification" nuxt><v-icon color="secondary" @click="hidePanel()" small>mdi-open-in-new</v-icon></n-link>
                 </div>
             </template>
         </v-snackbar>
@@ -97,7 +97,7 @@ export default {
                 notification.read = true
 
                 if (notification.id) {
-                    await this.$axios.$post(`/api/notifications/read`, [notification.id], {progress: false})
+                    await this.$axios.$post(`/api/notifications/${this.user.id}/read`, [notification.id], {progress: false})
                 }
             } catch (ex) {
                 console.error("TopNotifications.markAsRead", `Notification ${notification.id}`)
