@@ -38,8 +38,10 @@ export default {
             if (sportType == "Yoga") return "mdi-yoga"
             if (sportType == "Sail") return "mdi-sail-boat"
             if (sportType == "IceSkate") return "mdi-skate"
+            if (sportType == "Hike") return "mdi-hiking"
             if (sportType == "CrossFit" || sportType == "WeightTraining") return "mdi-weight-lifter"
             if (sportType.indexOf("Ski") > 0) return "mdi-ski"
+
             return "mdi-dumbbell"
         },
         // Convert sport type enum to readable text (with spaces).
