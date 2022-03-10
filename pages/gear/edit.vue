@@ -445,6 +445,7 @@ export default {
                 this.hasChanges = true
             }
 
+            this.gearwearComponent = {}
             this.componentDialog = false
         },
         // TRACKING RESET
@@ -473,6 +474,7 @@ export default {
                 this.gearwearComponent.currentTime = 0
                 this.gearwearComponent.dateAlertSent = null
                 this.gearwearComponent.lastResetDate = this.$dayjs().format("ll")
+                this.gearwearComponent = {}
             } catch (ex) {
                 this.$webError("GearEdit.resetTracking", ex)
             }
