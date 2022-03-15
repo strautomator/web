@@ -1,6 +1,6 @@
 // Strautomator API: GitHub
 
-import {database} from "strautomator-core"
+import core from "strautomator-core"
 import crypto = require("crypto")
 import express = require("express")
 import logger = require("anyhow")
@@ -73,7 +73,7 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
  */
 router.get("/changelog", async (req: express.Request, res: express.Response) => {
     try {
-        const changelog = await database.appState.get("changelog")
+        const changelog = await core.database.appState.get("changelog")
         webserver.renderJson(req, res, changelog)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
