@@ -170,14 +170,16 @@ export default {
         }
     },
     data() {
-        let recipe, valid
+        let recipe, valid, isNew
 
         if (this.$route.query && this.$route.query.id) {
             recipe = this.$store.state.user.recipes[this.$route.query.id]
             valid = true
+            isNew = false
         } else {
             recipe = {conditions: [], actions: []}
             valid = false
+            isNew = true
         }
 
         // Invalid recipe?
@@ -195,7 +197,8 @@ export default {
             conditionDialog: false,
             deleteItemSelected: false,
             deleteDialog: false,
-            hasChanges: false
+            hasChanges: false,
+            isNew: isNew
         }
     },
     computed: {
@@ -258,9 +261,10 @@ export default {
 
                     const url = `/api/users/${this.user.id}/recipes`
                     const recipeData = await this.$axios.$post(url, this.recipe)
+                    const queryField = this.isNew ? "new" : "updated"
 
                     this.$store.commit("setUserRecipe", recipeData)
-                    this.$router.push({path: `/automations?new=${recipeData.id}`})
+                    this.$router.push({path: `/automations?${queryField}=${recipeData.id}`})
                 }
             } catch (ex) {
                 this.$webError("AutomationEdit.save", ex)

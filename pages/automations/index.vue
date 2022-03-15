@@ -14,6 +14,12 @@
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
+            <v-snackbar v-if="$route.query.updated" v-model="alertUpdated" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Automation "{{ this.user.recipes[$route.query.updated].title }}" updated!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
             <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded bottom>
                 Automation "{{ $route.query.title }}" deleted!
                 <template v-slot:action="{attrs}">
@@ -65,6 +71,7 @@ export default {
     },
     mounted() {
         this.alertNew = this.$route.query.new ? true : false
+        this.alertUpdated = this.$route.query.updated ? true : false
         this.alertDeleted = this.$route.query.deleted ? true : false
     },
     methods: {
