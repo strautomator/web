@@ -61,6 +61,7 @@ export default {
     data() {
         return {
             alertNew: false,
+            alertUpdated: false,
             alertDeleted: false
         }
     },
