@@ -119,7 +119,7 @@ export default {
                 const filterTitle = (item) => item.question.search(regex) >= 0
                 const filterContent = (item) => item.tags.indexOf(query) >= 0 || item.answer.search(regex) >= 0
                 const questions = _.filter(this.faq, filterTitle).concat(_.filter(this.faq, filterContent))
-                results.push({title: `Search results: ${query}`, questions: questions})
+                results.push({title: `Search results: ${query}`, questions: _.uniqBy(questions, "question")})
             } else {
                 for (let category of this.categories) {
                     const questions = _.filter(this.faq, (q) => q.tags.indexOf(category.tag) == 0)
