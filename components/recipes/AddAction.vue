@@ -53,6 +53,8 @@
                                 <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
                                 <v-chip @click="addTag('movingTime')" small>Moving time</v-chip>
+                                <v-chip @click="addTag('lapCount')" small>Lap count</v-chip>
+                                <v-chip @click="addTag('lapDistance')" small>Lap distance</v-chip>
                                 <v-chip @click="addTag('device')" small>Device</v-chip>
                                 <h3 class="mt-3 mb-2">Weather tags</h3>
                                 <v-chip @click="addTag('weather.icon')" small>Icon</v-chip>
