@@ -28,7 +28,7 @@
                         </tr>
                         <tr>
                             <td>Personal records</td>
-                            <td class="text-center">Bike and Run</td>
+                            <td class="text-center">Bike, Run</td>
                             <td class="text-center">All sports</td>
                         </tr>
                         <tr>
@@ -69,11 +69,11 @@
                         </tr>
 
                         <tr v-if="!noPrice">
-                            <td>Price</td>
+                            <td>Price / year</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">
                                 <n-link to="/billing" v-if="$store.state.user && !$store.state.user.isPro" nuxt>${{ $store.state.proPlanDetails.price.year }} / year</n-link>
-                                <span v-else>${{ $store.state.proPlanDetails.price.year }} / year</span>
+                                <span v-else>${{ $store.state.proPlanDetails.price.year }}</span>
                             </td>
                         </tr>
                     </tbody>
