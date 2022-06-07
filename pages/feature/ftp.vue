@@ -28,7 +28,7 @@
                                 <ul class="ml-n2">
                                     <li>200W for 20 minutes, FTP = 190W</li>
                                     <li>200W for 1 hour, FTP = 200W</li>
-                                    <li>200W for 4 hours, FTP = 218W</li>
+                                    <li>200W for 4 hours, FTP = 224W</li>
                                 </ul>
                             </div>
 
