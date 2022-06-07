@@ -101,7 +101,7 @@
                 </v-btn>
             </div>
 
-            <ads-panel :pro-hide="true" />
+            <ads-panel />
 
             <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />

@@ -22,7 +22,7 @@
                 <div>
                     {{ lastAnnouncement.body }}
                     <br v-if="!$breakpoint.mdAndUp" />
-                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>Open...</n-link>
+                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>More...</n-link>
                 </div>
             </v-alert>
             <div class="mb-4">
@@ -169,7 +169,7 @@
                     </div>
                 </v-alert>
 
-                <ads-panel :pro-hide="true" />
+                <ads-panel />
             </template>
         </v-container>
     </v-layout>
