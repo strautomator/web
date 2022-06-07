@@ -15,8 +15,15 @@ router.get("/:userId/active", async (req: express.Request, res: express.Response
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const result = await announcements.getActive()
-        result.forEach((a) => delete a.readCount)
+        const all = await announcements.getActive()
+        all.forEach((a) => delete a.readCount)
+
+        // Filter specific announcements for PRO / Free users.
+        const result = all.filter((a) => {
+            if (a.isFree && user.isPro) return false
+            if (a.isPro && !user.isPro) return false
+            return true
+        })
 
         webserver.renderJson(req, res, result)
     } catch (ex) {
