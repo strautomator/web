@@ -37,7 +37,7 @@
 
                 <feature-links />
 
-                <ads-panel :pro-hide="true" />
+                <ads-panel />
             </div>
         </v-container>
     </v-layout>
@@ -141,10 +141,15 @@ export default {
             // Get all questions and answers.
             this.faq = await this.$axios.$get("/api/faq")
 
-            // Search uery passed via the URL?
-            if (this.$route.query && this.$route.query.q) {
-                this.searchValue = decodeURIComponent(this.$route.query.q)
-                this.searchQuery = this.searchValue
+            // Search query or auto expand panel passed via the URL?
+            if (this.$route.query) {
+                if (this.$route.query.q) {
+                    this.searchValue = decodeURIComponent(this.$route.query.q)
+                    this.searchQuery = this.searchValue
+                }
+                if (this.$route.query.expand) {
+                    this.expandedPanels = [...Array(this.groupedQuestions.length).keys()]
+                }
             }
         } catch (ex) {
             this.$webError("Help.fetch", ex)
