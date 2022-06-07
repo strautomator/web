@@ -3,7 +3,7 @@
         "baseUrl": "",
         "rootDir": "src",
         "outDir": "server",
-        "target": "es2018",
+        "target": "ES2022",
         "module": "commonjs",
         "moduleResolution": "node",
         "esModuleInterop": true,
