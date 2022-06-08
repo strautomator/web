@@ -1,19 +1,19 @@
 # BUILDER
-FROM node:18-alpine AS strautomator-web-builder
+FROM node:16-alpine AS strautomator-web-builder
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && apk add --no-cache bash git openssh python3 make g++ && git config --global init.defaultBranch master && npm install && ./node_modules/.bin/tsc && npm run build
 
 # DEPENDENCIES
-FROM node:18-alpine AS strautomator-web-dependencies
+FROM node:16-alpine AS strautomator-web-dependencies
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && apk add --no-cache bash git openssh python3 make g++ && git config --global init.defaultBranch master && npm install --production && rm -rf ./node_modules/typescript
 
 # FINAL IMAGE
-FROM node:18-alpine AS strautomator-web-final
+FROM node:16-alpine AS strautomator-web-final
 ENV NODE_ENV=production
 ENV JSON_LOGGING=true
 ENV HOST 0.0.0.0
