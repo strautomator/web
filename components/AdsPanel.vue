@@ -1,7 +1,7 @@
 <template>
     <v-card class="affiliates-card mt-12" v-if="!hidden" outlined>
-        <v-card-text class="grey lighten-2">
-            <div class="mb-5 grey lighten-2 black--text text-center text-h6">Affiliates</div>
+        <v-card-text class="grey lighten-1">
+            <div class="mb-5 grey lighten-1 black--text text-center text-h6">Affiliates</div>
             <v-row>
                 <v-col cols="4">
                     <a :href="linkIcan" target="ican" title="Carbon wheels and frames @ ICAN"><v-img src="/images/affiliates/ican.png" max-height="58px" /></a>
