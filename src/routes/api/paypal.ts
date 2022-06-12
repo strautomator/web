@@ -77,6 +77,10 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
         if (!user) return
 
         // Check if billing plan is valid.
+        const legacyPlan = paypal.legacyBillingPlans[req.params.billingPlanId]
+        if (legacyPlan) {
+            throw new Error("This billing plan is not accepting new subscriptions")
+        }
         const billingPlan = paypal.currentBillingPlans[req.params.billingPlanId]
         if (!billingPlan) {
             throw new Error("Invalid billing plan")
