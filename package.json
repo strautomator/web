@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.233.11003",
+    "version": "22.242.11216",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -11,10 +11,10 @@
         "url": "https://github.com/strautomator/web.git"
     },
     "scripts": {
-        "build": "nuxt build",
-        "generate": "nuxt generate",
-        "start": "cross-env NODE_ENV=production node server/index.js",
-        "start:ts": "cross-env NODE_ENV=development node --preserve-symlinks -r ts-node/register ./src/index.ts",
+        "build": "NODE_OPTIONS=--openssl-legacy-provider nuxt build",
+        "generate": "NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
+        "start": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider node server/index.js",
+        "start:ts": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider node --preserve-symlinks -r ts-node/register ./src/index.ts",
         "start:dev": "nodemon"
     },
     "dependencies": {
@@ -42,7 +42,7 @@
         "@nuxt/types": "^2.15.8",
         "@types/express": "^4.17.13",
         "@types/lodash": "^4.14.182",
-        "@types/node": "^17.0.41",
+        "@types/node": "^17.0.42",
         "axios-debug-log": "^0.8.4",
         "chalk": "^4.1.2",
         "nodemon": "^2.0.16",
