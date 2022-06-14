@@ -41,8 +41,9 @@
                         </template>
                         <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
-                            <div>Next payment: {{ subscription.status == "CANCELLED" ? "cancelled" : nextPaymentDate }}</div>
+                            <div class="mb-2">Price: {{ paymentAmount }}</div>
                             <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDate }}</div>
+                            <div>Next payment: {{ subscription.status == "CANCELLED" ? "cancelled" : nextPaymentDate }}</div>
                             <div class="mt-6 text-center text-md-left" v-if="subscription.status != 'CANCELLED'">
                                 <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
@@ -50,7 +51,7 @@
                                 </v-btn>
                             </div>
                         </template>
-                        <template v-else>
+                        <template v-else-if="!loading">
                             <h3 class="secondary--text ma-0 mb-2">Oops!</h3>
                             Seems like your subscription is missing some details on our end.
                             <br v-if="$breakpoint.mdAndUp" />
@@ -158,6 +159,12 @@ export default {
         }
     },
     computed: {
+        paymentAmount() {
+            if (!this.subscription) return "free"
+            if (this.subscriptionSource == "Friend") return "free"
+            if (this.subscriptionSource == "Revolut") return "free"
+            return this.subscription.lastPayment.amount + " " + this.subscription.lastPayment.currency
+        },
         lastPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "never"
