@@ -142,7 +142,8 @@ export const actions = {
 
             // Set map styles.
             const mapStyles = Object.keys(core.StravaMapStyle).map((s) => {
-                return {text: s.replace(/([A-Z])/g, " $1").trim(), value: core.StravaMapStyle[s]}
+                const mapTitle = s.replace(/([A-Z])/g, " $1").trim()
+                return {text: mapTitle.replace("Sattelite3 D", "Sattelite 3D"), value: core.StravaMapStyle[s]}
             })
             commit("setMapStyles", mapStyles)
 
