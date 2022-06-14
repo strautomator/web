@@ -284,7 +284,8 @@ export default {
                 {value: "de", text: "Deutsch"},
                 {value: "es", text: "Español"},
                 {value: "fr", text: "Français"},
-                {value: "pt", text: "Português"}
+                {value: "pt", text: "Português"},
+                {value: "it", text: "Italiano"}
             ]
         }
     },

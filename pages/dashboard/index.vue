@@ -26,9 +26,9 @@
                 </div>
             </v-alert>
             <div class="mb-4">
-                See something new? Check our
+                See something new? Check the
                 <n-link to="/changelog" title="Full changelog" nuxt>changelog</n-link>
-                to keep track of the new features and bug fixes.
+                to keep track of new features and bug fixes.
             </div>
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
