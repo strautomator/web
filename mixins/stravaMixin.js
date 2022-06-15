@@ -26,9 +26,10 @@ export default {
         getSportIcon(sportType) {
             if (!sportType) return "mdi-incognito"
             if (sportType == "Ride") return "mdi-bike"
+            if (sportType == "GravelRide" || sportType == "MountainBikeRide") return "mdi-bicycle"
+            if (sportType == "EBikeRide" || sportType == "EMountainBikeRide") return "mdi-bicycle-electric"
             if (sportType == "VirtualRide") return "mdi-bike-fast"
-            if (sportType == "EBikeRide") return "mdi-bicycle-electric"
-            if (sportType == "Run") return "mdi-run"
+            if (sportType == "Run" || sportType == "TrailRun") return "mdi-run"
             if (sportType == "VirtualRun") return "mdi-run-fast"
             if (sportType == "Walk") return "mdi-walk"
             if (sportType == "Golf") return "mdi-golf"
@@ -75,7 +76,7 @@ export default {
             if (!records) return false
 
             // Find a record with a matching activity ID.
-            return records[activity.type] ? Object.entries(records[activity.type]).find((e) => e[1].activityId == activity.id) : null
+            return records[activity.sportType] ? Object.entries(records[activity.sportType]).find((e) => e[1].activityId == activity.id) : null
         }
     }
 }
