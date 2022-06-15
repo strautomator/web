@@ -66,11 +66,11 @@
                             <tbody>
                                 <tr v-for="activity in activities" :key="activity.id">
                                     <td class="text-center" v-if="$breakpoint.mdAndUp">
-                                        <v-icon>{{ getSportIcon(activity.sportType) }}</v-icon>
+                                        <v-icon>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
                                     </td>
                                     <td class="pt-2 pb-2">
                                         <template v-if="!$breakpoint.mdAndUp">
-                                            <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.sportType) }}</v-icon>
+                                            <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
                                             <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
                                             <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                                             <ul>
