@@ -27,7 +27,7 @@
                         </tr>
                         <tr v-for="activity in recentActivities" :key="activity.id">
                             <td>
-                                <v-icon>{{ getSportIcon(activity.type) }}</v-icon>
+                                <v-icon>{{ getSportIcon(activity.sportType) }}</v-icon>
                             </td>
                             <td>
                                 <div class="mt-2 mb-2">
