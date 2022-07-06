@@ -8,7 +8,7 @@
 
 {
     "api": {
-        // API is rate limited to 600 requests per minute per instance, by default. If you wish to disable
+        // API is rate limited to 600 requests per minute per instance by default. If you wish to disable
         // rate limiting altogether, set "rateLimit": false.
         "rateLimit": {
             "max": 600,
@@ -29,7 +29,7 @@
         "trustProxy": 1
     },
     "webhooks": {
-        // Retry the webhooks setup every 2 minutes (if failed). Value in milliseconds.
-        "retryInterval": 120000
+        // Retry the webhooks setup every 90 seconds (if failed). Value in milliseconds.
+        "retryInterval": 90000
     }
 }
