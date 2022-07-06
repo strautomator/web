@@ -31,7 +31,7 @@
                                     <v-select label="Weekday" v-model="selectedWeekdays" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" :rules="valueInputRules" :suffix="selectedSuffix" :type="selectedType" dense outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" dense outlined rounded></v-text-field>
                                 </div>
                                 <div v-else>
                                     <v-autocomplete
@@ -97,12 +97,12 @@ export default {
 
             return this.selectedProperty.suffix
         },
-        selectedType() {
+        inputPlaceholder() {
             if (this.selectedProperty.type == "time") {
-                return "time"
+                return "00:00"
             }
 
-            return "text"
+            return ""
         },
         isDefaultFor() {
             return this.selectedProperty.value && this.selectedProperty.value == "defaultFor"
@@ -161,6 +161,8 @@ export default {
         },
         valueInputRules() {
             if (this.isDefaultFor) return false
+            if (["dateStart", "dateEnd"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.time]
+            if (["movingTime", "totalTime", "lapTime"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.timer]
             if (this.recipeRules[this.selectedProperty.type]) return [this.recipeRules.required, this.recipeRules[this.selectedProperty.type]]
             return [this.recipeRules.required]
         }
@@ -262,7 +264,7 @@ export default {
                     } else if (this.isLocation) {
                         result.value = this.locationInput.value
                         result.friendlyValue = this.locationInput.address
-                    } else if (this.selectedType == "time") {
+                    } else if (this.selectedProperty.type == "time") {
                         const arrTime = result.value.split(":")
                         result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
                         result.friendlyValue = this.valueInput

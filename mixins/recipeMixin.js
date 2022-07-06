@@ -25,10 +25,18 @@ export default {
                 },
                 time: (value) => {
                     if (!value) return "Invalid time"
-                    value = value.replace(":", "")
-                    if (isNaN(value)) return "Invalid time"
-                    const num = parseFloat(value)
-                    if (num < 0 || num > 2359) return "Invalid time"
+                    const arrTime = value.split(":")
+                    if (arrTime.length != 2) return "Invalid time"
+                    if (isNaN(arrTime[0]) || isNaN(arrTime[1])) return "Invalid time"
+                    if (arrTime[0] < 0 || arrTime[0] > 23 || arrTime[1] < 0 || arrTime[1] > 59) return "Invalid time"
+                    return true
+                },
+                timer: (value) => {
+                    if (!value) return "Invalid timer"
+                    const arrTime = value.split(":")
+                    if (arrTime.length != 2) return "Invalid timer"
+                    if (isNaN(arrTime[0]) || isNaN(arrTime[1])) return "Invalid timer"
+                    if (arrTime[0] < 0 || arrTime[1] < 0 || arrTime[1] > 59) return "Invalid timer"
                     return true
                 },
                 text: (value) => {
