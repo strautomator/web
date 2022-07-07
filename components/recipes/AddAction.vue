@@ -49,6 +49,7 @@
                                 <v-chip @click="addTag('calories')" small>Calories</v-chip>
                                 <v-chip @click="addTag('relativeEffort')" small>Relative effort</v-chip>
                                 <v-chip @click="addTag('perceivedExertion')" small>Perceived Exertion</v-chip>
+                                <v-chip @click="addTag('tss')" small>TSS</v-chip>
                                 <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
                                 <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
                                 <v-chip @click="addTag('totalTime')" small>Total time</v-chip>

@@ -103,6 +103,7 @@
                         <v-chip class="mr-1 mb-2" @click="addTag('hrAvg')" small>Avg HR</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('hrMax')" small>Max HR</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('perceivedExertion')" small>Perceived exertion</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('tss')" small>TSS</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('relativeEffort')" small>Relative effort</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('device')" small>Device</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('commute')" small>Is commute</v-chip>
