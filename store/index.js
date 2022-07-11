@@ -64,6 +64,7 @@ export const mutations = {
         state.user = data
     },
     setAthleteRecords(state, data) {
+        delete data.id
         state.athleteRecords = data
     },
     setUserPreferences(state, data) {
