@@ -14,21 +14,24 @@
 
                             <h2 class="mb-2">How does it estimate my FTP?</h2>
                             <div class="mb-8">
-                                <v-alert class="font-weight-bold">eFTP = (C<sup>+20%</sup> + H) / 2</v-alert>
+                                <v-alert class="font-weight-bold">eFTP = (C<sup>+30%</sup> + H) / 2</v-alert>
                                 <ul class="mt-n1 ml-n2">
-                                    <li>C = current FTP on Strava, weighted to 120%</li>
+                                    <li>C = current FTP on Strava, weighted to 130%</li>
                                     <li>H = estimated FTP for your highest power effort during the past {{ $store.state.ftpWeeks }} weeks</li>
                                 </ul>
-                                <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas, depending on the activity's total time.</div>
+                                <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas.</div>
                                 <ul class="ml-n2">
-                                    <li>95% to 100% of the average power if betwen 20 minutes and 1 hour</li>
-                                    <li>104% of the average power for each extra hour after the first hour</li>
+                                    <li>79% of your best 5min interval (PRO only)</li>
+                                    <li>94% of your best 20min interval (PRO only)</li>
+                                    <li>94% to 100% of the average power if between 20 minutes and 1 hour</li>
+                                    <li>103% of the average power for each extra hour after the first hour</li>
                                 </ul>
                                 <div class="mt-4 mb-2">Examples:</div>
                                 <ul class="ml-n2">
-                                    <li>200W for 20 minutes, FTP = 190W</li>
+                                    <li>200W for 5 minutes, FTP = 158W</li>
+                                    <li>200W for 20 minutes, FTP = 188W</li>
                                     <li>200W for 1 hour, FTP = 200W</li>
-                                    <li>200W for 4 hours, FTP = 224W</li>
+                                    <li>200W for 4 hours, FTP = 225W</li>
                                 </ul>
                             </div>
 

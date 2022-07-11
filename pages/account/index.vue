@@ -164,7 +164,7 @@
                 <v-card-text>
                     <p class="mt-4" v-if="ftpResult === null">
                         <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
-                        Estimating your FTP, please wait...
+                        Estimating your FTP, please wait, it can take up to 2 minutes...
                     </p>
                     <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
