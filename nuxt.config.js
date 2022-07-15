@@ -45,7 +45,7 @@ module.exports = {
     // Day.js options.
     dayjs: {
         locales: ["en"],
-        plugins: ["advancedFormat", "localizedFormat", "duration", "utc"]
+        plugins: ["advancedFormat", "localizedFormat", "duration", "utc", "relativeTime"]
     },
 
     // Forced environment variables.
