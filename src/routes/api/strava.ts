@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {database, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune} from "strautomator-core"
+import {database, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -146,10 +146,10 @@ router.get("/:userId/activities/processed", async (req: express.Request, res: ex
 
         // Limit number of activites returned?
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
-        let dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).toDate() : null
-        let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).toDate() : null
+        let dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).startOf("day").toDate() : null
+        let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
 
-        const activities = await strava.activities.getProcessedActivites(user, dateFrom, dateTo, limit)
+        const activities = await strava.activityProcessing.getProcessedActivites(user, dateFrom, dateTo, limit)
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
@@ -181,6 +181,52 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
 })
 
 /**
+ * Logged user can trigger a batch processing of older activities.
+ */
+router.post("/:userId/process-activities", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.body) throw new Error("Missing request body")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        let dateFrom = req.body.dateFrom ? dayjs(req.body.dateFrom as string) : null
+        let dateTo = req.body.dateTo ? dayjs(req.body.dateTo as string) : null
+        let filterPrivacy = req.body.filterPrivacy ? req.body.filterPrivacy : "all"
+        let filterSport = req.body.filterSport ? req.body.filterSport : "all"
+        let filterType = req.body.filterType ? req.body.filterType : "all"
+
+        // Check if passed dates are valid
+        if (!dateFrom || !dateFrom.isValid) throw new Error(`Invalid "from" date`)
+        if (dateTo && !dateTo.isValid) throw new Error(`Invalid "to" date`)
+
+        // Limit batch operations per day.
+        if (user.dateLastBatchProcessing && dayjs().subtract(settings.strava.queueBatchPerHours, "hours").isBefore(user.dateLastBatchProcessing)) {
+            throw new Error(`Only a single batch operation allowed every ${settings.strava.queueBatchPerHours} hour(s)`)
+        }
+
+        // Additional batch processing filters.
+        let filter: StravaActivityFilter = {}
+        if (filterPrivacy == "private") filter.private = true
+        else if (filterPrivacy == "public") filter.private = false
+        if (filterType == "commute") filter.commute = true
+        else if (filterType == "notCommute") filter.commute = false
+        if (filterSport != "all") filter.sportType = filterSport
+
+        const activityCount = await strava.activityProcessing.batchProcessActivities(user, dateFrom.startOf("day").toDate(), dateTo.startOf("day").toDate(), filter)
+
+        // Start processing the first batch of activities straight away.
+        await strava.activityProcessing.processQueuedActivities()
+
+        webserver.renderJson(req, res, {activityCount: activityCount, processed: activityCount <= settings.strava.queueBatchSize})
+    } catch (ex) {
+        const errorMessage = ex.toString()
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, {error: ex.toString()}, errorMessage.includes("single batch operation") ? 429 : 500)
+    }
+})
+
+/**
  * Logged user can trigger a forced processing of a particular activity.
  */
 router.get("/:userId/process-activity/:activityId", async (req: express.Request, res: express.Response) => {
@@ -191,7 +237,7 @@ router.get("/:userId/process-activity/:activityId", async (req: express.Request,
         if (!user) return
 
         // Process the passed activity.
-        const processedActivity = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+        const processedActivity = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
         webserver.renderJson(req, res, processedActivity || {processed: false})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -472,10 +518,10 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
 
         // Process the passed activity now, or queue later, depending on user preferences.
         if (user.preferences.delayedProcessing) {
-            await strava.activities.queueActivity(user, parseInt(req.params.activityId))
+            await strava.activityProcessing.queueActivity(user, parseInt(req.params.activityId))
             user.dateLastProcessedActivity = now
         } else {
-            const processed = await strava.activities.processActivity(user, parseInt(req.params.activityId))
+            const processed = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
             if (processed && !processed.error) user.dateLastProcessedActivity = now
         }
 
@@ -484,7 +530,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         await users.update(updatedUser)
 
         // Check if there are activities on the queue waiting to be processed.
-        strava.activities.checkQueuedActivities()
+        strava.activityProcessing.checkQueuedActivities()
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
@@ -500,7 +546,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/process-activity-queue`, as
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        await strava.activities.processQueuedActivities()
+        await strava.activityProcessing.processQueuedActivities(50)
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
