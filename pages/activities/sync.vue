@@ -75,7 +75,15 @@
                         </tr>
                     </tbody>
                 </v-simple-table>
-                <v-alert class="mt-4 text-caption text-center text-md-left" border="top">Please note that weather tags can't be added to activities that happened more than a week ago.</v-alert>
+                <v-card class="mt-4" outlined>
+                    <v-card-text>
+                        <div>Want to execute your automations on existing activities in a single batch?</div>
+                        <v-btn color="primary" class="mt-4" to="/activities/batchsync" rounded small>
+                            <v-icon left>mdi-animation-play</v-icon>
+                            Proceed to batch processing
+                        </v-btn>
+                    </v-card-text>
+                </v-card>
             </template>
             <template v-else>
                 <div v-if="loading">
@@ -87,7 +95,7 @@
                         {{ syncError }}
                     </v-alert>
                     <v-card v-else outlined>
-                        <v-card-title class="accent"> Activity {{ activityId }} </v-card-title>
+                        <v-card-title class="accent">Activity {{ activityId }}</v-card-title>
                         <v-card-text>
                             <div class="mt-4" v-if="!processedActivity || recipeKeys.length == 0">No automations were triggered for this activity.</div>
                             <div class="mt-4" v-else>
@@ -115,12 +123,13 @@
                                     </li>
                                 </ul>
                             </div>
+                            <v-alert class="mt-2 text-caption text-center text-md-left">Please note that weather tags might not be available for activities older than 1 week.</v-alert>
                         </v-card-text>
                     </v-card>
                     <div class="mt-6 text-center text-md-left">
                         Want to try with another activity?
                         <br v-if="!$breakpoint.mdAndUp" />
-                        <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try again</v-btn>
+                        <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try another</v-btn>
                     </div>
 
                     <ads-panel />
