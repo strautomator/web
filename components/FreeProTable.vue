@@ -32,6 +32,11 @@
                             <td class="text-center">All sports</td>
                         </tr>
                         <tr>
+                            <td>Batch processing</td>
+                            <td class="text-center">{{ $store.state.freePlanDetails.batchDays }} days</td>
+                            <td class="text-center">{{ $store.state.proPlanDetails.batchDays }} days</td>
+                        </tr>
+                        <tr>
                             <td>Calendar range</td>
                             <td class="text-center">
                                 -{{ $store.state.freePlanDetails.pastCalendarDays }}{{ dayText }}<br />
@@ -80,7 +85,7 @@
                 </v-simple-table>
             </v-card-text>
         </v-card>
-        <ul class="caption mt-2 mb-5 pl-4" v-if="!$store.state.user || !$store.state.user.isPro">
+        <ul class="caption mt-2 mb-5 pl-4">
             <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
             <li>Some features might be released first to PRO users so they can give their feedback.</li>
         </ul>
