@@ -170,20 +170,15 @@ export default {
             arr = _.cloneDeep(arr)
 
             // Make sure we disable related actions that were already set.
-            if (arr.includes("commute")) {
-                arr.push("commute")
-            }
             if (arr.includes("name")) {
                 arr.push("prependName")
                 arr.push("appendName")
             }
             if (arr.includes("prependName")) {
                 arr.push("name")
-                arr.push("appendName")
             }
             if (arr.includes("appendName")) {
                 arr.push("name")
-                arr.push("prependName")
             }
             if (arr.includes("description")) {
                 arr.push("prependDescription")
@@ -191,41 +186,9 @@ export default {
             }
             if (arr.includes("prependDescription")) {
                 arr.push("description")
-                arr.push("appendDescription")
             }
             if (arr.includes("appendDescription")) {
                 arr.push("description")
-                arr.push("prependDescription")
-            }
-            if (arr.includes("sportType")) {
-                arr.push("sportType")
-            }
-            if (arr.includes("workoutType")) {
-                arr.push("workoutType")
-            }
-            if (arr.includes("privateNote")) {
-                arr.push("privateNote")
-            }
-            if (arr.includes("mapStyle")) {
-                arr.push("mapStyle")
-            }
-            if (arr.includes("hideHome")) {
-                arr.push("hideHome")
-            }
-            if (arr.includes("hideStatPace")) {
-                arr.push("hideStatPace")
-            }
-            if (arr.includes("hideStatSpeed")) {
-                arr.push("hideStatSpeed")
-            }
-            if (arr.includes("hideStatCalories")) {
-                arr.push("hideStatCalories")
-            }
-            if (arr.includes("hideStatHeartRate")) {
-                arr.push("hideStatHeartRate")
-            }
-            if (arr.includes("hideStatPower")) {
-                arr.push("hideStatPower")
             }
 
             arr = _.uniq(arr)
