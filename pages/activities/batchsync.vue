@@ -98,8 +98,9 @@
                         </div>
                         <div v-else-if="batchProcessed">Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are being processed right now, and should be updated in less than a minute.</div>
                         <div v-else>
-                            Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are now queued for processing.<br v-if="$breakpoint.mdAndUp" />Please note that this is an asynchronous job, and can take up to
-                            {{ maxHours }} hour(s) to complete.
+                            Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are now queued for processing.<br v-if="$breakpoint.mdAndUp" />This asynchronous job can take up to {{ maxHours }} hour(s) to
+                            complete.
+                            <div class="mt-3">You can keep track of what's already automated on your automation history.</div>
                         </div>
                         <v-btn v-if="activityCount > 0" class="mt-4" color="primary" title="Go to my automations history" to="/automations/history" small nuxt rounded>
                             <v-icon left>mdi-history</v-icon>
@@ -203,7 +204,7 @@ export default {
         },
         batchTitle() {
             if (this.activityCount < 1) return "No activities found"
-            if (this.batchProcessed) return `Processed ${this.processedCount} activities`
+            if (this.batchProcessed) return `Processed ${this.activityCount} activities`
             return `Will process ${this.activityCount} activities`
         }
     },
