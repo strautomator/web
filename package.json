@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.281.12238",
+    "version": "22.291.11722",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -46,7 +46,7 @@
         "axios-debug-log": "^0.8.4",
         "chalk": "^4.1.2",
         "nodemon": "^2.0.19",
-        "ts-node": "^10.8.2",
+        "ts-node": "^10.9.1",
         "webpack": "^4.46.0"
     },
     "peerDependencies": {
