@@ -106,7 +106,7 @@
                                 Go to automation history
                             </v-btn>
                         </div>
-                        <div class="caption mt-4 ml-5">Please note that the list above does not show activities that weren't updated by Strautomator.</div>
+                        <div class="caption mt-4 ml-5 mr-5">Please note that the list above doesn't include activities that were not updated by Strautomator.</div>
                     </v-card-text>
                 </v-card>
             </div>
@@ -161,7 +161,7 @@
                     <div class="mb-3 mb-md-0">
                         Missing something?
                         <br v-if="!$breakpoint.mdAndUp" />
-                        Try a <n-link to="/activities/sync" title="Try your automations" nuxt>manual sync</n-link>.
+                        Try the <n-link to="/activities/sync" title="Try your automations" nuxt>manual automation sync</n-link>.
                     </div>
                     <div>
                         Want to see activities and club events on your calendar app?
