@@ -64,8 +64,6 @@ export const mutations = {
         state.user = data
     },
     setAthleteRecords(state, data) {
-        delete data.id
-        delete data.dateRefreshed
         state.athleteRecords = data
     },
     setUserPreferences(state, data) {
@@ -175,11 +173,14 @@ export const actions = {
                     .then((res) => {
                         commit("setUser", res[0])
 
-                        const aRecords = res[1] || {}
-                        delete aRecords.id
-                        delete aRecords.dateRefreshed
-
-                        commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
+                        try {
+                            const aRecords = res[1] || {}
+                            delete aRecords.id
+                            delete aRecords.dateRefreshed
+                            commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
+                        } catch (recordsEx) {
+                            logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to assign records", ex)
+                        }
                     })
                     .catch((err) => {
                         throw err
