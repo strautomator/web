@@ -16,8 +16,8 @@
                     <p>
                         If you are just sneaking around then I wish you happy exploring.
                         <br v-if="$breakpoint.mdAndUp" />
-                        Otherwise contact me on
-                        <a href="mailto:info@strautomator.com" title="Bug report via email">info@strautomator.com</a> and I'll be glad to investigate.
+                        Otherwise, first try clearing your cookies and browser cache, and if necessary contact me on
+                        <a href="mailto:info@strautomator.com" title="Bug report via email">info@strautomator.com</a>. I'll be glad to help.
                     </p>
                 </div>
                 <v-alert color="error" border="top" v-if="stravaStatus" class="mt-4 mb-4">
