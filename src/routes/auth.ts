@@ -86,7 +86,7 @@ export class Auth {
             // User really not found?
             if (!user) {
                 logger.error("Auth.requestValidator", req.originalUrl, "User not found", `From ${req.ip}`)
-                webserver.renderError(req, res, "Access denied", 401)
+                webserver.renderError(req, res, "Access denied", 404)
                 return false
             }
 
