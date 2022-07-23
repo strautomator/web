@@ -8,10 +8,7 @@
                 <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
 
                 <div class="text-center text-caption mt-n4">Use the field above to search by keywords. The most common questions are listed below.</div>
-                <div class="text-center text-caption mb-6">
-                    If you're looking for the changelog, it can be found
-                    <n-link to="/changelog" title="Changelog" nuxt>here</n-link>.
-                </div>
+                <div class="text-center text-caption mb-6">You can also view our <n-link to="/tc" title="Terms and Conditions" nuxt>Terms and Conditions</n-link> or <n-link to="/changelog" title="Changelog" nuxt>Changelog</n-link>.</div>
                 <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 class="mb-1 ml-1">{{ group.title }}</h2>
                     <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0"> No results found. </v-alert>
