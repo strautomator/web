@@ -10,129 +10,169 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <p>Last updated: 2022-07-01</p>
-                        <p>Welcome to <b>Strautomator</b> (“we”, “our”, “us”... or "me", Igor Ramadas)!</p>
-                        <p>These Terms of Service (“Terms”, “Terms of Service”) govern your use of our website located at <b>strautomator.com</b> (together or individually “Service”).</p>
-                        <p>Our Privacy Policy also governs your use of our Service and explains how we collect, safeguard and disclose information that results from your use of our web pages.</p>
-                        <p>Your agreement with us includes these Terms and our Privacy Policy (“Agreements”). You acknowledge that you have read and understood Agreements, and agree to be bound of them.</p>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: 22 July 2022</h4>
+                        <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>
-                            If you do not agree with (or cannot comply with) Agreements, then you may not use the Service, but please let us know by emailing at <b>info@strautomator.com</b> so we can try to find a solution. These Terms apply to all
-                            visitors, users and others who wish to access or use Service.
+                            This website and its services were <i>developed*</i>, are maintained and represented by a single individual: Igor Ramadas. Therefore in these terms and conditions, when you read "we", "us" or "our", it's effectively just
+                            myself, Igor.
                         </p>
-                        <p>2. <b>Free accounts</b></p>
-                        <p>By using our Service, not bound to a Subscription (the Free account), you agree to the processing of your Strava account details, including private activities and private performance data.</p>
-                        <p>Free accounts have no cost, and are guaranteed to work for free as long as the Service exists.</p>
-                        <p>3. <b>PRO accounts</b></p>
-                        <p>By using our Service, bound to a Subscription (the PRO account), you agree to the processing of your Strava account details, including private activities and private performance data.</p>
+                        <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals.</i></p>
+
+                        <h2 class="mt-6 mb-4">Privacy</h2>
                         <p>
-                            If you wish to subscribe to the PRO account, you may be asked to supply certain information relevant to your Subscription including but not limited to, your PayPal billing account, as well as some private information like
-                            name, email and country of residence.
+                            Your privacy is important to us. It is our policy to respect your privacy and comply with any applicable law and regulation regarding any personal information we may collect about you, including across our website,
+                            https://strautomator.com.
                         </p>
-                        <p>You represent and warrant that: (i) you have the legal right to use any card(s) or other payment method(s) in connection with any Purchase; and that (ii) the information you supply to us is true, correct and complete.</p>
+
+                        <h2 class="mt-6 mb-4">Information We Collect</h2>
                         <p>
-                            We reserve the right to refuse or cancel your Subscription at any time for reasons including but not limited to: product or service availability, errors in the description or price of the product or service, error in your
-                            payment information or other reasons.
+                            Information we collect includes both information you knowingly and actively provide us when using or participating in any of our services, and any information automatically sent by your devices in the course of accessing
+                            our services.
                         </p>
-                        <p>We reserve the right to refuse or cancel your Subscription if fraud or an unauthorized or illegal transaction is suspected.</p>
+
+                        <h3 class="mt-1 mb-2">Log Data</h3>
                         <p>
-                            At the end of each Billing Cycle, your Subscription will automatically renew under the exact same conditions unless you cancel it or Strautomator cancels it. You may cancel your Subscription renewal either through your
-                            online account management page or by contacting info@strautomator.com.
+                            When you visit our website, our servers may automatically log the standard data provided by your web browser. It may include your device's Internet Protocol (IP) address, your browser type and version, the pages you visit,
+                            the time and date of your visit, the time spent on each page, other details about your visit, and technical details that occur in conjunction with any errors you may encounter.
                         </p>
+                        <p>Please be aware that while this information may not be personally identifying by itself, it may be possible to combine it with other data to personally identify individual persons.</p>
+
+                        <h3 class="mt-1 mb-2">Personal Information</h3>
+                        <p>We may ask for personal information which may include one or more of the following:</p>
+                        <ul class="mb-6">
+                            <li>Email address</li>
+                            <li>Social media profile from Strava</li>
+                            <li>Activity metadata from Strava</li>
+                        </ul>
+
+                        <h3 class="mt-1 mb-2">Legitimate Reasons for Processing Your Personal Information</h3>
+                        <p>We only collect and use your personal information when we have a legitimate reason for doing so. In which instance, we only collect personal information that is reasonably necessary to provide our services to you.</p>
+
+                        <h3 class="mt-1 mb-2">Collection and Use of Information</h3>
+                        <p>We may collect personal information from you when you do any of the following on our website:</p>
+                        <ul class="mb-6">
+                            <li>Use a mobile device or web browser to access our website services</li>
+                            <li>Contact us via email, social media, or on any similar technologies</li>
+                            <li>When you mention us on social media</li>
+                        </ul>
+                        <p>We may collect, hold, use, and disclose information for the following purposes, and personal information will not be further processed in a manner that is incompatible with these purposes:</p>
+                        <ul class="mb-6">
+                            <li>To enable you to access and use our website, associated applications, and associated social media platforms</li>
+                        </ul>
+                        <p>Please be aware that we may combine information we collect about you with general information or research data we receive from other trusted sources.</p>
+
+                        <h3 class="mt-1 mb-2">Security of Your Personal Information</h3>
                         <p>
-                            A valid payment method is required to process the payment for your Subscription. You shall provide us with accurate and complete billing information that may include but not limited to full name, country or and a valid
-                            payment method information. By submitting such payment information, you automatically authorize Strautomator to charge all Subscription fees incurred through your account to any such payment instruments.
-                        </p>
-                        <p>Should automatic billing fail to occur for any reason, Strautomator reserves the right to terminate your access to the Service with immediate effect.</p>
-                        <p>4. <b>Promotions</b></p>
-                        <p>
-                            Any contests, sweepstakes or other promotions (collectively, “Promotions”) made available through Service may be governed by rules that are separate from these Terms of Service. If you participate in any Promotions, please
-                            review the applicable rules as well as our Privacy Policy. If the rules for a Promotion conflict with these Terms of Service, Promotion rules will apply.
-                        </p>
-                        <p>5. <b>Fee Changes</b></p>
-                        <p>Strautomator, in its sole discretion and at any time, may modify Subscription fees for the Subscriptions. Any Subscription fee change will become effective at the end of the then-current Billing Cycle.</p>
-                        <p>Strautomator will provide you with a reasonable prior notice of any change in Subscription fees to give you an opportunity to terminate your Subscription before such change becomes effective.</p>
-                        <p>Your continued use of Service after Subscription fee change comes into effect constitutes your agreement to pay the modified Subscription fee amount.</p>
-                        <p>6. <b>Refunds</b></p>
-                        <p>We issue refunds for Contracts within <b>1 days</b> of the original purchase of the Contract.</p>
-                        <p>7. <b>Content</b></p>
-                        <p>
-                            Content found on or through this Service are the property of Strautomator or used with permission. You may not distribute, modify, transmit, reuse, download, repost, copy, or use said Content, whether in whole or in part,
-                            for commercial purposes or for personal gain, without express advance written permission from us.
-                        </p>
-                        <p>8. <b>Prohibited Uses</b></p>
-                        <p>You may use Service only for lawful purposes and in accordance with Terms. You agree not to use Service:</p>
-                        <p>0.1. In any way that violates any applicable national or international law or regulation.</p>
-                        <p>0.2. For the purpose of exploiting, harming, or attempting to exploit or harm minors in any way by exposing them to inappropriate content or otherwise.</p>
-                        <p>0.3. To transmit, or procure the sending of, any advertising or promotional material, including any “junk mail”, “chain letter,” “spam,” or any other similar solicitation.</p>
-                        <p>0.4. To impersonate or attempt to impersonate Company, a Company employee, another user, or any other person or entity.</p>
-                        <p>0.5. In any way that infringes upon the rights of others, or in any way is illegal, threatening, fraudulent, or harmful, or in connection with any unlawful, illegal, fraudulent, or harmful purpose or activity.</p>
-                        <p>0.6. To engage in any other conduct that restricts or inhibits anyone’s use or enjoyment of Service, or which, as determined by us, may harm or offend Company or users of Service or expose them to liability.</p>
-                        <p>Additionally, you agree not to:</p>
-                        <p>0.1. Use Service in any manner that could disable, overburden, damage, or impair Service or interfere with any other party’s use of Service, including their ability to engage in real time activities through Service.</p>
-                        <p>0.2. Use any robot, spider, or other automatic device, process, or means to access Service for any purpose, including monitoring or copying any of the material on Service.</p>
-                        <p>0.3. Use any manual process to monitor or copy any of the material on Service or for any other unauthorized purpose without our prior written consent.</p>
-                        <p>0.4. Use any device, software, or routine that interferes with the proper working of Service.</p>
-                        <p>0.5. Introduce any viruses, trojan horses, worms, logic bombs, or other material which is malicious or technologically harmful.</p>
-                        <p>0.6. Attempt to gain unauthorized access to, interfere with, damage, or disrupt any parts of Service, the server on which Service is stored, or any server, computer, or database connected to Service.</p>
-                        <p>0.7. Attack Service via a denial-of-service attack or a distributed denial-of-service attack.</p>
-                        <p>0.8. Take any action that may damage or falsify Company rating.</p>
-                        <p>0.9. Otherwise attempt to interfere with the proper working of Service.</p>
-                        <p>9. <b>Analytics</b></p>
-                        <p>We may use third-party Service Providers to monitor and analyze the use of our Service.</p>
-                        <p>10. <b>Intellectual Property</b></p>
-                        <p>
-                            Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property of Strautomator and its licensors. Service is protected by copyright, trademark,
-                            and other laws of and foreign countries. Our trademarks may not be used in connection with any product or service without the prior written consent of Strautomator.
-                        </p>
-                        <p>11. <b>Error Reporting and Feedback</b></p>
-                        <p>
-                            You may provide us either directly at info@strautomator.com or via third party sites and tools with information and feedback concerning errors, suggestions for improvements, ideas, problems, complaints, and other matters
-                            related to our Service (“Feedback”). You acknowledge and agree that: (i) you shall not retain, acquire or assert any intellectual property right or other right, title or interest in or to the Feedback; (ii) Company may
-                            have development ideas similar to the Feedback; (iii) Feedback does not contain confidential information or proprietary information from you or any third party; and (iv) Company is not under any obligation of
-                            confidentiality with respect to the Feedback. In the event the transfer of the ownership to the Feedback is not possible due to applicable mandatory laws, you grant Company and its affiliates an exclusive, transferable,
-                            irrevocable, free-of-charge, sub-licensable, unlimited and perpetual right to use (including copy, modify, create derivative works, publish, distribute and commercialize) Feedback in any manner and for any purpose.
-                        </p>
-                        <p>12. <b>Links To Other Web Sites</b></p>
-                        <p>Our Service may contain links to third party web sites or services that are not owned or controlled by Strautomator.</p>
-                        <p>
-                            Strautomator has no control over, and assumes no responsibility for the content, privacy policies, or practices of any third party web sites or services. We do not warrant the offerings of any of these entities/individuals
-                            or their websites.
+                            When we collect and process personal information, and while we retain this information, we will protect it within commercially acceptable means to prevent loss and theft, as well as unauthorized access, disclosure,
+                            copying, use, or modification.
                         </p>
                         <p>
-                            YOU ACKNOWLEDGE AND AGREE THAT COMPANY SHALL NOT BE RESPONSIBLE OR LIABLE, DIRECTLY OR INDIRECTLY, FOR ANY DAMAGE OR LOSS CAUSED OR ALLEGED TO BE CAUSED BY OR IN CONNECTION WITH USE OF OR RELIANCE ON ANY SUCH CONTENT,
-                            GOODS OR SERVICES AVAILABLE ON OR THROUGH ANY SUCH THIRD PARTY WEB SITES OR SERVICES.
+                            Although we will do our best to protect the personal information you provide to us, we advise that no method of electronic transmission or storage is 100% secure, and no one can guarantee absolute data security. We will
+                            comply with laws applicable to us in respect of any data breach.
                         </p>
-                        <p>WE STRONGLY ADVISE YOU TO READ THE TERMS OF SERVICE AND PRIVACY POLICIES OF ANY THIRD PARTY WEB SITES OR SERVICES THAT YOU VISIT.</p>
-                        <p>13. <b>Termination</b></p>
+                        <p>You are responsible for ensuring the security of your own information within the bounds of our services.</p>
+
+                        <h3 class="mt-1 mb-2">How Long We Keep Your Personal Information</h3>
                         <p>
-                            We may terminate or suspend your account and bar access to Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a
-                            breach of Terms.
+                            We keep your personal information only for as long as we need to. This time period may depend on what we are using your information for, in accordance with this policy. If your personal information is no longer required,
+                            we will delete it or make it anonymous by removing all details that identify you.
                         </p>
-                        <p>If you wish to terminate your account, you may simply discontinue using Service.</p>
-                        <p>All provisions of Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity and limitations of liability.</p>
-                        <p>14. <b>Changes To Service</b></p>
+
+                        <h3 class="mt-1 mb-2">Feature: "Privacy Mode"</h3>
                         <p>
-                            We reserve the right to withdraw or amend our Service, and any service or material we provide via Service, in our sole discretion without notice. We will not be liable if for any reason all or any part of Service is
-                            unavailable at any time or for any period. From time to time, we may restrict access to some parts of Service, or the entire Service, to users, including registered users.
+                            You have the option on your account preferences to enable a feature called "Privacy mode". If enabled, Strautomator will anonymize some of your account details, as well as deleting some of the processed data related to
+                            your account, including but not limited to:
                         </p>
-                        <p>15. <b>Amendments To Terms</b></p>
-                        <p>We may amend Terms at any time by posting the amended terms on this site. It is your responsibility to review these Terms periodically.</p>
+                        <ul class="mb-6">
+                            <li>Your Strava username and location</li>
+                            <li>Dates when you changed GearWear components</li>
+                            <li>Processed activity dates and sport details</li>
+                        </ul>
+                        <p>Additionally, some of the website features will be disabled, including:</p>
+                        <ul class="mb-6">
+                            <li>Tracking of personal records</li>
+                            <li>Activity sharing on Twitter</li>
+                        </ul>
+
+                        <h2 class="mt-6 mb-4">Disclosure of Personal Information to Third Parties</h2>
+                        <p>We do not disclose any of your personal information to third parties or individuals.</p>
+                        <p>Third party services (Strava, and possibly PayPal or GitHub) will disclose some of your personal information to Strautomator. But we do not send any extra information about you to them.</p>
+                        <p>We might, however, disclose your personal information to legal authorities if we are presented with a warrant to do so.</p>
+
+                        <h2 class="mt-6 mb-4">Your Rights and Controlling Your Personal Information</h2>
                         <p>
-                            Your continued use of the Platform following the posting of revised Terms means that you accept and agree to the changes. You are expected to check this page frequently so you are aware of any changes, as they are binding
-                            on you.
-                        </p>
-                        <p>By continuing to access or use our Service after any revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use Service.</p>
-                        <p>16. <b>Waiver And Severability</b></p>
-                        <p>
-                            No waiver by Company of any term or condition set forth in Terms shall be deemed a further or continuing waiver of such term or condition or a waiver of any other term or condition, and any failure of Company to assert a
-                            right or provision under Terms shall not constitute a waiver of such right or provision.
+                            You always retain the right to withhold personal information from us, with the understanding that your experience of our website may be affected. We will not discriminate against you for exercising any of your rights over
+                            your personal information. If you do provide us with personal information you understand that we will collect, hold, use and disclose it in accordance with this policy. You retain the right to request details of any
+                            personal information we hold about you.
                         </p>
                         <p>
-                            If any provision of Terms is held by a court or other tribunal of competent jurisdiction to be invalid, illegal or unenforceable for any reason, such provision shall be eliminated or limited to the minimum extent such that
-                            the remaining provisions of Terms will continue in full force and effect.
+                            If we receive personal information about you from a third party, we will protect it as set out in this policy. If you are a third party providing personal information about somebody else, you represent and warrant that you
+                            have such person's consent to provide the personal information to us.
                         </p>
-                        <p>17. <b>Acknowledgement</b></p>
-                        <p>BY USING SERVICE OR OTHER SERVICES PROVIDED BY US, YOU ACKNOWLEDGE THAT YOU HAVE READ THESE TERMS OF SERVICE AND AGREE TO BE BOUND BY THEM.</p>
+                        <p>
+                            If you believe that any information we hold about you is inaccurate, out of date, incomplete, irrelevant, or misleading, please contact us using the details provided in this policy. We will take reasonable steps to correct
+                            any information found to be inaccurate, incomplete, misleading, or out of date.
+                        </p>
+                        <p>
+                            If you believe that we have breached a relevant data protection law and wish to make a complaint, please contact us using the details below and provide us with full details of the alleged breach. We will promptly
+                            investigate your complaint and respond to you, in writing, setting out the outcome of our investigation and the steps we will take to deal with your complaint. You also have the right to contact a regulatory body or data
+                            protection authority in relation to your complaint.
+                        </p>
+
+                        <h2 class="mt-6 mb-4">Use of Cookies</h2>
+                        <p>
+                            We use &ldquo;cookies&rdquo; to collect information about you and your activity across our site. A cookie is a small piece of data that our website stores on your computer, and accesses each time you visit, so we can
+                            understand how you use our site. This helps us serve you content based on preferences you have specified.
+                        </p>
+
+                        <h2 class="mt-6 mb-4">Subscription Plans</h2>
+                        <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via special promotions. Those subscriptions plans might change or be cancelled at any time.</p>
+
+                        <h3 class="mt-4 mb-2">Updates to Subscription Plans</h3>
+                        <p>
+                            Planned changes to subscription plans will be communicated to subscribers with at least 30 days in advance. Changes that benefit the user experience might not be communicated beforehand, although we usually do it.
+                            Cancellation of existing subscription plans due to legal reasons or external dependencies, such as the Strava API, are not guaranteed to be communicated beforehand.
+                        </p>
+
+                        <h3 class="mt-4 mb-2">Payment Processing</h3>
+                        <p>Payments are currently handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
+                        <p>Subscriptions paid in form of a Sponsorship via GitHub are handled entirely by GitHub.</p>
+
+                        <h3 class="mt-4 mb-2">Refunds</h3>
+                        <p>We do not offer refunds by default. On exceptional cases, we might offer a partial or full refund on your last subscription payment, in case we find that it's justifiable.</p>
+
+                        <h3 class="mt-4 mb-2">PRO Account</h3>
+                        <p>
+                            The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be enabled or disabled as we wish, according to usage and third party
+                            dependencies. Below you'll find a comparison between PRO and Free:
+                        </p>
+                        <free-pro-table no-footer="true" />
+
+                        <h2 class="mt-6 mb-4">Strava API Dependency</h2>
+                        <p>
+                            All of our services are fully depenendant on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
+                            their API, or cancel our connection to their API, all of our core services will cease to work.
+                        </p>
+
+                        <h2 class="mt-6 mb-4">Limits of Our Policy</h2>
+                        <p>
+                            Our website may link to external sites that are not operated by us. Please be aware that we have no control over the content and policies of those sites, and cannot accept responsibility or liability for their respective
+                            privacy practices.
+                        </p>
+
+                        <h2 class="mt-6 mb-4">Changes to This Policy</h2>
+                        <p>
+                            At our discretion, we may change our terms and conditions to reflect updates to our services, current acceptable practices, or legislative or regulatory changes. If we decide to change this policy, we will post the changes
+                            here at the same link by which you are accessing this policy.
+                        </p>
+                        <p>If required by law, we will get your permission or give you the opportunity to opt in to or opt out of, as applicable, any new uses of your personal information.</p>
+
+                        <h2 class="mt-6 mb-4">Contact Us</h2>
+                        <p>For any questions or concerns, you may contact us using the following details:</p>
+                        <p>
+                            Igor Ramadas<br />
+                            info@strautomator.com
+                        </p>
 
                         <div class="text-center mt-4">
                             <v-btn color="primary" @click="goBack" rounded>Back {{ backTarget }}</v-btn>
@@ -146,10 +186,12 @@
 
 <script>
 import _ from "lodash"
+import FreeProTable from "~/components/FreeProTable.vue"
 
 export default {
     authenticated: false,
     layout: "landing",
+    components: {FreeProTable},
     head() {
         return {
             title: "Terms and Conditions"
