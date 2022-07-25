@@ -276,6 +276,7 @@ router.get("/:userId/athlete-records/refresh", async (req: express.Request, res:
         if (existing) {
             logger.warn("Routes", req.method, req.originalUrl, `Recently refreshed, will not proceed`)
             webserver.renderJson(req, res, {recentlyRefreshed: true})
+            return
         }
 
         // First we prepare the baseline.
