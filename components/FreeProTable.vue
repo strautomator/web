@@ -77,8 +77,8 @@
                             <td>Price / year</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">
-                                <n-link to="/billing" v-if="$store.state.user && !$store.state.user.isPro" nuxt>${{ $store.state.proPlanDetails.price.year }} / year</n-link>
-                                <span v-else>${{ $store.state.proPlanDetails.price.year }}</span>
+                                <n-link to="/billing" v-if="$store.state.user && !$store.state.user.isPro" nuxt>{{ $store.state.proPlanDetails.price.year }} {{ currency }}</n-link>
+                                <span v-else>{{ $store.state.proPlanDetails.price.year }} {{ currency }}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -98,6 +98,9 @@ export default {
     computed: {
         dayText() {
             return this.$breakpoint.mdAndUp ? " days" : "d"
+        },
+        currency() {
+            return this.$store.state.expectedCurrency
         }
     }
 }

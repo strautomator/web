@@ -1,3 +1,89 @@
+const countryListGbp = ["uk", "gb", "england", "great britain", "scotland", "united kingdom"]
+const countryListEur = [
+    "ad",
+    "andorra",
+    "al",
+    "albania",
+    "am",
+    "armenia",
+    "at",
+    "austria",
+    "be",
+    "belgium",
+    "bg",
+    "bulgaria",
+    "by",
+    "belarus",
+    "ch",
+    "switzerland",
+    "cy",
+    "cyprus",
+    "cz",
+    "czech republic",
+    "de",
+    "germany",
+    "dk",
+    "denmark",
+    "ee",
+    "estonia",
+    "es",
+    "spain",
+    "fi",
+    "filand",
+    "fr",
+    "france",
+    "gi",
+    "gibraltar",
+    "gr",
+    "greece",
+    "hr",
+    "croatia",
+    "hu",
+    "hungary",
+    "ie",
+    "ireland",
+    "is",
+    "iceland",
+    "it",
+    "italy",
+    "lt",
+    "lithuania",
+    "lu",
+    "luxembourg",
+    "lv",
+    "slovenia",
+    "mt",
+    "malta",
+    "mc",
+    "monaco",
+    "nl",
+    "holland",
+    "netherlands",
+    "no",
+    "norway",
+    "pl",
+    "poland",
+    "pt",
+    "portugal",
+    "ro",
+    "romania",
+    "ru",
+    "russia",
+    "se",
+    "sweden",
+    "si",
+    "slovenia",
+    "sk",
+    "slovakia",
+    "slovakian republic",
+    "sm",
+    "san marino",
+    "tr",
+    "turkey",
+    "ua",
+    "ukraine"
+]
+
 export const state = () => ({
     lastUserFetch: new Date().valueOf(),
     user: null,
@@ -14,7 +100,8 @@ export const state = () => ({
     recordFields: [],
     mapStyles: [],
     freePlanDetails: {},
-    proPlanDetails: {}
+    proPlanDetails: {},
+    expectedCurrency: null
 })
 
 export const getters = {
@@ -84,19 +171,22 @@ export const mutations = {
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
     },
+    setGearWearCount(state, count) {
+        state.gearwearCount = count
+    },
+    setExpectedCurrency(state, currency) {
+        state.expectedCurrency = currency
+    },
     setUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
-    },
-    setGearWearCount(state, count) {
-        state.gearwearCount = count
     }
 }
 
 export const actions = {
-    async nuxtServerInit({commit, dispatch, state}) {
+    async nuxtServerInit({commit, dispatch, state}, {req}) {
         if (process.server) {
             const core = require("strautomator-core")
             const settings = require("setmeup").settings
@@ -158,10 +248,10 @@ export const actions = {
         let oauth = state.oauth
 
         if (!user && oauth && oauth.accessToken) {
-            await dispatch("assignUser")
+            await dispatch("assignUser", {req})
         }
     },
-    async assignUser({commit, state}) {
+    async assignUser({commit, state}, {req}) {
         try {
             if (state.oauth.userId) {
                 this.$axios.setToken(state.oauth.accessToken)
@@ -171,8 +261,24 @@ export const actions = {
 
                 await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
                     .then((res) => {
-                        commit("setUser", res[0])
+                        const aUser = res[0]
+                        commit("setUser", aUser)
 
+                        let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
+                        let country = (aUser.profile.country || req.headers["cf-country"] || "xx").toLowerCase()
+                        if (!currency && country) {
+                            if (countryListGbp.includes(country)) {
+                                currency = "GBP"
+                            } else if (countryListEur.includes(country)) {
+                                currency = "EUR"
+                            }
+                        }
+
+                        // Set the expected PRO currency, defaulting to USD.
+                        if (!currency) currency = "USD"
+                        commit("setExpectedCurrency", currency)
+
+                        // Set athlete records.
                         try {
                             const aRecords = res[1] || {}
                             delete aRecords.id
