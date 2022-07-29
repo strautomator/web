@@ -164,6 +164,9 @@ export const mutations = {
     setUserEmail(state, email) {
         state.user.email = email
     },
+    setUserUrlToken(state, token) {
+        state.user.urlToken = token
+    },
     setUserSubscription(state, data) {
         state.user.subscription = data
         if (data.enabled === false) state.user.isPro = false

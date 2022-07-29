@@ -44,9 +44,18 @@
                             Subscribe to calendar
                         </v-btn>
                     </div>
-                    <div class="text-center text-md-left caption mt-4">If the button above does not work, please subscribe manually using the link below:</div>
+                    <div class="text-center text-md-left caption mt-4">If the button above does not work, please subscribe manually copying the link below:</div>
                     <div class="mt-4">
                         <v-text-field label="URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                    </div>
+                    <div class="text-center text-md-left mt-2">
+                        <v-btn v-if="!newUrlToken" color="primary" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" outlined small rounded nuxt>
+                            <v-icon left>mdi-reload-alert</v-icon>
+                            Reset URL token
+                        </v-btn>
+                        <v-alert v-else color="success" icon="mdi-arrow-up-bold" rounded dense>
+                            <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
+                        </v-alert>
                     </div>
                 </v-card-text>
             </v-card>
@@ -153,6 +162,34 @@
                     </ul>
                 </v-card-text>
             </v-card>
+
+            <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">
+                <v-card>
+                    <v-toolbar color="primary">
+                        <v-toolbar-title>Reset URL token</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-toolbar-items>
+                            <v-btn icon @click.stop="hideResetDialog">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </v-toolbar-items>
+                    </v-toolbar>
+                    <v-card-text>
+                        <p class="mt-2">Are you sure you want to reset your URL token? Your calendar will have a new base URL, and previously imported calendars will be invalidated.</p>
+                        <div class="text-right">
+                            <v-spacer></v-spacer>
+                            <v-btn class="mr-1" color="grey" title="Cancel and do not reset" @click.stop="hideResetDialog" text rounded>
+                                <v-icon left>mdi-cancel</v-icon>
+                                Cancel
+                            </v-btn>
+                            <v-btn color="primary" title="Confirm and reset the URL" @click="resetUrl" rounded>
+                                <v-icon left>mdi-check</v-icon>
+                                Reset
+                            </v-btn>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-container>
     </v-layout>
 </template>
@@ -194,7 +231,9 @@ export default {
             sampleTemplate: {
                 eventSummary: "${name} ${icon}",
                 eventDetails: "${distance} - ${elevationGain}\n${speedAvg}\n${calories}\n${hrAvg} - ${wattsAvg}\nGear: ${gear}\n${description}"
-            }
+            },
+            resetDialog: false,
+            newUrlToken: false
         }
     },
     mounted() {
@@ -267,6 +306,28 @@ export default {
                     textInput.setSelectionRange(range, range)
                 }
             })
+        },
+        showResetDialog() {
+            this.resetDialog = true
+        },
+        hideResetDialog() {
+            this.resetDialog = false
+        },
+        async resetUrl() {
+            try {
+                const body = {urlToken: this.$store.state.user.urlToken}
+                const response = await this.$axios.$post(`/api/users/${this.user.id}/url-token`, body)
+
+                if (!response || !response.urlToken) {
+                    throw new Error("Failed to generate a new URL token")
+                }
+
+                this.resetDialog = false
+                this.$store.commit("setUserUrlToken", response.urlToken)
+                this.newUrlToken = response.urlToken
+            } catch (ex) {
+                this.$webError("Calendar.resetUrl", ex)
+            }
         }
     }
 }

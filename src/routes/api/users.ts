@@ -258,6 +258,33 @@ router.post("/:userId/email", async (req: express.Request, res: express.Response
     }
 })
 
+/**
+ * Reset the user's URL token.
+ */
+router.post("/:userId/url-token", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params || !req.body) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Validate existing token.
+        const oldToken = req.body.urlToken
+        if (oldToken != user.urlToken) {
+            throw new Error(`The passed URL token does not match the existing one`)
+        }
+
+        // Generate a new URL token.
+        const newToken = await users.setUrlToken(user)
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, {urlToken: newToken})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
 // USER RECIPES MANAGEMENT
 // --------------------------------------------------------------------------
 
