@@ -40,6 +40,9 @@
                             <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
+                            <v-select label="Wind speed unit" v-model="windSpeedUnit" :items="listWindSpeedUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                        </div>
+                        <div class="flex-grow-1">
                             <v-select label="Language" v-model="language" :items="listLanguages" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                     </div>
@@ -216,22 +219,24 @@ export default {
     },
     data() {
         const user = this.$store.state.user
+        const preferences = user.preferences
         const defaultLinksOn = user.isPro ? 0 : this.$store.state.linksOnPercent
-        const linksOn = user.preferences.linksOn || defaultLinksOn
-        const delayedProcessing = user.preferences.delayedProcessing || false
-        const gearwearDelayDays = user.preferences.gearwearDelayDays || 2
-        const hashtag = user.preferences.activityHashtag || false
-        const twitterShare = user.preferences.twitterShare || false
-        const privacyMode = user.preferences.privacyMode || false
-        const ftpAutoUpdate = user.preferences.ftpAutoUpdate || false
-        const language = user.preferences.language || "en"
-        const weatherProvider = user.isPro ? user.preferences.weatherProvider || null : null
-        const weatherUnit = user.preferences.weatherUnit || "c"
+        const linksOn = preferences.linksOn || defaultLinksOn
+        const delayedProcessing = preferences.delayedProcessing || false
+        const gearwearDelayDays = preferences.gearwearDelayDays || 2
+        const hashtag = preferences.activityHashtag || false
+        const twitterShare = preferences.twitterShare || false
+        const privacyMode = preferences.privacyMode || false
+        const ftpAutoUpdate = preferences.ftpAutoUpdate || false
+        const language = preferences.language || "en"
+        const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
+        const weatherUnit = preferences.weatherUnit || "c"
+        const windSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : weatherUnit == "f" ? "mph" : "kph"
         const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
 
         const now = this.$dayjs()
         const dateFormat = "YYYY-MM-DD"
-        let dateResetCounter = user.preferences.dateResetCounter || null
+        let dateResetCounter = preferences.dateResetCounter || null
         let resetCounter = dateResetCounter ? true : false
         let arrDateReset = dateResetCounter ? dateResetCounter.split("-") : null
 
@@ -274,10 +279,16 @@ export default {
             language: language,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
+            windSpeedUnit: windSpeedUnit,
             listWeatherProviders: listWeatherProviders,
             listWeatherUnits: [
                 {value: "c", text: "Celsius"},
                 {value: "f", text: "Fahrenheit"}
+            ],
+            listWindSpeedUnits: [
+                {value: "m/s", text: "m/s"},
+                {value: "kph", text: "kph"},
+                {value: "mph", text: "mph"}
             ],
             listLanguages: [
                 {value: "en", text: "English"},
@@ -440,6 +451,7 @@ export default {
                     privacyMode: this.privacyMode,
                     weatherProvider: this.weatherProvider,
                     weatherUnit: this.weatherUnit,
+                    windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
