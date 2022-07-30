@@ -161,6 +161,11 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.weatherUnit = req.body.weatherUnit != "c" ? "f" : "c"
         }
 
+        // Make sure wind speed unit is valid.
+        if (preferenceChanged("windSpeedUnit") && ["m/s", "kph", "mph"].includes(req.body.windSpeedUnit)) {
+            preferences.windSpeedUnit = req.body.windSpeedUnit
+        }
+
         // Make sure language is valid.
         if (preferenceChanged("language")) {
             preferences.language = req.body.language.toString().substring(0, 2)
