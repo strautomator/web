@@ -4,7 +4,11 @@
             <h1>Calendar</h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
-                    <p>Strautomator can export your Strava activities and club events using the iCal format.</p>
+                    <p>
+                        Strautomator can export your Strava activities and club events using the iCal format.<br />
+                        Please set your desired options, and then use the generated URL to subscribe.
+                    </p>
+
                     <div>
                         <h3>What to export</h3>
                         <v-radio-group class="mt-1" v-model="calendarType" :row="$breakpoint.mdAndUp">
@@ -29,34 +33,33 @@
                     </div>
                     <div v-if="calendarType != 'clubs'">
                         <h3>Days of activities</h3>
-                        <v-row no-gutters>
+                        <v-row class="mb-0 pb-0" no-gutters>
                             <v-col cols="5" md="2" class="mt-1">
-                                <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" outlined rounded dense></v-text-field>
+                                <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" hide-details outlined rounded dense></v-text-field>
                             </v-col>
                             <v-col cols="5" v-if="daysFrom > maxDaysFrom">
                                 <div class="mt-3 ml-1 error--text">max {{ maxDaysFrom }}</div>
                             </v-col>
                         </v-row>
                     </div>
-                    <div class="text-center text-md-left mt-1">
+                    <v-divider class="mt-4"></v-divider>
+                    <div class="mt-5">
+                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                    </div>
+                    <div class="text-center text-md-left mt-2">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
-                    </div>
-                    <div class="text-center text-md-left caption mt-4">If the button above does not work, please subscribe manually copying the link below:</div>
-                    <div class="mt-4">
-                        <v-text-field label="URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                    </div>
-                    <div class="text-center text-md-left mt-2">
-                        <v-btn v-if="!newUrlToken" color="primary" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" outlined small rounded nuxt>
+                        <v-btn color="primary" class="ml-md-2 mt-2 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :disabled="newUrlToken" outlined rounded nuxt>
                             <v-icon left>mdi-reload-alert</v-icon>
                             Reset URL token
                         </v-btn>
-                        <v-alert v-else color="success" icon="mdi-arrow-up-bold" rounded dense>
+                        <v-alert v-if="newUrlToken" color="success" icon="mdi-arrow-up-bold" rounded dense>
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
                         </v-alert>
                     </div>
+                    <div class="text-center text-md-left mt-2"></div>
                 </v-card-text>
             </v-card>
             <v-alert v-if="user && !user.isPro" border="top" color="primary" class="mt-4" colored-border>
@@ -162,6 +165,14 @@
                     </ul>
                 </v-card-text>
             </v-card>
+
+            <v-alert class="mt-4 text-center text-md-left">
+                <div class="mb-3 mb-md-0">
+                    Want to see an overview of your upcoming club events?
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    Try the <n-link to="/calendar/upcoming" title="Try your automations" nuxt>Upcoming Events</n-link> map.
+                </div>
+            </v-alert>
 
             <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">
                 <v-card>
