@@ -11,6 +11,7 @@
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn to="/automations" router nuxt>Automations</v-btn>
                 <v-btn to="/gear" router nuxt>Gear</v-btn>
+                <v-btn to="/calendar" router nuxt>Calendar</v-btn>
                 <v-btn to="/account" router nuxt>Account</v-btn>
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
@@ -50,7 +51,7 @@
         </v-main>
         <v-bottom-navigation class="hidden-md-and-up" color="primary" :value="activeNavBtn" app grow>
             <v-btn value="/dashboard" to="/dashboard" router nuxt>
-                <span>Dashboard</span>
+                <span>Home</span>
                 <v-icon>mdi-home</v-icon>
             </v-btn>
             <v-btn value="/automations" to="/automations" router nuxt>
@@ -60,6 +61,10 @@
             <v-btn value="/gear" to="/gear" router nuxt>
                 <span>Gear</span>
                 <v-icon>mdi-cog-refresh</v-icon>
+            </v-btn>
+            <v-btn value="/calendar" to="/calendar" router nuxt>
+                <span>Calendar</span>
+                <v-icon>mdi-calendar</v-icon>
             </v-btn>
             <v-btn value="/account" to="/account" router nuxt>
                 <span>Account</span>
@@ -115,11 +120,6 @@ export default {
         return {
             activeNavBtn: this.$route.path || null,
             logoutDialog: false
-        }
-    },
-    mounted() {
-        if (this.$store.state.user && this.$store.state.user.preferences.privacyMode) {
-            this.$ga.disable()
         }
     },
     methods: {

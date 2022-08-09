@@ -59,6 +59,8 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
  */
 router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: express.Response) => {
     try {
+        if (!req.params) throw new Error("Missing request params")
+
         const user = await users.getById(req.params.userId)
         const calType = req.params.calType
         const now = dayjs()
@@ -66,7 +68,6 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Validate user and URL token.
         if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
         if (!user) throw new Error(`User ${req.params.userId} not found`)
-        if (!user.urlToken) throw new Error(`User ${user.id} has no URL token assigned`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
         // Get calendar options from query parameters.

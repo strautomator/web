@@ -101,9 +101,13 @@
                         </v-simple-table>
                         <v-divider />
                         <div class="ml-md-4 mt-4 text-center text-md-left">
-                            <v-btn color="primary" title="Go to my automations history" to="/automations/history" small nuxt rounded>
+                            <v-btn color="primary" title="Go to my automations history" to="/automations/history" class="mr-md-2 mb-4 mb-md-0" small nuxt rounded>
                                 <v-icon left>mdi-history</v-icon>
                                 Go to automation history
+                            </v-btn>
+                            <v-btn color="primary" title="View my upcoming club events" to="/calendar/upcoming" small nuxt rounded>
+                                <v-icon left>mdi-calendar-check</v-icon>
+                                Upcoming club events
                             </v-btn>
                         </div>
                         <div class="caption mt-4 ml-5 mr-5">Please note that the list above doesn't include activities that were not updated by Strautomator.</div>
@@ -162,10 +166,6 @@
                         Missing something?
                         <br v-if="!$breakpoint.mdAndUp" />
                         Try the <n-link to="/activities/sync" title="Try your automations" nuxt>manual automation sync</n-link>.
-                    </div>
-                    <div>
-                        Want to see activities and club events on your calendar app?
-                        <n-link to="/calendar" title="Calendar subscription" nuxt>Subscribe</n-link>.
                     </div>
                 </v-alert>
 
