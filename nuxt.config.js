@@ -33,11 +33,17 @@ module.exports = {
         },
         optimization: {
             runtimeChunk: true
+        },
+        devMiddleware: {
+            headers: {
+                "Cache-Control": "no-cache",
+                Vary: "*"
+            }
         }
     },
 
     // Additional builders.
-    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/dayjs", "@nuxtjs/google-analytics"],
+    buildModules: ["@nuxtjs/vuetify", "@nuxtjs/dayjs"],
 
     // Append global styles.
     css: ["@/assets/styles.scss"],
@@ -51,14 +57,6 @@ module.exports = {
     // Forced environment variables.
     env: {
         baseUrl: "https://strautomator.com/"
-    },
-
-    // Please change the GA ID to your own, or simply disable the module if not needed.
-    googleAnalytics: {
-        id: "UA-9331973-6",
-        autoTracking: {
-            exception: true
-        }
     },
 
     // Loading specs.
@@ -75,7 +73,7 @@ module.exports = {
     },
 
     // Additional plugins.
-    plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/authtoken"],
+    plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/localstorage", "~/plugins/authtoken"],
 
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],

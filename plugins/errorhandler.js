@@ -21,13 +21,12 @@ Vue.prototype.$webError = async (method, ex) => {
             const logger = require("anyhow")
             logger.error("Vue", method, `Status ${status}`, `${title || "Error"} - ${message}`)
         } else {
-            try {
-                if (this.$ga) this.$ga.exception(message)
-            } catch (gaEx) {
-                console.error(gaEx)
-            }
+            console.error(method, ex)
 
-            document.location.href = `/error?status=${encodeURIComponent(status)}&message=${encodeURIComponent(message)}&title=${encodeURIComponent(title)}`
+            // Redirect in production.
+            if (document.location.hostname == "strautomator.com") {
+                document.location.href = `/error?status=${encodeURIComponent(status)}&message=${encodeURIComponent(message)}&title=${encodeURIComponent(title)}`
+            }
         }
     } catch (innerEx) {
         console.error("Vue.webError", ex, innerEx)
