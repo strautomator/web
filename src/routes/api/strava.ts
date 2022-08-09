@@ -418,6 +418,66 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
     }
 })
 
+// CLUB EVENTS
+// --------------------------------------------------------------------------
+
+/**
+ * Get upcoming club events for the user.
+ * Defaults to 7 days for PRO and 2 days for Free accounts.
+ */
+router.get("/:userId/clubs/upcoming-events", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const days = req.query.days || user.isPro ? 7 : settings.plans.free.futureCalendarDays
+        if (!user.isPro && days > settings.plans.free.futureCalendarDays) {
+            throw new Error(`Free accounts are limited to ${settings.plans.free.futureCalendarDays} days in the future`)
+        }
+
+        const events = await strava.clubs.getUpcomingClubEvents(user, days)
+        webserver.renderJson(req, res, events)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Returns a ZIP file with the specified routes.
+ */
+router.get("/:userId/:urlToken/routes.zip", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user = await users.getById(req.params.userId)
+
+        // Validate user and URL token.
+        if (!user) throw new Error(`User ${req.params.userId} not found`)
+        if (user.urlToken != req.params.urlToken) throw new Error(`Download not found`)
+
+        const routes = req.query.routes as string
+        if (!routes) {
+            throw new Error("Missing route IDs")
+        }
+
+        // Maximum of just a few files can be zipped at the same time.
+        let routeIds = routes.split(",")
+        if (routeIds.length > settings.strava.routes.zipLimit) {
+            logger.warn("Routes", req.method, req.originalUrl, `Only first ${settings.strava.routes.zipLimit} of the passed ${routeIds.length} routes will be processed`)
+            routeIds = routeIds.slice(0, settings.strava.routes.zipLimit)
+        }
+
+        const zip = await strava.routes.zipGPX(user, routeIds)
+        zip.pipe(res).on("error", (err) => logger.error("Routes", req.method, req.originalUrl, err))
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
 // WEBHOOKS
 // --------------------------------------------------------------------------
 
