@@ -109,18 +109,16 @@
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
-                                <div v-for="plan in billingPlans" :key="plan.id">
-                                    <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(plan.id)" x-large rounded nuxt>
-                                        <v-icon left>mdi-credit-card-outline</v-icon>
-                                        ${{ plan.price.toFixed(2) + " / " + plan.frequency }} via PayPal
-                                    </v-btn>
-                                </div>
+                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" x-large rounded nuxt>
+                                    <v-icon left>mdi-credit-card-outline</v-icon>
+                                    {{ `${activeBillingPlan.price.toFixed(2)} ${activeBillingPlan.currency} / ${activeBillingPlan.frequency}` }} via PayPal
+                                </v-btn>
                             </v-col>
                             <v-col class="text-center mb-2">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
                                     <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        ${{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} / month via GitHub
+                                        {{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} USD / month via GitHub
                                     </v-btn>
                                 </a>
                             </v-col>
@@ -151,6 +149,7 @@ export default {
         return {
             loading: true,
             billingPlans: [],
+            activeBillingPlan: null,
             subscription: null,
             subscriptionSource: null,
             unsubscribed: false,
@@ -180,8 +179,10 @@ export default {
     },
     async fetch() {
         try {
-            const billingPlans = await this.$axios.$get(`/api/paypal/${this.user.id}/billingplans`)
-            this.billingPlans = Object.values(billingPlans)
+            const res = await this.$axios.$get(`/api/paypal/${this.user.id}/billingplans`)
+            const billingPlans = Object.values(res)
+            this.billingPlans = billingPlans
+            this.activeBillingPlan = billingPlans.find((b) => b.currency == (this.$store.state.expectedCurrency || "USD"))
         } catch (ex) {
             this.$webError("Billing.fetch", ex)
         }
