@@ -9,7 +9,7 @@ export default {
         recipeRules() {
             return {
                 required: (value) => {
-                    if (!value || value.trim().length < 1) return `Field is required`
+                    if (!value || value.toString().trim().length < 1) return `Field is required`
                     return true
                 },
                 number: (value) => {

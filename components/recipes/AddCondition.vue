@@ -41,6 +41,7 @@
                                         :items="locations"
                                         :loading="loading"
                                         :search-input.sync="searchLocations"
+                                        :rules="locationInputRules"
                                         return-object
                                         dense
                                         rounded
@@ -149,15 +150,19 @@ export default {
         },
         sportInputRules() {
             if (!this.isSportType) return false
-            return [() => this.selectedSportTypes.length > 0]
+            return [this.recipeRules.required, () => this.selectedSportTypes.length > 0]
         },
         booleanInputRules() {
             if (!this.isBoolean) return false
-            return [() => this.selectedBoolean.value === false || this.selectedBoolean.value === true]
+            return [this.recipeRules.required, () => this.selectedBoolean.value === false || this.selectedBoolean.value === true]
         },
         weekdayInputRules() {
             if (!this.isWeekday) return false
-            return [() => this.selectedWeekdays.length > 0]
+            return [this.recipeRules.required, () => this.selectedWeekdays.length > 0]
+        },
+        locationInputRules() {
+            if (!this.isLocation) return false
+            return [this.recipeRules.required, () => (this.locationInput && this.locationInput.value.length > 0 ? true : false)]
         },
         valueInputRules() {
             if (this.isDefaultFor) return false
@@ -291,10 +296,12 @@ export default {
                 // User typed the coordinates directly?
                 if (_.isString(value) && value.indexOf(",") > 0) {
                     const arrValue = value.split(",")
+                    let lat = arrValue[0].trim()
+                    let long = arrValue[1].trim()
 
-                    if (arrValue.length == 2 && !isNaN(arrValue[0]) && !isNaN(arrValue[1])) {
-                        const lat = parseFloat(arrValue[0])
-                        const long = parseFloat(arrValue[1])
+                    if (arrValue.length == 2 && !isNaN(lat) && !isNaN(long)) {
+                        lat = parseFloat(lat)
+                        long = parseFloat(long)
 
                         if (lat >= -90 && lat <= 90 && long >= -180 && long <= 180) {
                             const option = {value: [lat, long], address: `Coordinates ${lat}, ${long}`}
