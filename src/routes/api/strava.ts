@@ -173,7 +173,7 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activity)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
+        logger.warn("Routes", req.method, req.originalUrl, ex)
         const errorMessage = ex.toString().toLowerCase()
         const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
@@ -432,7 +432,7 @@ router.get("/:userId/clubs/upcoming-events", async (req: express.Request, res: e
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const days = req.query.days || user.isPro ? 7 : settings.plans.free.futureCalendarDays
+        const days = req.query.days ? parseInt(req.query.days as string) : user.isPro ? settings.plans.pro.futureCalendarDays : settings.plans.free.futureCalendarDays
         if (!user.isPro && days > settings.plans.free.futureCalendarDays) {
             throw new Error(`Free accounts are limited to ${settings.plans.free.futureCalendarDays} days in the future`)
         }
