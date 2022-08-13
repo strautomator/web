@@ -65,13 +65,13 @@
                                     <th>Best</th>
                                     <th v-if="$breakpoint.mdAndUp">2nd Best</th>
                                     <th v-if="$breakpoint.mdAndUp">Date</th>
-                                    <th class="text-center">Activity</th>
-                                    <th class="text-center" v-if="$breakpoint.mdAndUp">Edit</th>
+                                    <th class="text-center pr-0 pl-0" width="1">Activity</th>
+                                    <th class="text-center pr-0 pl-0" width="1">Edit</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="mb-1" v-for="recordField in getRecordFields(recordEntry[1])" :key="'td-' + recordField">
-                                    <td class="text-lowercase">
+                                    <td class="text-capitalize">
                                         <v-icon class="mr-1">{{ getRecordIcon(recordField) }}</v-icon>
                                         {{ camelCaseName(recordField) }}
                                     </td>
@@ -90,7 +90,7 @@
                                         </template>
                                         <span v-else><v-icon title="Unknown activity" color="grey">mdi-help-box</v-icon></span>
                                     </td>
-                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
+                                    <td class="text-center">
                                         <v-icon title="Edit record value" color="primary" @click="showEditDialog(recordEntry, recordField)">mdi-pencil-outline</v-icon>
                                     </td>
                                 </tr>
@@ -99,14 +99,18 @@
                     </v-card-text>
                 </v-card>
 
-                <v-alert class="mt-6 text-center text-md-left">Your personal records are updated automatically.</v-alert>
+                <v-alert class="mt-6 text-center text-md-left">Your personal records are updated automatically with every new activity.</v-alert>
             </template>
         </v-container>
 
         <v-dialog v-model="editDialog" width="400" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
-                    <v-toolbar-title>{{ camelCaseName(editRecordSport) }} - {{ editRecordField }} record</v-toolbar-title>
+                    <v-toolbar-title>
+                        <v-icon class="mr-1">{{ getSportIcon(editRecordSport) }}</v-icon>
+                        <span class="text-capitalize">{{ camelCaseName(editRecordField) }}</span>
+                        (new record)
+                    </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
                         <v-btn icon @click.stop="hideEditDialog">
@@ -116,7 +120,8 @@
                 </v-toolbar>
                 <v-card-text>
                     <v-form ref="editForm">
-                        <p class="mt-3">Enter the new value below. Your previous record will be erased, as well as its activity ID.</p>
+                        <p class="mt-3">Sport: {{ camelCaseName(editRecordSport) }}</p>
+                        <p>Enter the new record below. Your previous record will be erased, as well as its referenced activity ID.</p>
                         <div>
                             <v-text-field v-model="editRecordValue" label="New record" maxlength="10" :loading="savingRecord" :suffix="editRecordSuffix" validate-on-blur outlined rounded></v-text-field>
                         </div>
