@@ -205,6 +205,9 @@ export default {
                     this.mapSetPosition()
                 }
 
+                const bikeLayer = new google.maps.BicyclingLayer()
+                bikeLayer.setMap(this.map)
+
                 for (let e of this.events) {
                     try {
                         this.eventMapObjects[e.id] = {}
