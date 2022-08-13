@@ -11,13 +11,13 @@
                             Once you hit that button, there's no way back. All your data will be deleted straight away, and Strautomator will drop its connection to your Strava account.
                         </p>
                         <div class="text-center mt-8">
-                            <v-btn color="gray" class="mr-md-3 mb-3 mb-md-0" to="/account" title="Back to my account" text rounded nuxt>
+                            <v-btn color="gray" class="mr-2" to="/account" title="Back to my account" text rounded nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
                                 Back
                             </v-btn>
                             <v-btn color="removal" @click="cancelAccount()" title="Goodbye :-(" rounded>
                                 <v-icon left>mdi-close-circle</v-icon>
-                                Close my account
+                                Close account
                             </v-btn>
                         </div>
                     </div>

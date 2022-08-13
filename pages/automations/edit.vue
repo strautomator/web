@@ -166,7 +166,7 @@ export default {
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
-            title: "Automation"
+            title: this.$route.query.id ? "Edit automation" : "New automation"
         }
     },
     data() {
@@ -184,7 +184,7 @@ export default {
 
         // Invalid recipe?
         if (!recipe) {
-            return this.$webError("UserAutomations.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
+            return this.$webError("AutomationEditdata", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
         return {
@@ -225,7 +225,7 @@ export default {
                 this.currentCounter = recipeStats.counter
             }
         } catch (ex) {
-            this.$webError("UserAutomations.fetch", ex)
+            this.$webError("AutomationEditfetch", ex)
         }
     },
     beforeRouteLeave(to, from, next) {

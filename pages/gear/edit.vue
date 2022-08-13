@@ -368,6 +368,11 @@ export default {
             try {
                 this.hasChanges = false
 
+                if (this.gearwearConfig.components.length == 0) {
+                    this.$router.push({path: "/gear"})
+                    return
+                }
+
                 // Remove lastResetDate helper from components.
                 for (let comp of this.gearwearConfig.components) {
                     delete comp.lastResetDate
@@ -493,6 +498,7 @@ export default {
         async deleteComponent() {
             try {
                 _.remove(this.gearwearConfig.components, this.gearwearComponent)
+                this.gearwearConfig.components = this.gearwearConfig.components
                 this.hasChanges = true
             } catch (ex) {
                 this.$webError("GearEdit.deleteComponent", ex)

@@ -1,12 +1,13 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1 class="mb-4">
+            <h1>
                 Charts
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
                     <v-icon small>mdi-history</v-icon>
                 </v-btn>
             </h1>
+
             <v-card outlined>
                 <v-card-text>
                     <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
@@ -29,6 +30,14 @@
                     <canvas id="main-chart" :height="$breakpoint.mdAndUp ? '' : '320'"></canvas>
                 </v-card-text>
             </v-card>
+
+            <v-alert class="mt-4 text-center text-md-left">
+                <div class="mb-3 mb-md-0">
+                    Thinking about the future instead?
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    Try the <n-link to="/calendar/upcoming" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.
+                </div>
+            </v-alert>
         </v-container>
     </v-layout>
 </template>

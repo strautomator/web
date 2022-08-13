@@ -12,25 +12,21 @@
                     <br v-if="user.email && $breakpoint.mdAndDown" />
                     <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
-                <div>Account ID {{ user.id }}</div>
+                <div>
+                    Account ID {{ user.id }}
+                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" class="ml-1 mt-n1" small>mdi-open-in-new</v-icon></a>
+                </div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
-                <p class="mt-1 caption">
-                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" small>mdi-open-in-new</v-icon> Open my Strava profile</a>
-                </p>
-                <div class="ml-n1 mt-3 text-center text-md-left">
-                    <v-btn class="ma-1" color="primary" to="/calendar" title="My calendar" nuxt rounded>
-                        <v-icon left>mdi-calendar-month</v-icon>
-                        Calendar
-                    </v-btn>
-                    <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt rounded>
+                <div class="ml-n1 mt-2 text-left">
+                    <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt small rounded>
                         <v-icon left>mdi-bell</v-icon>
-                        Notifications
+                        My notifications
                     </v-btn>
                 </div>
             </div>
             <v-card class="mt-5" outlined>
-                <v-card-title class="accent"> My preferences </v-card-title>
+                <v-card-title class="accent">My preferences</v-card-title>
                 <v-card-text>
                     <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-1">
@@ -48,7 +44,7 @@
                     </div>
                     <div v-if="user.isPro" class="mb-8 mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
-                            <v-icon color="primary" small>mdi-information-outline</v-icon>
+                            <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
                             Need help choosing a weather provider?
                         </n-link>
                     </div>

@@ -33,7 +33,7 @@
                     </div>
                     <div v-if="calendarType != 'clubs'">
                         <h3>Days of activities</h3>
-                        <v-row class="mb-0 pb-0" no-gutters>
+                        <v-row class="mb-0 pb-0 mb-5" no-gutters>
                             <v-col cols="5" md="2" class="mt-1">
                                 <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" hide-details outlined rounded dense></v-text-field>
                             </v-col>
@@ -42,16 +42,13 @@
                             </v-col>
                         </v-row>
                     </div>
-                    <v-divider class="mt-4"></v-divider>
-                    <div class="mt-5">
-                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                    </div>
-                    <div class="text-center text-md-left mt-2">
+
+                    <div class="text-center text-md-left">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
-                        <v-btn color="primary" class="ml-md-2 mt-2 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :disabled="newUrlToken" outlined rounded nuxt>
+                        <v-btn color="primary" class="ml-md-2 mt-3 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :small="!$breakpoint.mdAndUp" :disabled="newUrlToken" outlined rounded nuxt>
                             <v-icon left>mdi-reload-alert</v-icon>
                             Reset URL token
                         </v-btn>
@@ -59,7 +56,9 @@
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
                         </v-alert>
                     </div>
-                    <div class="text-center text-md-left mt-2"></div>
+                    <div class="mt-5">
+                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                    </div>
                 </v-card-text>
             </v-card>
             <v-alert v-if="user && !user.isPro" border="top" color="primary" class="mt-4" colored-border>
@@ -167,11 +166,7 @@
             </v-card>
 
             <v-alert class="mt-4 text-center text-md-left">
-                <div class="mb-3 mb-md-0">
-                    Want to see an overview of your upcoming club events?
-                    <br v-if="!$breakpoint.mdAndUp" />
-                    Try the <n-link to="/calendar/upcoming" title="Try your automations" nuxt>Upcoming Events</n-link> map.
-                </div>
+                <div class="mb-3 mb-md-0">Want to see an overview of your upcoming club events? Try the <n-link to="/calendar/upcoming" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.</div>
             </v-alert>
 
             <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">

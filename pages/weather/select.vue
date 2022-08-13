@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="d-flex pa-0 mt-2">{{ summary.icon }} {{ summary.summary }}</div>
                                 <div class="d-flex pa-0 mt-1">
-                                    <div class="mr-3">
+                                    <div class="mr-3 ml-n1">
                                         <v-icon small>mdi-thermometer</v-icon>
                                         {{ summary.temperature }} ({{ summary.feelsLike }})
                                     </div>
@@ -86,7 +86,7 @@
                         </v-card>
                     </div>
                 </v-radio-group>
-                <div class="mt-2 text-center text-md-left">
+                <div class="mt-1 text-center text-md-left">
                     <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
                         Use {{ weatherProvider }}

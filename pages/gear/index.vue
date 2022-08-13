@@ -1,10 +1,7 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>
-                My Gear
-                <v-badge v-if="gearWithConfig.length > 0" color="accent" offset-x="-2" offset-y="1" :content="gearWithConfig.length"></v-badge>
-            </h1>
+            <h1>My Gear</h1>
             <template v-if="!isLoading && gearWithConfig.length == 0">
                 <p>With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.</p>
             </template>
@@ -24,7 +21,7 @@
             <template v-else>
                 <v-alert class="text-center text-md-left" v-if="!user.email">
                     <p>To get GearWear distance alerts, Strautomator needs to know your email address first.</p>
-                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded>Set my email address</v-btn>
+                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded small>Set my email address</v-btn>
                     <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
                 </v-alert>
                 <div class="mt-5 mb-2" v-if="isLoading">

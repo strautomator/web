@@ -10,13 +10,10 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: 22 July 2022</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: August 17th, 2022</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
-                        <p>
-                            This website and its services were <i>developed*</i>, are maintained and represented by a single individual: Igor Ramadas. Therefore in these terms and conditions, when you read "we", "us" or "our", it's effectively just
-                            myself, Igor.
-                        </p>
-                        <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals.</i></p>
+                        <p>This website and its services were developed, are maintained and represented by a single individual: Igor Ramadas.</p>
+                        <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
 
                         <h2 class="mt-6 mb-4">Privacy</h2>
                         <p>
@@ -144,8 +141,11 @@
                         <h3 class="mt-4 mb-2">PRO Account</h3>
                         <p>
                             The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be enabled or disabled as we wish, according to usage and third party
-                            dependencies. Below you'll find a comparison between PRO and Free:
+                            dependencies.
                         </p>
+                        <p>The monthly or yearly price of the PRO account varies per country and subscription date. The accepted payment currencies are USD, EUR, and GBP.</p>
+                        <p>Below you'll find a comparison between PRO and Free:</p>
+
                         <free-pro-table no-footer="true" />
 
                         <h2 class="mt-6 mb-4">Strava API Dependency</h2>

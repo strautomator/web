@@ -17,7 +17,7 @@
                     <v-card-title class="accent"> Previous Notifications </v-card-title>
                     <v-card-text>
                         <div class="mt-4">
-                            <p>These will be deleted automatically after a few days.</p>
+                            <p>These will be deleted automatically after some weeks.</p>
                             <div class="mt-4 mb-2" v-for="notification in readNotifications" :key="notification.id">
                                 <v-divider class="mb-2" />
                                 <div class="secondary--text">{{ notification.title }}</div>
