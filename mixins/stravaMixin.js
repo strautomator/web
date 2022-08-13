@@ -69,6 +69,10 @@ export default {
             const icons = this.getAllRecordIcons()
             return icons[field]
         },
+        // Helper to get field name from camelCase.
+        getFriendlyUpdatedField(field) {
+            return field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+        },
         // Check if the passed activity has broken a personal record, and returns
         // an array with the record key (field) and its details.
         isActivityRecord(activity) {
