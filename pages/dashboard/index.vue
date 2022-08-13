@@ -53,52 +53,9 @@
                                 <n-link to="/automations" title="Automations" nuxt router>automations</n-link>?
                             </p>
                         </div>
-                        <v-simple-table :class="{'mt-2': !$breakpoint.mdAndUp}" v-else>
-                            <thead v-if="$breakpoint.mdAndUp">
-                                <tr>
-                                    <th></th>
-                                    <th>Original activity</th>
-                                    <th>Automation(s)</th>
-                                    <th>Updated fields</th>
-                                    <th class="text-center">Strava</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="activity in activities" :key="activity.id">
-                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
-                                        <v-icon>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
-                                    </td>
-                                    <td class="pt-2 pb-2">
-                                        <template v-if="!$breakpoint.mdAndUp">
-                                            <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
-                                            <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
-                                            <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
-                                            <ul>
-                                                <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rsd-${id}`">
-                                                    <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
-                                                </li>
-                                            </ul>
-                                        </template>
-                                        <template v-else>
-                                            <strong>{{ activity.name || "Activity *" }}</strong>
-                                            <br />
-                                            {{ getDate(activity).format("lll") }}
-                                        </template>
-                                    </td>
-                                    <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
-                                        <div v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
-                                            <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
-                                        {{ getUpdatedFields(activity.updatedFields) }}
-                                    </td>
-                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
-                                        <a :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava"><v-icon color="primary" class="mt-n1">mdi-open-in-new</v-icon></a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-simple-table>
+
+                        <processed-activities :activities="activities" v-else></processed-activities>
+
                         <v-divider />
                         <div class="ml-md-4 mt-4 text-center text-md-left">
                             <v-btn color="primary" title="Go to my automations history" to="/automations/history" class="mr-md-2 mb-4 mb-md-0" small nuxt rounded>
@@ -182,10 +139,11 @@ import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 import AdsPanel from "~/components/AdsPanel.vue"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
+import ProcessedActivities from "~/components/ProcessedActivities.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, CreateFirst},
+    components: {AdsPanel, CreateFirst, ProcessedActivities},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
@@ -247,18 +205,8 @@ export default {
         this.getStravaStatus()
     },
     methods: {
-        getDate(activity) {
-            const aDate = this.$dayjs(activity.dateStart || activity.dateProcessed)
-
-            // Always display local activity times!
-            if (activity.utcStartOffset) {
-                aDate.utcOffset(activity.utcStartOffset)
-            }
-
-            return aDate
-        },
         getUpdatedFields(fields) {
-            const arr = Object.keys(fields)
+            const arr = Object.keys(fields).map((f) => f.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()))
             arr.sort()
             return arr.join(", ")
         },

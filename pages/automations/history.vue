@@ -28,9 +28,9 @@
                             </v-menu>
                         </v-col>
                         <v-col cols="12" md="2" class="text-center text-md-left pb-0 pt-1 mt-n4 mt-md-0">
-                            <v-btn color="primary" title="Fetch history" @click="fetchHistory()" :disabled="loading" rounded>
+                            <v-btn color="primary" title="Search history of processed activities" @click="fetchHistory()" :disabled="loading" rounded>
                                 <v-icon left>mdi-table-search</v-icon>
-                                Search
+                                Search activities
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -48,62 +48,7 @@
                         {{ dateFrom }} to {{ dateTo }}.
                     </div>
 
-                    <v-simple-table v-else>
-                        <thead class="accent" v-if="$breakpoint.mdAndUp">
-                            <tr>
-                                <th></th>
-                                <th>Original activity</th>
-                                <th>Automation(s)</th>
-                                <th>Updated fields</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="activity in activities" :key="activity.id">
-                                <td class="text-center" v-if="$breakpoint.mdAndUp">
-                                    <v-icon>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
-                                </td>
-                                <td class="pt-2 pb-2" nowrap>
-                                    <template v-if="!$breakpoint.mdAndUp">
-                                        <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
-                                        <span class="float-right ml-2">{{ getDate(activity).format("ll hA") }}</span>
-                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
-                                        <ul class="mt-1 ml-n2">
-                                            <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rs-${id}`">
-                                                <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
-                                            </li>
-                                        </ul>
-                                        <div class="mt-1 ml-n2">
-                                            <v-icon class="mr-2 mb-1" v-if="isActivityRecord(activity)" small>mdi-medal</v-icon>
-                                            <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" small outlined>{{ propName }}</v-chip>
-                                            <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>linkback</v-chip>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
-                                        <br />
-                                        {{ getDate(activity).format("ll") }}
-                                        <br />
-                                        {{ getDate(activity).format("HH:mm") }}
-                                    </template>
-                                </td>
-                                <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp" nowrap>
-                                    <ul class="pl-0">
-                                        <li v-for="(recipe, id) in activity.recipes" :key="`${activity.id}-rm-${id}`">
-                                            <span :class="{'text-decoration-line-through grey--text': !user.recipes[id]}">{{ recipe.title }}</span>
-                                        </li>
-                                    </ul>
-                                </td>
-                                <td v-if="$breakpoint.mdAndUp" class="pt-2 pb-2">
-                                    <v-icon class="mr-2 mb-1" v-if="isActivityRecord(activity)">mdi-medal</v-icon>
-                                    <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fm-${propName}`" small>{{ propName }}</v-chip>
-                                    <v-chip class="mr-1 mb-1" title="Link to strautomator.com" small outlined>linkback</v-chip>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-bold pt-2 pb-2" colspan="4">Total: {{ activities.length }} activities</td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
+                    <processed-activities :activities="activities" :header="true" v-else></processed-activities>
                 </v-card-text>
             </v-card>
 
@@ -117,9 +62,11 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
+import ProcessedActivities from "~/components/ProcessedActivities.vue"
 
 export default {
     authenticated: true,
+    components: {ProcessedActivities},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
@@ -140,22 +87,12 @@ export default {
     },
     async fetch() {
         if (!this.dateFrom) {
-            this.dateFrom = this.$dayjs(this.user.dateLastProcessedActivity).subtract(30, "days").format("YYYY-MM-DD")
+            this.dateFrom = this.$dayjs(this.user.dateLastProcessedActivity).subtract(1, "month").startOf("month").format("YYYY-MM-DD")
         }
 
         await this.fetchHistory()
     },
     methods: {
-        getDate(activity) {
-            const aDate = this.$dayjs(activity.dateStart || activity.dateProcessed)
-
-            // Always display local activity times!
-            if (activity.utcStartOffset) {
-                aDate.utcOffset(activity.utcStartOffset)
-            }
-
-            return aDate
-        },
         async fetchHistory() {
             try {
                 this.loading = true
