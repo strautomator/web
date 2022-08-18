@@ -103,7 +103,8 @@ export const state = () => ({
     mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {},
-    expectedCurrency: null
+    expectedCurrency: null,
+    archiveDownloadDays: null
 })
 
 export const getters = {
@@ -182,6 +183,9 @@ export const mutations = {
     setExpectedCurrency(state, currency) {
         state.expectedCurrency = currency
     },
+    setArchiveDownloadDays(state, days) {
+        state.archiveDownloadDays = days
+    },
     setUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe
     },
@@ -247,6 +251,9 @@ export const actions = {
 
             // Set the FTP weeks default.
             commit("setFtpWeeks", settings.strava.ftp.weeks)
+
+            // Set GDPR archive days interval.
+            commit("setArchiveDownloadDays", settings.users.archiveDownloadDays)
         }
 
         let user = state.user
