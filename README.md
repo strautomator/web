@@ -1,6 +1,6 @@
 # Strautomator Web
 
-This is Strautomator's web frontend, built with Nuxt + Vuetify. It depends on the [Strautomator Core](https://github.com/strautomator/core) to run. Please make sure you read the docs for the Core first before proceeding with the Web setup.
+This is Strautomator's web frontend, built with NuxtJS + Vuetify. It depends on the [Strautomator Core](https://github.com/strautomator/core) to run. Please make sure you read the docs for the Core first before proceeding with the Web setup.
 
 ## Settings
 
