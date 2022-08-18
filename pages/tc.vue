@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: August 17th, 2022</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: August 18th, 2022</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>This website and its services were developed, are maintained and represented by a single individual: Igor Ramadas.</p>
                         <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
@@ -54,9 +54,9 @@
                         </ul>
                         <p>We may collect, hold, use, and disclose information for the following purposes, and personal information will not be further processed in a manner that is incompatible with these purposes:</p>
                         <ul class="mb-6">
-                            <li>To enable you to access and use our website, associated applications, and associated social media platforms</li>
+                            <li>To enable you to access and use our website</li>
+                            <li>To enable our servers to connect to your Strava account</li>
                         </ul>
-                        <p>Please be aware that we may combine information we collect about you with general information or research data we receive from other trusted sources.</p>
 
                         <h3 class="mt-1 mb-2">Security of Your Personal Information</h3>
                         <p>
@@ -77,8 +77,8 @@
 
                         <h3 class="mt-1 mb-2">Feature: "Privacy Mode"</h3>
                         <p>
-                            You have the option on your account preferences to enable a feature called "Privacy mode". If enabled, Strautomator will anonymize some of your account details, as well as deleting some of the processed data related to
-                            your account, including but not limited to:
+                            You have the option on your account preferences to enable a feature called "Privacy mode". If enabled, Strautomator will anonymize some of your account details, as well as delete some of the processed data related to your
+                            account, including but not limited to:
                         </p>
                         <ul class="mb-6">
                             <li>Your Strava username and location</li>
@@ -93,7 +93,7 @@
 
                         <h2 class="mt-6 mb-4">Disclosure of Personal Information to Third Parties</h2>
                         <p>We do not disclose any of your personal information to third parties or individuals.</p>
-                        <p>Third party services (Strava, and possibly PayPal or GitHub) will disclose some of your personal information to Strautomator. But we do not send any extra information about you to them.</p>
+                        <p>Third party services (Strava, and possibly PayPal or GitHub) will disclose some of your personal information to Strautomator. But we do not send any extra information about you to them, that they don't already have.</p>
                         <p>We might, however, disclose your personal information to legal authorities if we are presented with a warrant to do so.</p>
 
                         <h2 class="mt-6 mb-4">Your Rights and Controlling Your Personal Information</h2>
@@ -116,27 +116,34 @@
                             protection authority in relation to your complaint.
                         </p>
 
-                        <h2 class="mt-6 mb-4">Use of Cookies</h2>
+                        <h3 class="mt-6 mb-4">Use of Cookies</h3>
                         <p>
-                            We use &ldquo;cookies&rdquo; to collect information about you and your activity across our site. A cookie is a small piece of data that our website stores on your computer, and accesses each time you visit, so we can
-                            understand how you use our site. This helps us serve you content based on preferences you have specified.
+                            We use "cookies" to collect information about you and your activity across our site. A cookie is a small piece of data that our website stores on your computer, and accesses each time you visit, so we can understand how
+                            you use our site. This helps us serve you content based on preferences you have specified.
                         </p>
 
                         <h2 class="mt-6 mb-4">Subscription Plans</h2>
-                        <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via special promotions. Those subscriptions plans might change or be cancelled at any time.</p>
+                        <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via special promotions.</p>
 
                         <h3 class="mt-4 mb-2">Updates to Subscription Plans</h3>
+                        <p>Planned changes to subscription plans will be usually communicated to subscribers at least 14 days in advance.</p>
+
+                        <h3 class="mt-4 mb-2">Cancellation of Subscription Plans</h3>
                         <p>
-                            Planned changes to subscription plans will be communicated to subscribers with at least 30 days in advance. Changes that benefit the user experience might not be communicated beforehand, although we usually do it.
-                            Cancellation of existing subscription plans due to legal reasons or external dependencies, such as the Strava API, are not guaranteed to be communicated beforehand.
+                            Cancellation of existing subscription plans are usually communicated to subscribers at least 14 days in advance. Cancellation due to legal reasons or external dependencies, such as the Strava API, are not guaranteed to be
+                            communicated beforehand.
                         </p>
 
                         <h3 class="mt-4 mb-2">Payment Processing</h3>
                         <p>Payments are currently handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
-                        <p>Subscriptions paid in form of a Sponsorship via GitHub are handled entirely by GitHub.</p>
+                        <p>Subscriptions paid in form of a Sponsorship via GitHub are handled by Stripe, via GitHub.</p>
 
                         <h3 class="mt-4 mb-2">Refunds</h3>
-                        <p>We do not offer refunds by default. On exceptional cases, we might offer a partial or full refund on your last subscription payment, in case we find that it's justifiable.</p>
+                        <p>We do not guarantee refunds by default. Refunds are handled on a per-case basis.</p>
+                        <p>
+                            Users can request a partial refund of up to 50% of the last subscription payment, if they're not happy with changes made to their subscription plan. Such requests must be made no later than 7 days after the changes go into
+                            production. On exceptional cases, we might offer a partial refund on your last subscription payment for other reasons, if we find it justifiable, or if you created a new subscription by mistake.
+                        </p>
 
                         <h3 class="mt-4 mb-2">PRO Account</h3>
                         <p>
@@ -148,10 +155,10 @@
 
                         <free-pro-table no-footer="true" />
 
-                        <h2 class="mt-6 mb-4">Strava API Dependency</h2>
+                        <h3 class="mt-6 mb-4">Strava API Dependency</h3>
                         <p>
-                            All of our services are fully depenendant on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
-                            their API, or cancel our connection to their API, all of our core services will cease to work.
+                            All of our services are fully dependant on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
+                            their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work.
                         </p>
 
                         <h2 class="mt-6 mb-4">Limits of Our Policy</h2>
