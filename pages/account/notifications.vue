@@ -14,7 +14,7 @@
             </div>
             <template v-if="readNotifications.length > 0">
                 <v-card class="mt-6" outlined>
-                    <v-card-title class="accent"> Previous Notifications </v-card-title>
+                    <v-card-title class="accent">Previous Notifications</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             <p>These will be deleted automatically after some weeks.</p>
@@ -87,8 +87,7 @@ export default {
             try {
                 await this.$axios.$post(`/api/notifications/${this.user.id}/read`, ids)
             } catch (ex) {
-                console.error("NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`)
-                console.error(ex)
+                this.$webError("NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`, ex)
             }
         }
     }

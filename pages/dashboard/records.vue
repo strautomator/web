@@ -99,7 +99,7 @@
                     </v-card-text>
                 </v-card>
 
-                <v-alert class="mt-6 text-center text-md-left">Your personal records are updated automatically with every new activity.</v-alert>
+                <v-alert class="mt-6 text-center text-md-left">Your personal records are updated automatically with each new activity.</v-alert>
             </template>
         </v-container>
 
