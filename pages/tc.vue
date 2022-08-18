@@ -181,7 +181,7 @@
                             info@strautomator.com
                         </p>
 
-                        <div class="text-center mt-4">
+                        <div class="text-center mt-6">
                             <v-btn color="primary" @click="goBack" rounded>Back {{ backTarget }}</v-btn>
                         </div>
                     </v-card-text>
