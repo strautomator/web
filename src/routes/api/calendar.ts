@@ -98,7 +98,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         res.setHeader("Expires", `${expires.format("ddd, DD MMM YYYY HH:mm:ss")} GMT`)
 
         // Generate the calendar.
-        await calendar.generate(user, options, res)
+        const redirectUrl = await calendar.generate(user, options)
+        res.redirect(302, redirectUrl)
     } catch (ex) {
         if (ex.toString().includes(" not found")) {
             logger.warn("Routes", req.method, req.originalUrl, ex)
