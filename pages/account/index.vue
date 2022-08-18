@@ -135,6 +135,12 @@
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
+                <v-btn color="primary" title="Download my data" to="/account/download" small outlined rounded nuxt>
+                    <v-icon left>mdi-archive-arrow-down</v-icon>
+                    Download my data
+                </v-btn>
+            </div>
+            <div class="mt-4 text-center text-md-left">
                 <v-btn color="removal" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
