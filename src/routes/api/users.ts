@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {gdpr, paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -484,6 +484,33 @@ router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {counter: counter})
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+// GDPR
+// --------------------------------------------------------------------------
+
+/**
+ * User wants to download an archive of its full data.
+ */
+router.get("/:userId/archive-download", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const archiveUrl = await gdpr.generateArchive(user)
+
+        if (!archiveUrl) {
+            throw new Error("Could not generate archive, please try again in a few hours")
+        }
+
+        logger.info("Routes", req.method, req.originalUrl)
+        webserver.renderJson(req, res, {url: archiveUrl})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)
