@@ -145,7 +145,7 @@ export default {
         },
         routeIds() {
             if (!this.events || this.events.length == 0) return null
-            return this.events.filter((e) => e.route).map((e) => e.route.id)
+            return this.events.filter((e) => e.route).map((e) => e.route.idString)
         }
     },
     async mounted() {
@@ -272,7 +272,7 @@ export default {
                                 <div>Next date: ${this.$dayjs(e.dates[0]).format("lll")}</div>
                                 <div>Distance: ${e.route ? this.getDistance(e.route.distance) : "-"}</div>
                                 <div>Duration: ${e.route ? this.getEstimatedTime(e.route.estimatedTime) : "-"}</div>
-                                <div class="mt-1"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
+                                <div class="mt-2 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
                               </div>`
                 })
 
