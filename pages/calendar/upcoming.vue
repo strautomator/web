@@ -36,10 +36,10 @@
                                             <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            {{ ed.event.route ? getDistance(ed.event.route.distance) : "-" }}
+                                            {{ getDistance(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            {{ ed.event.route ? getEstimatedTime(ed.event.route.estimatedTime) : "-" }}
+                                            {{ getEstimatedTime(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
                                             <v-icon class="mt-n1" v-if="ed.event.joined">mdi-checkbox-marked</v-icon>
@@ -53,8 +53,8 @@
                                     <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(ed.event.type) }}</v-icon>
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>
                                     <v-chip class="ml-1 float-right" color="primary" v-if="ed.event.joined" x-small>V</v-chip>
-                                    <v-chip class="ml-1 float-right" v-if="ed.event.route" x-small>{{ getEstimatedTime(ed.event.route.estimatedTime) }}</v-chip>
-                                    <v-chip class="ml-1 float-right" v-if="ed.event.route" x-small>{{ getDistance(ed.event.route.distance) }}</v-chip>
+                                    <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
+                                    <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
                                     <br />
                                     <a v-if="ed.event.route" @click="tableRouteClick(e)">{{ ed.event.title }}</a>
                                     <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
@@ -270,8 +270,8 @@ export default {
                     content: `<div class="black--text">
                                 <h3 class="mb-1">${e.title}</h3>
                                 <div>Next date: ${this.$dayjs(e.dates[0]).format("lll")}</div>
-                                <div>Distance: ${e.route ? this.getDistance(e.route.distance) : "-"}</div>
-                                <div>Duration: ${e.route ? this.getEstimatedTime(e.route.estimatedTime) : "-"}</div>
+                                <div>Distance: ${this.getDistance(e)}</div>
+                                <div>Duration: ${this.getEstimatedTime(e)}</div>
                                 <div class="mt-2 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
                               </div>`
                 })
@@ -351,11 +351,15 @@ export default {
         tableRouteClick(e) {
             this.mapSetBounds(e)
         },
-        getDistance(distance) {
+        getDistance(event) {
+            if (!event.route && !event.komootRoute) return "-"
+            const distance = event.route ? event.route.distance : event.komootRoute.distance
             const suffix = this.$store.state.user.profile.units == "imperial" ? "mi" : "km"
             return `${distance}${suffix}`
         },
-        getEstimatedTime(seconds) {
+        getEstimatedTime(event) {
+            if (!event.route && !event.komootRoute) return "-"
+            const seconds = event.route ? event.route.estimatedTime : event.komootRoute.estimatedTime
             const baseDuration = this.$dayjs.duration(seconds * 1100)
             const toQuarter = 15 - (baseDuration.minutes() % 15)
             const duration = baseDuration.add(toQuarter, "minutes")
