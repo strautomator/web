@@ -25,7 +25,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="ed in eventDates" :key="ed.date + ed.event.id">
-                                        <td class="text-center">
+                                        <td class="text-left">
                                             <v-icon>{{ getSportIcon(ed.event.type) }}</v-icon>
                                         </td>
                                         <td class="pt-2 pb-2" nowrap>
@@ -132,7 +132,6 @@ export default {
             map: null,
             events: null,
             eventDates: [],
-            unmappedEvents: [],
             eventMapObjects: {},
             selectedEvent: null,
             currentPosition: null,
@@ -150,38 +149,66 @@ export default {
     },
     async mounted() {
         try {
-            const positionSuccess = (position) => this.mapSetPosition(position)
-            const positionFailed = (err) => console.error(err)
-            navigator.geolocation.getCurrentPosition(positionSuccess, positionFailed)
+            const prepareMap = () => {
+                const eventDates = []
+                this.events.forEach((e) => e.dates.forEach((d) => eventDates.push({date: d, event: e})))
+                this.eventDates = _.sortBy(eventDates, "date")
 
-            // Check if events are cached on local storage, or if they should be reloaded.
+                if (typeof window !== "undefined" && !window.google) {
+                    window.initUpcomingEventsMap = () => this.loadMap()
+
+                    const mapScript = document.createElement("script")
+                    mapScript.async = true
+                    mapScript.defer = true
+                    mapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0cBXUmFBGn_HNlH06F2LM_WG2YWZGKe0&libraries=geometry&callback=initUpcomingEventsMap"
+                    mapScript.onerror = (ex) => this.$webError("UpcomingEventsMap.mounted", ex)
+                    document.querySelector("head").appendChild(mapScript)
+                } else {
+                    this.loadMap()
+                }
+
+                this.loading = false
+            }
+
+            // Helper to get events from the server.
+            const getEvents = async () => {
+                if (this.events) return
+
+                const queryCoords = this.currentPosition ? `&coordinates=${this.currentPosition.latitude},${this.currentPosition.longitude}` : ""
+                const events = await this.$axios.$get(`/api/strava/${this.user.id}/clubs/upcoming-events?days=${this.days}${queryCoords}`)
+                this.events = events
+                this.$setLocalStorage("clubs-upcoming-events", events, this.user.isPro ? 3600 : 7200)
+
+                prepareMap()
+            }
+
+            // Helper to get current position from the Browser.
+            const getCurrentPosition = () => {
+                return new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => resolve(position),
+                        (error) => reject(error),
+                        {maximumAge: 86400000, timeout: 5000, enableHighAccuracy: false}
+                    )
+                })
+            }
+
+            // Try getting the current position.
+            try {
+                const position = await getCurrentPosition()
+                this.mapSetPosition(position)
+            } catch (error) {
+                console.error(error)
+            }
+
+            // Check if events are cached on local storage. If so, prepare the map straight away.
             const cachedEvents = this.$getLocalStorage("clubs-upcoming-events")
             if (cachedEvents) {
                 this.events = cachedEvents
+                prepareMap()
             } else {
-                const events = await this.$axios.$get(`/api/strava/${this.user.id}/clubs/upcoming-events?days=${this.days}`)
-                this.events = events
-                this.$setLocalStorage("clubs-upcoming-events", events, this.user.isPro ? 3600 : 7200)
+                getEvents()
             }
-
-            const eventDates = []
-            this.events.forEach((e) => e.dates.forEach((d) => eventDates.push({date: d, event: e})))
-            this.eventDates = _.sortBy(eventDates, "date")
-
-            if (typeof window !== "undefined" && !window.google) {
-                window.initUpcomingEventsMap = () => this.loadMap()
-
-                const mapScript = document.createElement("script")
-                mapScript.async = true
-                mapScript.defer = true
-                mapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0cBXUmFBGn_HNlH06F2LM_WG2YWZGKe0&libraries=geometry&callback=initUpcomingEventsMap"
-                mapScript.onerror = (ex) => this.$webError("UpcomingEventsMap.fetch", ex)
-                document.querySelector("head").appendChild(mapScript)
-            } else {
-                this.loadMap()
-            }
-
-            this.loading = false
         } catch (ex) {
             this.$webError("UpcomingEventsMap.mounted", ex)
         }
@@ -196,6 +223,7 @@ export default {
 
                 this.loading = false
                 this.map = new google.maps.Map(this.$refs.googlemaps, {
+                    gestureHandling: "greedy",
                     fullscreenControl: false,
                     zoom: 9,
                     center: {lat: 0, lng: 0}
@@ -213,12 +241,14 @@ export default {
                         this.eventMapObjects[e.id] = {}
                         this.mapDrawRoute(e)
 
+                        if (e.komootRoute && e.komootRoute.locationStart) {
+                            e.position = {lat: e.komootRoute.locationStart[0], lng: e.komootRoute.locationStart[1]}
+                        }
                         if (!e.position) {
                             e.position = await this.loadAddressLocation(e)
                         }
                         if (!e.position) {
-                            this.unmappedEvents.push(e)
-                            _.remove(this.events, {id: e.id})
+                            e.noMap = true
                             continue
                         }
                         if (!this.currentPosition) {
