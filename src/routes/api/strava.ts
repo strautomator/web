@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {database, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune, StravaActivityFilter} from "strautomator-core"
+import {database, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ = require("lodash")
@@ -437,7 +437,23 @@ router.get("/:userId/clubs/upcoming-events", async (req: express.Request, res: e
             throw new Error(`Free accounts are limited to ${settings.plans.free.futureCalendarDays} days in the future`)
         }
 
-        const events = await strava.clubs.getUpcomingClubEvents(user, days)
+        const countries = [user.profile.country]
+
+        // Coordinates were passed? Geocode the country.
+        if (req.query.coordinates) {
+            try {
+                const queryCoords = req.query.coordinates.toString()
+                const coordinates = queryCoords.split(",").map((c) => parseFloat(c)) as [number, number]
+                const address = await maps.getReverseGeocode(coordinates, "locationiq")
+                if (address && address.country != user.profile.country) {
+                    countries.push(address.country)
+                }
+            } catch (geoEx) {
+                logger.error("Routes", req.method, req.originalUrl, "Could not get current user's country")
+            }
+        }
+
+        const events = await strava.clubs.getUpcomingClubEvents(user, days, countries)
         webserver.renderJson(req, res, events)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
