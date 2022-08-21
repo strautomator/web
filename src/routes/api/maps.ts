@@ -8,7 +8,7 @@ import webserver = require("../../webserver")
 const router = express.Router()
 
 /**
- * Get geocode for specified address.
+ * Get geocode for the specified address.
  */
 router.get("/:userId/geocode", async (req: express.Request, res: express.Response) => {
     try {
@@ -19,6 +19,26 @@ router.get("/:userId/geocode", async (req: express.Request, res: express.Respons
         const results = await maps.getGeocode(req.query.address as string, region || "")
 
         webserver.renderJson(req, res, results)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 500)
+    }
+})
+
+/**
+ * Get reverse geocode for the specified coordinates.
+ */
+router.get("/:userId/reverse-geocode", async (req: express.Request, res: express.Response) => {
+    try {
+        const validated = await auth.requestValidator(req, res)
+        if (!validated) return
+        if (!req.query.c) throw new Error("Missing query coordinates")
+
+        const query = req.query.c.toString()
+        const coordinates = query.split(",").map((c) => parseFloat(c))
+        const result = await maps.getReverseGeocode(coordinates as [number, number])
+
+        webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 500)
