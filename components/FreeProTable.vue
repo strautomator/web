@@ -68,7 +68,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>Test new features *</td>
+                            <td>Early access *</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
