@@ -277,7 +277,7 @@ export const actions = {
                         commit("setUser", aUser)
 
                         let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
-                        let country = (aUser.profile.country || req.headers["cf-country"] || "xx").toLowerCase()
+                        let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "xx").toLowerCase()
                         if (!currency && country) {
                             if (countryListGbp.includes(country)) {
                                 currency = "GBP"
