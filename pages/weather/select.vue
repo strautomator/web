@@ -131,7 +131,7 @@ export default {
         },
         getPosition() {
             this.loading = true
-            navigator.geolocation.getCurrentPosition(this.getWeather, this.positionError)
+            navigator.geolocation.getCurrentPosition(this.getWeather, this.positionError, {maximumAge: 3600000, timeout: 10000, enableHighAccuracy: false})
         },
         positionError(err) {
             this.loading = false
