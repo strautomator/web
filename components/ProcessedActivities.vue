@@ -24,7 +24,7 @@
                         <div v-for="(recipe, id) in activity.recipes" :class="{'text-decoration-line-through grey--text': !user.recipes[id]}" :key="`${activity.id}-rs-${id}`">
                             {{ recipe.title }}
                         </div>
-                        <div>
+                        <div class="mt-1 ml-n1">
                             <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" x-small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
                             <v-chip class="mb-1" title="Link to strautomator.com" x-small outlined>linkback</v-chip>
                         </div>

@@ -34,7 +34,7 @@
                         <h3 class="mb-4">Other options</h3>
                         <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="calendarType != 'clubs'" dense />
                         <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="calendarType != 'activities'" dense />
-                        <v-checkbox class="mt-n4" v-model="includeAllCountries" :label="'Include events outside ' + user.profile.country" v-if="calendarType != 'activities'" dense />
+                        <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include club events outside my country" v-if="calendarType != 'activities'" dense />
                     </div>
                     <div v-if="calendarType != 'clubs'">
                         <h3>Days of activities</h3>
