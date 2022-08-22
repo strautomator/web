@@ -34,6 +34,7 @@
                                         <td class="pt-2 pb-2">
                                             <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                             <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
+                                            <v-icon color="primary" small v-if="ed.event.route">mdi-download</v-icon>
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
                                             {{ getDistance(ed.event) }}
@@ -42,8 +43,8 @@
                                             {{ getEstimatedTime(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            <v-icon class="mt-n1" v-if="ed.event.joined">mdi-checkbox-marked</v-icon>
-                                            <v-icon class="mt-n1" color="grey" v-else>mdi-checkbox-blank-outline</v-icon>
+                                            <v-icon class="mt-n1" v-if="ed.event.joined">mdi-check-circle</v-icon>
+                                            <span v-else>-</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -52,20 +53,24 @@
                                 <div class="text-truncate mt-3" v-for="ed in eventDates" :key="ed.date + ed.event.id">
                                     <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(ed.event.type) }}</v-icon>
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>
-                                    <v-chip class="ml-1 float-right" color="primary" v-if="ed.event.joined" x-small>V</v-chip>
+                                    <v-icon class="ml-1 float-right" v-if="ed.event.joined" small>mdi-check-circle</v-icon>
                                     <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
                                     <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
                                     <br />
-                                    <a v-if="ed.event.route" @click="tableRouteClick(e)">{{ ed.event.title }}</a>
+                                    <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
                                     <v-divider class="mt-1 mb-1"></v-divider>
                                 </div>
                             </div>
-                            <div class="text-center text-md-left mt-3" v-if="routeIds">
+                            <div class="text-center text-md-left mt-3">
                                 <v-btn color="primary" title="Download routes" @click.stop="showDownloadDialog" :disabled="!routeIds || !user.isPro" small rounded>
                                     <v-icon left>mdi-folder-download</v-icon>
-                                    Download routes {{ !user.isPro ? "(PRO only)" : "" }}
+                                    {{ !routeIds ? "No routes to download" : !user.isPro ? "Download routes (PRO only)" : "Download routes" }}
                                 </v-btn>
+                            </div>
+                            <div class="mt-5">
+                                Showing club events for the next {{ days }} days.<br />
+                                Only Strava routes can be downloaded. Downloads from Komoot are not supported.
                             </div>
                         </template>
                         <div v-else>
@@ -94,7 +99,7 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-2">A total of {{ routeIds ? routeIds.length : 0 }} GPX routes for your upcoming events will be fetched from Strava, and zipped into a single file before downloading.</p>
+                        <p class="mt-2">A total of {{ routeIds ? routeIds.length : 0 }} GPX routes for your upcoming events will be fetched from Strava, and zipped into a single file before downloading. Komoot routes are not supported.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel and do not reset" @click.stop="hideDownloadDialog" text rounded>
@@ -177,7 +182,7 @@ export default {
                 const queryCoords = this.currentPosition ? `&coordinates=${this.currentPosition.latitude},${this.currentPosition.longitude}` : ""
                 const events = await this.$axios.$get(`/api/strava/${this.user.id}/clubs/upcoming-events?days=${this.days}${queryCoords}`)
                 this.events = events
-                this.$setLocalStorage("clubs-upcoming-events", events, this.user.isPro ? 3600 : 7200)
+                this.$setLocalStorage("clubs-upcoming-events", events, this.user.isPro ? 900 : 3600)
 
                 prepareMap()
             }
@@ -233,13 +238,18 @@ export default {
                     this.mapSetPosition()
                 }
 
+                const routeColors = ["#FFFF11", "#FF66CC", "#1133AA", "#00AA11", "#0011FF", "#AA1111", "#FF11FF", "#FF1100"]
                 const bikeLayer = new google.maps.BicyclingLayer()
                 bikeLayer.setMap(this.map)
 
+                let zIndex = 10
                 for (let e of this.events) {
                     try {
-                        this.eventMapObjects[e.id] = {}
-                        this.mapDrawRoute(e)
+                        this.eventMapObjects[e.id] = {zIndex: zIndex}
+                        if (e.route && e.route.polyline) {
+                            this.mapDrawRoute(e, routeColors.pop())
+                            zIndex--
+                        }
 
                         if (e.komootRoute && e.komootRoute.locationStart) {
                             e.position = {lat: e.komootRoute.locationStart[0], lng: e.komootRoute.locationStart[1]}
@@ -305,6 +315,9 @@ export default {
                                 <div class="mt-2 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
                               </div>`
                 })
+                infoWindow.addListener("closeclick", () => {
+                    this.selectedEvent = null
+                })
 
                 this.eventMapObjects[e.id].marker = marker
                 this.eventMapObjects[e.id].infoWindow = infoWindow
@@ -312,16 +325,15 @@ export default {
                 console.error("UpcomingEventsMap.mapCreateMarker", e.id, ex)
             }
         },
-        mapDrawRoute(e) {
-            if (!e.route || !e.route.polyline) return
-
+        mapDrawRoute(e, color) {
             try {
                 const points = google.maps.geometry.encoding.decodePath(e.route.polyline)
                 const poly = new google.maps.Polyline({
                     path: points,
-                    strokeColor: "#FF0000",
-                    strokeOpacity: 0.45,
+                    strokeColor: color,
+                    strokeOpacity: 0.55,
                     strokeWeight: 4,
+                    zIndex: this.eventMapObjects[e.id].zIndex,
                     map: this.map
                 })
 
@@ -343,43 +355,60 @@ export default {
             }
         },
         mapSetBounds(e) {
+            if (!this.eventMapObjects[e.id].polyline) return
+
             const bounds = new google.maps.LatLngBounds()
             const points = this.eventMapObjects[e.id].polyline.getPath().getArray()
             points.forEach((p) => bounds.extend(p))
             this.map.fitBounds(bounds)
         },
-        mapMarkerClick(e) {
-            if (this.selectedEvent && this.selectedEvent.id == e.id) {
-                const previousEvent = this.selectedEvent
-                this.selectedEvent = null
-                this.mapHighlightRoute(previousEvent, false)
-            } else {
-                const marker = this.eventMapObjects[e.id].marker
-                const infoWindow = this.eventMapObjects[e.id].infoWindow
-
-                this.selectedEvent = e
-                this.mapHighlightRoute(e, true, true)
-                this.map.setCenter(marker.getPosition())
-
-                infoWindow.open({
-                    anchor: marker,
-                    map: this.map
-                })
-            }
-        },
         mapHighlightRoute(e, highlight, clicked) {
             if (!this.eventMapObjects[e.id].polyline) return
 
             if (clicked) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.95})
+                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.95, strokeWeight: 6, zIndex: 20})
             } else if (highlight) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.85})
+                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.85, strokeWeight: 5, zIndex: 19})
             } else if (!this.selectedEvent || this.selectedEvent.id != e.id) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.45})
+                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.55, strokeWeight: 4, zIndex: this.eventMapObjects[e.id].zIndex})
             }
         },
+        mapRouteSelect(e) {
+            const previousEvent = this.selectedEvent || null
+            this.selectedEvent = e
+
+            if (previousEvent && previousEvent.id == e.id) {
+                this.selectedEvent = null
+                this.mapHighlightRoute(previousEvent, false)
+            } else {
+                this.selectedEvent = e
+                this.mapHighlightRoute(e, true, true)
+                this.mapSetBounds(e)
+
+                if (previousEvent) {
+                    this.mapHighlightRoute(previousEvent, false)
+                    this.eventMapObjects[previousEvent.id].infoWindow.close()
+                }
+            }
+
+            this.mapHighlightRoute(e, true, true)
+        },
+        mapMarkerClick(e) {
+            const previousEvent = this.selectedEvent || null
+            const marker = this.eventMapObjects[e.id].marker
+            const infoWindow = this.eventMapObjects[e.id].infoWindow
+
+            this.mapRouteSelect(e)
+            this.map.setCenter(marker.getPosition())
+
+            infoWindow.open({
+                anchor: marker,
+                map: this.map
+            })
+        },
+
         tableRouteClick(e) {
-            this.mapSetBounds(e)
+            this.mapRouteSelect(e)
         },
         getDistance(event) {
             if (!event.route && !event.komootRoute) return "-"
