@@ -5,14 +5,12 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">
-                    Automate your Strava
-                </h1>
+                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Automate your Strava</h1>
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
                 <div class="mt-6 mb-2">
-                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                 </div>
 
                 <v-card color="black" class="mb-2 home-panel">
@@ -24,12 +22,7 @@
                                     First you connect Strautomator to your Strava account. Then you create automations to automagically update your activities based on its properties like distance, speed, heart rate, time, location, weather, and many
                                     more.
                                 </p>
-                                <p>
-                                    You can also register your bike components to get an email letting you know when it's time to replace them. Never forget to swap a chain again!
-                                </p>
-                                <p>
-                                    New features and automation possibilities are being constantly added!
-                                </p>
+                                <p>You can also register your bike components to get an email letting you know when it's time to replace them. Never forget to swap a chain again!</p>
                             </div>
                         </div>
 
@@ -37,19 +30,33 @@
                             <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
                                 <div class="home-chip" :class="sampleAlignClass(index)">
                                     <span class="c-if primary--text">If</span>
-                                    <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp"/></span>
+                                    <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp" /></span>
                                     <span class="c-then primary--text">then</span>
                                     <span class="action">{{ sample.action }}</span>
                                 </div>
                             </div>
                         </v-responsive>
 
+                        <div class="home-faq mt-4 px-1 text-left">
+                            <h2>What else does it do?</h2>
+                            <div>
+                                <p>Strautomator can also:</p>
+                                <ul class="ml-4 pl-0">
+                                    <li>Add weather data to activity names or descriptions</li>
+                                    <li>Export your past activities and upcoming club events to .ics calendars</li>
+                                    <li>Show your upcoming club events directly on a map, with weather forecasts</li>
+                                    <li>Automatically estimate and update your cycling FTP on Strava</li>
+                                </ul>
+                                <p class="mt-4">New features possibilities are being constantly added!</p>
+                            </div>
+                        </div>
+
                         <div class="home-faq mt-8 px-1 text-left">
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
                                     Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users. Unlimited
-                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for ${{ $store.state.proPlanDetails.price.year }}
+                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for {{ $store.state.proPlanDetails.price.year }} {{ $store.state.expectedCurrency }}
                                     / year, paid via PayPal.
                                 </p>
                             </div>
@@ -57,7 +64,7 @@
                         </div>
 
                         <div class="mt-6 mb-6">
-                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg"/></a>
+                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -229,7 +236,7 @@ export default {
 
         return {
             showCookieConsent: displayCookieConsent,
-            samples: _.sampleSize(allSamples, 7),
+            samples: _.sampleSize(allSamples, 5),
             screenshot: 0
         }
     },
