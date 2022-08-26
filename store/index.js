@@ -261,6 +261,17 @@ export const actions = {
 
         if (!user && oauth && oauth.accessToken) {
             await dispatch("assignUser", {req})
+        } else {
+            let country = (req.headers["cf-ipcountry"] || "us").toLowerCase()
+            let currency = "USD"
+
+            if (countryListGbp.includes(country)) {
+                currency = "GBP"
+            } else if (countryListEur.includes(country)) {
+                currency = "EUR"
+            }
+
+            commit("setExpectedCurrency", currency)
         }
     },
     async assignUser({commit, state}, {req}) {
@@ -276,18 +287,20 @@ export const actions = {
                         const aUser = res[0]
                         commit("setUser", aUser)
 
+                        let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
                         let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
-                        let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "xx").toLowerCase()
+
                         if (!currency && country) {
                             if (countryListGbp.includes(country)) {
                                 currency = "GBP"
                             } else if (countryListEur.includes(country)) {
                                 currency = "EUR"
+                            } else {
+                                currency = "USD"
                             }
                         }
 
-                        // Set the expected PRO currency, defaulting to USD.
-                        if (!currency) currency = "USD"
+                        // Set the expected PRO currency based on existing user data and country.
                         commit("setExpectedCurrency", currency)
 
                         // Set athlete records.
