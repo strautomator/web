@@ -33,20 +33,31 @@ export class Auth {
             }
 
             // Check for referer instead of token? Will use same URL set for CORS.
-            if (options.image) {
+            if (options.referer) {
                 const referer = req.headers["referer"] || "unknown"
 
                 if (referer.indexOf(settings.app.url) < 0) {
                     logger.error("Auth.requestValidator", req.originalUrl, `Invalid referer: ${referer}`, `From ${req.ip}`)
 
-                    const result = fs.readFileSync(`${__dirname}/../static/access-denied.png`)
                     res.setHeader("cache-control", "no-cache")
-                    res.contentType("image/png")
-                    res.send(result)
-                    return false
+                    res.status(403)
+
+                    if (options.image) {
+                        const result = fs.readFileSync(`${__dirname}/../static/access-denied.png`)
+                        res.contentType("image/png")
+                        res.send(result)
+                    } else {
+                        res.send("Access denied")
+                    }
+
+                    if (options.anonymous) {
+                        return false
+                    }
                 }
 
-                return true
+                if (options.anonymous) {
+                    return true
+                }
             }
 
             // Auth bearer header is mandatory.
@@ -111,8 +122,12 @@ export class Auth {
  * Request validation options.
  */
 export interface RequestOptions {
+    /** Accept unauthenticated requests. */
+    anonymous?: boolean
     /** Requesting an image? Accept requests only from the Strautomator referer. */
     image?: boolean
+    /** Accept requests only from the Strautomator referer. */
+    referer?: boolean
 }
 
 /**
