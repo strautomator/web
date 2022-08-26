@@ -144,7 +144,7 @@ export default {
                 const latitude = position.coords.latitude
                 const longitude = position.coords.longitude
 
-                const result = await this.$axios.$get(`/api/weather/${this.user.id}/${latitude.toFixed(4)},${longitude.toFixed(4)}`)
+                const result = await this.$axios.$get(`/api/weather/${this.user.id}/coordinates/${latitude.toFixed(4)},${longitude.toFixed(4)}`)
 
                 // Iterate weather summaries to set the provider name and append to the weatherSummaries list.
                 for (let id of Object.keys(result)) {
