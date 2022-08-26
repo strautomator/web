@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.341.12012",
+    "version": "22.345.12112",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -13,8 +13,8 @@
     "scripts": {
         "build": "NODE_OPTIONS=--openssl-legacy-provider nuxt build",
         "generate": "NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
-        "start": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider node server/index.js",
-        "start:ts": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider node --preserve-symlinks -r ts-node/register ./src/index.ts",
+        "start": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider STRAUTOMATOR_CRON=true node server/index.js",
+        "start:ts": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider STRAUTOMATOR_CRON=true node --preserve-symlinks -r ts-node/register ./src/index.ts",
         "start:dev": "nodemon"
     },
     "dependencies": {
@@ -31,11 +31,11 @@
         "cross-env": "^7.0.3",
         "dayjs": "^1.11.5",
         "express": "^4.18.1",
-        "express-rate-limit": "^6.5.1",
+        "express-rate-limit": "^6.5.2",
         "nuxt": "^2.15.8",
         "qs": "^6.11.0",
         "strautomator-core": "strautomator/core",
-        "typescript": "^4.7.4",
+        "typescript": "^4.8.2",
         "vuedraggable": "^2.24.3"
     },
     "devDependencies": {
