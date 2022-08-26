@@ -18,8 +18,8 @@
                                         <th></th>
                                         <th>Date</th>
                                         <th>Title</th>
-                                        <th class="text-center">Distance</th>
-                                        <th class="text-center">Duration</th>
+                                        <th class="text-center">Details</th>
+                                        <th class="text-center">Weather</th>
                                         <th class="text-center">Joined</th>
                                     </tr>
                                 </thead>
@@ -38,9 +38,20 @@
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
                                             {{ getDistance(ed.event) }}
+                                            <br />
+                                            {{ getEstimatedTime(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            {{ getEstimatedTime(ed.event) }}
+                                            <template v-if="ed.event.route || ed.event.komootRoute">
+                                                <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
+                                                <template v-else-if="ed.weather.length == 0">-</template>
+                                                <div v-else>
+                                                    <template v-for="weather in ed.weather">
+                                                        {{ weather.icon }}
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            <template v-else>-</template>
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
                                             <v-icon class="mt-n1" v-if="ed.event.joined">mdi-check-circle</v-icon>
@@ -53,12 +64,14 @@
                                 <div class="text-truncate mt-3" v-for="ed in eventDates" :key="ed.date + ed.event.id">
                                     <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(ed.event.type) }}</v-icon>
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>
-                                    <v-icon class="ml-1 float-right" v-if="ed.event.joined" small>mdi-check-circle</v-icon>
-                                    <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
-                                    <v-chip class="ml-1 float-right" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
+                                    <v-icon v-if="ed.event.joined" small>mdi-check-circle</v-icon>
+                                    <span class="ml-1 float-right">{{ ed.weather.map((w) => w.icon).join(" ") }}</span>
                                     <br />
                                     <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
+                                    <br />
+                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
+                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
                                     <v-divider class="mt-1 mb-1"></v-divider>
                                 </div>
                             </div>
@@ -70,6 +83,7 @@
                             </div>
                             <div class="mt-5">
                                 Showing club events for the next {{ days }} days.<br />
+                                Weather limited to events happening in the next {{ weatherDays }} days.<br />
                                 Only Strava routes can be downloaded. Downloads from Komoot are not supported.
                             </div>
                         </template>
@@ -134,10 +148,12 @@ export default {
     data() {
         return {
             loading: true,
+            loadingWeather: true,
+            weatherDays: 5,
             map: null,
             events: null,
             eventDates: [],
-            eventMapObjects: {},
+            eventObjects: {},
             selectedEvent: null,
             currentPosition: null,
             downloadDialog: false
@@ -156,7 +172,7 @@ export default {
         try {
             const prepareMap = () => {
                 const eventDates = []
-                this.events.forEach((e) => e.dates.forEach((d) => eventDates.push({date: d, event: e})))
+                this.events.forEach((e) => e.dates.forEach((d) => eventDates.push({date: d, event: e, weather: []})))
                 this.eventDates = _.sortBy(eventDates, "date")
 
                 if (typeof window !== "undefined" && !window.google) {
@@ -239,15 +255,16 @@ export default {
                 }
 
                 const routeColors = ["#FFFF11", "#FF66CC", "#1133AA", "#00AA11", "#0011FF", "#AA1111", "#FF11FF", "#FF1100"]
-                const bikeLayer = new google.maps.BicyclingLayer()
-                bikeLayer.setMap(this.map)
 
                 let zIndex = 10
                 for (let e of this.events) {
+                    const color = routeColors.pop()
+
                     try {
-                        this.eventMapObjects[e.id] = {zIndex: zIndex}
+                        this.eventObjects[e.id] = {zIndex: zIndex}
+
                         if (e.route && e.route.polyline) {
-                            this.mapDrawRoute(e, routeColors.pop())
+                            this.mapDrawRoute(e, color)
                             zIndex--
                         }
 
@@ -265,11 +282,13 @@ export default {
                             this.mapSetPosition({latitude: e.position.lat(), longitude: e.position.lng()})
                         }
 
-                        this.mapCreateMarker(e)
+                        this.mapCreateMarker(e, color)
                     } catch (eventEx) {
                         console.error("UpcomingEventsMap.loadMap.events", e.id, eventEx)
                     }
                 }
+
+                this.loadWeather()
             } catch (ex) {
                 this.$webError("UpcomingEventsMap.loadMap", ex)
             } finally {
@@ -294,10 +313,81 @@ export default {
                 })
             })
         },
-        mapCreateMarker(e) {
+        async loadWeather() {
             try {
+                const query = []
+
+                // Iterate the events to build the query data, using the format "eventId-start/mid/end:coordinates:timestamp".
+                for (let ed of this.eventDates) {
+                    ed.weather = []
+
+                    const event = ed.event
+                    const route = event.route || event.komootRoute || null
+
+                    // Abort if event has no route or is not happening within the next few days.
+                    if (!route) {
+                        continue
+                    }
+                    if (this.$dayjs().add(this.weatherDays, "days").isBefore(ed.date)) {
+                        continue
+                    }
+
+                    const eDate = this.$dayjs(ed.date)
+                    const timestamp = Math.round(eDate.unix())
+
+                    if (route.locationStart) {
+                        query.push(`${event.id}:${route.locationStart.join(",")}:${timestamp}`)
+                    }
+                    // Mid point weather will only be fetched for events longer than 3 hours.
+                    if (route.locationMid && route.estimatedTime >= 10800) {
+                        query.push(`${event.id}:${route.locationMid.join(",")}:${timestamp}`)
+                    }
+                    // End point weather will only be fetched for events longer than 1.5 hours.
+                    if (route.locationEnd && route.estiamtedTime >= 5400) {
+                        query.push(`${event.id}:${route.locationEnd.join(",")}:${timestamp}`)
+                    }
+                }
+
+                // Fetch weather for all relevant event locations and timestamps. Query data separated by a | pipe.
+                const weatherForecasts = await this.$axios.$get(`/api/weather/${this.user.id}/multi-forecast?data=${query.join("|")}`)
+
+                // Here we translate the result back to start / mid / end forecasts.
+                for (let data of weatherForecasts) {
+                    try {
+                        const coordinateString = data.coordinates.join(",")
+                        const eventDate = this.eventDates.find((ed) => {
+                            const route = ed.event.route || ed.event.komootRoute || {}
+                            const isStart = route.locationStart && route.locationStart.join(",") == coordinateString
+                            const isMid = route.locationMid && route.locationMid.join(",") == coordinateString
+                            const isEnd = route.locationEnd && route.locationEnd.join(",") == coordinateString
+                            return Math.round(this.$dayjs(ed.date).unix()) == data.timestamp && (isStart || isMid || isEnd)
+                        })
+
+                        eventDate.weather.push(data.forecast)
+                    } catch (forecastEx) {
+                        console.error(forecastEx)
+                    }
+                }
+
+                this.loadingWeather = false
+            } catch (ex) {
+                this.$webError("UpcomingEventsMap.loadWeather", ex)
+            }
+        },
+        mapCreateMarker(e, color) {
+            try {
+                const svgMarker = {
+                    path: "M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z",
+                    fillColor: color,
+                    fillOpacity: 1,
+                    strokeWeight: 0,
+                    rotation: 0,
+                    scale: 0.7
+                }
+
                 const marker = new google.maps.Marker({
                     position: e.position,
+                    icon: svgMarker,
                     title: e.title,
                     map: this.map
                 })
@@ -308,19 +398,19 @@ export default {
                 // Info window.
                 const infoWindow = new google.maps.InfoWindow({
                     content: `<div class="black--text">
-                                <h3 class="mb-1">${e.title}</h3>
-                                <div>Next date: ${this.$dayjs(e.dates[0]).format("lll")}</div>
+                                <h3 class="mb-2">${e.title}</h3>
+                                <div>Next: ${this.$dayjs(e.dates[0]).format("lll")}</div>
                                 <div>Distance: ${this.getDistance(e)}</div>
                                 <div>Duration: ${this.getEstimatedTime(e)}</div>
-                                <div class="mt-2 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
+                                <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
                               </div>`
                 })
                 infoWindow.addListener("closeclick", () => {
                     this.selectedEvent = null
                 })
 
-                this.eventMapObjects[e.id].marker = marker
-                this.eventMapObjects[e.id].infoWindow = infoWindow
+                this.eventObjects[e.id].marker = marker
+                this.eventObjects[e.id].infoWindow = infoWindow
             } catch (ex) {
                 console.error("UpcomingEventsMap.mapCreateMarker", e.id, ex)
             }
@@ -333,14 +423,14 @@ export default {
                     strokeColor: color,
                     strokeOpacity: 0.55,
                     strokeWeight: 4,
-                    zIndex: this.eventMapObjects[e.id].zIndex,
+                    zIndex: this.eventObjects[e.id].zIndex,
                     map: this.map
                 })
 
                 // Append start of the route as the event position.
                 e.position = points[0]
 
-                this.eventMapObjects[e.id].polyline = poly
+                this.eventObjects[e.id].polyline = poly
             } catch (ex) {
                 console.error("UpcomingEventsMap.mapDrawRoute", e.id, ex)
             }
@@ -355,22 +445,22 @@ export default {
             }
         },
         mapSetBounds(e) {
-            if (!this.eventMapObjects[e.id].polyline) return
+            if (!this.eventObjects[e.id].polyline) return
 
             const bounds = new google.maps.LatLngBounds()
-            const points = this.eventMapObjects[e.id].polyline.getPath().getArray()
+            const points = this.eventObjects[e.id].polyline.getPath().getArray()
             points.forEach((p) => bounds.extend(p))
             this.map.fitBounds(bounds)
         },
         mapHighlightRoute(e, highlight, clicked) {
-            if (!this.eventMapObjects[e.id].polyline) return
+            if (!this.eventObjects[e.id].polyline) return
 
             if (clicked) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.95, strokeWeight: 6, zIndex: 20})
+                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.95, strokeWeight: 6, zIndex: 20})
             } else if (highlight) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.85, strokeWeight: 5, zIndex: 19})
+                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.85, strokeWeight: 5, zIndex: 19})
             } else if (!this.selectedEvent || this.selectedEvent.id != e.id) {
-                this.eventMapObjects[e.id].polyline.setOptions({strokeOpacity: 0.55, strokeWeight: 4, zIndex: this.eventMapObjects[e.id].zIndex})
+                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.55, strokeWeight: 4, zIndex: this.eventObjects[e.id].zIndex})
             }
         },
         mapRouteSelect(e) {
@@ -387,7 +477,7 @@ export default {
 
                 if (previousEvent) {
                     this.mapHighlightRoute(previousEvent, false)
-                    this.eventMapObjects[previousEvent.id].infoWindow.close()
+                    this.eventObjects[previousEvent.id].infoWindow.close()
                 }
             }
 
@@ -395,8 +485,8 @@ export default {
         },
         mapMarkerClick(e) {
             const previousEvent = this.selectedEvent || null
-            const marker = this.eventMapObjects[e.id].marker
-            const infoWindow = this.eventMapObjects[e.id].infoWindow
+            const marker = this.eventObjects[e.id].marker
+            const infoWindow = this.eventObjects[e.id].infoWindow
 
             this.mapRouteSelect(e)
             this.map.setCenter(marker.getPosition())
@@ -413,7 +503,7 @@ export default {
         getDistance(event) {
             if (!event.route && !event.komootRoute) return "-"
             const distance = event.route ? event.route.distance : event.komootRoute.distance
-            const suffix = this.$store.state.user.profile.units == "imperial" ? "mi" : "km"
+            const suffix = this.$store.state.user.profile.units == "imperial" ? " mi" : " km"
             return `${distance}${suffix}`
         },
         getEstimatedTime(event) {
@@ -422,7 +512,7 @@ export default {
             const baseDuration = this.$dayjs.duration(seconds * 1100)
             const toQuarter = 15 - (baseDuration.minutes() % 15)
             const duration = baseDuration.add(toQuarter, "minutes")
-            return `${duration.days() * 24 + duration.hours()}:${duration.format("mm")}`
+            return `${duration.days() * 24 + duration.hours()}:${duration.format("mm")} h`
         },
         getEventUrl(e) {
             return `https://www.strava.com/clubs/${e.club.id}/group_events/${e.id}`
