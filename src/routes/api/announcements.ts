@@ -46,7 +46,7 @@ router.post("/:userId/read", async (req: express.Request, res: express.Response)
         if (!id) throw new Error("Missing announcement ID")
 
         // Increase read count.
-        await announcements.setReadCount(id, user)
+        await announcements.setReadCount(user, id)
         webserver.renderJson(req, res, {read: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)

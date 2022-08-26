@@ -51,7 +51,7 @@ router.get("/:userId/reverse-geocode", async (req: express.Request, res: express
  */
 router.get("/:userId/image", async (req: express.Request, res: express.Response) => {
     try {
-        const validated = await auth.requestValidator(req, res, {image: true})
+        const validated = await auth.requestValidator(req, res, {anonymous: true, image: true, referer: true})
         if (!validated) return
 
         const latlong = req.query.latlong.toString().split(",")
