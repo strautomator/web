@@ -1,6 +1,6 @@
 // Strautomator API: GitHub
 
-import {database} from "strautomator-core"
+import {database, github} from "strautomator-core"
 import crypto = require("crypto")
 import express = require("express")
 import logger = require("anyhow")
@@ -23,7 +23,7 @@ const validateWebhook = (req, res): boolean => {
 
         // Parse payload JSON to get the checksum.
         const payload = JSON.stringify(req.body).replace(/[^\\]\\u[\da-f]{4}/g, (s) => {
-            return s.substr(0, 3) + s.substr(3).toUpperCase()
+            return s.substring(0, 3) + s.substring(3).toUpperCase()
         })
 
         // Calculate checksums.
@@ -31,22 +31,10 @@ const validateWebhook = (req, res): boolean => {
         const digest = Buffer.from("sha1=" + hmac.update(payload).digest("hex"), "utf8")
         const checksum = Buffer.from(hubHeader.toString(), "utf8")
 
-        // Log request body.
-        const body = req.body
-        if (body.action) details.push(`Action: ${body.action}`)
-        if (body.sender) details.push(`Sender: ${body.sender.login}`)
-        if (body.hook) details.push(`Hook: ${body.hook.type}`)
-        if (body.sponsorship) {
-            details.push(`Sponsor: ${body.sponsorship.sponsor.login}`)
-            details.push(`Tier: ${body.sponsorship.tier.name}`)
-            details.push(`Amount: ${body.sponsorship.tier.monthly_price_in_dollars} USD`)
-        }
-
         if (checksum.length != digest.length || !crypto.timingSafeEqual(digest, checksum)) {
             throw new Error(`Request checksum invalid, got ${checksum}, expected ${digest}`)
         }
 
-        logger.info("Routes", req.method, req.originalUrl, details.join(", "))
         return true
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, details.join(", "), ex)
@@ -61,6 +49,9 @@ const validateWebhook = (req, res): boolean => {
 router.post("/webhook", async (req: express.Request, res: express.Response) => {
     try {
         if (!validateWebhook(req, res)) return
+
+        await github.processWebhook(req.body)
+
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
