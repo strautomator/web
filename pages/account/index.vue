@@ -117,7 +117,7 @@
                             Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
                             <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
-                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'"></v-switch>
+                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'" @change="confirmPrivacyDialog"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Twitter sharing</h3>
@@ -198,6 +198,36 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="privacyDialog" width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Privacy mode</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="cancelPrivacyDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4">If you enable the privacy mode, some of your profile data will be anonymized, your personal records will be cleared, and some metadata from processed activities will be cleared.</p>
+                    <p>This action is irreversible!</p>
+
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="cancelPrivacyDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" title="Enable the privacy mode" @click="savePrivacyDialog" rounded>
+                            <v-icon left>mdi-shield-check</v-icon>
+                            Confirm
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-layout>
 </template>
 
@@ -270,6 +300,7 @@ export default {
             activityHashtag: hashtag,
             twitterShare: twitterShare,
             privacyMode: privacyMode,
+            privacyDialog: false,
             ftpAutoUpdate: ftpAutoUpdate,
             ftpResult: null,
             ftpDialog: false,
@@ -373,7 +404,6 @@ export default {
         privacyMode(newValue, oldValue) {
             if (newValue != oldValue) {
                 this.savePending = true
-                this.delaySavePreferences()
             }
         },
         resetCounter(newValue, oldValue) {
@@ -405,9 +435,18 @@ export default {
             this.ftpDialog = true
             this.estimateFtp()
         },
-        hideFtpDialog() {
-            this.ftpDialog = false
+        confirmPrivacyDialog() {
+            this.privacyDialog = this.privacyMode
         },
+        cancelPrivacyDialog() {
+            this.privacyDialog = false
+            this.privacyMode = false
+        },
+        savePrivacyDialog() {
+            this.privacyDialog = false
+            this.privacyMode = true
+        },
+
         async estimateFtp() {
             if (this.ftpResult) return
 
