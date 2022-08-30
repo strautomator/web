@@ -183,8 +183,23 @@ export default {
     },
     async fetch() {
         try {
-            this.activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=5`)
-            this.announcements = await this.$axios.$get(`/api/announcements/${this.user.id}/active`)
+            const cachedAnnouncements = this.$getLocalStorage("active-announcements")
+            if (cachedAnnouncements) {
+                this.announcements = cachedAnnouncements
+            } else {
+                const announcements = await this.$axios.$get(`/api/announcements/${this.user.id}/active`)
+                this.announcements = announcements
+                this.$setLocalStorage("active-announcements", announcements, 600)
+            }
+
+            const cachedActivities = this.$getLocalStorage("dashboard-activities")
+            if (cachedActivities) {
+                this.activities = cachedActivities
+            } else {
+                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=5`)
+                this.activities = activities
+                this.$setLocalStorage("dashboard-activities", activities, 60)
+            }
 
             if (this.announcements.length > 0) {
                 while (this.announcements.length > 0 && !this.lastAnnouncement) {
@@ -238,7 +253,7 @@ export default {
 
             this.$cookies.set(`announcement-${this.lastAnnouncement.id}`, new Date().getTime(), {
                 path: "/",
-                maxAge: 60 * 60 * 24 * 30
+                maxAge: 60 * 60 * 24 * 90
             })
 
             this.lastAnnouncement = null
