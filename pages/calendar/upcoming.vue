@@ -70,8 +70,8 @@
                                     <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
                                     <br />
-                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
                                     <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
+                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
                                     <v-divider class="mt-1 mb-1"></v-divider>
                                 </div>
                             </div>
@@ -83,8 +83,7 @@
                             </div>
                             <div class="mt-5">
                                 Showing club events for the next {{ days }} days.<br />
-                                Weather limited to events happening in the next {{ weatherDays }} days.<br />
-                                Only Strava routes can be downloaded. Downloads from Komoot are not supported.
+                                Weather forecast only for events happening in the next {{ weatherDays }} days.
                             </div>
                         </template>
                         <div v-else>
@@ -113,7 +112,8 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <p class="mt-2">A total of {{ routeIds ? routeIds.length : 0 }} GPX routes for your upcoming events will be fetched from Strava, and zipped into a single file before downloading. Komoot routes are not supported.</p>
+                        <p class="mt-2">A total of {{ routeIds ? routeIds.length : 0 }} GPX routes for your upcoming events will be fetched from Strava and compressed into a single ZIP file.</p>
+                        <p class="mt-1">Komoot routes are not supported.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-1" color="grey" title="Cancel and do not reset" @click.stop="hideDownloadDialog" text rounded>
@@ -348,11 +348,15 @@ export default {
                     }
                 }
 
+                // Stop here if no weather to be fetched.
+                if (query.length == 0) return
+
                 // Fetch weather for all relevant event locations and timestamps. Query data separated by a | pipe.
                 const weatherForecasts = await this.$axios.$get(`/api/weather/${this.user.id}/multi-forecast?data=${query.join("|")}`)
 
                 // Here we translate the result back to start / mid / end forecasts.
                 for (let data of weatherForecasts) {
+                    if (!data.forecast) continue
                     try {
                         const coordinateString = data.coordinates.join(",")
                         const eventDate = this.eventDates.find((ed) => {
@@ -368,10 +372,10 @@ export default {
                         console.error(forecastEx)
                     }
                 }
-
-                this.loadingWeather = false
             } catch (ex) {
                 this.$webError("UpcomingEventsMap.loadWeather", ex)
+            } finally {
+                this.loadingWeather = false
             }
         },
         mapCreateMarker(e, color) {
