@@ -2,6 +2,10 @@ import Vue from "vue"
 
 Vue.prototype.$getLocalStorage = (key) => {
     try {
+        if (process.server) {
+            return null
+        }
+
         const itemJson = window.localStorage.getItem(key)
         if (!itemJson) {
             return null
@@ -21,6 +25,10 @@ Vue.prototype.$getLocalStorage = (key) => {
 
 Vue.prototype.$setLocalStorage = (key, data, maxAgeSeconds) => {
     try {
+        if (process.server) {
+            return
+        }
+
         const item = {data: data}
 
         // Optional age to set the expiration timestamp (as seconds).
