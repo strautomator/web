@@ -169,18 +169,18 @@
                 <v-card-text>
                     <p class="mt-4" v-if="ftpResult === null">
                         <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
-                        Estimating your FTP, please wait, it can take up to 2 minutes...
+                        Estimating your FTP, please wait...
                     </p>
                     <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
                         <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
                         <p>
-                            Current FTP set on Strava: {{ ftpResult.ftpCurrentWatts ? `${ftpResult.ftpCurrentWatts} watts` : "not set" }}<br />
-                            Estimation based on {{ ftpResult.activityCount }} activities, and the highest effort of {{ ftpResult.bestWatts }} watts on
-                            <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $dayjs(ftpResult.bestActivity.dateStart).format("ll") }} - {{ ftpResult.bestActivity.name }}</a>
+                            Estimation based on {{ ftpResult.activityCount }} activities.<br />
+                            Best effort of {{ ftpResult.bestWatts }} watts:
+                            <a target="StravaActivity" :href="'https://www.strava.com/activities/' + ftpResult.bestActivity.id">{{ $dayjs(ftpResult.bestActivity.dateStart).format("ll") }}</a>
                         </p>
                         <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">Keep up the good work!</p>
-                        <p v-else-if="!ftpResult.recentlyUpdated">Do you want to update your FTP ({{ ftpResult.ftpWatts }} watts) on your Strava account now?</p>
+                        <p v-else-if="!ftpResult.recentlyUpdated">Do you want to update your FTP from {{ ftpResult.ftpCurrentWatts || "0" }} to {{ ftpResult.ftpWatts }} watts on your Strava account now?</p>
                         <v-alert color="accent" v-else> Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature. </v-alert>
                     </template>
 
@@ -348,75 +348,43 @@ export default {
     },
     watch: {
         ftpAutoUpdate(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         linksOn(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         delayedProcessing(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         gearwearDelayDays(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         activityHashtag(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         weatherProvider(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         weatherUnit(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
+        },
+        windSpeedUnit(newValue, oldValue) {
+            this.preferenceChanged(newValue, oldValue)
         },
         language(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         twitterShare(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         privacyMode(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         resetCounter(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         },
         dateResetCounter(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
+            this.preferenceChanged(newValue, oldValue)
         }
     },
     async beforeRouteLeave(to, from, next) {
@@ -427,6 +395,12 @@ export default {
         next()
     },
     methods: {
+        preferenceChanged(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.savePending = true
+                this.delaySavePreferences()
+            }
+        },
         hideEmailDialog(emailSaved) {
             this.emailDialog = false
             this.emailSaved = emailSaved
@@ -434,6 +408,9 @@ export default {
         showFtpDialog() {
             this.ftpDialog = true
             this.estimateFtp()
+        },
+        hideFtpDialog() {
+            this.ftpDialog = false
         },
         confirmPrivacyDialog() {
             this.privacyDialog = this.privacyMode
@@ -446,7 +423,6 @@ export default {
             this.privacyDialog = false
             this.privacyMode = true
         },
-
         async estimateFtp() {
             if (this.ftpResult) return
 
