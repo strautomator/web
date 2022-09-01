@@ -21,11 +21,14 @@
                                 <div v-if="isDefaultFor">
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="defaultSportTypes" dense outlined rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="isBoolean">
-                                    <v-select label="Yes or No?" v-model="selectedBoolean" :items="booleans" :rules="booleanInputRules" dense outlined rounded return-object></v-select>
-                                </div>
                                 <div v-else-if="isSportType">
                                     <v-select label="Sport types" v-model="selectedSportTypes" :items="sportTypes" :rules="sportInputRules" multiple dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="isGear">
+                                    <v-select label="Gear" v-model="selectedGear" :items="allGear" :rules="gearInputRules" multiple dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="isBoolean">
+                                    <v-select label="Yes or No?" v-model="selectedBoolean" :items="booleans" :rules="booleanInputRules" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isWeekday">
                                     <v-select label="Weekday" v-model="selectedWeekdays" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
@@ -111,6 +114,9 @@ export default {
         isSportType() {
             return this.selectedProperty.value && this.selectedProperty.value == "sportType"
         },
+        isGear() {
+            return this.selectedProperty.value && this.selectedProperty.value == "gear"
+        },
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
@@ -152,6 +158,10 @@ export default {
             if (!this.isSportType) return false
             return [this.recipeRules.required, () => this.selectedSportTypes.length > 0]
         },
+        gearInputRules() {
+            if (!this.isGear) return false
+            return [this.recipeRules.required, () => this.selectedGear.length > 0]
+        },
         booleanInputRules() {
             if (!this.isBoolean) return false
             return [this.recipeRules.required, () => this.selectedBoolean.value === false || this.selectedBoolean.value === true]
@@ -174,7 +184,8 @@ export default {
     },
     methods: {
         initialData() {
-            const recipes = Object.values(this.$store.state.user.recipes)
+            const user = this.$store.state.user
+            const recipes = Object.values(user.recipes)
             const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
             const defaultSportTypes = []
             const sportTypes = []
@@ -191,8 +202,14 @@ export default {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
             }
 
+            // Gear condition.
+            const gearMap = (g) => {
+                return {value: g.id, text: g.name}
+            }
+            const allGear = _.concat(user.profile.bikes || [], user.profile.shoes || []).map(gearMap)
+
             // Privacy mode disables new records.
-            if (this.$store.state.user.preferences.privacyMode) {
+            if (user.preferences.privacyMode) {
                 const newRecordsProp = recipeProperties.find((p) => p.value == "newRecords")
                 newRecordsProp.disabled = true
                 newRecordsProp.text += " (privacy mode)"
@@ -222,9 +239,11 @@ export default {
                 recipeProperties: recipeProperties,
                 defaultSportTypes: defaultSportTypes,
                 sportTypes: sportTypes,
+                allGear: allGear,
                 booleans: booleans,
                 weekdays: weekdays,
                 selectedSportTypes: [],
+                selectedGear: [],
                 selectedWeekdays: [],
                 selectedBoolean: {},
                 selectedProperty: {},
@@ -263,6 +282,9 @@ export default {
                     } else if (this.isSportType) {
                         result.value = _.map(this.selectedSportTypes, "value").join(",")
                         result.friendlyValue = _.map(this.selectedSportTypes, "text").join(" or ")
+                    } else if (this.isGear) {
+                        result.value = _.map(this.selectedGear, "value").join(",")
+                        result.friendlyValue = _.map(this.selectedGear, "text").join(" or ")
                     } else if (this.isWeekday) {
                         result.value = _.map(this.selectedWeekdays, "value").join(",")
                         result.friendlyValue = _.map(this.selectedWeekdays, "text").join(" or ")

@@ -38,6 +38,9 @@
                             </v-container>
                         </div>
                     </template>
+
+                    <v-alert class="mt-1 text-body-2" color="accent" icon="mdi-alert" dense v-if="needsDelay(recipe)">Some of these conditions might only work if you enable the "Delayed processing" on your Account.</v-alert>
+
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
                             <v-icon class="mr-2">mdi-plus-circle</v-icon>
@@ -284,6 +287,10 @@ export default {
         checkValid() {
             const hasConditions = this.recipe.defaultFor || this.recipe.conditions.length > 0
             this.valid = hasConditions && this.recipe.actions.length > 0
+        },
+        needsDelay(recipe) {
+            const conditions = recipe.conditions.map((c) => c.property)
+            return !this.user.preferences.delayedProcessing && _.intersection(["gear", "name", "description"], conditions).length > 0
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")
