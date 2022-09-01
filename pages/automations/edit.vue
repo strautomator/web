@@ -290,7 +290,7 @@ export default {
         },
         needsDelay(recipe) {
             const conditions = recipe.conditions.map((c) => c.property)
-            return !this.user.preferences.delayedProcessing && _.intersection(["gear", "name", "description"], conditions).length > 0
+            return !this.user.preferences.delayedProcessing && _.intersection(["gear", "description"], conditions).length > 0
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")
