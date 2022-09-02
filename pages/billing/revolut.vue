@@ -41,13 +41,13 @@
                         <li>Verify your identity with Revolut</li>
                         <li>Add money to your new account</li>
                         <li>Request a physical Revolut card</li>
-                        <li>Complete at least 3x 5 EUR+ purchases</li>
+                        <li>At least 3 purchases of 5 EUR or more</li>
                     </ul>
                     <p class="mt-3">
                         If you sign up using the same email you have registered in Strautomator, the upgrade to PRO should happen automatically after a few days. Otherwise please send your full name or email to
                         <a href="mailto:info@strautomator.com">info@strautomator.com</a>, and I'll manually active your PRO subscription.
                     </p>
-                    <p>Eligible users who complete the steps will have their lifetime PRO activated by {{ $dayjs(dateSwitch).format("ll") }} at the latest, including the last step.</p>
+                    <p>Eligible users who complete the steps will have their lifetime PRO activated by {{ $dayjs(dateSwitch).format("ll") }} at the latest.</p>
 
                     <div class="mt-5 text-center text-md-left">
                         <a href="https://links.devv.com/l/revolut" title="Sign up to Revolut" target="revolut"
