@@ -125,7 +125,7 @@ export default {
         },
         isLocation() {
             if (this.selectedProperty.value) {
-                return this.selectedProperty.value == "polyline" || this.selectedProperty.value.indexOf("location") >= 0
+                return this.selectedProperty.value == "polyline" || this.selectedProperty.value.includes("location")
             }
             return false
         },

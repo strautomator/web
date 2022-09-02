@@ -36,7 +36,7 @@ export class Auth {
             if (options.referer) {
                 const referer = req.headers["referer"] || "unknown"
 
-                if (referer.indexOf(settings.app.url) < 0) {
+                if (!referer.includes(settings.app.url)) {
                     logger.error("Auth.requestValidator", req.originalUrl, `Invalid referer: ${referer}`, `From ${req.ip}`)
 
                     res.setHeader("cache-control", "no-cache")

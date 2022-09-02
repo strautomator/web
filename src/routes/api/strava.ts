@@ -175,7 +175,7 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
     } catch (ex) {
         logger.warn("Routes", req.method, req.originalUrl, ex)
         const errorMessage = ex.toString().toLowerCase()
-        const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
+        const status = errorMessage.includes("not found") ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
     }
 })
@@ -242,7 +242,7 @@ router.get("/:userId/process-activity/:activityId", async (req: express.Request,
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         const errorMessage = ex.toString()
-        const status = errorMessage.indexOf("not found") > 0 ? 404 : 500
+        const status = errorMessage.includes("not found") ? 404 : 500
         webserver.renderError(req, res, {error: errorMessage}, status)
     }
 })

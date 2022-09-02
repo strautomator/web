@@ -55,7 +55,7 @@ export default {
 
             for (let [id, recipe] of recipes) {
                 for (let action of recipe.actions) {
-                    if (action.type == "gear" && gearIds.indexOf(action.value) < 0) {
+                    if (action.type == "gear" && !gearIds.includes(action.value)) {
                         const title = `Invalid gear ${action.value}: ${action.friendlyValue}`
                         const body = `Your automation "${recipe.title}" has an invalid gear set. Please update it or delete it to avoid triggering unnecessary alerts.`
                         const href = `/automations/edit?id=${recipe.id}`
