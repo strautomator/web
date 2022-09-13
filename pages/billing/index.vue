@@ -160,20 +160,19 @@ export default {
     computed: {
         paymentAmount() {
             if (!this.subscription) return "free"
-            if (this.subscriptionSource == "Friend") return "free"
-            if (this.subscriptionSource == "Revolut") return "free"
+            if (["Friend", "Revolut", "Trial"].includes(this.subscriptionSource)) return "free"
             return this.subscription.lastPayment.amount + " " + this.subscription.lastPayment.currency
         },
         lastPaymentDate() {
             if (!this.subscription) return ""
-            if (this.subscriptionSource == "Friend") return "never"
-            if (this.subscriptionSource == "Revolut") return "never"
+            if (["Friend", "Revolut", "Trial"].includes(this.subscriptionSource)) return "never"
             return this.$dayjs(this.subscription.lastPayment.date).format("ll")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
             if (this.subscriptionSource == "Revolut") return "when the universe ends"
+            if (this.subscriptionSource == "Trial") return `hopefully on ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
             return this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll")
         }
     },
@@ -205,6 +204,9 @@ export default {
                 } else if (subscription.revolut) {
                     this.subscriptionSource = "Revolut"
                     this.subscription = subscription.revolut
+                } else if (subscription.trial) {
+                    this.subscriptionSource = "Trial"
+                    this.subscription = subscription.trial
                 }
             }
         } catch (ex) {

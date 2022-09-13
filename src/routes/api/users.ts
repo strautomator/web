@@ -86,16 +86,24 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
             return webserver.renderJson(req, res, "User has no valid subscription", 404)
         }
 
-        // Subscribed via PayPal, GitHub, or just a friend?
-        if (user.subscription.source == "paypal") {
-            const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
-            subscription.userId = userId
-            webserver.renderJson(req, res, {paypal: subscription})
+        let subscription
+
+        // Subscribed via GitHub or PayPal, or something else?
+        if (user.subscription.source == "github") {
+            subscription = await users.subscriptions.getById(user.subscription.source)
+        } else if (user.subscription.source == "paypal") {
+            try {
+                subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
+            } catch (paypalEx) {
+                logger.error("Routes", req.method, req.originalUrl, "Failed to get subscription details from PayPal")
+                subscription = await users.subscriptions.getById(user.subscription.source)
+            }
         } else {
-            const subscription = {}
-            subscription[user.subscription.source] = user.subscription
-            webserver.renderJson(req, res, subscription)
+            subscription = user.subscription
         }
+
+        subscription.userId = userId
+        webserver.renderJson(req, res, {[user.subscription.source]: subscription})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderJson(req, res, {error: ex.toString()})
