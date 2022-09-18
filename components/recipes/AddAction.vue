@@ -34,40 +34,33 @@
                             <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
                                 <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
                             </div>
-                            <div class="action-activity-tags" v-if="actionIsText">
-                                <h3 class="mb-2">Activity tags</h3>
-                                <v-chip @click="addTag('counter')" small>Counter</v-chip>
-                                <v-chip @click="addTag('distance')" small>Distance</v-chip>
-                                <v-chip @click="addTag('speedAvg')" small>Avg speed</v-chip>
-                                <v-chip @click="addTag('speedMax')" small>Max speed</v-chip>
-                                <v-chip @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
-                                <v-chip @click="addTag('wattsAvg')" small>Avg watts</v-chip>
-                                <v-chip @click="addTag('wattsWeighted')" small>Weighted watts</v-chip>
-                                <v-chip @click="addTag('wattsMax')" small>Max watts</v-chip>
-                                <v-chip @click="addTag('hrAvg')" small>Avg HR</v-chip>
-                                <v-chip @click="addTag('hrMax')" small>Max HR</v-chip>
-                                <v-chip @click="addTag('calories')" small>Calories</v-chip>
-                                <v-chip @click="addTag('relativeEffort')" small>Relative effort</v-chip>
-                                <v-chip @click="addTag('perceivedExertion')" small>Perceived Exertion</v-chip>
-                                <v-chip @click="addTag('tss')" small>TSS</v-chip>
-                                <v-chip @click="addTag('elevationGain')" small>Elevation gain</v-chip>
-                                <v-chip @click="addTag('elevationMax')" small>Max elevation</v-chip>
-                                <v-chip @click="addTag('totalTime')" small>Total time</v-chip>
-                                <v-chip @click="addTag('movingTime')" small>Moving time</v-chip>
-                                <v-chip @click="addTag('lapCount')" small>Lap count</v-chip>
-                                <v-chip @click="addTag('lapDistance')" small>Lap distance</v-chip>
-                                <v-chip @click="addTag('lapTime')" small>Lap time</v-chip>
-                                <v-chip @click="addTag('device')" small>Device</v-chip>
-                                <h3 class="mt-3 mb-2">Weather tags</h3>
-                                <v-chip @click="addTag('weather.icon')" small>Icon</v-chip>
-                                <v-chip @click="addTag('weather.summary')" small>Summary</v-chip>
-                                <v-chip @click="addTag('weather.temperature')" small>Temp. (real)</v-chip>
-                                <v-chip @click="addTag('weather.feelsLike')" small>Temp. (feels like)</v-chip>
-                                <v-chip @click="addTag('weather.humidity')" small>Humidity</v-chip>
-                                <v-chip @click="addTag('weather.pressure')" small>Pressure</v-chip>
-                                <v-chip @click="addTag('weather.windSpeed')" small>Wind speed</v-chip>
-                                <v-chip @click="addTag('weather.windDirection')" small>Wind direction</v-chip>
-                                <v-chip @click="addTag('weather.precipitation')" small>Precipitation</v-chip>
+                            <div v-if="actionIsText">
+                                <v-btn v-if="!showTags" class="mb-4" title="View activity and weather tags" @click="showTags = true" rounded x-small>
+                                    <v-icon>mdi-chevron-down</v-icon>
+                                    View available tags
+                                </v-btn>
+                                <v-tabs v-if="showTags" height="36" background-color="accent" :fixed-tabs="!$breakpoint.mdAndUp" v-model="tabTags">
+                                    <v-tab>Activity tags</v-tab>
+                                    <v-tab>Weather tags</v-tab>
+                                </v-tabs>
+                                <v-tabs-items class="action-activity-tags" v-model="tabTags">
+                                    <v-tab-item class="pt-3">
+                                        <template v-for="aTags in activityTags">
+                                            <h3 class="mt-1">{{ aTags.title }} stats</h3>
+                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                            </v-card>
+                                        </template>
+                                    </v-tab-item>
+                                    <v-tab-item class="pt-3">
+                                        <template v-for="wTags in weatherTags">
+                                            <h3 class="mt-1">{{ wTags.title }} of activity</h3>
+                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                            </v-card>
+                                        </template>
+                                    </v-tab-item>
+                                </v-tabs-items>
                             </div>
                             <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
                                 You can try some auto-generated names
@@ -91,7 +84,7 @@
 
 <style>
 .action-activity-tags .v-chip {
-    margin: 1px 2px 10px -1px;
+    margin: 0 5px 8px 0;
 }
 </style>
 
@@ -148,6 +141,66 @@ export default {
             const workoutTypes = _.cloneDeep(this.$store.state.workoutTypes)
             const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
 
+            // Activity general tags.
+            const activityGeneralTags = [
+                {key: "counter", text: "Counter"},
+                {key: "distance", text: "Distance"},
+                {key: "speedAvg", text: "Avg speed"},
+                {key: "speedMax", text: "Max speed"},
+                {key: "cadenceAvg", text: "Avg cadence"},
+                {key: "elevationGain", text: "Elevation gain"},
+                {key: "elevationMax", text: "Max elevation"},
+                {key: "totalTime", text: "Total time"},
+                {key: "movingTime", text: "Moving time"},
+                {key: "device", text: "Device"}
+            ]
+
+            // Activity performance tags.
+            const activityPerfTags = [
+                {key: "wattsAvg", text: "Avg watts"},
+                {key: "wattsWeighted", text: "Weighted watts"},
+                {key: "wattsMax", text: "Max watts"},
+                {key: "tss", text: "TSS"},
+                {key: "hrAvg", text: "Avg HR"},
+                {key: "hrMax", text: "Max HR"},
+                {key: "calories", text: "Calories"},
+                {key: "relativeEffort", text: "Relative efftort"},
+                {key: "perceivedExertion", text: "Perceived exertion"}
+            ]
+
+            // Activity lap tags.
+            const activityLapTags = [
+                {key: "lapCount", text: "Lap cunt"},
+                {key: "lapDistance", text: "Lap distance"},
+                {key: "lapTime", text: "Lap time"}
+            ]
+
+            // Combine activity tags.
+            const mapActivityTags = [
+                {title: "General", tags: activityGeneralTags},
+                {title: "Performance", tags: activityPerfTags},
+                {title: "Lap", tags: activityLapTags}
+            ]
+
+            // Weather tags.
+            const weatherTags = [
+                {key: "icon", text: "Icon"},
+                {key: "summary", text: "Summary"},
+                {key: "temperature", text: "Temp. (real)"},
+                {key: "feelsLike", text: "Teem. (feels like)"},
+                {key: "humidity", text: "Humidity"},
+                {key: "pressure", text: "Pressure"},
+                {key: "windSpeed", text: "Wind speed"},
+                {key: "windDirection", text: "Wind direction"},
+                {key: "precipitation", text: "Precipitation"}
+            ]
+
+            // Combine weather tags.
+            const mapWeatherTags = [
+                {title: "Start", tags: weatherTags},
+                {title: "End", tags: weatherTags}
+            ]
+
             return {
                 action: {},
                 loading: false,
@@ -162,6 +215,10 @@ export default {
                 sportTypes: sportTypes,
                 workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
+                showTags: false,
+                tabTags: null,
+                activityTags: mapActivityTags,
+                weatherTags: mapWeatherTags,
                 valueInput: ""
             }
         },
