@@ -186,7 +186,7 @@ export default {
             return this.user.isPro ? this.$store.state.proPlanDetails.batchDays : this.$store.state.freePlanDetails.batchDays
         },
         maxHours() {
-            return Math.ceil(this.activityCount / 100)
+            return Math.ceil(this.activityCount / 80)
         },
         dateFromMin() {
             return this.$dayjs().subtract(this.maxDays, "days").format("YYYY-MM-DD")
