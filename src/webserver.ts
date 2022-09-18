@@ -86,12 +86,27 @@ class WebServer {
             if (settings.api.rateLimit && settings.api.rateLimit.max) {
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
                 rateLimit.onLimitReached = (req) => logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
-
                 this.app.use("/api/*", rateLimit)
 
                 logger.info("WebServer.init", `API rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
-            } else {
-                logger.info("WebServer.init", `API rate limit: disabled`)
+            }
+
+            // Only accept connections coming via Cloudflare?
+            if (settings.api.requireCloudflare) {
+                this.app.use("/api/*", (req, res, next) => {
+                    if (!req.headers["cf-ray"]) {
+                        logger.error("WebServer.requireCloudflare", req.method, req.originalUrl, "Missing CF-Ray header", req.ip)
+
+                        if (!res.headersSent) {
+                            return this.renderError(req, res, "Access denied", 401)
+                        } else {
+                            return res.end()
+                        }
+                    }
+                    next()
+                })
+
+                logger.info("WebServer.init", "API requests via Cloudflare required")
             }
 
             // Load routes.

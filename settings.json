@@ -13,7 +13,9 @@
         "rateLimit": {
             "max": 600,
             "windowMs": 60000
-        }
+        },
+        // Only accept connections coming via Cloudflare by default.
+        "requireCloudflare": true
     },
     "app": {
         // The server will look for the files strautomator.cert and strautomator.key on the
@@ -29,7 +31,7 @@
         "trustProxy": 1
     },
     "webhooks": {
-        // Retry the webhooks setup every 90 seconds (if failed). Value in milliseconds.
-        "retryInterval": 90000
+        // Retry the webhooks setup every 60 seconds (if failed). Value in milliseconds.
+        "retryInterval": 60000
     }
 }
