@@ -44,17 +44,17 @@
                                     <v-tab>Weather tags</v-tab>
                                 </v-tabs>
                                 <v-tabs-items class="action-activity-tags" v-model="tabTags">
-                                    <v-tab-item class="pt-3">
+                                    <v-tab-item class="pt-4">
                                         <template v-for="aTags in activityTags">
-                                            <h3 class="mt-1">{{ aTags.title }} stats</h3>
+                                            <h3>{{ aTags.title }} stats</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
                                                 <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
                                             </v-card>
                                         </template>
                                     </v-tab-item>
-                                    <v-tab-item class="pt-3">
+                                    <v-tab-item class="pt-4">
                                         <template v-for="wTags in weatherTags">
-                                            <h3 class="mt-1">{{ wTags.title }} of activity</h3>
+                                            <h3>{{ wTags.title }} of activity</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
                                                 <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
                                             </v-card>
@@ -187,7 +187,7 @@ export default {
                 {key: "icon", text: "Icon"},
                 {key: "summary", text: "Summary"},
                 {key: "temperature", text: "Temp. (real)"},
-                {key: "feelsLike", text: "Teem. (feels like)"},
+                {key: "feelsLike", text: "Temp. (feels like)"},
                 {key: "humidity", text: "Humidity"},
                 {key: "pressure", text: "Pressure"},
                 {key: "windSpeed", text: "Wind speed"},
