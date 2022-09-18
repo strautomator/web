@@ -1,16 +1,18 @@
 {
+    "include": ["./src/*", "./src/**/*"],
     "compilerOptions": {
         "baseUrl": "",
         "rootDir": "src",
         "outDir": "server",
         "target": "ES2022",
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
         "esModuleInterop": true,
         "noUnusedParameters": true,
         "noUnusedLocals": true,
         "declaration": true,
         "skipLibCheck": true,
+        "allowJs": true,
         "typeRoots": ["node_modules/@types"],
         "paths": {
             "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
@@ -22,5 +24,8 @@
         "excludePrivate": true,
         "name": "Strautomator Web",
         "out": "docs"
+    },
+    "vueCompilerOptions": {
+        "target": 2.7
     }
 }
