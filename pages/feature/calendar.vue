@@ -19,7 +19,7 @@
                             <v-img class="mb-2" src="/images/feature/calendar-subscribe.png"></v-img>
                             <div class="mb-8">
                                 <ul class="ml-n2 mb-4">
-                                    <li>Go to My Account, then My Calendar</li>
+                                    <li>Go to the Calendar tab</li>
                                     <li>Choose your desired calendar options</li>
                                     <li>Use the "Subscribe to calendar" button, or copy the URL directly from the text field</li>
                                 </ul>
