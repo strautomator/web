@@ -170,7 +170,7 @@ export default {
 
             // Activity lap tags.
             const activityLapTags = [
-                {key: "lapCount", text: "Lap cunt"},
+                {key: "lapCount", text: "Lap count"},
                 {key: "lapDistance", text: "Lap distance"},
                 {key: "lapTime", text: "Lap time"}
             ]
