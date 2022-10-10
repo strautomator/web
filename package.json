@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "22.404.12004",
+    "version": "22.411.11059",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -30,7 +30,7 @@
         "cookie-universal-nuxt": "^2.2.2",
         "cross-env": "^7.0.3",
         "dayjs": "^1.11.5",
-        "express": "^4.18.1",
+        "express": "^4.18.2",
         "express-rate-limit": "^6.6.0",
         "limiter": "^2.1.0",
         "nuxt": "^2.15.8",
