@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>Activity fortune</h1>
-            <div>Try out Strautomator's auto generaed activity names. Just like fortune cookies!</div>
+            <div>Try out Strautomator's auto generated activity names. Just like fortune cookies!</div>
             <v-card class="mt-6" outlined>
                 <v-card-text class="pb-2 pb-md-0">
                     <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
