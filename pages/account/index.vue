@@ -2,6 +2,18 @@
     <v-layout column>
         <v-container fluid>
             <h1>Account</h1>
+            <v-snackbar v-if="$route.query.spotify == 'linked' && user && user.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Spotify account "{{ this.user.spotify.email }}" linked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
+            <v-snackbar v-else-if="user && !user.spotify" v-model="spotifyUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Spotify account unlinked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
             <div>
                 <div class="mt-3">
                     {{ user.profile.firstName }} {{ user.profile.lastName }}
@@ -12,14 +24,19 @@
                     <br v-if="user.email && $breakpoint.mdAndDown" />
                     <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
                 </div>
+
                 <div>
                     Account ID {{ user.id }}
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" class="ml-1 mt-n1" small>mdi-open-in-new</v-icon></a>
                 </div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
-                <div class="ml-n1 mt-2 text-left">
-                    <v-btn class="ma-1" color="primary" to="/account/notifications" title="My notifications" nuxt small rounded>
+                <div class="ml-n1 mt-3 text-left">
+                    <v-btn class="ma-1" color="primary" title="My notifications" @click="spotifyDialog = true" nuxt small rounded>
+                        <v-icon left>mdi-spotify</v-icon>
+                        {{ user.spotify ? "Unlink Spotify account" : "Link Spotify account" }}
+                    </v-btn>
+                    <v-btn class="ma-1" color="primary" title="My notifications" to="/account/notifications" nuxt small rounded>
                         <v-icon left>mdi-bell</v-icon>
                         My notifications
                     </v-btn>
@@ -155,6 +172,39 @@
             </v-snackbar>
         </v-container>
 
+        <v-dialog v-model="spotifyDialog" width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Spotify account</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideSpotifyDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4" v-if="!user.spotify">You can link your Spotify account to your Strautomator profile to use recent tracks as part of conditions or actions in your automations.</p>
+                    <p class="mt-4" v-else>You have linked the Spotify account {{ user.spotify.email }} to your profile. If you unlink it, existing automations having Spotify related properties might stop working.</p>
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="hideSpotifyDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" title="Proceed to authentication with Spotify" @click="linkSpotify" v-if="!user.spotify" rounded>
+                            <v-icon left>mdi-link</v-icon>
+                            Go to Spotify
+                        </v-btn>
+                        <v-btn color="primary" title="Unlink my Spotify account" @click="unlinkSpotify" v-else rounded>
+                            <v-icon left>mdi-link-off</v-icon>
+                            Unlink
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="ftpDialog" width="540" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
@@ -248,6 +298,10 @@ export default {
     },
     created() {
         this.delaySavePreferences = _.debounce(this.savePreferences, 1000)
+
+        if (this.$route.query.spotify) {
+            this.refreshUser()
+        }
     },
     data() {
         const user = this.$store.state.user
@@ -294,6 +348,9 @@ export default {
             savePending: false,
             emailDialog: false,
             emailSaved: false,
+            spotifyDialog: this.$route.query.spotify == "link",
+            spotifyLinked: this.$route.query.spotify == "linked",
+            spotifyUnlinked: this.$route.query.spotify == "unlinked",
             linksOn: linksOn || defaultLinksOn,
             delayedProcessing: delayedProcessing,
             gearwearDelayDays: gearwearDelayDays,
@@ -405,12 +462,27 @@ export default {
             this.emailDialog = false
             this.emailSaved = emailSaved
         },
-        showFtpDialog() {
-            this.ftpDialog = true
-            this.estimateFtp()
+        hideSpotifyDialog() {
+            this.spotifyDialog = false
         },
-        hideFtpDialog() {
-            this.ftpDialog = false
+        async linkSpotify(unlink) {
+            try {
+                const result = await this.$axios.$get("/api/spotify/auth/url")
+                document.location.href = result.url
+            } catch (ex) {
+                this.$webError("Account.linkSpotify", ex)
+            }
+        },
+        async unlinkSpotify(unlink) {
+            try {
+                await this.$axios.$get("/api/spotify/auth/unlink")
+                await this.refreshUser()
+
+                this.spotifyUnlinked = true
+                this.hideSpotifyDialog()
+            } catch (ex) {
+                this.$webError("Account.unlinkSpotify", ex)
+            }
         },
         confirmPrivacyDialog() {
             this.privacyDialog = this.privacyMode
@@ -422,6 +494,13 @@ export default {
         savePrivacyDialog() {
             this.privacyDialog = false
             this.privacyMode = true
+        },
+        showFtpDialog() {
+            this.ftpDialog = true
+            this.estimateFtp()
+        },
+        hideFtpDialog() {
+            this.ftpDialog = false
         },
         async estimateFtp() {
             if (this.ftpResult) return
@@ -479,6 +558,10 @@ export default {
             } catch (ex) {
                 this.$webError("Account.savePreferences", ex)
             }
+        },
+        closeAlert() {
+            this.spotifyLinked = false
+            this.spotifyUnlinked = false
         }
     }
 }
