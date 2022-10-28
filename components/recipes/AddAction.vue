@@ -42,6 +42,7 @@
                                 <v-tabs v-if="showTags" height="36" background-color="accent" :fixed-tabs="!$breakpoint.mdAndUp" v-model="tabTags">
                                     <v-tab>Activity tags</v-tab>
                                     <v-tab>Weather tags</v-tab>
+                                    <v-tab>Music tags</v-tab>
                                 </v-tabs>
                                 <v-tabs-items class="action-activity-tags" v-model="tabTags">
                                     <v-tab-item class="pt-4">
@@ -57,6 +58,20 @@
                                             <h3>{{ wTags.title }} of activity</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
                                                 <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                            </v-card>
+                                        </template>
+                                    </v-tab-item>
+                                    <v-tab-item class="pt-4">
+                                        <template v-if="!user.spotify">
+                                            <div class="ml-2 mr-2 mb-2">
+                                                To use music tags, you need to link your Spotify
+                                                <n-link to="/account?spotify=link" title="My account" nuxt>account</n-link> first.
+                                            </div>
+                                        </template>
+                                        <template v-for="mTags in musicTags" v-else>
+                                            <h3>{{ mTags.title }}</h3>
+                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
                                             </v-card>
                                         </template>
                                     </v-tab-item>
@@ -202,6 +217,16 @@ export default {
                 {title: "End", tags: weatherTags}
             ]
 
+            // Music track tags.
+            const trackTags = [
+                {key: "trackStart", text: "Starting track"},
+                {key: "trackEnd", text: "Last played track"},
+                {key: "trackList", text: "Full track list"}
+            ]
+
+            // Combine music tags.
+            const mapMusicTags = [{title: "Spotify", source: "spotify", tags: trackTags}]
+
             return {
                 action: {},
                 loading: false,
@@ -220,6 +245,7 @@ export default {
                 tabTags: null,
                 activityTags: mapActivityTags,
                 weatherTags: mapWeatherTags,
+                musicTags: mapMusicTags,
                 valueInput: ""
             }
         },
