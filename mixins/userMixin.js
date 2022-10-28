@@ -47,15 +47,19 @@ export default {
         if (this.$axios && this.$store.state.oauth) {
             this.$axios.setToken(this.$store.state.oauth.accessToken)
 
-            const minTimestamp = new Date().valueOf() - 600000
-
             // Make sure current user information is never older than 10 minutes.
+            const minTimestamp = new Date().valueOf() - 600000
             if (!this.$store.state.lastUserFetch || this.$store.state.lastUserFetch < minTimestamp) {
-                const user = await this.$axios.$get(`/api/users/${this.user.id}?refresh=1`)
-                this.$store.commit("setLastUserFetch", new Date().valueOf())
-                this.$store.commit("setUser", user)
-                this.user = user
+                await this.refreshUser()
             }
+        }
+    },
+    methods: {
+        async refreshUser() {
+            const data = await this.$axios.$get(`/api/users/${this.user.id}?refresh=1`)
+            this.$store.commit("setLastUserFetch", new Date().valueOf())
+            this.$store.commit("setUser", data)
+            this.user = data
         }
     }
 }
