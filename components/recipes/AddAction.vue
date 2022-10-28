@@ -160,6 +160,7 @@ export default {
                 {key: "wattsAvg", text: "Avg watts"},
                 {key: "wattsWeighted", text: "Weighted watts"},
                 {key: "wattsMax", text: "Max watts"},
+                {key: "wattsKg", text: "Watts / kg"},
                 {key: "tss", text: "TSS"},
                 {key: "hrAvg", text: "Avg HR"},
                 {key: "hrMax", text: "Max HR"},
