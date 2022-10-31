@@ -13,7 +13,7 @@
                     <a :href="linkNextDns" target="probikekit" title="The new firewall for the modern Internet"><v-img src="/images/affiliates/nextdns.png" max-height="58px" /></a>
                 </v-col>
             </v-row>
-            <div class="mt-4 caption black--text text-center">Using our affiliate stores is a win-win: you get the best deals, and Strautomator gets a small comission to keep the servers running.</div>
+            <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win: you get the best deals, and Strautomator gets a small comission to keep the servers running.</div>
         </v-card-text>
     </v-card>
 </template>
