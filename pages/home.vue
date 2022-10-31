@@ -226,6 +226,10 @@ export default {
             {
                 condition: "no hard efforts during the past weeks",
                 action: "decrease my FTP setting on Strava"
+            },
+            {
+                condition: "virtual rides using Zwift",
+                action: "add my Spotify playlist to the activity description"
             }
         ]
 

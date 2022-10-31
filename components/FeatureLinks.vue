@@ -5,6 +5,7 @@
                 <h2 class="mb-4">Strautomator features</h2>
                 <ul class="text-body-1 ml-n1">
                     <li><n-link to="/feature/weather" nuxt>Weather data on your activities</n-link></li>
+                    <li><n-link to="/feature/spotify" nuxt>Spotify tracks on your activities</n-link></li>
                     <li><n-link to="/feature/commute" nuxt>Automatically tag your commutes</n-link></li>
                     <li><n-link to="/feature/mute" nuxt>Automatically mute your activities</n-link></li>
                     <li><n-link to="/feature/counter" nuxt>Auto-incrementing activity counter</n-link></li>
