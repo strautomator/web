@@ -120,6 +120,9 @@ export default {
         isWeekday() {
             return this.selectedProperty.value && this.selectedProperty.value == "weekday"
         },
+        isSpotify() {
+            return this.selectedProperty.value && this.selectedProperty.value == "spotify.track"
+        },
         isBoolean() {
             return this.selectedProperty.value && this.selectedProperty.type == "boolean"
         },
@@ -200,6 +203,13 @@ export default {
 
             if (sportTypes.length > 0) {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
+            }
+
+            // Disable Spotify if user has no account linked.
+            if (!user.spotify) {
+                const spotifyProp = _.find(recipeProperties, {value: "spotify.track"})
+                spotifyProp.text += " (needs linked Spotify)"
+                spotifyProp.disabled = true
             }
 
             // Gear condition.
