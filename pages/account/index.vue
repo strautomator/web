@@ -31,6 +31,7 @@
                 </div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units: {{ user.profile.units }}</div>
+                <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
                 <div class="ml-n1 mt-3 text-left">
                     <v-btn class="ma-1" color="primary" title="My notifications" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
