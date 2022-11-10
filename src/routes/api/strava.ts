@@ -44,8 +44,12 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
             }
 
             // Only want to process new activities, so skip the rest.
-            if (obj.aspect_type != "create" || obj.object_type != "activity") {
-                logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Skipped")
+            if (obj.object_type != "activity" || obj.aspect_type != "create") {
+                if (obj.object_type == "activity" && obj.aspect_type == "delete") {
+                    logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, `Deleted activity ${obj.object_id}`)
+                } else {
+                    logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
+                }
                 webserver.renderJson(req, res, {ok: false})
                 return false
             }
@@ -591,8 +595,6 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
             return webserver.renderJson(req, res, {ok: false, message: `User ${user.id} is suspended`})
         }
 
-        user.dateLastActivity = now
-
         // Process the passed activity now, or queue later, depending on user preferences.
         if (user.preferences.delayedProcessing) {
             await strava.activityProcessing.queueActivity(user, parseInt(req.params.activityId))
@@ -603,6 +605,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         }
 
         // Update user.
+        user.dateLastActivity = now
         const updatedUser = {id: user.id, displayName: user.displayName, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
         await users.update(updatedUser)
 
