@@ -90,6 +90,7 @@ export default {
             {tag: "records", title: "Personal records"},
             {tag: "ftp", title: "FTP estimation"},
             {tag: "subscription", title: "Free vs. PRO"},
+            {tag: "spotify", title: "Spotify integration"},
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
         ]
