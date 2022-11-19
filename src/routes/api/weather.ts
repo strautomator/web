@@ -20,7 +20,7 @@ interface MultiForecastResult {
 /**
  * Weather for the specified coordinates.
  */
-router.get("/:userId/coordinates/:coordinates", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -33,11 +33,12 @@ router.get("/:userId/coordinates/:coordinates", async (req: express.Request, res
         }
 
         const result = {}
+        const now = dayjs().utcOffset(parseInt(req.params.timeoffset))
         const coordinates = req.params.coordinates.toString()
 
         for (let provider of weather.providers) {
             try {
-                const summary = await provider.getWeather(coordinates.split(","), new Date(), user.preferences)
+                const summary = await provider.getWeather(coordinates.split(","), now, user.preferences)
                 result[provider.name] = summary
             } catch (innerEx) {
                 logger.error("Routes", req.method, req.originalUrl, `Provider: ${provider.name}`, innerEx)
@@ -80,7 +81,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
                 const arrData = query.split(":")
                 queryResult.coordinates = arrData[1].split(",").map((c) => parseFloat(c)) as [number, number]
                 queryResult.timestamp = parseInt(arrData[2])
-                queryResult.forecast = await weather.getLocationWeather(user, queryResult.coordinates, dayjs.unix(queryResult.timestamp).utc().toDate())
+                queryResult.forecast = await weather.getLocationWeather(user, queryResult.coordinates, dayjs.unix(queryResult.timestamp))
             } catch (weatherEx) {
                 logger.warn("Routes", req.method, req.path, query, weatherEx.message)
                 hadError = true

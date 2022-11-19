@@ -333,7 +333,7 @@ export default {
                     }
 
                     const eDate = this.$dayjs(ed.date)
-                    const timestamp = Math.round(eDate.unix())
+                    const timestamp = Math.round(eDate.utc().unix())
 
                     if (route.locationStart) {
                         query.push(`${event.id}:${route.locationStart.join(",")}:${timestamp}`)
