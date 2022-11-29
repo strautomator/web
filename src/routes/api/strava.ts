@@ -79,13 +79,13 @@ router.get("/:userId/activities/recent", async (req: express.Request, res: expre
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
         if (limit > 50) limit = 50
 
-        // Get activities for the past 21 days by default, with a hard limit of 30 days.
-        let timestamp = req.query.since ? dayjs.unix(parseInt(req.query.since as string)) : dayjs().subtract(21, "days")
-        let minTimestamp = dayjs().subtract(30, "days")
-        if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
+        // Get activities for the past 21 days by default, with a hard limit of 48 days.
+        let dateFrom = req.query.since ? dayjs.unix(parseInt(req.query.since as string)) : dayjs().subtract(48, "days")
+        let minDate = dayjs().subtract(30, "days")
+        if (dateFrom.isBefore(minDate)) dateFrom = minDate
 
         // Fetch recent activities.
-        let activities = await strava.activities.getActivities(user, {after: timestamp.unix()})
+        let activities = await strava.activities.getActivities(user, {after: dateFrom})
 
         // Recent activities should come first, so we reverse the array.
         activities.reverse()
@@ -120,12 +120,12 @@ router.get("/:userId/activities/since/:timestamp", async (req: express.Request, 
         }
 
         // Hard limit of 2 years on the minimum timestamp.
-        let timestamp = dayjs.unix(parseInt(req.params.timestamp as string))
-        let minTimestamp = dayjs().subtract(731, "days")
-        if (timestamp.isBefore(minTimestamp)) timestamp = minTimestamp
+        let dateFrom = dayjs.unix(parseInt(req.params.timestamp as string))
+        let minDate = dayjs().subtract(731, "days")
+        if (dateFrom.isBefore(minDate)) dateFrom = minDate
 
         // Fetch activities since the specified timestamp.
-        let activities = await strava.activities.getActivities(user, {after: timestamp.unix()})
+        let activities = await strava.activities.getActivities(user, {after: dateFrom})
 
         // If a gear filter was passed, remove activities that are not for that particular gear.
         if (req.query.gear) {
@@ -194,8 +194,8 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        let dateFrom = req.body.dateFrom ? dayjs(req.body.dateFrom as string) : null
-        let dateTo = req.body.dateTo ? dayjs(req.body.dateTo as string) : null
+        let dateFrom = req.body.dateFrom ? dayjs(req.body.dateFrom as string).utc() : null
+        let dateTo = req.body.dateTo ? dayjs(req.body.dateTo as string).utc() : null
         let filterPrivacy = req.body.filterPrivacy ? req.body.filterPrivacy : "all"
         let filterSport = req.body.filterSport ? req.body.filterSport : "all"
         let filterType = req.body.filterType ? req.body.filterType : "all"
@@ -217,7 +217,7 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
         else if (filterType == "notCommute") filter.commute = false
         if (filterSport != "all") filter.sportType = filterSport
 
-        const activityCount = await strava.activityProcessing.batchProcessActivities(user, dateFrom.startOf("day").toDate(), dateTo.startOf("day").toDate(), filter)
+        const activityCount = await strava.activityProcessing.batchProcessActivities(user, dateFrom.startOf("day"), dateTo.endOf("day"), filter)
 
         // Start processing the first batch of activities straight away.
         await strava.activityProcessing.processQueuedActivities()
@@ -276,8 +276,11 @@ router.get("/:userId/athlete-records/refresh", async (req: express.Request, res:
         if (!user) return
 
         const existing = await strava.athletes.getAthleteRecords(user)
+        const now = dayjs().utc().subtract(1, "second")
+        const minDate = now.subtract(24, "hours")
 
-        if (existing) {
+        // Stop here if records were recently refreshed.
+        if (existing && minDate.isBefore(existing.dateRefreshed)) {
             logger.warn("Routes", req.method, req.originalUrl, `Recently refreshed, will not proceed`)
             webserver.renderJson(req, res, {recentlyRefreshed: true})
             return
@@ -286,11 +289,11 @@ router.get("/:userId/athlete-records/refresh", async (req: express.Request, res:
         // First we prepare the baseline.
         await strava.athletes.prepareAthleteRecords(user)
 
-        const tsAfter = new Date("2000-01-01").valueOf() / 1000
-        const tsBefore = new Date().valueOf() / 1000
+        const dateFrom = dayjs("2000-01-01").utc()
+        const dateTo = now
 
         // Now get all user activities and check their records.
-        const activities = await strava.activities.getActivities(user, {before: tsBefore, after: tsAfter})
+        const activities = await strava.activities.getActivities(user, {after: dateFrom, before: dateTo})
         const records = await strava.athletes.checkActivityRecords(user, activities)
 
         webserver.renderJson(req, res, records)
