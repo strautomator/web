@@ -23,33 +23,39 @@
                     <template v-else-if="refreshing">
                         <div class="text-center text-md-left">
                             <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                            Fetching activity records, please wait...
+                            Fetching your activity records, please wait...
                         </div>
-                        <v-alert class="mt-5 text-center text-md-left" color="accent" border="top">This is a long process and can take up to 3 minutes to complete!</v-alert>
+                        <v-alert class="mt-5 text-center text-md-left" color="accent" border="top">This is a long process and can take up to 4 minutes to complete!</v-alert>
                     </template>
-                    <template v-else-if="!records">
-                        <template v-if="!noRecords">
+                    <template v-else-if="noRecords">
+                        <div class="text-center">
                             <div>
-                                Strautomator can keep track of your personal records!
-                                <br v-if="$breakpoint.mdAndUp" />
-                                Want to enable the feature? Start now by fetching your existing activity records.
+                                <v-icon class="mb-4" x-large>mdi-cancel</v-icon>
                             </div>
-                            <v-btn class="mt-4" color="primary" title="Process my activity records" @click="refreshRecords" nuxt rounded>
-                                <v-icon left>mdi-tray-arrow-down</v-icon>
-                                Fetch activity records
-                            </v-btn>
-                        </template>
-                        <template v-else>
-                            <div class="text-center">
-                                <div>
-                                    <v-icon class="mb-4" x-large>mdi-cancel</v-icon>
-                                </div>
-                                No personal records could be extracted from your activities. Please try again after you've registered at least 10 activities on Strava.
-                            </div>
-                        </template>
+                            No personal records could be extracted from your activities. Please try again after you've registered at least 10 activities on Strava.
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div>
+                            Strautomator can keep track of your personal records!
+                            <br v-if="$breakpoint.mdAndUp" />
+                            Want to enable the feature? Start now by fetching your existing activity records.
+                        </div>
+                        <v-btn class="mt-4" color="primary" title="Process my activity records" @click="refreshRecords" nuxt rounded>
+                            <v-icon left>mdi-tray-arrow-down</v-icon>
+                            Fetch activity records
+                        </v-btn>
                     </template>
                 </v-card-text>
             </v-card>
+
+            <template v-else-if="refreshing">
+                <div class="text-center text-md-left">
+                    <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                    Refreshing activity records, please wait...
+                </div>
+                <v-alert class="mt-5 text-center text-md-left" color="accent" border="top">This is a long process and can take up to 4 minutes to complete!</v-alert>
+            </template>
 
             <template v-else>
                 <v-card class="mb-5" v-for="recordEntry in records" :key="recordEntry[0]" outlined>
@@ -99,8 +105,22 @@
                     </v-card-text>
                 </v-card>
 
-                <v-alert class="mt-6 text-center text-md-left">Your personal records are updated automatically with each new activity.</v-alert>
+                <v-card outlined>
+                    <v-card-text class="text-center text-md-left">
+                        <p>
+                            Your personal records are updated automatically with each new Strava activity.
+                            <br v-if="$breakpoint.mdAndUp" />
+                            If for some reason you think the records shown above are wrong or outdated, you can manually refresh them.
+                        </p>
+                        <v-btn class="mt-2" color="primary" title="Refresh my activity records" @click="refreshRecords" nuxt rounded>
+                            <v-icon left>mdi-refresh</v-icon>
+                            Refresh my records
+                        </v-btn>
+                    </v-card-text>
+                </v-card>
             </template>
+
+            <v-alert v-if="refreshError" class="mt-5 text-center text-md-left" color="error" border="top">{{ refreshError }}</v-alert>
         </v-container>
 
         <v-dialog v-model="editDialog" width="400" overlay-opacity="0.95">
@@ -222,13 +242,13 @@ export default {
                 if (!records) {
                     this.noRecords = true
                     this.refreshError = "No personal records were found"
-                } else if (records.rencetlyRefreshed) {
+                } else if (records.recentlyRefreshed) {
                     this.refreshError = waitMessage
                 } else {
                     this.$store.commit("setAthleteRecords", records)
                     this.$cookies.set("athlete-records-refreshed", timestamp, {
                         path: "/",
-                        maxAge: 60 * 60 * 8
+                        maxAge: 60 * 60 * 12
                     })
                 }
             } catch (ex) {
