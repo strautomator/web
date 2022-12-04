@@ -162,6 +162,8 @@ export default {
                 {key: "distance", text: "Distance"},
                 {key: "speedAvg", text: "Avg speed"},
                 {key: "speedMax", text: "Max speed"},
+                {key: "paceAvg", text: "Avg pace"},
+                {key: "paceMax", text: "Max pace"},
                 {key: "cadenceAvg", text: "Avg cadence"},
                 {key: "elevationGain", text: "Elevation gain"},
                 {key: "elevationMax", text: "Max elevation"},
