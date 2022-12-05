@@ -110,6 +110,8 @@
                         <v-chip class="mr-1 mb-2" @click="addTag('climbingRatio')" small>Climbing ratio</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('speedAvg')" small>Avg speed</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('speedMax')" small>Max speed</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('paceAvg')" small>Avg pace</v-chip>
+                        <v-chip class="mr-1 mb-2" @click="addTag('paceMax')" small>Max pace</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('calories')" small>Calories</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>Has power</v-chip>
