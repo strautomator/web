@@ -201,7 +201,8 @@ export default {
     },
     methods: {
         camelCaseName(field) {
-            return field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+            const result = field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+            return result.replace("Hr", "HR")
         },
         getRecordFields(recordDetails) {
             return Object.keys(recordDetails).sort()
