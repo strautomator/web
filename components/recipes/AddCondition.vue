@@ -17,7 +17,18 @@
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
                             <v-select label="Select a condition..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-select>
                             <div v-if="selectedProperty.value">
-                                <v-select label="Operator..." v-model="selectedOperator" v-if="!isDefaultFor && !isBoolean" :hint="selectedOperator.description" :items="selectedProperty.operators" dense outlined rounded return-object></v-select>
+                                <v-select
+                                    v-if="!isDefaultFor && !isBoolean"
+                                    label="Operator..."
+                                    v-model="selectedOperator"
+                                    :hint="selectedOperator.description"
+                                    :items="selectedProperty.operators"
+                                    :item-text="(item) => (user.profile.units == 'imperial' ? item.impText || item.text : item.text)"
+                                    dense
+                                    outlined
+                                    rounded
+                                    return-object
+                                ></v-select>
                                 <div v-if="isDefaultFor">
                                     <v-select label="Sport types" v-model="selectedDefaultFor" :items="defaultSportTypes" dense outlined rounded return-object></v-select>
                                 </div>
