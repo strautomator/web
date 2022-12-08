@@ -3,6 +3,7 @@ const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
 const {parse} = require("qs")
+const settings = require("setmeup").settings
 
 function Handler(opts) {
     this.init(opts)
@@ -66,11 +67,15 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 
         // Check for existing user and create a new one if necessary.
         await core.users.upsert(athlete, stravaTokens, true)
-        await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
 
-        logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
+        // Only proceed if session data has been validated and saved successfully.
+        const saved = await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
+        if (saved) {
+            logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
+            return this.redirect(redirectUrl)
+        }
 
-        return this.redirect(redirectUrl)
+        return this.redirectAccessDenied()
     } catch (ex) {
         logger.warn("OAuth.authenticateCallbackToken", ex)
         return this.redirectToOAuth()
@@ -152,7 +157,8 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
     if (!stravaTokens || !stravaTokens.accessToken) {
         userId = this.req[this.opts.sessionName].userId ? this.req[this.opts.sessionName].userId : null
         logger.warn("OAuth.saveData", `User ${userId}`, "No access token passed to save, will reset")
-        return this.req[this.opts.sessionName].reset()
+        this.req[this.opts.sessionName].reset()
+        return false
     }
 
     const {accessToken, refreshToken, expiresAt} = stravaTokens
@@ -184,16 +190,29 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
             if (userFromToken) {
                 userId = userFromToken.id
             } else {
-                logger.warn("OAuth.saveData", `Can't find user ${userId} by token`)
+                logger.warn("OAuth.saveData", `Can't find ${userId ? userId : "user"} by token`)
             }
         } catch (ex) {
             logger.error("OAuth.saveData", "Error fetching user", ex)
         }
     }
 
+    // Beta environment is available to PRO users only.
+    if (userId && settings.beta.enabled) {
+        const userFromProd = await core.beta.getProductionUser(userId)
+        if (!userFromProd) {
+            logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
+            this.req[this.opts.sessionName].token = false
+            this.req.accessToken = false
+            this.req.accessDenied = true
+            return false
+        }
+    }
+
     if (userId) {
         this.req[this.opts.sessionName].userId = userId
         this.req.userId = userId
+        return true
     }
 }
 
@@ -207,6 +226,11 @@ Handler.routes = {
 Handler.prototype.redirect = function redirect(path) {
     this.res.writeHead(302, {location: path})
     this.res.end()
+}
+
+Handler.prototype.redirectAccessDenied = async function redirectToOAuth(redirectUrl) {
+    const qBeta = settings.beta.enabled ? "&beta=1" : ""
+    return this.redirect(`/error?status=401${qBeta}`)
 }
 
 Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) {

@@ -3,7 +3,8 @@
         <v-app-bar fixed app>
             <v-toolbar-title class="mr-10 ml-1">
                 <n-link to="/dashboard" nuxt router>
-                    <img src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
+                    <img v-if="$store.state.beta" src="/images/logo-round-beta.png" width="48" height="48" class="strautologo float-left" />
+                    <img v-else src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
                     <span class="d-inline-block ml-2 mt-2">Strautomator</span>
                 </n-link>
             </v-toolbar-title>
@@ -46,6 +47,7 @@
                 <div class="copyright">
                     <span>Strautomator.com</span>
                     <v-chip v-if="$store.state.user && $store.state.user.isPro" color="primary" class="caption mb-1 ml-1" outlined>PRO</v-chip>
+                    <v-chip v-if="$store.state.beta" color="primary" class="caption mb-1 ml-1" outlined>Beta</v-chip>
                 </div>
             </div>
         </v-main>

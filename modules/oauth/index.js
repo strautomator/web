@@ -8,7 +8,9 @@ const defaultOptions = {
 module.exports = function NuxtOAuth(moduleOptions) {
     const options = Object.assign(defaultOptions, moduleOptions, this.options.oauth)
 
-    if (options.scopes && !Array.isArray(options.scopes)) throw new Error("options.scopes must be an array")
+    if (options.scopes && !Array.isArray(options.scopes)) {
+        throw new Error("The options.scopes must be an array")
+    }
 
     // Setup middlewares
     this.addServerMiddleware(base(options))

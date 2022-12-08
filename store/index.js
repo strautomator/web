@@ -104,7 +104,8 @@ export const state = () => ({
     freePlanDetails: {},
     proPlanDetails: {},
     expectedCurrency: null,
-    archiveDownloadDays: null
+    archiveDownloadDays: null,
+    beta: false
 })
 
 export const getters = {
@@ -191,6 +192,9 @@ export const mutations = {
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
+    },
+    setBeta(state, value) {
+        state.beta = value
     }
 }
 
@@ -254,6 +258,11 @@ export const actions = {
 
             // Set GDPR archive days interval.
             commit("setArchiveDownloadDays", settings.users.archiveDownloadDays)
+
+            // Beta environment?
+            if (settings.beta.enabled) {
+                commit("setBeta", true)
+            }
         }
 
         let user = state.user
@@ -276,6 +285,8 @@ export const actions = {
     },
     async assignUser({commit, state}, {req}) {
         try {
+            const userId = state && state.oauth ? state.oauth.userId : "unknown"
+
             if (state.oauth.userId) {
                 this.$axios.setToken(state.oauth.accessToken)
 
@@ -320,7 +331,6 @@ export const actions = {
         } catch (ex) {
             if (process.server) {
                 const logger = require("anyhow")
-                const userId = state.oauth ? state.oauth.userId : "unknown"
                 logger.error("nuxtServerInit.assignUser", `User ${userId}`, ex)
             } else {
                 console.error(ex)

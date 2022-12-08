@@ -2,7 +2,8 @@
     <v-app dark>
         <div class="text-center mt-10">
             <div class="width-wrapper text-center">
-                <img src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
+                <img v-if="$store.state.beta" src="/images/logo-round-beta.png" width="96" height="96" class="strautologo" />
+                <img v-else src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
                 <div class="mt-8" v-if="errorDetails">
                     <h1 class="display-1">{{ errorDetails.title }}</h1>
                     <div class="headline">{{ errorDetails.message }}</div>
@@ -16,8 +17,8 @@
                     <p>
                         If you are just sneaking around then I wish you happy exploring.
                         <br v-if="$breakpoint.mdAndUp" />
-                        Otherwise, first try clearing your cookies and browser cache, and if necessary contact me on
-                        <a href="mailto:info@strautomator.com" title="Bug report via email">info@strautomator.com</a>. I'll be glad to help.
+                        Otherwise, if you need help, please contact me on
+                        <a href="mailto:info@strautomator.com" title="Bug report via email">info@strautomator.com</a>.
                     </p>
                 </div>
                 <v-alert color="error" border="top" v-if="stravaStatus" class="mt-4 mb-4">
@@ -55,6 +56,7 @@ export default {
         errorDetails() {
             let status = this.error.status || this.error.statusCode
             let message = this.error.description ? this.error.description : this.error.message
+            let betaMessage = "Only PRO subscribers have access to the beta environment of Strautomator."
 
             if (message && message.indexOf("{") == 0 && message.indexOf("}") > 0) {
                 message = null
@@ -63,7 +65,7 @@ export default {
             if (status == 401 || status == 403) {
                 return {
                     title: this.error.title || "Access denied",
-                    message: "Please try connecting to Strava again, allowing all the requested permissions."
+                    message: this.beta ? betaMessage : "Please try connecting to Strava again, allowing all the requested permissions."
                 }
             } else if (status == 404) {
                 return {
@@ -79,7 +81,10 @@ export default {
         },
         showLogin() {
             const status = this.error.status || this.error.statusCode
-            return status == 401 || status == 403
+            return !this.beta && (status == 401 || status == 403)
+        },
+        beta() {
+            return this.$route.query.beta == "1"
         }
     },
     mounted() {
