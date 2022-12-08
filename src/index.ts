@@ -37,6 +37,8 @@ async function start() {
 
         // Override nuxt configuration.
         const baseUrl = settings.app.url
+        nuxt.options.head.title = settings.app.title
+        nuxt.options.head.titleTemplate = `${settings.app.title} - %s`
         nuxt.options.server.host = settings.app.ip
         nuxt.options.server.port = settings.app.port
         nuxt.options.env.baseUrl = baseUrl
