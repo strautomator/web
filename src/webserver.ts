@@ -159,7 +159,7 @@ class WebServer {
             const existingWebhook = _.find(webhooks, {url: paypal.webhookUrl})
 
             // No webhooks on PayPal yet? Register one now.
-            if (!existingWebhook) {
+            if (!existingWebhook && !settings.beta.enabled) {
                 logger.warn("WebServer.setupWebhooks", "No matching webhook (URL) found on PayPal, will register one now")
                 await paypal.webhooks.createWebhook()
             }
