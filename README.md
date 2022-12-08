@@ -64,6 +64,22 @@ Sample: [app.yaml](https://github.com/strautomator/web/blob/master/app.yaml.samp
 
 Deploying to Cloud Run is as simple as creating a [Cloud Build trigger](https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers) to update your services whenever there's a new version pushed to GIT.
 
+### Beta deployments
+
+Strautomator can be deployed to beta-specific environments by setting the `settings.beta.enabled` flag. Beta deployments have the following peculiarities:
+
+-   Only available to PRO users (in production). Free accounts can't login or use Beta environments.
+-   All users get a PRO status in Beta (reason above).
+-   PayPal subscriptions are not available in Beta.
+-   The Spotify integration is limited and emails must be added to an allow-list beforehand.
+-   A (Beta) suffix is added to the app title, as well to frontend logos.
+-   The cookie session name will have a forced "-beta" suffix.
+-   Database collections will have a forced "-beta" suffix.
+-   All user-based data will be deleted after 3 months (except for the user profile itself).
+-   Expect things to break!
+
+It's not guaranteed that we'll have a Beta deployment running at all times. So some of Strautomator features that depend on scheduled jobs might not work as expected, for instance the FTP auto update and processing of GearWear usage.
+
 ### Locked in to Google Cloud Platform?
 
 You might have noticed that the database, settings, deployment... everything has samples and mentions to GCP. And you are right. I (as in Igor, the developer) wanted to try out and get some experience with the GCP platform, and Strautomator is my pilot project. So far I've been very happy with it, and thus I have no urge to create a cross-cloud-platform version of this service.
