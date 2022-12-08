@@ -26,8 +26,7 @@
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
-
-                <p v-else-if="subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+                <p v-else-if="$store.state.beta || subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
                 <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> on {{ nextPaymentDate }}.</p>
 
                 <v-card outlined>
@@ -50,6 +49,10 @@
                                     Cancel subscription
                                 </v-btn>
                             </div>
+                        </template>
+                        <template v-else-if="$store.state.beta">
+                            Subscriptions are disabled on the beta environment. To see your subscription details, please go to the
+                            <a href="https://strautomator.com/billing">production website</a>.
                         </template>
                         <template v-else-if="!loading">
                             <h3 class="secondary--text ma-0 mb-2">Oops!</h3>
@@ -109,7 +112,7 @@
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
-                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" x-large rounded nuxt>
+                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" :disabled="$store.state.beta" x-large rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
                                     {{ `${activeBillingPlan.price.toFixed(2)} ${activeBillingPlan.currency} / ${activeBillingPlan.frequency}` }} via PayPal
                                 </v-btn>

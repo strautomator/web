@@ -3,8 +3,7 @@
         <v-app-bar fixed app>
             <v-toolbar-title class="mr-10 ml-1">
                 <n-link to="/dashboard" nuxt router>
-                    <img v-if="$store.state.beta" src="/images/logo-round-beta.png" width="48" height="48" class="strautologo float-left" />
-                    <img v-else src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
+                    <img src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
                     <span class="d-inline-block ml-2 mt-2">Strautomator</span>
                 </n-link>
             </v-toolbar-title>
@@ -30,6 +29,8 @@
             </v-btn>
         </v-app-bar>
         <v-main>
+            <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
+
             <v-container class="width-wrapper" fluid>
                 <nuxt />
             </v-container>

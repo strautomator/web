@@ -18,9 +18,10 @@ async function start() {
         const config = require("../nuxt.config.js")
         config.dev = process.env.NODE_ENV !== "production"
 
-        // Copy SetMeUp settings to nuxt.
+        // Copy SetMeUp settings to the OAuth module.
         const oauthConfig = config.oauth
         oauthConfig.secretKey = settings.cookie.secret
+        oauthConfig.sessionName = settings.cookie.sessionName
         oauthConfig.oauthClientID = settings.strava.api.clientId
         oauthConfig.oauthClientSecret = settings.strava.api.clientSecret
         oauthConfig.scopes = [settings.strava.api.scopes]

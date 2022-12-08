@@ -232,7 +232,7 @@
                         </p>
                         <p v-if="ftpResult.ftpWatts == ftpResult.ftpCurrentWatts">Keep up the good work!</p>
                         <p v-else-if="!ftpResult.recentlyUpdated">Do you want to update your FTP from {{ ftpResult.ftpCurrentWatts || "0" }} to {{ ftpResult.ftpWatts }} watts on your Strava account now?</p>
-                        <v-alert color="accent" v-else> Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature. </v-alert>
+                        <v-alert color="accent" v-else>Your FTP was recently updated by Strautomator, so you'll have to wait 24 hours before using this feature.</v-alert>
                     </template>
 
                     <div class="text-right mt-1">

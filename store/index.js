@@ -284,54 +284,58 @@ export const actions = {
         }
     },
     async assignUser({commit, state}, {req}) {
+        const userId = state?.oauth?.userId || null
+
         try {
-            const userId = state && state.oauth ? state.oauth.userId : "unknown"
-
-            if (state.oauth.userId) {
-                this.$axios.setToken(state.oauth.accessToken)
-
-                const urlUser = `/api/users/${state.oauth.userId}`
-                const urlRecords = `/api/strava/${state.oauth.userId}/athlete-records`
-
-                await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
-                    .then((res) => {
-                        const aUser = res[0]
-                        commit("setUser", aUser)
-
-                        let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
-                        let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
-
-                        if (!currency && country) {
-                            if (countryListGbp.includes(country)) {
-                                currency = "GBP"
-                            } else if (countryListEur.includes(country)) {
-                                currency = "EUR"
-                            } else {
-                                currency = "USD"
-                            }
-                        }
-
-                        // Set the expected PRO currency based on existing user data and country.
-                        commit("setExpectedCurrency", currency)
-
-                        // Set athlete records.
-                        try {
-                            const aRecords = res[1] || {}
-                            delete aRecords.id
-                            delete aRecords.dateRefreshed
-                            commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
-                        } catch (recordsEx) {
-                            logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to assign records", ex)
-                        }
-                    })
-                    .catch((err) => {
-                        throw err
-                    })
+            if (!userId) {
+                return
             }
+
+            if (state?.oauth?.accessToken) {
+                this.$axios.setToken(state.oauth.accessToken)
+            }
+
+            const urlUser = `/api/users/${userId}`
+            const urlRecords = `/api/strava/${userId}/athlete-records`
+
+            await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
+                .then((res) => {
+                    const aUser = res[0]
+                    commit("setUser", aUser)
+
+                    let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
+                    let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
+
+                    if (!currency && country) {
+                        if (countryListGbp.includes(country)) {
+                            currency = "GBP"
+                        } else if (countryListEur.includes(country)) {
+                            currency = "EUR"
+                        } else {
+                            currency = "USD"
+                        }
+                    }
+
+                    // Set the expected PRO currency based on existing user data and country.
+                    commit("setExpectedCurrency", currency)
+
+                    // Set athlete records.
+                    try {
+                        const aRecords = res[1] || {}
+                        delete aRecords.id
+                        delete aRecords.dateRefreshed
+                        commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
+                    } catch (recordsEx) {
+                        logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to assign records", ex)
+                    }
+                })
+                .catch((err) => {
+                    throw err
+                })
         } catch (ex) {
             if (process.server) {
                 const logger = require("anyhow")
-                logger.error("nuxtServerInit.assignUser", `User ${userId}`, ex)
+                logger.error("nuxtServerInit.assignUser", `User ${userId || "unknown"}`, ex)
             } else {
                 console.error(ex)
                 const status = ex.response ? ex.response.status : 401

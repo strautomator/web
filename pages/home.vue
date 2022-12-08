@@ -9,6 +9,9 @@
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
+                <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
+                <beta-notice v-if="$store.state.beta" />
+
                 <div class="mt-6 mb-2">
                     <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                 </div>
@@ -93,7 +96,10 @@
 
                 <h3 class="mt-8">Want to know more?</h3>
                 <div>
-                    <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>Help Section</v-btn>
+                    <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>
+                        <v-icon left>mdi-help-circle</v-icon>
+                        Help section
+                    </v-btn>
                 </div>
             </div>
         </v-container>
@@ -118,12 +124,13 @@
 
 <script>
 import _ from "lodash"
+import BetaNotice from "~/components/BetaNotice.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 
 export default {
     layout: "landing",
-    components: {FeatureLinks, FreeProTable},
+    components: {BetaNotice, FeatureLinks, FreeProTable},
     head() {
         return {
             title: "Automate your Strava"

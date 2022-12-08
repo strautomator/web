@@ -2,8 +2,9 @@
     <v-app dark>
         <div class="text-center mt-10">
             <div class="width-wrapper text-center">
-                <img v-if="$store.state.beta" src="/images/logo-round-beta.png" width="96" height="96" class="strautologo" />
-                <img v-else src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
+                <img src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
+                <div v-if="$store.state.beta" class="beta-header mt-4">Beta environment, for testing purposes only!</div>
+
                 <div class="mt-8" v-if="errorDetails">
                     <h1 class="display-1">{{ errorDetails.title }}</h1>
                     <div class="headline">{{ errorDetails.message }}</div>

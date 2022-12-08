@@ -13,7 +13,7 @@ export default function (req, res, next) {
     }
 
     // Logged users go to dashboard, others to home.
-    if (!req.headers.cookie || !req.headers.cookie.toString().includes("strautsession=")) {
+    if (!req.headers.cookie || !req.headers.cookie.toString().includes(`${settings.cookie.sessionName}=`)) {
         return res.redirect(302, "/home")
     } else {
         return res.redirect(302, "/dashboard")

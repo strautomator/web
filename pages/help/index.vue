@@ -5,6 +5,8 @@
             <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
                 <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
+                <beta-notice v-if="$store.state.beta" />
+
                 <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
 
                 <div class="text-center text-caption mt-n4">Use the field above to search by keywords.<br v-if="!$breakpoint.mdAndUp" />The most common questions are listed below.</div>
@@ -29,7 +31,10 @@
                 </div>
 
                 <div class="mt-10 mb-4 text-center" title="Back to Strautomator home..." v-if="!loggedIn">
-                    <v-btn color="primary" @click="backHome" rounded>Back to home...</v-btn>
+                    <v-btn color="primary" @click="backHome" rounded>
+                        <v-icon left>mdi-home</v-icon>
+                        Back to home
+                    </v-btn>
                 </div>
 
                 <feature-links />
@@ -64,11 +69,12 @@
 <script>
 import _ from "lodash"
 import AdsPanel from "~/components/AdsPanel.vue"
+import BetaNotice from "~/components/BetaNotice.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 
 export default {
     authenticated: false,
-    components: {AdsPanel, FeatureLinks},
+    components: {AdsPanel, BetaNotice, FeatureLinks},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"
