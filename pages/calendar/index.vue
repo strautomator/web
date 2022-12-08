@@ -102,7 +102,6 @@
                         <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
                         <v-chip class="mr-1 mb-2" @click="addTag('icon')" small>Icon</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('name')" small>Name</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('description')" small>Description</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('gear')" small>Gear</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('distance')" small>Distance</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('elevationGain')" small>Elevation gain</v-chip>
@@ -113,7 +112,6 @@
                         <v-chip class="mr-1 mb-2" @click="addTag('paceAvg')" small>Avg pace</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('paceMax')" small>Max pace</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('calories')" small>Calories</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>Has power</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('wattsAvg')" small>Avg watts</v-chip>
                         <v-chip class="mr-1 mb-2" @click="addTag('wattsWeighted')" small>Weighted watts</v-chip>
