@@ -10,6 +10,7 @@ docs/
 node_modules/
 samples/
 Makefile
+settings.local.json
 settings.secret.json
 settings.from-gcp.json
 app.yaml

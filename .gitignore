@@ -18,6 +18,7 @@ node_modules/
 pids/
 server/
 /app.yaml
+/settings.local.json
 /settings.secret.json
 /settings.from-gcp.json
 /settings.env
