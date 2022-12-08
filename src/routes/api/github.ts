@@ -72,4 +72,17 @@ router.get("/changelog", async (req: express.Request, res: express.Response) => 
     }
 })
 
+/**
+ * Last commits to the GitHub repos.
+ */
+router.get("/last-commits", async (req: express.Request, res: express.Response) => {
+    try {
+        const commits = await github.getLastCommits()
+        webserver.renderJson(req, res, commits)
+    } catch (ex) {
+        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderJson(req, res, {error: ex.toString()})
+    }
+})
+
 export = router
