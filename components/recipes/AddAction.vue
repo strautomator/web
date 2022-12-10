@@ -71,7 +71,7 @@
                                         <template v-for="mTags in musicTags" v-else>
                                             <h3>{{ mTags.title }}</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                                <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
                                             </v-card>
                                         </template>
                                     </v-tab-item>
@@ -221,13 +221,22 @@ export default {
 
             // Music track tags.
             const trackTags = [
-                {key: "trackStart", text: "Starting track"},
-                {key: "trackEnd", text: "Last played track"},
-                {key: "trackList", text: "Full track list"}
+                {key: "trackList", text: "Full track list"},
+                {key: "trackStart", text: "Starting track title"},
+                {key: "trackEnd", text: "Last track title"}
+            ]
+
+            // Music lyrics tags.
+            const lyricsTags = [
+                {key: "lyricsStart", text: "Starting track lyrics", pro: true},
+                {key: "lyricsEnd", text: "Last track lyrics", pro: true}
             ]
 
             // Combine music tags.
-            const mapMusicTags = [{title: "Spotify", source: "spotify", tags: trackTags}]
+            const mapMusicTags = [
+                {title: "Tracks", source: "spotify", tags: trackTags},
+                {title: "Lyrics", source: "spotify", tags: lyricsTags}
+            ]
 
             return {
                 action: {},
@@ -294,6 +303,9 @@ export default {
 
             this.recipeActions = recipeActions
             return recipeActions
+        },
+        getChipText(tag) {
+            return tag.pro && !this.user.isPro ? `${tag.text} (PRO only)` : tag.text
         },
         cancel() {
             this.$emit("closed", false)
