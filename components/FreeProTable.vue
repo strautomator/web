@@ -58,6 +58,11 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
+                            <td>Spotify lyrics</td>
+                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                        </tr>
+                        <tr>
                             <td>Webhooks</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
@@ -68,7 +73,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>Early access *</td>
+                            <td>Beta access *</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
