@@ -5,8 +5,6 @@
             <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
                 <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
 
-                <beta-notice v-if="$store.state.beta" />
-
                 <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
 
                 <div class="text-center text-caption mt-n4">Use the field above to search by keywords.<br v-if="!$breakpoint.mdAndUp" />The most common questions are listed below.</div>
@@ -69,12 +67,11 @@
 <script>
 import _ from "lodash"
 import AdsPanel from "~/components/AdsPanel.vue"
-import BetaNotice from "~/components/BetaNotice.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 
 export default {
     authenticated: false,
-    components: {AdsPanel, BetaNotice, FeatureLinks},
+    components: {AdsPanel, FeatureLinks},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"
