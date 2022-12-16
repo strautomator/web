@@ -97,10 +97,11 @@ export default {
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
         ]
+        const betaCategories = [{tag: "beta", title: "Beta"}]
 
         return {
             loading: true,
-            categories: categories,
+            categories: this.$store.state.beta ? betaCategories : categories,
             faq: [],
             expandedPanels: [],
             searchValue: "",
