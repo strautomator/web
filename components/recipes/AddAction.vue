@@ -169,6 +169,7 @@ export default {
                 {key: "elevationMax", text: "Max elevation"},
                 {key: "totalTime", text: "Total time"},
                 {key: "movingTime", text: "Moving time"},
+                {key: "weekOfYear", text: "Week of year"},
                 {key: "device", text: "Device"}
             ]
 
