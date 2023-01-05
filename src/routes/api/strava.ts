@@ -407,17 +407,14 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        let ftp = req.body && req.body.ftp ? parseInt(req.body.ftp) : null
-
-        // Calculate the estimated FTP, if no value was passed.
-        if (!ftp) {
-            const data = await strava.ftp.estimateFtp(user)
-            ftp = data.ftpWatts
+        const estimation = await strava.ftp.estimateFtp(user)
+        if (req.body?.ftp && req.body.ftp > 0) {
+            estimation.ftpWatts = parseInt(req.body.ftp)
         }
 
         // Update the user's FTP.
-        const updated = await strava.ftp.saveFtp(user, ftp)
-        const result = updated ? {ftp: ftp} : false
+        const updated = await strava.ftp.saveFtp(user, estimation)
+        const result = updated ? {ftp: estimation.ftpWatts} : false
         webserver.renderJson(req, res, result)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
