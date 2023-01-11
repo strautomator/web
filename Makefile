@@ -43,6 +43,7 @@ update:
 	-ncu -u --target minor
 	npm version $(shell date '+%y.%-V%u.1%H%M') --force --allow-same-version --no-git-tag-version
 	npm install --prefer-online
+	npm audit fix
 
 # Deploy to Google App Engine
 deploy-app-engine:
