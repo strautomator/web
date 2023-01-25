@@ -158,6 +158,7 @@ export default {
 
             // Activity general tags.
             const activityGeneralTags = [
+                {key: "sportType", text: "Sport type"},
                 {key: "counter", text: "Counter"},
                 {key: "distance", text: "Distance"},
                 {key: "speedAvg", text: "Avg speed"},
