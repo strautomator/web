@@ -107,12 +107,15 @@
                 <v-switch class="ma-0 pa-0" title="Automation status" v-model="recipe.disabled" label="Disable this automation"></v-switch>
             </div>
             <div class="text-center text-md-left mt-2">
-                <v-btn color="primary" :disabled="!valid" @click="save" rounded>
+                <v-btn color="primary" title="Save this automation" :disabled="!valid" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save automation
                 </v-btn>
-                <div class="pa-2" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="removal" v-if="recipe.id" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
+                <v-btn color="primary" title="Duplicate this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" :disabled="!valid" @click="duplicate" rounded outlined>
+                    <v-icon left>mdi-content-duplicate</v-icon>
+                    Duplicate automation
+                </v-btn>
+                <v-btn color="removal" title="Delete this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete automation
                 </v-btn>
@@ -175,10 +178,16 @@ export default {
     data() {
         let recipe, valid, isNew
 
-        if (this.$route.query && this.$route.query.id) {
-            recipe = this.$store.state.user.recipes[this.$route.query.id]
+        if (this.$route.query?.id) {
+            recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.id])
             valid = true
             isNew = false
+        } else if (this.$route.query?.template) {
+            recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.template])
+            recipe.title += " (copy)"
+            delete recipe.id
+            valid = false
+            isNew = true
         } else {
             recipe = {conditions: [], actions: []}
             valid = false
@@ -191,7 +200,7 @@ export default {
         }
 
         return {
-            recipe: _.cloneDeep(recipe),
+            recipe: recipe,
             recipeStats: {counter: 0},
             currentCounter: 0,
             valid: valid,
@@ -271,6 +280,13 @@ export default {
                 }
             } catch (ex) {
                 this.$webError("AutomationEdit.save", ex)
+            }
+        },
+        async duplicate() {
+            try {
+                document.location.href = `/automations/edit?template=${this.recipe.id}`
+            } catch (ex) {
+                this.$webError("AutomationEdit.duplicate", ex)
             }
         },
         async setCounter() {
