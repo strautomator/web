@@ -90,12 +90,11 @@
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
             <div class="text-center text-md-left mt-5">
-                <v-btn color="primary" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
+                <v-btn color="primary" title="Save this configuration" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
                 </v-btn>
-                <div class="pa-3" v-if="!$breakpoint.mdAndUp"></div>
-                <v-btn color="removal" v-if="!isNew" :class="{'ml-3': $breakpoint.mdAndUp}" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
+                <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
                 </v-btn>
