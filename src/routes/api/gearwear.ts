@@ -2,7 +2,7 @@
 
 import {gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
 import auth from "../auth"
-import _ = require("lodash")
+import _ from "lodash"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")

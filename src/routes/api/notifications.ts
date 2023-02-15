@@ -1,7 +1,7 @@
 // Strautomator API: Notifications
 
 import {notifications, UserData} from "strautomator-core"
-import _ = require("lodash")
+import _ from "lodash"
 import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")

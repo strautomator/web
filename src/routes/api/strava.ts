@@ -3,7 +3,7 @@
 import {database, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
-import _ = require("lodash")
+import _ from "lodash"
 import express = require("express")
 import jaul = require("jaul")
 import logger = require("anyhow")

@@ -3,7 +3,7 @@
 import {gdpr, paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
-import _ = require("lodash")
+import _ from "lodash"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")

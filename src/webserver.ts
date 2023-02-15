@@ -2,7 +2,7 @@
 
 import {strava, paypal} from "strautomator-core"
 import express = require("express")
-import _ = require("lodash")
+import _ from "lodash"
 import fs = require("fs")
 import http = require("http")
 import https = require("https")
