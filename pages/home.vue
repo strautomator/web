@@ -45,6 +45,8 @@
                             <div>
                                 <p>Strautomator can also:</p>
                                 <ul class="ml-4 pl-0">
+                                    <li>Set the default shoes for runs, walks and hikes.</li>
+                                    <li>Set the default bike for road, MTB and gravel cycling.</li>
                                     <li>Add weather data to activity names or descriptions</li>
                                     <li>Export your past activities and upcoming club events to .ics calendars</li>
                                     <li>Show your upcoming club events directly on a map, with weather forecasts</li>
