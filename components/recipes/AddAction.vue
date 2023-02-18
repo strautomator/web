@@ -49,7 +49,7 @@
                                         <template v-for="aTags in activityTags">
                                             <h3>{{ aTags.title }} stats</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                                <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
                                             </v-card>
                                         </template>
                                     </v-tab-item>
@@ -57,7 +57,7 @@
                                         <template v-for="wTags in weatherTags">
                                             <h3>{{ wTags.title }} of activity</h3>
                                             <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" small>{{ tag.text }}</v-chip>
+                                                <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
                                             </v-card>
                                         </template>
                                     </v-tab-item>
@@ -171,7 +171,8 @@ export default {
                 {key: "totalTime", text: "Total time"},
                 {key: "movingTime", text: "Moving time"},
                 {key: "weekOfYear", text: "Week of year"},
-                {key: "device", text: "Device"}
+                {key: "device", text: "Device"},
+                {key: "city", text: "City", pro: true}
             ]
 
             // Activity performance tags.
