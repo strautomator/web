@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: August 18th, 2022</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: February 21st, 2023</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>This website and its services were developed, are maintained and represented by a single individual: Igor Ramadas.</p>
                         <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
@@ -40,6 +40,7 @@
                             <li>Email address</li>
                             <li>Social media profile from Strava</li>
                             <li>Activity metadata from Strava</li>
+                            <li>Addresses used in automations</li>
                         </ul>
 
                         <h3 class="mt-1 mb-2">Legitimate Reasons for Processing Your Personal Information</h3>
@@ -77,8 +78,8 @@
 
                         <h3 class="mt-1 mb-2">Feature: "Privacy Mode"</h3>
                         <p>
-                            You have the option on your account preferences to enable a feature called "Privacy mode". If enabled, Strautomator will anonymize some of your account details, as well as delete some of the processed data related to your
-                            account, including but not limited to:
+                            You have the option on your account preferences to enable a feature called "Privacy mode". If such feature is enabled, Strautomator will anonymize some of your account details, as well as delete some of the processed data
+                            related to your account, including but not limited to:
                         </p>
                         <ul class="mb-6">
                             <li>Your Strava username and location</li>
@@ -87,7 +88,7 @@
                         </ul>
                         <p>Additionally, some of the website features will be disabled, including:</p>
                         <ul class="mb-6">
-                            <li>Tracking of personal records</li>
+                            <li>Tracking of personal activity records</li>
                             <li>Activity sharing on Twitter</li>
                         </ul>
 
@@ -130,24 +131,25 @@
 
                         <h3 class="mt-4 mb-2">Cancellation of Subscription Plans</h3>
                         <p>
-                            Cancellation of existing subscription plans are usually communicated to subscribers at least 14 days in advance. Cancellation due to legal reasons or external dependencies, such as the Strava API, are not guaranteed to be
-                            communicated beforehand.
+                            Cancellation of existing subscription plans are usually communicated to subscribers at least 14 days in advance. Cancellation due to legal reasons or external factors, such as changes to the the Strava API, are not
+                            guaranteed to be communicated beforehand.
                         </p>
 
                         <h3 class="mt-4 mb-2">Payment Processing</h3>
-                        <p>Payments are currently handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
+                        <p>Subscription payments are currently handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
                         <p>Subscriptions paid in form of a Sponsorship via GitHub are handled by Stripe, via GitHub.</p>
 
                         <h3 class="mt-4 mb-2">Refunds</h3>
                         <p>We do not guarantee refunds by default. Refunds are handled on a per-case basis.</p>
                         <p>
-                            Users can request a partial refund of up to 50% of the last subscription payment, if they're not happy with changes made to their subscription plan. Such requests must be made no later than 7 days after the changes go into
-                            production. On exceptional cases, we might offer a partial refund on your last subscription payment for other reasons, if we find it justifiable, or if you created a new subscription by mistake.
+                            Users can request a partial refund of up to 50% of the last subscription payment, if they're not happy with changes made to their subscription plan after the subscription has started. Such requests must be made no later
+                            than 30 days after the changes go into production. On exceptional cases, we might offer a partial refund on your last subscription payment for other reasons, if we find it justifiable, or if you created a new subscription
+                            by mistake.
                         </p>
 
                         <h3 class="mt-4 mb-2">PRO Account</h3>
                         <p>
-                            The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be enabled or disabled as we wish, according to usage and third party
+                            The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be updated or enhanced as needed, according to usage and third party
                             dependencies.
                         </p>
                         <p>The monthly or yearly price of the PRO account varies per country and subscription date. The accepted payment currencies are USD, EUR, and GBP.</p>
@@ -158,7 +160,8 @@
                         <h3 class="mt-6 mb-4">Strava API Dependency</h3>
                         <p>
                             All of our services are fully dependant on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
-                            their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work.
+                            their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work. In such case, subscribers that had their last payment made less than 28 days before
+                            the service shutdown are entitled to a refund for that last payment alone.
                         </p>
 
                         <h2 class="mt-6 mb-4">Limits of Our Policy</h2>
