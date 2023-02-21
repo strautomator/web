@@ -172,7 +172,8 @@ export default {
                 {key: "movingTime", text: "Moving time"},
                 {key: "weekOfYear", text: "Week of year"},
                 {key: "device", text: "Device"},
-                {key: "city", text: "City", pro: true}
+                {key: "cityStart", text: "City (start)", pro: true},
+                {key: "cityEnd", text: "City (end)", pro: true}
             ]
 
             // Activity performance tags.
@@ -308,7 +309,7 @@ export default {
             return recipeActions
         },
         getChipText(tag) {
-            return tag.pro && !this.user.isPro ? `${tag.text} (PRO only)` : tag.text
+            return tag.pro && !this.user.isPro ? `${tag.text} - PRO only` : tag.text
         },
         cancel() {
             this.$emit("closed", false)
