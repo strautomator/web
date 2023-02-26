@@ -316,19 +316,18 @@ const routeUserRecipe = async (req: any, res: any) => {
         if (!validated) return
 
         let recipe: RecipeData = req.body
+        const recipeId = req.params.recipeId || recipe.id
+        const user: UserData = await users.getById(userId)
 
         // Make sure recipe was sent in the correct format.
         if (method != "DELETE") {
             try {
-                recipes.validate(recipe)
+                recipes.validate(user, recipe)
             } catch (ex) {
                 logger.error("Routes", req.method, req.originalUrl, ex, req.body)
                 return webserver.renderError(req, res, ex, 400)
             }
         }
-
-        const recipeId = req.params.recipeId || recipe.id
-        const user: UserData = await users.getById(userId)
 
         // User not found?
         if (!user) {
