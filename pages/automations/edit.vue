@@ -22,24 +22,28 @@
                             </div>
                         </v-container>
                     </div>
-                    <template v-else-if="recipe.conditions && recipe.conditions.length > 0">
-                        <div class="mb-3" v-for="(condition, index) in recipe.conditions" :key="`condition-${index}`">
-                            <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                                <div class="mr-2">
-                                    <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
-                                    <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
-                                </div>
-                                <div class="mr-2" v-if="deleteItemSelected == condition">
-                                    <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
-                                </div>
-                                <div>
-                                    <span>{{ conditionSummary(condition) }}</span>
-                                </div>
-                            </v-container>
-                        </div>
+                    <template v-else-if="groupedConditions">
+                        <template v-for="(conditions, property, groupIndex) in groupedConditions">
+                            <v-chip v-if="recipe.op == 'OR' && groupIndex > 0" class="ml-n1 mt-n1 mb-1" small outlined>OR</v-chip>
+                            <div class="mb-3" v-for="(condition, index) in conditions" :key="`${property}-c-${index}`">
+                                <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                    <div class="mr-2">
+                                        <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
+                                        <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                    </div>
+                                    <div class="mr-2" v-if="deleteItemSelected == condition">
+                                        <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
+                                    </div>
+                                    <div>
+                                        <span v-if="recipe.samePropertyOp == 'OR' && index > 0">or</span>
+                                        <span>{{ conditionSummary(condition) }}</span>
+                                    </div>
+                                </v-container>
+                            </div>
+                        </template>
                     </template>
 
-                    <v-alert class="mt-1 text-body-2" color="accent" icon="mdi-alert" dense v-if="needsDelay(recipe)">Some of these conditions might only work if you enable the "Delayed processing" on your Account.</v-alert>
+                    <v-alert class="mt-2 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if "Delayed processing" is enabled on your Account.</v-alert>
 
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
@@ -47,11 +51,32 @@
                             Add new condition
                         </v-btn>
                     </div>
+
                     <v-dialog v-model="conditionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
                         <add-condition @closed="setCondition" />
                     </v-dialog>
                 </v-card-text>
             </v-card>
+
+            <v-card v-if="!recipe.defaultFor" class="mt-4" outlined>
+                <v-card-title>Logical operators</v-card-title>
+                <v-card-text>
+                    <div>
+                        <div>Within conditions of the same type.</div>
+                        <v-radio-group v-model="recipe.samePropertyOp" class="mt-0 mb-0" row>
+                            <v-radio label="AND" value="AND"></v-radio>
+                            <v-radio label="OR" value="OR"></v-radio>
+                        </v-radio-group>
+
+                        <div>Between conditions with different types.</div>
+                        <v-radio-group v-model="recipe.op" class="mt-0 mb-n4" row>
+                            <v-radio label="AND" value="AND"></v-radio>
+                            <v-radio label="OR" value="OR"></v-radio>
+                        </v-radio-group>
+                    </div>
+                </v-card-text>
+            </v-card>
+
             <v-card class="mt-4" outlined>
                 <v-card-title>Actions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
                 <v-card-text>
@@ -136,11 +161,11 @@
                         <p class="mt-2">Are you sure you want to delete this automation?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel and do not delete" @click.stop="hideDeleteDialog" text rounded>
+                            <v-btn class="mr-1" color="grey" title="Cancel, do not delete" @click.stop="hideDeleteDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete recipe" @click="deleteRecipe" rounded>
+                            <v-btn color="removal" title="Confirm and delete automation" @click="deleteRecipe" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>
@@ -199,6 +224,10 @@ export default {
             return this.$webError("AutomationEditdata", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
+        // Make sure default logical operators are set.
+        if (!recipe.op) recipe.op = "AND"
+        if (!recipe.samePropertyOp) recipe.samePropertyOp = "AND"
+
         return {
             recipe: recipe,
             recipeStats: {counter: 0},
@@ -224,6 +253,10 @@ export default {
         },
         changedCounter() {
             return this.recipeStats.counter != this.currentCounter
+        },
+        groupedConditions() {
+            if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
+            return _.groupBy(this.recipe.conditions, "property")
         }
     },
     async fetch() {

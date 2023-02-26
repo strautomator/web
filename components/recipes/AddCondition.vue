@@ -75,7 +75,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this condition" :disabled="!selectedProperty.value || !selectedOperator.value" rounded>
+                            <v-btn color="primary" @click="save" title="Save this condition" :disabled="!isBoolean && (!selectedProperty.value || !selectedOperator.value)" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save condition
                             </v-btn>

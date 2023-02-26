@@ -23,11 +23,15 @@
                         </div>
                         <ul class="mt-0 pl-4 condition-list">
                             <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
-                            <li v-for="(condition, index) in recipe.conditions" :key="`condition-${index}`">
-                                {{ conditionSummary(condition) }}
-                            </li>
+                            <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions">
+                                <v-chip v-if="recipe.op == 'OR' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>OR</v-chip>
+                                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && recipe.samePropertyOp != 'and'}">
+                                    <span v-if="recipe.samePropertyOp == 'OR' && index > 0">or</span>
+                                    {{ conditionSummary(condition) }}
+                                </li>
+                            </template>
                         </ul>
-                        <ul class="mt-1 pl-4 action-list">
+                        <ul class="mt-3 mb-1 pl-4 action-list">
                             <li class="font-weight-medium" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
                                 {{ actionSummary(action) }}
                             </li>
@@ -81,6 +85,9 @@
 }
 .condition-list {
     list-style-type: circle;
+}
+.condition-list .or {
+    list-style-type: none;
 }
 .drag-handle {
     cursor: move;
@@ -147,6 +154,10 @@ export default {
         },
         setOrderedRecipes(recipes) {
             if (!recipes) recipes = this.recipes
+            for (let r of recipes) {
+                const conditions = _.sortBy(r.conditions, "property")
+                r.groupedConditions = _.groupBy(conditions, "property")
+            }
             this.recipes = _.sortBy(recipes, ["defaultFor", "order", "title"])
         },
         recipeReordered() {
