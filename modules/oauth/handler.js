@@ -1,4 +1,5 @@
 const core = require("strautomator-core")
+const jaul = require("jaul")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
@@ -54,6 +55,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         const stravaTokens = await core.strava.getToken(this.req.query.code)
 
         if (!stravaTokens || !stravaTokens.accessToken) {
+            logger.warn("OAuth.authenticateCallbackToken", this.req.query.code, "Can't extract access token, will restart the OAuth2 flow")
             return this.redirectToOAuth()
         }
 
@@ -71,7 +73,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         // Only proceed if session data has been validated and saved successfully.
         const saved = await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
         if (saved) {
-            logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, "Logged in")
+            logger.info("OAuth.authenticateCallbackToken", athlete.id, athlete.username, `Logged in, redirecting to ${redirectUrl.replace(settings.app.url, "")}`)
             return this.redirect(redirectUrl)
         }
 
@@ -92,6 +94,7 @@ Handler.prototype.createSession = function createSession() {
             duration: 7 * 24 * 60 * 60 * 1000
         })
 
+        logger.info("OAuth.createSession", this.opts.sessionName, `IP: ${jaul.network.getClientIP(this.req)}`)
         return new Promise((resolve) => session(this.req, this.res, resolve))
     } catch (ex) {
         logger.error("OAuth.createSession", ex)
