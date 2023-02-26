@@ -75,6 +75,9 @@ module.exports = {
     // Additional plugins.
     plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/localstorage", "~/plugins/authtoken"],
 
+    // Server settings are defined on runtime.
+    server: {},
+
     // Root route to redirect to /home or /dashboard.
     serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],
 

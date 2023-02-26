@@ -10,6 +10,7 @@ async function start() {
         // Load settings.
         const setmeup = require("setmeup")
         const settings = setmeup.settings
+        const baseUrl = settings.app.url
 
         // Enable logging unhandled exceptions and rejections.
         logger.setOptions({uncaughtExceptions: true, unhandledRejections: true})
@@ -18,13 +19,19 @@ async function start() {
         const config = require("../nuxt.config.js")
         config.dev = process.env.NODE_ENV !== "production"
 
-        // Copy SetMeUp settings to the OAuth module.
-        const oauthConfig = config.oauth
-        oauthConfig.secretKey = settings.cookie.secret
-        oauthConfig.sessionName = settings.cookie.sessionName
-        oauthConfig.oauthClientID = settings.strava.api.clientId
-        oauthConfig.oauthClientSecret = settings.strava.api.clientSecret
-        oauthConfig.scopes = [settings.strava.api.scopes]
+        // Override nuxt configuration.
+        config.oauth.secretKey = settings.cookie.secret
+        config.oauth.sessionName = settings.cookie.sessionName
+        config.oauth.oauthClientID = settings.strava.api.clientId
+        config.oauth.oauthClientSecret = settings.strava.api.clientSecret
+        config.oauth.scopes = [settings.strava.api.scopes]
+        config.head.title = settings.app.title
+        config.head.titleTemplate = `${settings.app.title} - %s`
+        config.server.host = settings.app.ip
+        config.server.port = settings.app.port
+        config.env.baseUrl = baseUrl
+        config.axios.baseURL = baseUrl
+        config.axios.browserBaseURL = baseUrl
 
         // Init Nuxt.js.
         const {Nuxt, Builder} = require("nuxt")
@@ -35,16 +42,6 @@ async function start() {
             logger.info("Strautomator.startup", `Port ${process.env.PORT} set via envionment variable`)
             settings.app.port = process.env.PORT
         }
-
-        // Override nuxt configuration.
-        const baseUrl = settings.app.url
-        nuxt.options.head.title = settings.app.title
-        nuxt.options.head.titleTemplate = `${settings.app.title} - %s`
-        nuxt.options.server.host = settings.app.ip
-        nuxt.options.server.port = settings.app.port
-        nuxt.options.env.baseUrl = baseUrl
-        nuxt.options.axios.baseURL = baseUrl
-        nuxt.options.axios.browserBaseURL = baseUrl
 
         // Nuxt setup.
         await nuxt.ready()
