@@ -19,9 +19,9 @@
             <v-spacer></v-spacer>
             <top-notifications />
 
-            <v-icon v-if="$store.state.user && $store.state.user.preferences.privacyMode" class="ml-1" large>mdi-incognito</v-icon>
-            <v-avatar class="ml-4" v-else-if="$store.state.user && $store.state.user.profile.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
-                <img :src="$store.state.user.profile.urlAvatar" />
+            <v-icon v-if="$store.state.user?.preferences?.privacyMode" class="ml-1" large>mdi-incognito</v-icon>
+            <v-avatar class="ml-4" v-else-if="$store.state.user?.profile?.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
+                <img :src="$store.state.user?.profile.urlAvatar" />
             </v-avatar>
             <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
                 <v-icon>mdi-logout</v-icon>
@@ -32,7 +32,7 @@
             <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
 
             <v-container class="width-wrapper" fluid>
-                <nuxt />
+                <nuxt v-if="$store.state?.user" />
             </v-container>
 
             <div class="mt-3 text-center">
@@ -47,7 +47,7 @@
 
                 <div class="copyright">
                     <span>Strautomator.com</span>
-                    <v-chip v-if="$store.state.user && $store.state.user.isPro" color="primary" class="caption mb-1 ml-1" outlined>PRO</v-chip>
+                    <v-chip v-if="$store.state.user?.isPro" color="primary" class="caption mb-1 ml-1" outlined>PRO</v-chip>
                     <v-chip v-if="$store.state.beta" color="primary" class="caption mb-1 ml-1" outlined>Beta</v-chip>
                 </div>
             </div>
@@ -123,6 +123,12 @@ export default {
         return {
             activeNavBtn: this.$route.path || null,
             logoutDialog: false
+        }
+    },
+    mounted() {
+        if (!this.$store.state?.user) {
+            const errTitle = "User not found"
+            document.location.href = `/error?status=401&title=${encodeURIComponent(errTitle)}`
         }
     },
     methods: {
