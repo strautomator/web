@@ -45,10 +45,15 @@ export default {
     },
     async fetch() {
         try {
-            const bikes = _.map(this.user.profile.bikes, "id")
-            const shoes = _.map(this.user.profile.shoes, "id")
+            if (!this.user) {
+                return
+            }
+
+            const user = this.user
+            const bikes = _.map(user.profile.bikes, "id")
+            const shoes = _.map(user.profile.shoes, "id")
             const gearIds = _.concat(bikes, shoes, ["none"])
-            const recipes = Object.entries(this.user.recipes)
+            const recipes = Object.entries(user.recipes)
 
             this.notifications = await this.$axios.$get(`/api/notifications/${this.user.id}/unread`)
             this.unreadCount = this.notifications.length

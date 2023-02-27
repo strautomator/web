@@ -57,7 +57,7 @@ export default {
     props: ["gear", "gearwear-config"],
     computed: {
         units() {
-            return this.user && this.user.profile.units == "imperial" ? "mi" : "km"
+            return this.user?.profile.units == "imperial" ? "mi" : "km"
         },
         canEdit() {
             return this.gearwearRemaining > 0 || this.gearwearConfig

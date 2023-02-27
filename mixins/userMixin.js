@@ -40,7 +40,7 @@ export default {
             else return remaining
         },
         isPrivacyMode() {
-            return this.user && this.user.preferences.privacyMode
+            return this.user?.preferences.privacyMode
         }
     },
     async fetch() {
