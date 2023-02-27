@@ -68,6 +68,11 @@ export default {
                     title: this.error.title || "Access denied",
                     message: this.beta ? betaMessage : "Please try connecting to Strava again, allowing all the requested permissions."
                 }
+            } else if (status == 402) {
+                return {
+                    title: this.error.title || "PRO users only",
+                    message: "This resource is available to PRO users only, sorry."
+                }
             } else if (status == 404) {
                 return {
                     title: this.error.title || "Lost GPS signal",
