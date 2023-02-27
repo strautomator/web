@@ -283,8 +283,9 @@ export const actions = {
             commit("setExpectedCurrency", currency)
         }
     },
-    async assignUser({commit, state}, {req}) {
+    async assignUser({commit, state}, {req, res}) {
         const userId = state?.oauth?.userId || null
+        let loggedUser
 
         try {
             if (!userId) {
@@ -300,11 +301,11 @@ export const actions = {
 
             await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
                 .then((res) => {
-                    const aUser = res[0]
-                    commit("setUser", aUser)
+                    loggedUser = res[0]
+                    commit("setUser", loggedUser)
 
-                    let country = (aUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
-                    let currency = aUser.isPro && aUser.subscription ? aUser.subscription.currency || "USD" : null
+                    let country = (loggedUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
+                    let currency = loggedUser.isPro && loggedUser.subscription ? loggedUser.subscription.currency || "USD" : null
 
                     if (!currency && country) {
                         if (countryListGbp.includes(country)) {
@@ -336,6 +337,10 @@ export const actions = {
             if (process.server) {
                 const logger = require("anyhow")
                 logger.error("nuxtServerInit.assignUser", `User ${userId || "unknown"}`, ex)
+
+                if (!loggedUser) {
+                    commit("setUser", null)
+                }
             } else {
                 console.error(ex)
                 const status = ex.response ? ex.response.status : 401
