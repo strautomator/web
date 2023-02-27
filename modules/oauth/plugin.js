@@ -47,7 +47,7 @@ const redirectToAccessDenied = () => {
 
 middleware.auth = (context) => {
     const isAuthenticated = checkAuthenticatedRoute(context)
-    const accessToken = context.store.state[moduleName] ? context.store.state[moduleName].accessToken : null
+    const accessToken = context.store.state[moduleName]?.accessToken || null
 
     if (!isAuthenticated || (accessToken && !context.req?.accessDenied)) {
         return

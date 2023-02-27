@@ -85,7 +85,9 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
 }
 
 Handler.prototype.createSession = function createSession() {
-    if (this.req[this.opts.sessionName]) return Promise.resolve()
+    if (this.req[this.opts.sessionName]) {
+        return Promise.resolve()
+    }
 
     try {
         const session = sessions({
@@ -94,7 +96,7 @@ Handler.prototype.createSession = function createSession() {
             duration: 7 * 24 * 60 * 60 * 1000
         })
 
-        logger.info("OAuth.createSession", this.opts.sessionName, `IP: ${jaul.network.getClientIP(this.req)}`)
+        logger.info("OAuth.createSession", `IP: ${jaul.network.getClientIP(this.req)}`)
         return new Promise((resolve) => session(this.req, this.res, resolve))
     } catch (ex) {
         logger.error("OAuth.createSession", ex)
@@ -103,7 +105,7 @@ Handler.prototype.createSession = function createSession() {
 }
 
 Handler.prototype.extractToken = function extractToken() {
-    const authorization = this.req && this.req.headers ? this.req.headers.authorization : null
+    const authorization = this.req?.headers?.authorization || null
     if (!authorization) return null
 
     // Take the second split so it handles all token types.
@@ -111,16 +113,18 @@ Handler.prototype.extractToken = function extractToken() {
 }
 
 Handler.prototype.getSessionToken = function getSessionToken() {
-    return this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].token : null
+    return this.req[this.opts.sessionName]?.token || null
 }
 
 Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 
+    const userId = this.req[this.opts.sessionName]?.userId || null
     let stravaTokens = this.getSessionToken()
-    if (!stravaTokens || !stravaTokens.accessToken) return null
-
-    const userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
+    if (!stravaTokens || !stravaTokens.accessToken) {
+        logger.debug("OAuth.updateToken", `User ${userId || "unknown"}`, "Session token not found")
+        return null
+    }
 
     try {
         const now = new Date()
@@ -128,7 +132,8 @@ Handler.prototype.updateToken = async function updateToken() {
 
         // Current token expired? Refresh it.
         if (stravaTokens.expiresAt && stravaTokens.expiresAt <= epoch) {
-            stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken)
+            logger.debug("OAuth.updateToken", `User ${userId}`, `Current token expires at ${stravaTokens.expiresAt}`)
+            stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken, settings.beta.enabled)
 
             if (stravaTokens) {
                 const {accessToken, refreshToken, expiresAt} = stravaTokens
@@ -136,7 +141,7 @@ Handler.prototype.updateToken = async function updateToken() {
                 stravaTokens.refreshToken = refreshToken
                 stravaTokens.expiresAt = expiresAt
 
-                logger.info("OAuth.updateToken", `Refreshed token for user ${userId}`)
+                logger.info("OAuth.updateToken", `Refreshed token for user ${userId}`, `${accessToken.substring(0, 2)}*${accessToken.substring(tokens.accessToken.length - 2)}`)
             } else {
                 stravaTokens = null
             }
@@ -158,7 +163,7 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
     await this.createSession()
 
     if (!stravaTokens || !stravaTokens.accessToken) {
-        userId = this.req[this.opts.sessionName].userId ? this.req[this.opts.sessionName].userId : null
+        userId = this.req[this.opts.sessionName]?.userId || null
         logger.warn("OAuth.saveData", `User ${userId}`, "No access token passed to save, will reset")
         this.req[this.opts.sessionName].reset()
         return false
@@ -181,13 +186,13 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
 
     // Get user data from session if not expired yet.
     if (expiresAt && epoch < expiresAt) {
-        userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
+        userId = this.req[this.opts.sessionName]?.userId || null
     }
 
     // If user expired or not set yet, get from database.
     if (!userId) {
         try {
-            userId = athlete ? athlete.id : null
+            userId = athlete?.id || null
             const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
 
             if (userFromToken) {
@@ -231,7 +236,7 @@ Handler.prototype.redirect = function redirect(path) {
     this.res.end()
 }
 
-Handler.prototype.redirectAccessDenied = async function redirectToOAuth(redirectUrl) {
+Handler.prototype.redirectAccessDenied = async function redirectToOAuth() {
     const qBeta = settings.beta.enabled ? "&beta=1" : ""
     return this.redirect(`/error?status=401${qBeta}`)
 }
@@ -245,7 +250,7 @@ Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) 
 }
 
 Handler.prototype.logout = async function logout() {
-    const userId = this.req[this.opts.sessionName] ? this.req[this.opts.sessionName].userId : null
+    const userId = this.req[this.opts.sessionName]?.userId || null
 
     if (userId) {
         logger.warn("OAuth.logout", userId)
