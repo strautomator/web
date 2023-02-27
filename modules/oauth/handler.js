@@ -211,17 +211,16 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
         }
 
         // Beta environment is available to PRO users only.
-        // Enabled for everyone (temporarily).
-        // if (userId && settings.beta.enabled) {
-        //     const userFromProd = await core.beta.getProductionUser(userId)
-        //     if (!userFromProd) {
-        //         logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
-        //         this.req[this.opts.sessionName].token = false
-        //         this.req.accessToken = false
-        //         this.req.accessDenied = true
-        //         return false
-        //     }
-        // }
+        if (userId && settings.beta.enabled) {
+            const userFromProd = await core.beta.getProductionUser(userId)
+            if (!userFromProd) {
+                logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
+                this.req[this.opts.sessionName].token = false
+                this.req.accessToken = false
+                this.req.accessDenied = true
+                return false
+            }
+        }
 
         if (userId) {
             this.req[this.opts.sessionName].userId = userId
