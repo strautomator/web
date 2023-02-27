@@ -25,6 +25,10 @@ docs:
 build:
 	$(TSC)
 
+# Docker build.
+docker-build:
+	docker buildx build --platform linux/arm64 -t strautomator/web .
+
 # Run the app locally
 run: build
 	-cp -r ../core/settings*.json ./node_modules/strautomator-core/
