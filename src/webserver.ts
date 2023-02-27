@@ -72,13 +72,18 @@ class WebServer {
             // When running behind a proxy / LB.
             this.app.set("trust proxy", settings.app.trustProxy)
 
+            // Debug enabled? Log all requests.
+            if (settings.app.debug) {
+                this.app.use((req: express.Request, _res, next) => {
+                    logger.debug("WebServer", req.method, req.url)
+                    next()
+                })
+            }
+
             // Add body parser.
             const bodyParser = require("body-parser")
             this.app.use(bodyParser.json())
             this.app.use((err: Error, req: express.Request, res: express.Response, next) => {
-                if (!res.headersSent && settings.beta.enabled) {
-                    res.setHeader("X-Robots-Tag", "noindex, nofollow")
-                }
                 if (err) {
                     return this.renderError(req, res, err.toString(), 400)
                 }
