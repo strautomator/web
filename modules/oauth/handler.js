@@ -1,5 +1,4 @@
 const core = require("strautomator-core")
-const jaul = require("jaul")
 const logger = require("anyhow")
 const sessions = require("client-sessions")
 const {atob, btoa} = require("Base64")
@@ -68,7 +67,11 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         // Check for existing user and create a new one if necessary.
-        await core.users.upsert(athlete, stravaTokens, true)
+        // Beta environments are restricted to PRO users.
+        const user = await core.users.upsert(athlete, stravaTokens, true)
+        if (!user.isPro && settings.beta.enabled) {
+            return this.redirect("/error?status=402")
+        }
 
         // Only proceed if session data has been validated and saved successfully.
         const saved = await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
@@ -96,7 +99,6 @@ Handler.prototype.createSession = function createSession() {
             duration: 7 * 24 * 60 * 60 * 1000
         })
 
-        logger.info("OAuth.createSession", `IP: ${jaul.network.getClientIP(this.req)}`)
         return new Promise((resolve) => session(this.req, this.res, resolve))
     } catch (ex) {
         logger.error("OAuth.createSession", ex)
@@ -207,18 +209,6 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
                 }
             } catch (innerEx) {
                 logger.error("OAuth.saveData", "Error fetching user", innerEx)
-            }
-        }
-
-        // Beta environment is available to PRO users only.
-        if (userId && settings.beta.enabled) {
-            const userFromProd = await core.beta.getProductionUser(userId)
-            if (!userFromProd) {
-                logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
-                this.req[this.opts.sessionName].token = false
-                this.req.accessToken = false
-                this.req.accessDenied = true
-                return false
             }
         }
 
