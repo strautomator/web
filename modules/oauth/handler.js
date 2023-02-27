@@ -120,6 +120,7 @@ Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 
     const userId = this.req[this.opts.sessionName]?.userId || null
+
     let stravaTokens = this.getSessionToken()
     if (!stravaTokens || !stravaTokens.accessToken) {
         logger.debug("OAuth.updateToken", `User ${userId || "unknown"}`, "Session token not found")
@@ -141,10 +142,13 @@ Handler.prototype.updateToken = async function updateToken() {
                 stravaTokens.refreshToken = refreshToken
                 stravaTokens.expiresAt = expiresAt
 
-                logger.info("OAuth.updateToken", `Refreshed token for user ${userId}`, `${accessToken.substring(0, 2)}*${accessToken.substring(tokens.accessToken.length - 2)}`)
+                logger.info("OAuth.updateToken", `Refreshed token for user ${userId}`, `${accessToken.substring(0, 2)}*${accessToken.substring(accessToken.length - 2)}`)
             } else {
                 stravaTokens = null
             }
+        } else {
+            const accessToken = stravaTokens.accessToken
+            logger.debug("OAuth.updateToken", `User ${userId}`, `Token still valid: ${accessToken.substring(0, 2)}*${accessToken.substring(accessToken.length - 2)}`)
         }
 
         await this.saveData(stravaTokens)
@@ -160,67 +164,72 @@ Handler.prototype.saveData = async function saveData(stravaTokens, athlete) {
     const epoch = now.getTime() / 1000 - 1
     let userId
 
-    await this.createSession()
+    try {
+        await this.createSession()
 
-    if (!stravaTokens || !stravaTokens.accessToken) {
-        userId = this.req[this.opts.sessionName]?.userId || null
-        logger.warn("OAuth.saveData", `User ${userId}`, "No access token passed to save, will reset")
-        this.req[this.opts.sessionName].reset()
-        return false
-    }
-
-    const {accessToken, refreshToken, expiresAt} = stravaTokens
-    this.req.accessToken = accessToken
-
-    // Make sure session exists.
-    if (!this.req[this.opts.sessionName].token) {
-        this.req[this.opts.sessionName].token = {}
-    }
-
-    // Save access token on cookie.
-    this.req[this.opts.sessionName].token.accessToken = accessToken
-
-    // If passed, also save refreshToken and expiry date.
-    if (refreshToken) this.req[this.opts.sessionName].token.refreshToken = refreshToken
-    if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
-
-    // Get user data from session if not expired yet.
-    if (expiresAt && epoch < expiresAt) {
-        userId = this.req[this.opts.sessionName]?.userId || null
-    }
-
-    // If user expired or not set yet, get from database.
-    if (!userId) {
-        try {
-            userId = athlete?.id || null
-            const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
-
-            if (userFromToken) {
-                userId = userFromToken.id
-            } else {
-                logger.warn("OAuth.saveData", `Can't find ${userId ? userId : "user"} by token`)
-            }
-        } catch (ex) {
-            logger.error("OAuth.saveData", "Error fetching user", ex)
-        }
-    }
-
-    // Beta environment is available to PRO users only.
-    if (userId && settings.beta.enabled) {
-        const userFromProd = await core.beta.getProductionUser(userId)
-        if (!userFromProd) {
-            logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
-            this.req[this.opts.sessionName].token = false
-            this.req.accessToken = false
-            this.req.accessDenied = true
+        if (!stravaTokens || !stravaTokens.accessToken) {
+            userId = this.req[this.opts.sessionName]?.userId || null
+            logger.warn("OAuth.saveData", `User ${userId}`, "No access token passed to save, will reset")
+            this.req[this.opts.sessionName].reset()
             return false
         }
-    }
 
-    if (userId) {
-        this.req[this.opts.sessionName].userId = userId
-        this.req.userId = userId
-        return true
+        const {accessToken, refreshToken, expiresAt} = stravaTokens
+        this.req.accessToken = accessToken
+
+        // Make sure session exists.
+        if (!this.req[this.opts.sessionName].token) {
+            this.req[this.opts.sessionName].token = {}
+        }
+
+        // Save access token on cookie.
+        this.req[this.opts.sessionName].token.accessToken = accessToken
+
+        // If passed, also save refreshToken and expiry date.
+        if (refreshToken) this.req[this.opts.sessionName].token.refreshToken = refreshToken
+        if (expiresAt) this.req[this.opts.sessionName].token.expiresAt = expiresAt
+
+        // Get user data from session if not expired yet.
+        if (expiresAt && epoch < expiresAt) {
+            userId = this.req[this.opts.sessionName]?.userId || null
+        }
+
+        // If user expired or not set yet, get from database.
+        if (!userId) {
+            try {
+                userId = athlete?.id || null
+                const userFromToken = await core.users.getByToken({accessToken: accessToken, refreshToken: refreshToken}, userId)
+
+                if (userFromToken) {
+                    userId = userFromToken.id
+                } else {
+                    logger.warn("OAuth.saveData", `Can't find ${userId ? userId : "user"} by token`)
+                }
+            } catch (innerEx) {
+                logger.error("OAuth.saveData", "Error fetching user", innerEx)
+            }
+        }
+
+        // Beta environment is available to PRO users only.
+        // Enabled for everyone (temporarily).
+        // if (userId && settings.beta.enabled) {
+        //     const userFromProd = await core.beta.getProductionUser(userId)
+        //     if (!userFromProd) {
+        //         logger.warn("OAuth.saveData", `User ${userId} is not PRO and can't access the beta environment`)
+        //         this.req[this.opts.sessionName].token = false
+        //         this.req.accessToken = false
+        //         this.req.accessDenied = true
+        //         return false
+        //     }
+        // }
+
+        if (userId) {
+            this.req[this.opts.sessionName].userId = userId
+            this.req.userId = userId
+            return true
+        }
+    } catch (ex) {
+        logger.error("OAuth.saveData", `User ${userId || "unknown"}`, ex)
     }
 }
 
