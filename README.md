@@ -16,7 +16,7 @@ Please note that the [Core](https://github.com/strautomator/core) also has its o
 
 ## Local setup
 
-Before you try to get an instance running locally, make sure you have followed the [Getting started](https://github.com/strautomator/core#getting-started) instructions to have all the 3rd party dependencies ready.
+Before you try to get an instance running locally, make sure you have followed the [Getting started](https://github.com/strautomator/core#getting-started) instructions to have all the required 3rd party dependencies ready.
 
 ### Cloning the code
 
@@ -24,9 +24,9 @@ First, create a folder on your machine that will server as the root all the Stra
 
     $ mkdir ~/strautomator
     $ cd ~/strautomator
-    $ git clone git@github.com:strautomator/core.git
     $ git clone git@github.com:strautomator/web.git
-    & cd web
+    $ git clone git@github.com:strautomator/core.git
+    $ cd web
     $ make update
 
 ### Local settings
@@ -47,7 +47,7 @@ All other credentials are optional. You can set them as needed, depending on whi
 
 ### Setting the URL
 
-The default URL in development is `http://strautomator.local`, which should be manually set on your HOSTS file. This is fine if you only want to work on the web frontend and some of the API calls, but please note that Strava (and other 3rd party webhooks) won't be able to push data to the service using that URL. Authentication with Strava might also fail.
+The default URL in development is `http://localhost:3000`, which should be manually set on your HOSTS file. This is fine if you only want to work on the web frontend and some of the API calls, but please note that Strava (and other 3rd party webhooks) won't be able to push data to the service using that URL. Authentication with Strava might also fail.
 
 To properly test all APIs and webhooks from Strava and PayPal, you'll need to change the `app.url` setting on your `settings.local.json` file or via the `$SMU_app_url` environment variable, to a publicly accessible URL. It's recommended to use a tunnel to avoid port forwarding on your router.
 
@@ -61,7 +61,13 @@ To disable the tunnel execution, set the `app.tunnel` setting to false on the `s
 
 ### Server ports
 
-When starting up, the service will look for the `strautomator.cert` and `strautomator.key` files on the application root. If found, it will create a HTTPS server listening on port 8443 by default. Otherwise it will create a HTTP server on port 8080. Please note that the actual port can be overwritten either via the PORT environment variable, or via `settings.app.port`.
+When starting up, the service will look for the `strautomator.cert` and `strautomator.key` files on the application root. If found, it will create a HTTPS server with those certificate files, otherwise it will create a regular HTTP server. The default ports:
+
+-   Development: 3000
+-   Production (HTTP): 8080
+-   Production (HTTPS): 8443
+
+Please note that the actual port can be overwritten either via the PORT environment variable, or via `settings.app.port` setting.
 
 ### Running it locally
 
