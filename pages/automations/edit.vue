@@ -23,8 +23,13 @@
                         </v-container>
                     </div>
                     <template v-else-if="groupedConditions">
+                        <div v-if="recipe.conditions.length > 1" class="mt-n1 mb-2">
+                            <div v-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</div>
+                            <div v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</div>
+                            <div v-else-if="recipe.conditions.length > 1" class="if-then">If some of these conditions are met:</div>
+                        </div>
                         <template v-for="(conditions, property, groupIndex) in groupedConditions">
-                            <v-chip v-if="recipe.op == 'OR' && groupIndex > 0" class="ml-n1 mt-n1 mb-1" small outlined>OR</v-chip>
+                            <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-7 mt-n1 mb-2" small outlined>{{ recipe.op }}</v-chip>
                             <div class="mb-3" v-for="(condition, index) in conditions" :key="`${property}-c-${index}`">
                                 <v-container class="ma-0 pa-0 d-flex align-start" fluid>
                                     <div class="mr-2">
@@ -35,7 +40,7 @@
                                         <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
                                     </div>
                                     <div>
-                                        <span v-if="recipe.samePropertyOp == 'OR' && index > 0">or</span>
+                                        <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toString().toLowerCase() }}</span>
                                         <span>{{ conditionSummary(condition) }}</span>
                                     </div>
                                 </v-container>
@@ -43,7 +48,7 @@
                         </template>
                     </template>
 
-                    <v-alert class="mt-2 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if "Delayed processing" is enabled on your Account.</v-alert>
+                    <v-alert class="mt-3 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if "Delayed processing" is enabled on your Account.</v-alert>
 
                     <div>
                         <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
@@ -377,7 +382,7 @@ export default {
             this.conditionDialog = false
         },
         deleteAction(action) {
-            _.remove(this.recipe.actions, action)
+            this.recipe.actions.splice(this.recipe.actions.indexOf(action), 1)
             this.checkValid()
             this.deleteItemSelected = false
             this.hasChanges = true
@@ -386,7 +391,7 @@ export default {
             if (condition.defaultFor) {
                 this.recipe.defaultFor = null
             } else {
-                _.remove(this.recipe.conditions, condition)
+                this.recipe.conditions.splice(this.recipe.conditions.indexOf(condition), 1)
             }
 
             this.checkValid()

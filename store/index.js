@@ -152,6 +152,13 @@ export const mutations = {
         state.ftpWeeks = data
     },
     setUser(state, data) {
+        if (data?.recipes) {
+            const recipes = Object.values(data.recipes)
+            for (let r of recipes) {
+                if (!r.op) r.op = "AND"
+                if (!r.samePropertyOp) r.samePropertyOp = "AND"
+            }
+        }
         state.user = data
     },
     setAthleteRecords(state, data) {

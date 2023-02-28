@@ -23,15 +23,19 @@
                         </div>
                         <ul class="mt-0 pl-4 condition-list">
                             <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
+                            <li v-else-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
+                            <li v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</li>
+                            <li v-else-if="recipe.conditions.length > 1" class="if-then">If some of these conditions are met:</li>
                             <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions">
-                                <v-chip v-if="recipe.op == 'OR' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>OR</v-chip>
-                                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && recipe.samePropertyOp != 'and'}">
-                                    <span v-if="recipe.samePropertyOp == 'OR' && index > 0">or</span>
+                                <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>{{ recipe.op }}</v-chip>
+                                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && codeLogicalOperator(recipe) == 'SOME'}">
+                                    <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toLowerCase() }}</span>
                                     {{ conditionSummary(condition) }}
                                 </li>
                             </template>
                         </ul>
-                        <ul class="mt-3 mb-1 pl-4 action-list">
+                        <ul class="mt-2 mb-1 pl-4 action-list">
+                            <li v-if="!recipe.defaultFor && recipe.conditions.length > 1" class="if-then">Then execute these actions:</li>
                             <li class="font-weight-medium" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
                                 {{ actionSummary(action) }}
                             </li>
@@ -80,13 +84,17 @@
 </template>
 
 <style>
+li.if-then {
+    list-style-type: none;
+    opacity: 0.4;
+}
 .action-list {
     list-style-type: disc;
 }
 .condition-list {
     list-style-type: circle;
 }
-.condition-list .or {
+.condition-list li.or {
     list-style-type: none;
 }
 .drag-handle {

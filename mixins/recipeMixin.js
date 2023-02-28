@@ -98,6 +98,12 @@ export default {
         // Returns the text for the specified condition.
         conditionPropertyText(condition) {
             return _.find(this.$store.state.recipeProperties, {value: condition.property}).text
+        },
+        // Returns the code for the recipe logical operators (ALL, ANY or SOME).
+        codeLogicalOperator(recipe) {
+            if (recipe.samePropertyOp == "AND" && recipe.op == "AND") return "ALL"
+            if (recipe.samePropertyOp == "OR" && recipe.op == "OR") return "ANY"
+            return "SOME"
         }
     }
 }
