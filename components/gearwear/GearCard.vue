@@ -22,7 +22,8 @@
                         </v-col>
                         <v-col class="pt-2 pt-md-0" cols="12" :sm="12" :md="7">
                             <v-chip class="mr-3 ml-n1 mb-2" v-for="comp in gearwearConfig.components" :class="getChipClass(comp)" :color="getChipColor(comp)" :to="getChipLink(comp)" :key="gear.id + comp.name + 'sm'" nuxt>
-                                <v-icon class="mr-1" v-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync-alert</v-icon>
+                                <v-icon class="mr-1" v-if="comp.disabled" small>mdi-sync-off</v-icon>
+                                <v-icon class="mr-1" v-else-if="comp.currentDistance >= comp.alertDistance" small>mdi-sync</v-icon>
                                 {{ getChipText(comp) }}
                             </v-chip>
                         </v-col>
