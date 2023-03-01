@@ -84,9 +84,6 @@ class WebServer {
             const bodyParser = require("body-parser")
             this.app.use(bodyParser.json())
             this.app.use((err: Error, req: express.Request, res: express.Response, next) => {
-                if (!res.headersSent && settings.beta.enabled) {
-                    res.setHeader("X-Robots-Tag", "noindex, nofollow")
-                }
                 if (err) {
                     return this.renderError(req, res, err.toString(), 400)
                 }
