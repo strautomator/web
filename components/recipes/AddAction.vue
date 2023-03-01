@@ -15,77 +15,81 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12">
-                            <v-select label="Select an action..." v-model="selectedAction" :items="recipeActions" dense outlined rounded return-object></v-select>
-                            <div v-if="selectedAction.value == 'gear'">
-                                <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
-                            </div>
-                            <div v-else-if="selectedAction.value == 'sportType'">
-                                <v-select label="Select a sport..." v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
-                            </div>
-                            <div v-else-if="selectedAction.value == 'workoutType'">
-                                <v-select label="Select a workout type..." v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
-                            </div>
-                            <div v-else-if="selectedAction.value == 'mapStyle'">
-                                <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
-                            </div>
-                            <div v-else-if="actionIsDescription">
-                                <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
-                            </div>
-                            <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
-                                <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
-                            </div>
-                            <div v-if="actionIsText">
-                                <v-btn v-if="!showTags" class="mb-4" title="View activity and weather tags" @click="showTags = true" rounded x-small>
-                                    <v-icon>mdi-chevron-down</v-icon>
-                                    View available tags
-                                </v-btn>
-                                <v-tabs v-if="showTags" height="36" background-color="accent" :fixed-tabs="!$breakpoint.mdAndUp" v-model="tabTags">
-                                    <v-tab>Activity tags</v-tab>
-                                    <v-tab>Weather tags</v-tab>
-                                    <v-tab>Music tags</v-tab>
-                                </v-tabs>
-                                <v-tabs-items class="action-activity-tags" v-model="tabTags">
-                                    <v-tab-item class="pt-4">
-                                        <template v-for="aTags in activityTags">
-                                            <h3>{{ aTags.title }} stats</h3>
-                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
-                                            </v-card>
-                                        </template>
-                                    </v-tab-item>
-                                    <v-tab-item class="pt-4">
-                                        <template v-for="wTags in weatherTags">
-                                            <h3>{{ wTags.title }} of activity</h3>
-                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
-                                            </v-card>
-                                        </template>
-                                    </v-tab-item>
-                                    <v-tab-item class="pt-4">
-                                        <template v-if="!user.spotify">
-                                            <div class="ml-2 mr-2 mb-2">
-                                                To use music tags, you need to link your Spotify
-                                                <n-link to="/account?spotify=link" title="My account" nuxt>account</n-link> first.
-                                            </div>
-                                        </template>
-                                        <template v-for="mTags in musicTags" v-else>
-                                            <h3>{{ mTags.title }}</h3>
-                                            <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
-                                            </v-card>
-                                        </template>
-                                    </v-tab-item>
-                                </v-tabs-items>
-                            </div>
-                            <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
-                                You can try some auto-generated names
-                                <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
-                            </div>
+                            <v-autocomplete v-model="selectedAction" label="Select an action..." :items="recipeActions" dense outlined rounded return-object></v-autocomplete>
+                            <template v-if="selectedAction">
+                                <div v-if="selectedAction.value == 'gear'">
+                                    <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'sportType'">
+                                    <v-select label="Select a sport..." v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'workoutType'">
+                                    <v-select label="Select a workout type..." v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'mapStyle'">
+                                    <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="actionIsDescription">
+                                    <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
+                                </div>
+                                <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
+                                    <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
+                                </div>
+                                <div v-if="actionIsText">
+                                    <v-btn v-if="!showTags" class="mb-4" title="View activity and weather tags" @click="showTags = true" rounded x-small>
+                                        <v-icon>mdi-chevron-down</v-icon>
+                                        View available tags
+                                    </v-btn>
+                                    <v-tabs v-if="showTags" height="36" background-color="accent" :fixed-tabs="!$breakpoint.mdAndUp" v-model="tabTags">
+                                        <v-tab>Activity tags</v-tab>
+                                        <v-tab>Weather tags</v-tab>
+                                        <v-tab>Music tags</v-tab>
+                                    </v-tabs>
+                                    <v-tabs-items class="action-activity-tags" v-model="tabTags">
+                                        <v-tab-item class="pt-4">
+                                            <template v-for="aTags in activityTags">
+                                                <h3>{{ aTags.title }} stats</h3>
+                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                    <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
+                                                </v-card>
+                                            </template>
+                                        </v-tab-item>
+                                        <v-tab-item class="pt-4">
+                                            <template v-for="wTags in weatherTags">
+                                                <h3>{{ wTags.title }} of activity</h3>
+                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                    <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{
+                                                        getChipText(tag)
+                                                    }}</v-chip>
+                                                </v-card>
+                                            </template>
+                                        </v-tab-item>
+                                        <v-tab-item class="pt-4">
+                                            <template v-if="!user.spotify">
+                                                <div class="ml-2 mr-2 mb-2">
+                                                    To use music tags, you need to link your Spotify
+                                                    <n-link to="/account?spotify=link" title="My account" nuxt>account</n-link> first.
+                                                </div>
+                                            </template>
+                                            <template v-for="mTags in musicTags" v-else>
+                                                <h3>{{ mTags.title }}</h3>
+                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
+                                                    <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
+                                                </v-card>
+                                            </template>
+                                        </v-tab-item>
+                                    </v-tabs-items>
+                                </div>
+                                <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
+                                    You can try some auto-generated names
+                                    <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
+                                </div>
+                            </template>
                         </v-col>
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction.value" rounded>
+                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction?.value" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save action
                             </v-btn>
@@ -117,16 +121,13 @@ export default {
     },
     computed: {
         actionRules() {
-            if (this.selectedAction.value == "webhook") {
-                return [this.recipeRules.required, this.recipeRules.url]
-            }
-            return [this.recipeRules.required]
+            return this.selectedAction?.value == "webhook" ? [this.recipeRules.required, this.recipeRules.url] : [this.recipeRules.required]
         },
         actionIsDescription() {
-            return ["description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
+            return this.selectedAction && ["description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
         },
         actionIsText() {
-            return ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
+            return this.selectedAction && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
         }
     },
     watch: {

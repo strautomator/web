@@ -15,12 +15,12 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
-                            <v-select label="Select a condition..." v-model="selectedProperty" :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-select>
-                            <div v-if="selectedProperty.value">
+                            <v-autocomplete v-model="selectedProperty" label="Select a condition..." :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object> </v-autocomplete>
+                            <div v-if="selectedProperty?.value">
                                 <v-select
                                     v-if="!isDefaultFor && !isBoolean"
-                                    label="Operator..."
                                     v-model="selectedOperator"
+                                    label="Operator..."
                                     :hint="selectedOperator.description"
                                     :items="selectedProperty.operators"
                                     :item-text="(item) => (user.profile.units == 'imperial' ? item.impText || item.text : item.text)"
@@ -75,7 +75,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this condition" :disabled="!isBoolean && (!selectedProperty.value || !selectedOperator.value)" rounded>
+                            <v-btn color="primary" @click="save" title="Save this condition" :disabled="!isBoolean && (!selectedProperty?.value || !selectedOperator?.value)" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save condition
                             </v-btn>
@@ -100,7 +100,7 @@ export default {
     },
     computed: {
         selectedSuffix() {
-            if (this.selectedProperty.type == "time") {
+            if (!this.selectedProperty || this.selectedProperty.type == "time") {
                 return ""
             }
             if (this.user.preferences.weatherUnit == "f" && this.selectedProperty.fSuffix) {
@@ -113,35 +113,28 @@ export default {
             return this.selectedProperty.suffix
         },
         inputPlaceholder() {
-            if (this.selectedProperty.type == "time") {
-                return "00:00"
-            }
-
-            return ""
+            return this.selectedProperty?.type == "time" ? "00:00" : ""
         },
         isDefaultFor() {
-            return this.selectedProperty.value && this.selectedProperty.value == "defaultFor"
+            return this.selectedProperty?.value == "defaultFor"
         },
         isSportType() {
-            return this.selectedProperty.value && this.selectedProperty.value == "sportType"
+            return this.selectedProperty?.value == "sportType"
         },
         isGear() {
-            return this.selectedProperty.value && this.selectedProperty.value == "gear"
+            return this.selectedProperty?.value == "gear"
         },
         isWeekday() {
-            return this.selectedProperty.value && this.selectedProperty.value == "weekday"
+            return this.selectedProperty?.value == "weekday"
         },
         isSpotify() {
-            return this.selectedProperty.value && this.selectedProperty.value == "spotify.track"
+            return this.selectedProperty?.value == "spotify.track"
         },
         isBoolean() {
-            return this.selectedProperty.value && this.selectedProperty.type == "boolean"
+            return this.selectedProperty?.type == "boolean"
         },
         isLocation() {
-            if (this.selectedProperty.value) {
-                return this.selectedProperty.value == "polyline" || this.selectedProperty.value.includes("location")
-            }
-            return false
+            return this.selectedProperty?.value == "polyline" || this.selectedProperty?.value.includes("location")
         },
         isLocationImg() {
             return this.isLocation && this.selectedOperator.value && this.locationInput && this.locationInput.value
@@ -189,6 +182,7 @@ export default {
             return [this.recipeRules.required, () => (this.locationInput && this.locationInput.value.length > 0 ? true : false)]
         },
         valueInputRules() {
+            if (!this.selectedProperty) return [this.recipeRules.required]
             if (this.isDefaultFor) return false
             if (["dateStart", "dateEnd"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.time]
             if (["movingTime", "totalTime", "lapTime"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.timer]
@@ -267,7 +261,7 @@ export default {
                 selectedGear: [],
                 selectedWeekdays: [],
                 selectedBoolean: {},
-                selectedProperty: {},
+                selectedProperty: {value: ""},
                 selectedOperator: {},
                 selectedDefaultFor: {},
                 valueInput: "",
@@ -290,7 +284,7 @@ export default {
                     result = {defaultFor: this.selectedDefaultFor.value}
                 } else {
                     result = {
-                        property: this.selectedProperty.value,
+                        property: this.selectedProperty?.value,
                         operator: this.selectedOperator.value,
                         value: this.valueInput
                     }
@@ -326,7 +320,7 @@ export default {
         propertyChanged() {
             if (this.isDefaultFor) {
                 this.selectedOperator = {value: true}
-            } else if (this.selectedProperty.operators.length == 1) {
+            } else if (this.selectedProperty?.operators.length == 1) {
                 this.selectedOperator = this.selectedProperty.operators[0]
             } else {
                 this.selectedOperator = {}
