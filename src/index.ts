@@ -31,7 +31,8 @@ async function start() {
         config.server.port = settings.app.port
         config.env.baseUrl = baseUrl
         config.axios.baseURL = baseUrl
-        config.axios.browserBaseURL = baseUrl
+        config.privateRuntimeConfig.axios.baseURL = baseUrl
+        config.publicRuntimeConfig.axios.browserBaseURL = baseUrl
 
         // Init Nuxt.js.
         const {Nuxt, Builder} = require("nuxt")

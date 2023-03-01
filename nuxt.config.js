@@ -22,8 +22,9 @@ module.exports = {
 
     // Additional axios config.
     axios: {
-        baseURL: "https://strautomator.com/",
-        retry: false
+        retry: {
+            retries: 1
+        }
     },
 
     // Additional build config.
@@ -56,7 +57,7 @@ module.exports = {
 
     // Forced environment variables.
     env: {
-        baseUrl: "https://strautomator.com/"
+        baseUrl: process.env.SMU_app_url
     },
 
     // Loading specs.
@@ -74,6 +75,20 @@ module.exports = {
 
     // Additional plugins.
     plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/localstorage", "~/plugins/authtoken"],
+
+    // Private runtime config.
+    privateRuntimeConfig: {
+        axios: {
+            baseURL: process.env.SMU_app_url
+        }
+    },
+
+    // Public runtime config.
+    publicRuntimeConfig: {
+        axios: {
+            browserBaseURL: process.env.SMU_app_url
+        }
+    },
 
     // Server settings are defined on runtime.
     server: {},
