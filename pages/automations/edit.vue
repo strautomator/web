@@ -26,7 +26,7 @@
                         <div v-if="recipe.conditions.length > 1" class="mt-n1 mb-2">
                             <div v-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</div>
                             <div v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</div>
-                            <div v-else-if="recipe.conditions.length > 1" class="if-then">If some of these conditions are met:</div>
+                            <div v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</div>
                         </div>
                         <template v-for="(conditions, property, groupIndex) in groupedConditions">
                             <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-7 mt-n1 mb-2" small outlined>{{ recipe.op }}</v-chip>
@@ -63,17 +63,23 @@
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="!recipe.defaultFor" class="mt-4" outlined>
+            <v-card v-if="!recipe.defaultFor && recipe.conditions.length > 1" class="mt-4" outlined>
                 <v-card-title>Logical operators</v-card-title>
                 <v-card-text>
-                    <div>
+                    <div v-if="recipe.conditions.length > 2">
                         <div>Within conditions of the same type.</div>
                         <v-radio-group v-model="recipe.samePropertyOp" class="mt-0 mb-0" row>
                             <v-radio label="AND" value="AND"></v-radio>
                             <v-radio label="OR" value="OR"></v-radio>
                         </v-radio-group>
-
-                        <div>Between conditions with different types.</div>
+                        <div>Between conditions of different types.</div>
+                        <v-radio-group v-model="recipe.op" class="mt-0 mb-n4" row>
+                            <v-radio label="AND" value="AND"></v-radio>
+                            <v-radio label="OR" value="OR"></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div v-else>
+                        <div>Between any conditions.</div>
                         <v-radio-group v-model="recipe.op" class="mt-0 mb-n4" row>
                             <v-radio label="AND" value="AND"></v-radio>
                             <v-radio label="OR" value="OR"></v-radio>
@@ -231,7 +237,7 @@ export default {
 
         // Make sure default logical operators are set.
         if (!recipe.op) recipe.op = "AND"
-        if (!recipe.samePropertyOp) recipe.samePropertyOp = "AND"
+        if (!recipe.samePropertyOp) recipe.samePropertyOp = recipe.op
 
         return {
             recipe: recipe,

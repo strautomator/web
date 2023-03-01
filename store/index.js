@@ -154,9 +154,9 @@ export const mutations = {
     setUser(state, data) {
         if (data?.recipes) {
             const recipes = Object.values(data.recipes)
-            for (let r of recipes) {
-                if (!r.op) r.op = "AND"
-                if (!r.samePropertyOp) r.samePropertyOp = "AND"
+            for (let recipe of recipes) {
+                if (!recipe.op) recipe.op = "AND"
+                if (!recipe.samePropertyOp) recipe.samePropertyOp = recipe.op
             }
         }
         state.user = data

@@ -101,8 +101,8 @@ export default {
         },
         // Returns the code for the recipe logical operators (ALL, ANY or SOME).
         codeLogicalOperator(recipe) {
-            if (recipe.samePropertyOp == "AND" && recipe.op == "AND") return "ALL"
-            if (recipe.samePropertyOp == "OR" && recipe.op == "OR") return "ANY"
+            if (recipe.op == "AND" && (recipe.samePropertyOp == "AND" || recipe.conditions.length < 3)) return "ALL"
+            if (recipe.op == "OR" && (recipe.samePropertyOp == "OR" || recipe.conditions.length < 3)) return "ANY"
             return "SOME"
         }
     }

@@ -23,9 +23,9 @@
                         </div>
                         <ul class="mt-0 pl-4 condition-list">
                             <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
-                            <li v-else-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
-                            <li v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</li>
-                            <li v-else-if="recipe.conditions.length > 1" class="if-then">If some of these conditions are met:</li>
+                            <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
+                            <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</li>
+                            <li v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</li>
                             <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions">
                                 <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>{{ recipe.op }}</v-chip>
                                 <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && codeLogicalOperator(recipe) == 'SOME'}">
