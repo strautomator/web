@@ -77,7 +77,7 @@ As simple as:
 
     $ make run
 
-If any required settings are missing or wrongly set, you'll get alerted on the console.
+If any required settings are missing or wrongly set, you'll get alerted on the console. When running locally (NODE_ENV is development), all features dependent on scheduled functions will run at startup.
 
 ## Deployment
 
@@ -91,9 +91,9 @@ Basic deployment samples are provided:
 -   VM in Google Cloud Compute: [docker-compose.yml](https://github.com/strautomator/web/blob/master/docker-compose.yml.sample) (not tested in production).
 -   Cloud Run: create a [Cloud Build trigger](https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers) to update your service whenever there's a new version pushed to your GIT fork.
 
-### Locked in to Google Cloud Platform?
+### Scheduled functions
 
-You might have noticed that the database, settings, deployment... everything has samples and mentions to GCP. And you are right. I (as in Igor, the developer) wanted to try out and get some experience with the GCP platform, and Strautomator is my pilot project. So far I've been very happy with it, and thus I have no urge to create a cross-cloud-platform version of this service.
+Please note that some features depend on scheduled functions to work. These can be found [here](https://github.com/strautomator/functions), and need to be deployed separately to your environment of choice.
 
 ### Beta deployments
 
