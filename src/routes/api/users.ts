@@ -336,11 +336,12 @@ const routeUserRecipe = async (req: any, res: any) => {
         }
 
         const username = user.displayName
+        const operatorLog = recipe.op == recipe.samePropertyOp ? recipe.op : `${recipe.samePropertyOp} ${recipe.op}`
 
         // Creating a new recipe?
         if (!recipe.id && method == "POST") {
             if (!user.isPro && user.recipeCount >= settings.plans.free.maxRecipes) {
-                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, `Can't create recipe, reached free plan maximum`)
+                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, "Can't create recipe, reached free plan's maximum")
                 return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed`, 429)
             }
 
@@ -350,7 +351,7 @@ const routeUserRecipe = async (req: any, res: any) => {
 
             // Add to user's recipe list.
             user.recipes[recipe.id] = recipe
-            logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `New recipe ${recipe.id}: ${recipe.title}`)
+            logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `New recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
         } else {
             const existingRecipe = user.recipes[recipeId]
 
@@ -363,12 +364,12 @@ const routeUserRecipe = async (req: any, res: any) => {
             // Updating an existing recipe?
             if (method == "POST") {
                 user.recipes[recipe.id] = recipe
-                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Updated recipe ${recipe.id}: ${recipe.title}`, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
+                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Updated recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
             }
             // Deleting a recipe?
             else if (method == "DELETE") {
                 delete user.recipes[recipeId]
-                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Deleted recipe ${recipeId}`)
+                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Deleted recipe ${recipeId}: ${recipe.title}`)
             }
             // Invalid call.
             else {
