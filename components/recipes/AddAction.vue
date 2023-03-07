@@ -169,6 +169,7 @@ export default {
                 {key: "cadenceAvg", text: "Avg cadence"},
                 {key: "elevationGain", text: "Elevation gain"},
                 {key: "elevationMax", text: "Max elevation"},
+                {key: "climbingRatio", text: "Climbing ratio"},
                 {key: "totalTime", text: "Total time"},
                 {key: "movingTime", text: "Moving time"},
                 {key: "weekOfYear", text: "Week of year"},
