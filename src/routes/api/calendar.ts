@@ -82,7 +82,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.commutes === "0") options.excludeCommutes = true
         if (req.query.joined === "1") options.excludeNotJoined = true
         if (req.query.countries === "1") options.includeAllCountries = true
-        if (req.query.sports) options.sportTypes = req.query.sports.toString().split(",")
+        if (req.query.sports?.length > 1) options.sportTypes = req.query.sports.toString().split(",")
+        if (req.query.clubs?.length > 1) options.clubIds = req.query.clubs.toString().split(",")
         if (req.query.daysfrom) options.dateFrom = getQueryDate(req.query.daysfrom).startOf("day")
         if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day")
 
