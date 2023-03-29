@@ -15,6 +15,7 @@
                     <li><n-link to="/feature/calendar" nuxt>Export your Strava calendar</n-link></li>
                     <li><n-link to="/feature/upcoming-events-map" nuxt>View your upcoming events map</n-link></li>
                     <li><n-link to="/feature/records" nuxt>Track your personal records</n-link></li>
+                    <li><n-link to="/feature/chatgpt" nuxt>Let ChatGPT name your activities</n-link></li>
                 </ul>
             </v-card-text>
         </v-card>
