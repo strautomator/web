@@ -217,7 +217,7 @@ export default {
                 {key: "windSpeed", text: "Wind speed"},
                 {key: "windDirection", text: "Wind direction"},
                 {key: "precipitation", text: "Precipitation"},
-                {key: "aqi", text: "AQI (0 to 5)},
+                {key: "aqi", text: "AQI (0 to 5)"},
                 {key: "aqiIcon", text: "AQI Icon"}
             ]
 
