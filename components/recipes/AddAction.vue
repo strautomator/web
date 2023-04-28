@@ -216,7 +216,9 @@ export default {
                 {key: "pressure", text: "Pressure"},
                 {key: "windSpeed", text: "Wind speed"},
                 {key: "windDirection", text: "Wind direction"},
-                {key: "precipitation", text: "Precipitation"}
+                {key: "precipitation", text: "Precipitation"},
+                {key: "aqi", text: "AQI (0 to 5)},
+                {key: "aqiIcon", text: "AQI Icon"}
             ]
 
             // Combine weather tags.
