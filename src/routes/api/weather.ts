@@ -35,10 +35,11 @@ router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.
         const result = {}
         const now = dayjs().utcOffset(parseInt(req.params.timeoffset))
         const coordinates = req.params.coordinates.toString()
+        const arrCoordinates = coordinates.split(",").map((c) => parseFloat(c)) as [number, number]
 
         for (let provider of weather.providers) {
             try {
-                const summary = await provider.getWeather(coordinates.split(","), now, user.preferences)
+                const summary = await weather.getLocationWeather({user: user, coordinates: arrCoordinates, dDate: now, provider: provider.name})
                 result[provider.name] = summary
             } catch (innerEx) {
                 logger.error("Routes", req.method, req.originalUrl, `Provider: ${provider.name}`, innerEx)
@@ -81,7 +82,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
                 const arrData = query.split(":")
                 queryResult.coordinates = arrData[1].split(",").map((c) => parseFloat(c)) as [number, number]
                 queryResult.timestamp = parseInt(arrData[2])
-                queryResult.forecast = await weather.getLocationWeather(user, queryResult.coordinates, dayjs.unix(queryResult.timestamp))
+                queryResult.forecast = await weather.getLocationWeather({user: user, coordinates: queryResult.coordinates, dDate: dayjs.unix(queryResult.timestamp)})
             } catch (weatherEx) {
                 logger.warn("Routes", req.method, req.path, query, weatherEx.message)
                 hadError = true
