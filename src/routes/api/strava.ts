@@ -205,8 +205,8 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
         if (dateTo && !dateTo.isValid) throw new Error(`Invalid "to" date`)
 
         // Limit batch operations per day.
-        if (user.dateLastBatchProcessing && dayjs().subtract(settings.strava.queueBatchPerHours, "hours").isBefore(user.dateLastBatchProcessing)) {
-            throw new Error(`Only a single batch operation allowed every ${settings.strava.queueBatchPerHours} hour(s)`)
+        if (user.dateLastBatchProcessing && dayjs().subtract(settings.strava.processingQueue.batchPerHours, "hours").isBefore(user.dateLastBatchProcessing)) {
+            throw new Error(`Only a single batch operation allowed every ${settings.strava.processingQueue.batchPerHours} hour(s)`)
         }
 
         // Additional batch processing filters.
@@ -222,7 +222,7 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
         // Start processing the first batch of activities straight away.
         await strava.activityProcessing.processQueuedActivities()
 
-        webserver.renderJson(req, res, {activityCount: activityCount, processed: activityCount <= settings.strava.queueBatchSize})
+        webserver.renderJson(req, res, {activityCount: activityCount, processed: activityCount <= settings.strava.processingQueue.batchSize})
     } catch (ex) {
         const errorMessage = ex.toString()
         logger.error("Routes", req.method, req.originalUrl, ex)
