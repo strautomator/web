@@ -378,6 +378,11 @@ const routeUserRecipe = async (req: any, res: any) => {
             }
         }
 
+        // User was recently suspended? Unset the flag.
+        if (user.suspended) {
+            user.suspended = false
+        }
+
         // Update recipe count on user data.
         user.recipeCount = Object.keys(user.recipes).length
         await users.update(user, true)
