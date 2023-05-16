@@ -1,67 +1,178 @@
 <template>
     <v-layout column>
         <v-container v-if="recipe" fluid>
-            <h1>{{ recipe.id ? "Edit" : "New" }} automation</h1>
+            <h1>
+                {{ recipe.id ? "Edit" : "New" }} automation
+                <v-btn v-if="recipe.id" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
+                    <v-icon small>{{ asJson ? "mdi-form-select" : "mdi-code-json" }}</v-icon>
+                </v-btn>
+            </h1>
             <v-form v-model="valid" class="mb-0" ref="form">
                 <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" outlined rounded></v-text-field>
             </v-form>
-            <v-card outlined>
-                <v-card-title>Conditions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
-                <v-card-text>
-                    <div class="mb-3" v-if="recipe.defaultFor">
-                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                            <div class="mr-2">
-                                <v-icon color="removal" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+
+            <template v-if="asJson">
+                <v-card outlined>
+                    <v-card-title>Conditions and actions (JSON)</v-card-title>
+                    <v-card-text :class="{'compact-editor': $breakpoint.smAndDown}">
+                        <template v-if="asJson">
+                            <client-only>
+                                <JsonEditorVue v-model="jsonData" class="jse-theme-dark" :validator="validateJson" :indentation="$breakpoint.smAndDown ? 2 : 4" />
+                            </client-only>
+                            <v-alert color="error" v-if="jsonErrors.length > 0" class="mt-4">
+                                <div class="font-weight-bold">JSON validation errors</div>
+                                <ul class="ml-n2">
+                                    <li v-for="err in jsonErrors">{{ err.message }}.</li>
+                                </ul>
+                            </v-alert>
+
+                            <div class="text-center text-md-left mt-4">
+                                <v-btn color="primary" title="Save this automation" @click="showJsonSpecsDialog" small rounded>
+                                    <v-icon left>mdi-help-circle</v-icon>
+                                    JSON Help
+                                </v-btn>
                             </div>
-                            <div class="mr-2" v-if="deleteItemSelected == recipe.defaultFor">
-                                <v-btn color="removal" @click="deleteCondition({defaultFor: recipe.defaultFor})" rounded x-small>Delete</v-btn>
-                            </div>
-                            <div>
-                                <span class="font-weight-bold">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</span>
-                            </div>
-                        </v-container>
-                    </div>
-                    <template v-else-if="groupedConditions">
-                        <div v-if="recipe.conditions.length > 1" class="mt-n1 mb-2">
-                            <div v-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</div>
-                            <div v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</div>
-                            <div v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</div>
-                        </div>
-                        <template v-for="(conditions, property, groupIndex) in groupedConditions">
-                            <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-7 mt-n1 mb-2" small outlined>{{ recipe.op }}</v-chip>
-                            <div class="mb-3" v-for="(condition, index) in conditions" :key="`${property}-c-${index}`">
-                                <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                                    <div class="mr-2">
-                                        <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
-                                        <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
-                                    </div>
-                                    <div class="mr-2" v-if="deleteItemSelected == condition">
-                                        <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
-                                    </div>
-                                    <div>
-                                        <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toString().toLowerCase() }}</span>
-                                        <span>{{ conditionSummary(condition) }}</span>
-                                    </div>
-                                </v-container>
-                            </div>
+
+                            <v-dialog v-model="jsonSpecsDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown">
+                                <v-card>
+                                    <v-toolbar color="primary">
+                                        <v-toolbar-title>Automation JSON Help</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                        <v-toolbar-items>
+                                            <v-btn icon @click.stop="hideJsonSpecsDialog">
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>
+                                        </v-toolbar-items>
+                                    </v-toolbar>
+                                    <v-card-text>
+                                        <div class="mt-4">
+                                            <p>The following rules apply to the automation JSON source:</p>
+                                            <ul class="ml-n2">
+                                                <li>Must have "defaultFor" or "conditions", but not both.</li>
+                                                <li>Conditions must have the following fields: "property", "operator" and "value".</li>
+                                                <li>Actions must have the following fields: "type" and "value".</li>
+                                                <li>A "friendlyValue" can be added to conditions and actions to describe what it does, specially useful when using coordinates and booleans.</li>
+                                            </ul>
+                                            <p class="mt-2">Below you'll find a list of all available condition properties and actions.</p>
+                                            <v-autocomplete v-model="jsonSpecsItem" label="Condition properties and action types" :items="recipePropertiesActions" item-text="value" dense outlined rounded return-object></v-autocomplete>
+
+                                            <v-alert color="accent" v-if="jsonSpecsItem" class="mt-n1">
+                                                <div v-if="jsonSpecsItem.operators">
+                                                    <div class="subtitle-1">
+                                                        Property: <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
+                                                    </div>
+                                                    <div class="mt-1 mb-1">Operators:</div>
+                                                    <ul class="ml-n2">
+                                                        <li v-for="o in jsonSpecsItem.operators">
+                                                            <span class="font-weight-bold">{{ o.value }}</span> - {{ o.text }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="subtitle-1" v-else>
+                                                    Action: <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
+                                                </div>
+                                            </v-alert>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
                         </template>
-                    </template>
+                    </v-card-text>
+                </v-card>
+            </template>
+            <template v-else>
+                <v-card outlined>
+                    <v-card-title>Conditions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
+                    <v-card-text>
+                        <div class="mb-3" v-if="recipe.defaultFor">
+                            <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                <div class="mr-2">
+                                    <v-icon color="removal" v-if="deleteItemSelected != recipe.defaultFor" @click="confirmDelete(recipe.defaultFor)">mdi-minus-circle-outline</v-icon>
+                                    <v-icon v-if="deleteItemSelected == recipe.defaultFor" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                </div>
+                                <div class="mr-2" v-if="deleteItemSelected == recipe.defaultFor">
+                                    <v-btn color="removal" @click="deleteCondition({defaultFor: recipe.defaultFor})" rounded x-small>Delete</v-btn>
+                                </div>
+                                <div>
+                                    <span class="font-weight-bold">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</span>
+                                </div>
+                            </v-container>
+                        </div>
+                        <template v-else-if="groupedConditions">
+                            <div v-if="recipe.conditions.length > 1" class="mt-n1 mb-2">
+                                <div v-if="codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</div>
+                                <div v-else-if="codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</div>
+                                <div v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</div>
+                            </div>
+                            <template v-for="(conditions, property, groupIndex) in groupedConditions">
+                                <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-7 mt-n1 mb-2" small outlined>{{ recipe.op }}</v-chip>
+                                <div class="mb-3" v-for="(condition, index) in conditions" :key="`${property}-c-${index}`">
+                                    <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                        <div class="mr-2">
+                                            <v-icon color="removal" v-if="deleteItemSelected != condition" @click="confirmDelete(condition)">mdi-minus-circle-outline</v-icon>
+                                            <v-icon v-if="deleteItemSelected == condition" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                        </div>
+                                        <div class="mr-2" v-if="deleteItemSelected == condition">
+                                            <v-btn color="removal" @click="deleteCondition(condition)" rounded x-small>Delete</v-btn>
+                                        </div>
+                                        <div>
+                                            <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toString().toLowerCase() }}</span>
+                                            <span>{{ conditionSummary(condition) }}</span>
+                                        </div>
+                                    </v-container>
+                                </div>
+                            </template>
+                        </template>
+                        <v-alert class="mt-3 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if the "Delayed processing" is enabled on your Account.</v-alert>
+                        <div>
+                            <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
+                                <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                                Add new condition
+                            </v-btn>
+                        </div>
+                        <v-dialog v-model="conditionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
+                            <add-condition @closed="setCondition" />
+                        </v-dialog>
+                    </v-card-text>
+                </v-card>
 
-                    <v-alert class="mt-3 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if "Delayed processing" is enabled on your Account.</v-alert>
-
-                    <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
-                            <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                            Add new condition
-                        </v-btn>
-                    </div>
-
-                    <v-dialog v-model="conditionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
-                        <add-condition @closed="setCondition" />
-                    </v-dialog>
-                </v-card-text>
-            </v-card>
+                <v-card class="mt-4" outlined>
+                    <v-card-title>Actions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
+                    <v-card-text>
+                        <div class="mb-3" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
+                            <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                <div class="mr-2">
+                                    <v-icon color="removal" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>
+                                    <v-icon v-if="deleteItemSelected == action" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
+                                </div>
+                                <div class="mr-2" v-if="deleteItemSelected == action">
+                                    <v-btn color="removal" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
+                                </div>
+                                <div>
+                                    <span>{{ actionSummary(action) }}</span>
+                                </div>
+                            </v-container>
+                        </div>
+                        <div class="mb-3" v-if="recipe.killSwitch">
+                            <v-container class="ma-0 pa-0 d-flex align-start" fluid>
+                                <div class="mr-2">
+                                    <v-icon color="accent">mdi-stop-circle-outline</v-icon>
+                                </div>
+                                <span>Stop executing further automations</span>
+                            </v-container>
+                        </div>
+                        <div>
+                            <v-btn class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
+                                <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                                Add new action
+                            </v-btn>
+                        </div>
+                        <v-dialog v-model="actionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
+                            <add-action :disabled-actions="disabledActions" @closed="setAction" />
+                        </v-dialog>
+                    </v-card-text>
+                </v-card>
+            </template>
 
             <v-card v-if="!recipe.defaultFor && recipe.conditions.length > 1" class="mt-4" outlined>
                 <v-card-title>Logical operators</v-card-title>
@@ -88,42 +199,6 @@
                 </v-card-text>
             </v-card>
 
-            <v-card class="mt-4" outlined>
-                <v-card-title>Actions {{ recipe.disabled ? "(disabled)" : "" }}</v-card-title>
-                <v-card-text>
-                    <div class="mb-3" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
-                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                            <div class="mr-2">
-                                <v-icon color="removal" v-if="deleteItemSelected != action" @click="confirmDelete(action)">mdi-minus-circle-outline</v-icon>
-                                <v-icon v-if="deleteItemSelected == action" color="grey" @click="cancelDelete">mdi-cancel</v-icon>
-                            </div>
-                            <div class="mr-2" v-if="deleteItemSelected == action">
-                                <v-btn color="removal" @click="deleteAction(action)" rounded x-small>Delete</v-btn>
-                            </div>
-                            <div>
-                                <span>{{ actionSummary(action) }}</span>
-                            </div>
-                        </v-container>
-                    </div>
-                    <div class="mb-3" v-if="recipe.killSwitch">
-                        <v-container class="ma-0 pa-0 d-flex align-start" fluid>
-                            <div class="mr-2">
-                                <v-icon color="accent">mdi-stop-circle-outline</v-icon>
-                            </div>
-                            <span>Stop executing further automations</span>
-                        </v-container>
-                    </div>
-                    <div>
-                        <v-btn class="ml-n3 mt-2" color="primary" title="Add a new action" @click.stop="showActionDialog" rounded text small>
-                            <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                            Add new action
-                        </v-btn>
-                    </div>
-                    <v-dialog v-model="actionDialog" width="640" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown" persistent>
-                        <add-action :disabled-actions="disabledActions" @closed="setAction" />
-                    </v-dialog>
-                </v-card-text>
-            </v-card>
             <v-card class="mt-4" v-if="hasCounter" outlined>
                 <v-card-text class="mb-0 pb-0">
                     <div>This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.</div>
@@ -201,6 +276,7 @@ import AddAction from "~/components/recipes/AddAction.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
+import "vanilla-jsoneditor/themes/jse-theme-dark.css"
 
 export default {
     authenticated: true,
@@ -239,9 +315,17 @@ export default {
         if (!recipe.op) recipe.op = "AND"
         if (!recipe.samePropertyOp) recipe.samePropertyOp = recipe.op
 
+        // List of conditions and actions for the help dialog.
+        const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
+        recipeProperties.forEach((p) => (p.value = `Property: ${p.value}`))
+        const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
+        recipeActions.forEach((a) => (a.value = `Action: ${a.value}`))
+        const recipePropertiesActions = _.concat(recipeProperties, recipeActions)
+
         return {
             recipe: recipe,
             recipeStats: {counter: 0},
+            recipePropertiesActions: recipePropertiesActions,
             currentCounter: 0,
             valid: valid,
             disabledActions: [],
@@ -250,6 +334,11 @@ export default {
             deleteItemSelected: false,
             deleteDialog: false,
             hasChanges: false,
+            asJson: false,
+            jsonSpecsDialog: false,
+            jsonSpecsItem: null,
+            jsonData: null,
+            jsonErrors: [],
             isNew: isNew
         }
     },
@@ -298,9 +387,98 @@ export default {
         }
     },
     methods: {
+        toggleMode() {
+            this.updateJson()
+            this.asJson = !this.asJson
+        },
+        updateJson() {
+            try {
+                if (this.asJson) {
+                    const jsonData = _.isString(this.jsonData) ? JSON.parse(this.jsonData) : jsonData
+                    const currentDefaultFor = this.recipe.defaultFor ? JSON.stringify(this.recipe.defaultFor, null, 0).replace(/ /, "") : null
+                    const currentConditions = this.recipe.conditions ? JSON.stringify(this.recipe.conditions, null, 0).replace(/ /, "") : null
+                    const currentActions = JSON.stringify(this.recipe.actions, null, 0).replace(/ /, "")
+                    const currentData = `{"${currentDefaultFor ? "defaultFor" : "conditions"}":${currentDefaultFor || currentConditions},"actions":${currentActions}}`
+                    this.hasChanges = currentData != JSON.stringify(jsonData, null, 0).replace(/ /, "")
+
+                    if (this.jsonErrors.length == 0) {
+                        if (jsonData.defaultFor) {
+                            this.recipe.defaultFor = jsonData.defaultFor
+                        } else {
+                            this.recipe.conditions = jsonData.conditions
+                        }
+                        this.recipe.actions = jsonData.actions
+                    }
+                } else {
+                    const jsonData = {}
+                    if (this.recipe.defaultFor) {
+                        jsonData.defaultFor = _.cloneDeep(this.recipe.defaultFor)
+                    } else {
+                        jsonData.conditions = _.cloneDeep(this.recipe.conditions)
+                    }
+                    jsonData.actions = _.cloneDeep(this.recipe.actions)
+                    this.jsonData = jsonData
+                    this.jsonErrors = []
+                }
+            } catch (ex) {
+                this.jsonErrors.push({message: ex.toString()})
+            }
+        },
+        validateJson(data) {
+            const vErrors = []
+
+            try {
+                const jsonData = data
+
+                if (!jsonData.defaultFor && !jsonData.conditions) {
+                    vErrors.push({message: `A "defaultFor" or "conditions" list is mandatory`, path: []})
+                } else if (jsonData.defaultFor && jsonData.conditions) {
+                    vErrors.push({message: `Automation cannot have "defaultFor" and "condtions", please use just one`, path: []})
+                }
+
+                if (jsonData.conditions?.length > 0) {
+                    for (let i = 0; i < jsonData.conditions.length; i++) {
+                        const c = jsonData.conditions[i]
+                        const path = ["conditions", i]
+                        if (!c.property) {
+                            vErrors.push({message: `Condition ${i} is missing the "property"`, path: path})
+                        } else if (!_.find(this.$store.state.recipeProperties, {value: c.property})) {
+                            vErrors.push({message: `Condition ${i} has an invalid "property"`, path: path})
+                        }
+                        if (!c.operator) {
+                            vErrors.push({message: `Condition ${i} is missing an "operator"`, path: path})
+                        }
+                    }
+                }
+
+                if (!jsonData.actions) {
+                    vErrors.push({message: `Missing the "actions" list`, path: []})
+                } else if (jsonData.actions.length == 0) {
+                    vErrors.push({message: `You must define at least 1 action`, path: ["actions"]})
+                } else {
+                    for (let i = 0; i < jsonData.actions.length; i++) {
+                        const a = jsonData.actions[i]
+                        if (!a.type) {
+                            vErrors.push({message: `Action ${i} is missing the "property" type`, path: ["actions", i]})
+                        }
+                    }
+                }
+            } catch (ex) {
+                vErrors.push(ex.toString())
+            }
+
+            this.jsonErrors = vErrors
+            this.valid = vErrors.length == 0
+
+            return vErrors
+        },
         async save() {
             try {
                 this.hasChanges = false
+
+                if (this.asJson) {
+                    this.updateJson()
+                }
 
                 if (this.$refs.form.validate()) {
                     if (this.changedCounter) {
@@ -323,7 +501,11 @@ export default {
                     this.$router.push({path: `/automations?${queryField}=${recipeData.id}`})
                 }
             } catch (ex) {
-                this.$webError("AutomationEdit.save", ex)
+                if (ex.response?.status == 400 && ex.response?.data?.message) {
+                    this.jsonErrors = [{message: ex.response.data.message}]
+                } else {
+                    this.$webError("AutomationEdit.save", ex)
+                }
             }
         },
         async duplicate() {
@@ -346,11 +528,17 @@ export default {
         },
         checkValid() {
             const hasConditions = this.recipe.defaultFor || this.recipe.conditions.length > 0
-            this.valid = hasConditions && this.recipe.actions.length > 0
+            this.valid = hasConditions && this.recipe.actions.length > 0 && this.jsonErrors.length == 0
         },
         needsDelay(recipe) {
             const conditions = recipe.conditions.map((c) => c.property)
             return !this.user.preferences.delayedProcessing && _.intersection(["gear", "description"], conditions).length > 0
+        },
+        showJsonSpecsDialog() {
+            this.jsonSpecsDialog = true
+        },
+        hideJsonSpecsDialog() {
+            this.jsonSpecsDialog = false
         },
         showActionDialog() {
             this.disabledActions = _.map(this.recipe.actions, "type")

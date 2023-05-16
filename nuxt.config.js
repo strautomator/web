@@ -40,6 +40,14 @@ module.exports = {
                 "Cache-Control": "no-cache",
                 Vary: "*"
             }
+        },
+        transpile: ["json-editor-vue"],
+        extend(config) {
+            config.module.rules.push({
+                test: /\.mjs$/,
+                include: /node_modules/,
+                type: "javascript/auto"
+            })
         }
     },
 
@@ -74,7 +82,7 @@ module.exports = {
     },
 
     // Additional plugins.
-    plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/localstorage", "~/plugins/authtoken"],
+    plugins: ["~/plugins/breakpoint", "~/plugins/errorhandler", "~/plugins/localstorage", "~/plugins/authtoken", "~/plugins/jsoneditorvue.client"],
 
     // Private runtime config.
     privateRuntimeConfig: {

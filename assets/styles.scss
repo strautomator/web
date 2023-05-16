@@ -131,6 +131,24 @@ a {
     position: relative;
 }
 
+.jse-contents {
+    width: 100% !important;
+}
+
+.jse-contents .jse-value {
+    width: 100% !important;
+}
+
+.jse-editable-div {
+    width: 100% !important;
+}
+
+.jse-context-menu-pointer-anchor,
+.compact-editor .cm-gutters,
+.compact-editor .jse-validation-errors-overview {
+    display: none !important;
+}
+
 .stripe {
     position: fixed;
     display: -webkit-box;
