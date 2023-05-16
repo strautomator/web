@@ -109,6 +109,30 @@
                             </v-col>
                         </v-row>
                     </div>
+
+                    <div class="mt-4" v-if="linksOn > 0">
+                        <h3 class="mb-2">Hashtag preference</h3>
+                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
+                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Omit suffixes</h3>
+                        <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit, keep the appended suffixes'"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Privacy mode</h3>
+                        <div class="body-2">
+                            Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
+                            <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
+                        </div>
+                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'" @change="confirmPrivacyDialog"></v-switch>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="mb-2">Twitter sharing</h3>
+                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
+                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'" :disabled="privacyMode"></v-switch>
+                    </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
@@ -123,24 +147,6 @@
                                 <v-radio :label="user.isPro ? 'No links' : 'No links (PRO only)'" :value="0" :disabled="!user.isPro"></v-radio>
                             </v-radio-group>
                         </div>
-                    </div>
-                    <div class="mt-4" v-if="linksOn > 0">
-                        <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
-                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="mb-2">Privacy mode</h3>
-                        <div class="body-2">
-                            Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
-                            <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
-                        </div>
-                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'" @change="confirmPrivacyDialog"></v-switch>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="mb-2">Twitter sharing</h3>
-                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'" :disabled="privacyMode"></v-switch>
                     </div>
                 </v-card-text>
             </v-card>
@@ -314,6 +320,7 @@ export default {
         const hashtag = preferences.activityHashtag || false
         const twitterShare = preferences.twitterShare || false
         const privacyMode = preferences.privacyMode || false
+        const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
@@ -357,6 +364,7 @@ export default {
             gearwearDelayDays: gearwearDelayDays,
             activityHashtag: hashtag,
             twitterShare: twitterShare,
+            noSuffixes: noSuffixes,
             privacyMode: privacyMode,
             privacyDialog: false,
             ftpAutoUpdate: ftpAutoUpdate,
@@ -545,6 +553,7 @@ export default {
                     gearwearDelayDays: this.gearwearDelayDays,
                     activityHashtag: this.activityHashtag,
                     twitterShare: this.twitterShare,
+                    noSuffixes: this.noSuffixes,
                     privacyMode: this.privacyMode,
                     weatherProvider: this.weatherProvider,
                     weatherUnit: this.weatherUnit,
