@@ -2,7 +2,7 @@
 
 import express = require("express")
 import logger = require("anyhow")
-const router = express.Router()
+const router: express.Router = express.Router()
 const packageVersion = require("../../../package.json").version
 
 /**

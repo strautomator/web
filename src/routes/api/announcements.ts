@@ -5,7 +5,7 @@ import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Return active announcements. Please note that the read count will always come zeroed.

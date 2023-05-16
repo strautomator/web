@@ -6,7 +6,7 @@ import auth from "../auth"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Return unread notifications for the logged user.

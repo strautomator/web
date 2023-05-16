@@ -6,7 +6,7 @@ import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Validate webhooks dispatched by GitHub.

@@ -10,7 +10,7 @@ import logger = require("anyhow")
 import webserver = require("../../webserver")
 const axios = require("axios").default
 const settings = require("setmeup").settings
-const router = express.Router()
+const router: express.Router = express.Router()
 const packageVersion = require("../../../package.json").version
 
 /**

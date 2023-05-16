@@ -5,7 +5,7 @@ import auth from "../auth"
 import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Initiate an authentication procedure with Spotify.

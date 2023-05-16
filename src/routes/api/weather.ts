@@ -7,7 +7,7 @@ import logger = require("anyhow")
 import webserver = require("../../webserver")
 import dayjs from "dayjs"
 const settings = require("setmeup").settings
-const router = express.Router()
+const router: express.Router = express.Router()
 
 // Multi forecast result.
 interface MultiForecastResult {

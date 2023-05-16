@@ -4,7 +4,7 @@ import {faq} from "strautomator-core"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Search for answers from the FAQ.

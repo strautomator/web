@@ -6,7 +6,7 @@ import logger = require("anyhow")
 import webserver = require("../../webserver")
 import auth from "../auth"
 const settings = require("setmeup").settings
-const router = express.Router()
+const router: express.Router = express.Router()
 
 /**
  * Process webhooks dispatched by PayPal.
