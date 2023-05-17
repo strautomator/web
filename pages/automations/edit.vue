@@ -3,7 +3,7 @@
         <v-container v-if="recipe" fluid>
             <h1>
                 {{ recipe.id ? "Edit" : "New" }} automation
-                <v-btn v-if="recipe.id" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
+                <v-btn v-if="recipe.id && user.isPro" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
                     <v-icon small>{{ asJson ? "mdi-form-select" : "mdi-code-json" }}</v-icon>
                 </v-btn>
             </h1>
@@ -51,15 +51,25 @@
                                                 <li>Must have "defaultFor" or "conditions", but not both.</li>
                                                 <li>Conditions must have the following fields: "property", "operator" and "value".</li>
                                                 <li>Actions must have the following fields: "type" and "value".</li>
-                                                <li>A "friendlyValue" can be added to conditions and actions to describe what it does, specially useful when using coordinates and booleans.</li>
+                                                <li>A "friendlyValue" can be added to conditions and actions to describe what it does.</li>
                                             </ul>
                                             <p class="mt-2">Below you'll find a list of all available condition properties and actions.</p>
                                             <v-autocomplete v-model="jsonSpecsItem" label="Condition properties and action types" :items="recipePropertiesActions" item-text="value" dense outlined rounded return-object></v-autocomplete>
 
-                                            <v-alert color="accent" v-if="jsonSpecsItem" class="mt-n1">
-                                                <div v-if="jsonSpecsItem.operators">
+                                            <v-alert color="accent" v-if="jsonSpecsItem" class="mt-n2">
+                                                <div v-if="jsonSpecsItem.value == 'defaultFor'" class="subtitle-1 font-weight-bold">
+                                                    {{ jsonSpecsItem.text }}
+                                                </div>
+                                                <div v-else-if="jsonSpecsItem.operators">
                                                     <div class="subtitle-1">
-                                                        Property: <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
+                                                        Property:
+                                                        <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
+                                                    </div>
+                                                    <div class="subtitle-1">
+                                                        Value type:
+                                                        <span class="font-weight-bold">{{ jsonSpecsItem.type }}</span>
+                                                        <span v-if="jsonSpecsItem.type == 'time'">(HH:MM)</span>
+                                                        <span v-else-if="jsonSpecsItem.type == 'location'">(lat, lon)</span>
                                                     </div>
                                                     <div class="mt-1 mb-1">Operators:</div>
                                                     <ul class="ml-n2">
@@ -71,7 +81,17 @@
                                                 <div class="subtitle-1" v-else>
                                                     Action: <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
                                                 </div>
+                                                <v-select
+                                                    v-if="jsonSpecsItem.value == 'defaultFor' || jsonSpecsItem.type == 'sportType'"
+                                                    label="List of sport types"
+                                                    class="mt-4 mb-n4"
+                                                    :items="$store.state.sportTypes"
+                                                    dense
+                                                    outlined
+                                                    rounded
+                                                ></v-select>
                                             </v-alert>
+                                            <p>Further technical details can be found directly on <a href="https://github.com/strautomator/core/blob/master/src/recipes/lists.ts" target="github">GitHub</a>.</p>
                                         </div>
                                     </v-card-text>
                                 </v-card>
@@ -308,7 +328,7 @@ export default {
 
         // Invalid recipe?
         if (!recipe) {
-            return this.$webError("AutomationEditdata", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
+            return this.$webError("AutomationEdit.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
         // Make sure default logical operators are set.
@@ -320,7 +340,7 @@ export default {
         recipeProperties.forEach((p) => (p.value = `Property: ${p.value}`))
         const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
         recipeActions.forEach((a) => (a.value = `Action: ${a.value}`))
-        const recipePropertiesActions = _.concat(recipeProperties, recipeActions)
+        const recipePropertiesActions = _.concat([{value: "defaultFor", text: "Default automation for specific sport types"}], recipeProperties, recipeActions)
 
         return {
             recipe: recipe,
@@ -370,7 +390,7 @@ export default {
                 this.currentCounter = recipeStats.counter
             }
         } catch (ex) {
-            this.$webError("AutomationEditfetch", ex)
+            this.$webError("AutomationEdit.fetch", ex)
         }
     },
     beforeRouteLeave(to, from, next) {
