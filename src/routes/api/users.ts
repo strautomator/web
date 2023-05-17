@@ -204,6 +204,11 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.privacyMode = req.body.privacyMode ? true : false
         }
 
+        // Set the omit suffixes preference?
+        if (preferenceChanged("noSuffixes")) {
+            preferences.noSuffixes = req.body.noSuffixes ? true : false
+        }
+
         // Set counter reset date?
         if (preferenceChanged("dateResetCounter")) {
             if (req.body.dateResetCounter) {
