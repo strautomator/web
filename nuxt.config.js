@@ -55,7 +55,7 @@ module.exports = {
     buildModules: ["@nuxtjs/vuetify", "@nuxtjs/dayjs"],
 
     // Append global styles.
-    css: ["@/assets/styles.scss"],
+    css: ["@/assets/styles.scss", "vanilla-jsoneditor/themes/jse-theme-dark.css"],
 
     // Day.js options.
     dayjs: {

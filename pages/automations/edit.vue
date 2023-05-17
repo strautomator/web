@@ -296,7 +296,6 @@ import AddAction from "~/components/recipes/AddAction.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import "vanilla-jsoneditor/themes/jse-theme-dark.css"
 
 export default {
     authenticated: true,
