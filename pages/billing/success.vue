@@ -7,7 +7,7 @@
                     <p>Hi {{ user.profile.firstName }}!</p>
                     <p>We truly appreciate your support! It gives me not only the financial help to keep Strautomator running, but also the recognition and the motivation I need to keep bringing all the cool features you might want :-)</p>
                     <v-alert v-if="$route.query.fixed" color="accent" border="top">
-                        Seems like you had a previous subscription that was not reflected on the database. The system will wutomagically fix it and your account should be switched to PRO within the next few minutes.
+                        Seems like you had a previous subscription that was not reflected on the database. The system will automagically fix it and your account should be switched to PRO within the next few minutes.
                     </v-alert>
                     <p v-else>Your account will be switched to PRO automatically within the next few minutes.</p>
                 </v-card-text>

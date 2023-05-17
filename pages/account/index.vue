@@ -116,7 +116,7 @@
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">Omit suffixes</h3>
+                        <h3 class="mb-2">Omit tag suffixes</h3>
                         <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
                         <v-switch class="mt-2" title="Twitter sharing" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit, keep the appended suffixes'"></v-switch>
                     </div>

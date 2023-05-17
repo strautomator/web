@@ -343,7 +343,7 @@ export default {
                         query.push(`${event.id}:${route.locationMid.join(",")}:${timestamp}`)
                     }
                     // End point weather will only be fetched for events longer than 1.5 hours.
-                    if (route.locationEnd && route.estiamtedTime >= 5400) {
+                    if (route.locationEnd && route.estimatedTime >= 5400) {
                         query.push(`${event.id}:${route.locationEnd.join(",")}:${timestamp}`)
                     }
                 }

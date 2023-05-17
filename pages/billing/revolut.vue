@@ -5,7 +5,7 @@
                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
             </div>
         </v-container>
-        <v-container v-else-if="subscriptionSource == 'revoluta'" fluid>
+        <v-container v-else-if="subscriptionSource == 'revolut'" fluid>
             <v-card>
                 <v-card-text class="text-center">
                     <p>Thanks for participating! You already have a lifetime PRO account ☺</p>
@@ -28,9 +28,8 @@
                         Do you know Revolut? One app, all things money, in their words. In my words, it's one of the most innovative neobanks out there. Revolut is available in more than 35 countries worldwide, and it's possibly the most
                         feature-complete bank in most of these countries.
                     </p>
-
                     <p>
-                        Every now and then they run affiliate campaigns, and I'm taking the opportunity to offer a free lifetime PRO subscription to people who sign up to Revolut using my
+                        Every now and then they run affiliate campaigns, and I take the opportunity to offer a free lifetime PRO subscription to people who sign up to Revolut using my
                         <a href="https://links.devv.com/l/revolut" title="Sign up to Revolut" target="revolut">affiliate link</a>.
                     </p>
                     <p>
@@ -78,7 +77,7 @@
         <v-container v-else fluid>
             <v-card>
                 <v-card-text>
-                    <p class="text-center">The "Lifetime PRO with Revolut" campaign is currently not running. If you want a PRO account, please subscribe via PayPal or GitHub.</p>
+                    <p class="text-center mb-0">The "Lifetime PRO with Revolut" campaign is currently not running. If you want a PRO account, please subscribe via PayPal or GitHub.</p>
                 </v-card-text>
             </v-card>
             <div class="mt-6 text-center">

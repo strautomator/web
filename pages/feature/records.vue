@@ -14,7 +14,7 @@ vue
                             <p>Strautomator can keep tabs on your personal records on Strava! Track the longest distance, speed, power, heart rate and more for your rides, runs or any other activity type.</p>
                             <v-img class="mb-5" src="/images/feature/records-ride.png"></v-img>
 
-                            <p>And you can also use activit records as part of automaton conditions:</p>
+                            <p>And you can also use activity records as part of automaton conditions:</p>
                             <v-img class="mb-2" src="/images/feature/records-condition.png"></v-img>
 
                             <h2 class="mt-4 mb-2">How can I enable the feature?</h2>
@@ -25,7 +25,7 @@ vue
                                     <li>Use the "Fetch activity records" button</li>
                                     <li>Sit down and relax, your records should be extracted from activities within 3 minutes</li>
                                 </ul>
-                                <div class="mt-4">After the feature is enabled, new activty records will be checked automatically.</div>
+                                <div class="mt-4">After the feature is enabled, new activity records will be checked automatically.</div>
                             </div>
                         </div>
                     </v-card-text>

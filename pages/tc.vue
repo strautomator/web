@@ -159,7 +159,7 @@
 
                         <h3 class="mt-6 mb-4">Strava API Dependency</h3>
                         <p>
-                            All of our services are fully dependant on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
+                            All of our services are fully dependent on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
                             their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work. In such case, subscribers that had their last payment made less than 28 days before
                             the service shutdown are entitled to a refund for that last payment alone.
                         </p>

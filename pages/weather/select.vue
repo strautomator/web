@@ -114,7 +114,7 @@ export default {
             loading: false,
             saved: false,
             positionFailed: false,
-            weatherProvider: this.$store.state.user.preferences.weatherProvider || "stormglass",
+            weatherProvider: this.$store.state.user.preferences.weatherProvider || "openmeteo",
             weatherSummaries: []
         }
     },
