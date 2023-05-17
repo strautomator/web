@@ -166,7 +166,8 @@ export default {
                 {key: "speedMax", text: "Max speed"},
                 {key: "paceAvg", text: "Avg pace"},
                 {key: "paceMax", text: "Max pace"},
-                {key: "cadenceAvg", text: "Avg cadence"},
+                {key: "cadenceAvg", text: "Avg cadence (RPM)"},
+                {key: "cadenceSpm", text: "Avg cadence (SPM)"},
                 {key: "elevationGain", text: "Elevation gain"},
                 {key: "elevationMax", text: "Max elevation"},
                 {key: "climbingRatio", text: "Climbing ratio"},
@@ -188,7 +189,7 @@ export default {
                 {key: "hrAvg", text: "Avg HR"},
                 {key: "hrMax", text: "Max HR"},
                 {key: "calories", text: "Calories"},
-                {key: "relativeEffort", text: "Relative efftort"},
+                {key: "relativeEffort", text: "Relative effort"},
                 {key: "perceivedExertion", text: "Perceived exertion"}
             ]
 
