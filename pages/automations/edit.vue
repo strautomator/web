@@ -413,7 +413,7 @@ export default {
         updateJson() {
             try {
                 if (this.asJson) {
-                    const jsonData = _.isString(this.jsonData) ? JSON.parse(this.jsonData) : jsonData
+                    const jsonData = _.isString(this.jsonData) ? JSON.parse(this.jsonData) : this.jsonData
                     const currentDefaultFor = this.recipe.defaultFor ? JSON.stringify(this.recipe.defaultFor, null, 0).replace(/ /, "") : null
                     const currentConditions = this.recipe.conditions ? JSON.stringify(this.recipe.conditions, null, 0).replace(/ /, "") : null
                     const currentActions = JSON.stringify(this.recipe.actions, null, 0).replace(/ /, "")
@@ -452,7 +452,7 @@ export default {
                 if (!jsonData.defaultFor && !jsonData.conditions) {
                     vErrors.push({message: `A "defaultFor" or "conditions" list is mandatory`, path: []})
                 } else if (jsonData.defaultFor && jsonData.conditions) {
-                    vErrors.push({message: `Automation cannot have "defaultFor" and "condtions", please use just one`, path: []})
+                    vErrors.push({message: `Automation cannot have "defaultFor" and "conditions", please use just one`, path: []})
                 }
 
                 if (jsonData.conditions?.length > 0) {
@@ -493,11 +493,11 @@ export default {
         },
         async save() {
             try {
-                this.hasChanges = false
-
                 if (this.asJson) {
                     this.updateJson()
                 }
+
+                this.hasChanges = false
 
                 if (this.$refs.form.validate()) {
                     if (this.changedCounter) {
