@@ -3,7 +3,7 @@
         <v-container v-if="recipe" fluid>
             <h1>
                 {{ recipe.id ? "Edit" : "New" }} automation
-                <v-btn v-if="recipe.id && user.isPro" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
+                <v-btn v-if="recipe.id" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
                     <v-icon small>{{ asJson ? "mdi-form-select" : "mdi-code-json" }}</v-icon>
                 </v-btn>
             </h1>
