@@ -3,7 +3,7 @@
         <v-container v-if="recipe" fluid>
             <h1>
                 {{ recipe.id ? "Edit" : "New" }} automation
-                <v-btn v-if="recipe.id" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
+                <v-btn v-if="recipe.id || templateId" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" x-small fab rounded nuxt>
                     <v-icon small>{{ asJson ? "mdi-form-select" : "mdi-code-json" }}</v-icon>
                 </v-btn>
             </h1>
@@ -307,13 +307,14 @@ export default {
         }
     },
     data() {
-        let recipe, valid, isNew
+        let recipe, valid, isNew, templateId
 
         if (this.$route.query?.id) {
             recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.id])
             valid = true
             isNew = false
         } else if (this.$route.query?.template) {
+            templateId = this.$route.query.template
             recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.template])
             recipe.title += " (copy)"
             delete recipe.id
@@ -358,7 +359,8 @@ export default {
             jsonSpecsItem: null,
             jsonData: null,
             jsonErrors: [],
-            isNew: isNew
+            isNew: isNew,
+            templateId: templateId
         }
     },
     computed: {
