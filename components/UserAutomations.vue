@@ -6,21 +6,16 @@
                     <v-hover v-slot:default="{hover}">
                         <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                             <v-card-title class="accent">
-                                <v-icon class="ml-n1 mr-2" color="primary" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
-                                <span class="primary--text">{{ recipe.title }}</span>
+                                <v-icon class="ml-n1 mr-2" :color="isRecipeDisabled(recipe, recipeIndex) ? 'removal' : 'primary'" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
+                                <span>{{ recipe.title }}</span>
                                 <v-icon class="ml-2" v-show="hover" small>mdi-pencil-outline</v-icon>
                                 <v-spacer></v-spacer>
+                                <v-chip class="mr-2" color="removal" title="This automation is disabled" v-if="isRecipeDisabled(recipe, recipeIndex)" small>DISABLED</v-chip>
                                 <v-icon class="drag-handle ml-1" title="Hold to reorder this automation recipe" v-if="!recipe.defaultFor">mdi-drag</v-icon>
                             </v-card-title>
                         </n-link>
                     </v-hover>
                     <v-card-text class="white--text pb-2">
-                        <div class="mb-2" v-if="recipesRemaining < 0 && recipeIndex >= recipesMaxAllowed">
-                            <v-chip class="mb-0 ml-1" color="error" outlined small>DISABLED, NEEDS PRO</v-chip>
-                        </div>
-                        <div class="mb-2" v-else-if="recipe.disabled">
-                            <v-chip class="mb-0 ml-1" color="error" outlined small>DISABLED</v-chip>
-                        </div>
                         <ul class="mt-0 pl-4 condition-list">
                             <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
                             <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
@@ -40,6 +35,9 @@
                                 {{ actionSummary(action) }}
                             </li>
                         </ul>
+                        <div class="mt-2 mb-2" v-if="recipe.killSwitch">
+                            <v-chip class="mb-0 ml-1" color="removal" title="Stop processing further automations if this one is triggered" outlined small>STOP HERE</v-chip>
+                        </div>
                         <div class="mt-2 mb-2 mb-md-0" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
                             <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activityCount }} time(s), last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                             <v-chip class="mb-0 ml-1" v-if="hasCounter(recipe)" disabled outlined small>Counter: {{ recipeStats[recipe.id].counter }}</v-chip>
@@ -69,9 +67,9 @@
             <div v-else-if="recipesRemaining < 0">
                 <v-alert border="top" color="error" colored-border>
                     <p>
-                        You are over the limit of {{ recipesMaxAllowed }} automations on your free account.
+                        You are over the limit of {{ recipesMaxAllowed }} automations on the free account.
                         <br v-if="$breakpoint.mdAndUp" />
-                        Only the top {{ recipesMaxAllowed }} will work. If you want to keep using all of them, please upgrade to a PRO account.
+                        Only the top {{ recipesMaxAllowed }} automations will work. If you want to keep using all of them, please upgrade to PRO.
                     </p>
                     <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
@@ -157,6 +155,9 @@ export default {
         this.setOrderedRecipes(_.cloneDeep(Object.values(this.user.recipes)))
     },
     methods: {
+        isRecipeDisabled(recipe, index) {
+            return (this.recipesRemaining < 0 && index >= this.recipesMaxAllowed) || recipe.disabled
+        },
         hasCounter(recipe) {
             return this.recipeStats[recipe.id] && this.recipeStats[recipe.id].counter > 0 && _.find(recipe.actions, (a) => _.isString(a.value) && a.value.includes("${counter}"))
         },
