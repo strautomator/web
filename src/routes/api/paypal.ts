@@ -129,14 +129,14 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
 
         // Subscription not active?
         if (!user.subscription && !user.subscription.enabled) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} has no active subscription`)
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName} has no active subscription`)
             return webserver.renderError(req, res, "User has no active subscription", 400)
         }
 
         // Get and validate subscription info from PayPal.
         const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
         if (!subscription) {
-            logger.error("Routes", req.method, req.originalUrl, `Subscription ${user.subscription.id} is invalid`)
+            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName}`, `Subscription ${user.subscription.id} is invalid`)
             return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 400)
         }
 

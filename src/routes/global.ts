@@ -2,9 +2,9 @@
 
 const logger = require("anyhow")
 
-export default function(req, res, next) {
+export default function (req, res, next) {
     if (res.statusCode >= 400) {
-        logger.error("Routes", req.originalUrl, `Status ${res.statusCode}`)
+        logger.error("Routes", req.originalUrl, `Status ${res.statusCode}`, `From ${req.ip} ${req.userId || ""}`)
     }
 
     next()

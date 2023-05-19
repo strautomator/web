@@ -75,7 +75,7 @@ router.get("/:userId/activities/recent", async (req: express.Request, res: expre
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Limit number of recent activites, with a hard coded maximum of 50.
+        // Limit number of recent activities, with a hard coded maximum of 50.
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
         if (limit > 50) limit = 50
 
@@ -132,7 +132,7 @@ router.get("/:userId/activities/since/:timestamp", async (req: express.Request, 
             _.remove(activities, (a) => !a.gear || a.gear.id != req.query.gear)
         }
 
-        logger.info("Routes", req.method, req.originalUrl, `Got ${activities.length} activites`)
+        logger.info("Routes", req.method, req.originalUrl, `Got ${activities.length} activities`)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -148,12 +148,12 @@ router.get("/:userId/activities/processed", async (req: express.Request, res: ex
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Limit number of activites returned?
+        // Limit number of activities returned?
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
         let dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).startOf("day").toDate() : null
         let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
 
-        const activities = await strava.activityProcessing.getProcessedActivites(user, dateFrom, dateTo, limit)
+        const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
 
         logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
