@@ -106,7 +106,6 @@ module.exports = {
 
     // Vuetify general options.
     vuetify: {
-        customVariables: ["~/assets/variables.scss"],
         theme: {
             dark: true,
             themes: {
