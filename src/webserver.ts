@@ -95,8 +95,6 @@ class WebServer {
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
                 rateLimit.onLimitReached = (req) => logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
                 this.app.use("/api/*", rateLimit)
-
-                logger.info("WebServer.init", `API rate limit: ${settings.api.rateLimit.max} / ${settings.api.rateLimit.windowMs}ms`)
             }
 
             // Only accept connections coming via Cloudflare?
