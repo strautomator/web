@@ -340,6 +340,11 @@ const routeUserRecipe = async (req: any, res: any) => {
             return webserver.renderError(req, res, "User not found", 404)
         }
 
+        // If 2 conditions or less, we don't need to set a value for samePropertyOp, as we only use the default op.
+        if (recipe.conditions?.length <= 2 && recipe.samePropertyOp) {
+            delete recipe.samePropertyOp
+        }
+
         const username = user.displayName
         const operatorLog = recipe.op == recipe.samePropertyOp ? recipe.op : `${recipe.samePropertyOp} ${recipe.op}`
 
