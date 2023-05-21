@@ -6,8 +6,7 @@
                     <v-icon class="ml-n1 mr-2" color="primary">{{ gearIcon }}</v-icon>
                     <v-icon class="ml-n1 mr-2" color="primary" v-if="gear.primary">mdi-bookmark</v-icon>
                     <span>{{ gear.name }}</span>
-                    <v-spacer></v-spacer>
-                    <v-icon v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
+                    <v-icon class="ml-2" v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
                 </v-card-title>
             </n-link>
         </v-hover>
