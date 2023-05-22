@@ -92,9 +92,31 @@ class WebServer {
 
             // Set API rate limiting (if defined on the settings).
             if (settings.api.rateLimit && settings.api.rateLimit.max) {
+                const rateLimitOptions = _.cloneDeep(settings.api.rateLimit)
+                rateLimitOptions.handler = (req: express.Request, res: express.Response, next, options) => {
+                    try {
+                        if (!res.headersSent) {
+                            logger.warn("Routes", req.method, req.originalUrl, `From: ${req.ip}`, "Rate limited")
+                            res.status(options.statusCode).send(options.message)
+                        } else {
+                            logger.warn("Routes", req.method, req.originalUrl, `From: ${req.ip}`, `Rate limited, but status sent as ${res.statusCode}`)
+                        }
+                    } catch (ex) {
+                        logger.error("Routes", req.method, req.originalUrl, `From: ${req.ip}`, "Rate limit handler failed", ex)
+                        next()
+                    }
+                }
+
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
-                rateLimit.onLimitReached = (req) => logger.warn("Routes", req.method, req.originalUrl, `Rate limited: ${req.ip}`)
                 this.app.use("/api/*", rateLimit)
+                this.app.use("/api/*", (req, res, next) => {
+                    const reqRateLimit = (req as any).rateLimit
+                    const statusCode = res.statusCode || "not sent"
+                    if (reqRateLimit && [50, 10, 5, 1].includes(reqRateLimit.remaining)) {
+                        logger.warn("Routes", req.method, req.originalUrl, `From ${req.ip}`, `Status ${statusCode}`, `Rate limit remaining: ${reqRateLimit.remaining}`)
+                    }
+                    next()
+                })
             }
 
             // Only accept connections coming via Cloudflare?
