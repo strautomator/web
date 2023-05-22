@@ -444,7 +444,7 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
         if (!user) return
 
         if (!user.recipes[recipeId]) {
-            throw new Error("Invalid recipe")
+            throw new Error(`Invalid recipe: ${recipeId}`)
         }
 
         const stats = (await recipes.stats.getStats(user, user.recipes[recipeId])) as RecipeStatsData
@@ -468,11 +468,11 @@ router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res
         if (!user) return
 
         if (!user.recipes[recipeId]) {
-            throw new Error("Invalid recipe")
+            throw new Error(`Invalid recipe: ${recipeId}`)
         }
 
         if (isNaN(counter)) {
-            throw new Error("Counter is not a valid number")
+            throw new Error(`Counter is not a valid number: ${counter}`)
         }
 
         await recipes.stats.setCounter(user, user.recipes[recipeId], parseInt(counter))
