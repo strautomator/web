@@ -213,7 +213,7 @@ export default {
                 }
             }
         } catch (ex) {
-            this.$webError("Dashboard.fetch", ex)
+            this.$webError(this, "Dashboard.fetch", ex)
         }
     },
     mounted() {

@@ -87,7 +87,7 @@
                             </div>
                             <div class="text-right">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mr-1" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
+                                <v-btn class="mr-2" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
                                     <v-icon left>mdi-check</v-icon>
                                     Keep it
                                 </v-btn>
@@ -186,7 +186,7 @@ export default {
             this.billingPlans = billingPlans
             this.activeBillingPlan = billingPlans.find((b) => b.currency == (this.$store.state.expectedCurrency || "USD"))
         } catch (ex) {
-            this.$webError("Billing.fetch", ex)
+            this.$webError(this, "Billing.fetch", ex)
         }
 
         try {
@@ -213,7 +213,7 @@ export default {
                 }
             }
         } catch (ex) {
-            this.$webError("Billing.fetch", ex)
+            this.$webError(this, "Billing.fetch", ex)
         }
 
         this.loading = false
@@ -228,11 +228,11 @@ export default {
                 } else if (subscription && subscription.status == "ACTIVE") {
                     this.$router.push({path: `/billing/success?fixed=${subscription.id}`})
                 } else {
-                    this.$webError("Billing.prepareSubscription", "Could not setup your subscription with PayPal")
+                    this.$webError(this, "Billing.prepareSubscription", "Could not setup your subscription with PayPal")
                 }
             } catch (ex) {
                 ex.title = "Could not setup your subscription with PayPal"
-                this.$webError("Billing.prepareSubscription", ex)
+                this.$webError(this, "Billing.prepareSubscription", ex)
             }
         },
         async unsubscribe() {

@@ -32,7 +32,7 @@
             <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
 
             <v-container class="width-wrapper" fluid>
-                <nuxt v-if="$store.state?.user" />
+                <nuxt v-if="$store.state?.user" @onError="" />
             </v-container>
 
             <div class="mt-3 text-center">
@@ -95,13 +95,42 @@
                     <p>To log back in please use the <strong>Connect with Strava</strong> button again on the homepage.</p>
                     <div class="text-right">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>
+                        <v-btn class="mr-2" color="grey" title="Stay here" @click.stop="hideLogoutDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn color="removal" title="Yes, logout" @click="logout" rounded>
                             <v-icon left>mdi-logout</v-icon>
                             Logout
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="errorDialog" width="440" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="error">
+                    <v-toolbar-title>{{ $store.state.errorTitle }}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideErrorDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-3">Reference method: {{ $store.state.errorMethod }}</p>
+                    <p>{{ $store.state.errorMessage }}</p>
+                    <div class="text-right">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-2" color="accent" title="Back to the Dashboard" @click.stop="goToDashboard" rounded>
+                            <v-icon left>mdi-refresh</v-icon>
+                            Reload the app
+                        </v-btn>
+                        <v-btn color="accent" title="Ignore this error and continue" @click.stop="hideErrorDialog" rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Close
                         </v-btn>
                     </div>
                 </v-card-text>
@@ -125,6 +154,11 @@ export default {
             logoutDialog: false
         }
     },
+    computed: {
+        errorDialog() {
+            return this.$store.state.errorTitle || this.$store.state.errorMessage ? true : false
+        }
+    },
     mounted() {
         if (!this.$store.state?.user) {
             const errTitle = "User not found"
@@ -132,6 +166,17 @@ export default {
         }
     },
     methods: {
+        goToDashboard() {
+            document.location.href = "/dashboard"
+        },
+        showErrorDialog(title, message) {
+            this.errorTitle = title
+            this.errorMessage = message
+            this.errorDialog = true
+        },
+        hideErrorDialog() {
+            this.$store.commit("setError", null)
+        },
         showLogoutDialog() {
             this.logoutDialog = true
         },

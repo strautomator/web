@@ -154,7 +154,7 @@ export default {
                 }
             }
         } catch (ex) {
-            this.$webError("Help.fetch", ex)
+            this.$webError(this, "Help.fetch", ex)
         }
 
         this.loading = false

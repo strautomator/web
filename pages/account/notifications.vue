@@ -77,7 +77,7 @@ export default {
             this.readNotifications = _.remove(notifications, {read: true})
         } catch (ex) {
             this.notifications = []
-            this.$webError("NotificationHistory.fetch", ex)
+            this.$webError(this, "NotificationHistory.fetch", ex)
         }
     },
     methods: {
@@ -87,7 +87,7 @@ export default {
             try {
                 await this.$axios.$post(`/api/notifications/${this.user.id}/read`, ids)
             } catch (ex) {
-                this.$webError("NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`, ex)
+                this.$webError(this, "NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`, ex)
             }
         }
     }

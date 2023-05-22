@@ -116,7 +116,7 @@
                         <p class="mt-1">Komoot routes are not supported.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel and do not reset" @click.stop="hideDownloadDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Cancel and do not reset" @click.stop="hideDownloadDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -182,7 +182,7 @@ export default {
                     mapScript.async = true
                     mapScript.defer = true
                     mapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0cBXUmFBGn_HNlH06F2LM_WG2YWZGKe0&libraries=geometry&callback=initUpcomingEventsMap"
-                    mapScript.onerror = (ex) => this.$webError("UpcomingEventsMap.mounted", ex)
+                    mapScript.onerror = (ex) => this.$webError(this, "UpcomingEventsMap.mounted", ex)
                     document.querySelector("head").appendChild(mapScript)
                 } else {
                     this.loadMap()
@@ -231,7 +231,7 @@ export default {
                 getEvents()
             }
         } catch (ex) {
-            this.$webError("UpcomingEventsMap.mounted", ex)
+            this.$webError(this, "UpcomingEventsMap.mounted", ex)
         }
     },
     methods: {
@@ -290,7 +290,7 @@ export default {
 
                 this.loadWeather()
             } catch (ex) {
-                this.$webError("UpcomingEventsMap.loadMap", ex)
+                this.$webError(this, "UpcomingEventsMap.loadMap", ex)
             } finally {
                 this.loading = false
             }
@@ -373,7 +373,7 @@ export default {
                     }
                 }
             } catch (ex) {
-                this.$webError("UpcomingEventsMap.loadWeather", ex)
+                this.$webError(this, "UpcomingEventsMap.loadWeather", ex)
             } finally {
                 this.loadingWeather = false
             }

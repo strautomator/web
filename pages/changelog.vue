@@ -53,7 +53,7 @@ export default {
             const releases = _.sortBy(Object.values(changelog), "datePublished").reverse()
             this.releases = _.groupBy(releases, (r) => r.datePublished.split("T")[0])
         } catch (ex) {
-            this.$webError("Changelog.fetch", ex)
+            this.$webError(this, "Changelog.fetch", ex)
         }
     },
     methods: {

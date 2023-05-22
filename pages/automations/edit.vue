@@ -267,7 +267,7 @@
                         <p class="mt-2">Are you sure you want to delete this automation?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel, do not delete" @click.stop="hideDeleteDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Cancel, do not delete" @click.stop="hideDeleteDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -328,7 +328,7 @@ export default {
 
         // Invalid recipe?
         if (!recipe) {
-            return this.$webError("AutomationEdit.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
+            return this.$webError(this, "AutomationEdit.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
         // Make sure default logical operators are set.
@@ -384,14 +384,14 @@ export default {
         if (!this.$route.query.id || !this.$store.state.user.recipes[this.$route.query.id]) return
 
         try {
-            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}`)
+            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}a`)
 
             if (recipeStats) {
                 this.recipeStats = recipeStats
                 this.currentCounter = recipeStats.counter
             }
         } catch (ex) {
-            this.$webError("AutomationEdit.fetch", ex)
+            this.$webError(this, "AutomationEdit.fetch", ex)
         }
     },
     beforeRouteLeave(to, from, next) {
@@ -525,7 +525,7 @@ export default {
                 if (ex.response?.status == 400 && ex.response?.data?.message) {
                     this.jsonErrors = [{message: ex.response.data.message}]
                 } else {
-                    this.$webError("AutomationEdit.save", ex)
+                    this.$webError(this, "AutomationEdit.save", ex)
                 }
             }
         },
@@ -533,7 +533,7 @@ export default {
             try {
                 document.location.href = `/automations/edit?template=${this.recipe.id}`
             } catch (ex) {
-                this.$webError("AutomationEdit.duplicate", ex)
+                this.$webError(this, "AutomationEdit.duplicate", ex)
             }
         },
         async setCounter() {
@@ -544,7 +544,7 @@ export default {
                 const body = {id: this.recipe.id, counter: this.recipeStats.counter}
                 await this.$axios.$post(url, body)
             } catch (ex) {
-                this.$webError("AutomationEdit.setCounter", ex)
+                this.$webError(this, "AutomationEdit.setCounter", ex)
             }
         },
         checkValid() {
@@ -632,7 +632,7 @@ export default {
             try {
                 this.$axios.$delete(`/api/users/${this.user.id}/recipes/${this.recipe.id}`)
             } catch (ex) {
-                this.$webError("AutomationEdit.deleteRecipe", ex)
+                this.$webError(this, "AutomationEdit.deleteRecipe", ex)
             }
 
             this.deleteDialog = false

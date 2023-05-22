@@ -359,7 +359,7 @@ export default {
                 this.loading = false
                 this.locations = data
             } catch (ex) {
-                this.$webError("AddCondition.fetchLocations", ex)
+                this.$webError(this, "AddCondition.fetchLocations", ex)
             }
         },
         async fetchLocationsDebounced(value) {

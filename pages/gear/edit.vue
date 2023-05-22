@@ -123,7 +123,7 @@
                         <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Keep current tracking" @click.stop="hideResetDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Keep current tracking" @click.stop="hideResetDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -152,7 +152,7 @@
                         <p class="mt-2">Sure you want to delete this component?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Cancel deletion" @click.stop="hideDeleteComponentDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -181,7 +181,7 @@
                         <p class="mt-2">Sure you want to delete this GearWear configuration?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -300,7 +300,7 @@ export default {
     async fetch() {
         try {
             if (!this.$route.query || !this.$route.query.id) {
-                return this.$webError("GearEdit.fetch", {status: 404, message: "Missing gear ID on the URL"})
+                return this.$webError(this, "GearEdit.fetch", {status: 404, message: "Missing gear ID on the URL"})
             }
 
             const gearDetails = await this.$axios.$get(`/api/gearwear/${this.user.id}/${this.$route.query.id}`)
@@ -344,7 +344,7 @@ export default {
                 }
             }
         } catch (ex) {
-            this.$webError("GearEdit.fetch", ex)
+            this.$webError(this, "GearEdit.fetch", ex)
         }
 
         this.isLoading = false
@@ -385,7 +385,7 @@ export default {
                     this.$router.push({path: "/gear"})
                 }
             } catch (ex) {
-                this.$webError("GearEdit.saveConfig", ex)
+                this.$webError(this, "GearEdit.saveConfig", ex)
             }
         },
         createDefaults() {
@@ -480,7 +480,7 @@ export default {
                 this.gearwearComponent.lastResetDate = this.$dayjs().format("ll")
                 this.gearwearComponent = {}
             } catch (ex) {
-                this.$webError("GearEdit.resetTracking", ex)
+                this.$webError(this, "GearEdit.resetTracking", ex)
             }
 
             this.resetDialog = false
@@ -500,7 +500,7 @@ export default {
                 this.gearwearConfig.components = this.gearwearConfig.components
                 this.hasChanges = true
             } catch (ex) {
-                this.$webError("GearEdit.deleteComponent", ex)
+                this.$webError(this, "GearEdit.deleteComponent", ex)
             }
 
             this.deleteComponentDialog = false
@@ -520,7 +520,7 @@ export default {
 
                 this.$router.push({path: `/gear?deleted=${this.gear.id}`})
             } catch (ex) {
-                this.$webError("GearEdit.deleteGearWear", ex)
+                this.$webError(this, "GearEdit.deleteGearWear", ex)
             }
         }
     }

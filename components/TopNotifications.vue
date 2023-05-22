@@ -69,7 +69,7 @@ export default {
                 }
             }
         } catch (ex) {
-            this.$webError("TopNotifications.fetch", ex)
+            this.$webError(this, "TopNotifications.fetch", ex)
         }
     },
     methods: {

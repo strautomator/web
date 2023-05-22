@@ -98,7 +98,7 @@ export default {
                 this.loading = true
                 this.activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?from=${this.dateFrom}&to=${this.dateTo}`)
             } catch (ex) {
-                this.$webError("History.fetchHistory", ex)
+                this.$webError(this, "History.fetchHistory", ex)
             }
 
             this.loading = false

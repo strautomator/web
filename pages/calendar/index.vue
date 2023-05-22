@@ -189,7 +189,7 @@
                         <p class="mt-2">Are you sure you want to reset your URL token? Your calendar will have a new base URL, and previously imported calendars will be invalidated.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
-                            <v-btn class="mr-1" color="grey" title="Cancel and do not reset" @click.stop="hideResetDialog" text rounded>
+                            <v-btn class="mr-2" color="grey" title="Cancel and do not reset" @click.stop="hideResetDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
@@ -288,7 +288,7 @@ export default {
                 this.currentEventDetails = data.eventDetails
                 this.templateWarning = true
             } catch (ex) {
-                this.$webError("Calendar.saveTemplate", ex)
+                this.$webError(this, "Calendar.saveTemplate", ex)
             }
         },
         setSampleTemplate() {
@@ -337,7 +337,7 @@ export default {
                 this.$store.commit("setUserUrlToken", response.urlToken)
                 this.newUrlToken = response.urlToken
             } catch (ex) {
-                this.$webError("Calendar.resetUrl", ex)
+                this.$webError(this, "Calendar.resetUrl", ex)
             }
         }
     }

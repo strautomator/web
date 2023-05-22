@@ -190,7 +190,7 @@ export default {
             this.gearWithoutConfig = gearWithoutConfig
             this.hasManyBikes = bikes.length > 1
         } catch (ex) {
-            this.$webError("Gear.fetch", ex)
+            this.$webError(this, "Gear.fetch", ex)
         }
 
         this.isLoading = false

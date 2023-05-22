@@ -134,7 +134,7 @@ export default {
 
             this.loading = false
         } catch (ex) {
-            this.$webError("Revolut.fetch", ex)
+            this.$webError(this, "Revolut.fetch", ex)
         }
 
         this.loading = false

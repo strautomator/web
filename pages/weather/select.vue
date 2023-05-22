@@ -157,7 +157,7 @@ export default {
 
                 this.loading = false
             } catch (ex) {
-                this.$webError("Weather.getWeather", ex)
+                this.$webError(this, "Weather.getWeather", ex)
             }
         },
         async savePreferences() {
@@ -169,7 +169,7 @@ export default {
                 this.$store.commit("setUserPreferences", data)
                 this.saved = true
             } catch (ex) {
-                this.$webError("Weather.savePreferences", ex)
+                this.$webError(this, "Weather.savePreferences", ex)
             }
         },
         async saveAndExit() {

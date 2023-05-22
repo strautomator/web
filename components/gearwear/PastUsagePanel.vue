@@ -107,7 +107,7 @@ export default {
                 this.pastUsage = `${distance} ${this.distanceUnits} and ${hours} hours`
                 this.pastUsageAlert = true
             } catch (ex) {
-                this.$webError("GearPastUsagePanel.getPastUsage", ex)
+                this.$webError(this, "GearPastUsagePanel.getPastUsage", ex)
             }
 
             this.pastLoading = false

@@ -195,7 +195,7 @@
                     <p class="mt-4" v-else>You have linked the Spotify account {{ user.spotify.email }} to your profile. If you unlink it, existing automations having Spotify related properties might stop working.</p>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="hideSpotifyDialog" text rounded>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideSpotifyDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
@@ -243,7 +243,7 @@
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="hideFtpDialog" text rounded>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideFtpDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Close
                         </v-btn>
@@ -273,7 +273,7 @@
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Close" @click.stop="cancelPrivacyDialog" text rounded>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="cancelPrivacyDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
@@ -479,7 +479,7 @@ export default {
                 const result = await this.$axios.$get("/api/spotify/auth/url")
                 document.location.href = result.url
             } catch (ex) {
-                this.$webError("Account.linkSpotify", ex)
+                this.$webError(this, "Account.linkSpotify", ex)
             }
         },
         async unlinkSpotify(unlink) {
@@ -490,7 +490,7 @@ export default {
                 this.spotifyUnlinked = true
                 this.hideSpotifyDialog()
             } catch (ex) {
-                this.$webError("Account.unlinkSpotify", ex)
+                this.$webError(this, "Account.unlinkSpotify", ex)
             }
         },
         confirmPrivacyDialog() {
@@ -523,7 +523,7 @@ export default {
                     this.ftpResult = result
                 }
             } catch (ex) {
-                this.$webError("Account.estimateFtp", ex)
+                this.$webError(this, "Account.estimateFtp", ex)
             }
         },
         async saveEstimatedFtp() {
@@ -536,7 +536,7 @@ export default {
                     this.hideFtpDialog()
                 }
             } catch (ex) {
-                this.$webError("Account.saveFtp", ex)
+                this.$webError(this, "Account.saveFtp", ex)
             }
         },
         async savePreferences() {
@@ -566,7 +566,7 @@ export default {
 
                 await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)
             } catch (ex) {
-                this.$webError("Account.savePreferences", ex)
+                this.$webError(this, "Account.savePreferences", ex)
             }
         },
         closeAlert() {

@@ -145,7 +145,7 @@ export default {
 
             this.recipeStats = recipeStats
         } catch (ex) {
-            this.$webError("UserAutomations.fetch", ex)
+            this.$webError(this, "UserAutomations.fetch", ex)
         }
     },
     created() {
@@ -191,7 +191,7 @@ export default {
 
                 await this.$axios.$post(`/api/users/${this.user.id}/recipes/order`, data)
             } catch (ex) {
-                this.$webError("UserAutomations.saveOrder", ex)
+                this.$webError(this, "UserAutomations.saveOrder", ex)
             }
         }
     }

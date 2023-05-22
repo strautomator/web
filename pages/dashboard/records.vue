@@ -148,7 +148,7 @@
                     </v-form>
                     <div class="text-right">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-1" color="grey" title="Stay here" @click.stop="hideEditDialog" text rounded>
+                        <v-btn class="mr-2" color="grey" title="Stay here" @click.stop="hideEditDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
@@ -253,7 +253,7 @@ export default {
                     })
                 }
             } catch (ex) {
-                this.$webError("Records.fetch", ex)
+                this.$webError(this, "Records.fetch", ex)
             }
 
             this.refreshing = false
@@ -295,7 +295,7 @@ export default {
                 this.hideEditDialog()
                 this.savedRecord = true
             } catch (ex) {
-                this.$webError("Records.saveRecord", ex)
+                this.$webError(this, "Records.saveRecord", ex)
             }
         }
     }

@@ -88,6 +88,9 @@ const countryListEur = [
 
 export const state = () => ({
     lastUserFetch: new Date().valueOf(),
+    errorTitle: null,
+    errorMessage: null,
+    errorMethod: null,
     user: null,
     athleteRecords: null,
     gearwearCount: null,
@@ -121,6 +124,17 @@ export const getters = {
 }
 
 export const mutations = {
+    setError(state, data) {
+        if (data) {
+            state.errorTitle = data.title
+            state.errorMessage = data.message
+            state.errorMethod = data.method
+        } else {
+            state.errorTitle = null
+            state.errorMessage = null
+            state.errorMethod = null
+        }
+    },
     setRecipeOptions(state, data) {
         state.recipeProperties = data.recipeProperties
         state.recipeActions = data.recipeActions

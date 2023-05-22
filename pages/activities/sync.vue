@@ -191,7 +191,7 @@ export default {
             this.loading = false
         } catch (ex) {
             this.loading = false
-            this.$webError("ActivitiesSync.fetch", ex)
+            this.$webError(this, "ActivitiesSync.fetch", ex)
         }
     },
     methods: {

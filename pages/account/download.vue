@@ -137,7 +137,7 @@ export default {
 
                 window.open(result.url, "strautomator-download")
             } catch (ex) {
-                this.$webError("Account.downloadArchive", ex)
+                this.$webError(this, "Account.downloadArchive", ex)
             }
         }
     }
