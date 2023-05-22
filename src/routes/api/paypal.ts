@@ -16,19 +16,15 @@ const routeWebhook = async (req: express.Request, res: express.Response) => {
 
     try {
         if (req.params.urlToken != settings.paypal.api.urlToken) {
-            logger.error("Routes", req.method, req.originalUrl, "Invalid URL token")
             return webserver.renderError(req, res, "Invalid URL token", 401)
         }
 
         // Check if a body was passed.
         if (!data) {
-            logger.error("Routes", req.method, req.originalUrl, "Missing request body")
             return webserver.renderError(req, res, "Missing request body", 400)
         }
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
-        return false
+        return webserver.renderError(req, res, ex)
     }
 
     // Process event and return.
@@ -49,7 +45,6 @@ router.get("/billingplans", async (req: express.Request, res: express.Response) 
     try {
         webserver.renderJson(req, res, paypal.currentBillingPlans)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })
@@ -61,7 +56,6 @@ router.get("/:userId/billingplans", async (req: express.Request, res: express.Re
     try {
         webserver.renderJson(req, res, paypal.currentBillingPlans)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })
@@ -97,13 +91,13 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
 
             // User hasn't approved it yet, and it's still valid?
             else if (existingSub.billingPlan && existingSub.billingPlan.id == billingPlan.id && existingSub.status == "APPROVAL_PENDING") {
-                logger.info("Routes", req.method, req.originalUrl, `Redirecting user ${user.id} to previous subscription ${existingSub.id}`)
+                logger.info("Routes.paypal", `Redirecting user ${user.id} to previous subscription ${existingSub.id}`)
                 return webserver.renderJson(req, res, existingSub)
             }
 
             // User has a valid subscription? Update the database and activate PRO again.
             else if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
-                logger.warn("Routes", req.method, req.originalUrl, `Already subscribed, subscription ID ${existingSub.id}, will fix it`)
+                logger.warn("Routes.paypal", req.method, req.originalUrl, `Already subscribed (${existingSub.id}), will fix it`)
                 existingSub.userId = user.id
                 await paypal.subscriptions.fixSubscription(existingSub)
                 return webserver.renderJson(req, res, existingSub)
@@ -114,7 +108,6 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
         const subscription = await paypal.subscriptions.createSubscription(billingPlan, user.id)
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })
@@ -129,15 +122,13 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
 
         // Subscription not active?
         if (!user.subscription && !user.subscription.enabled) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName} has no active subscription`)
-            return webserver.renderError(req, res, "User has no active subscription", 400)
+            return webserver.renderError(req, res, `${logHelper.user(user)} has no active subscription`, 409)
         }
 
         // Get and validate subscription info from PayPal.
         const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
         if (!subscription) {
-            logger.error("Routes", req.method, req.originalUrl, logHelper.user(user), `Subscription ${user.subscription.id} is invalid`)
-            return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 400)
+            return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 409)
         }
 
         // Force set user ID on subscription and request cancellation on PayPal.
@@ -155,7 +146,6 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
 
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })

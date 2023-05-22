@@ -28,7 +28,6 @@ router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.
         if (!user) return
 
         if (!req.params.coordinates) {
-            logger.error("Routes", req.method, req.originalUrl, "Missing coordinates")
             return webserver.renderError(req, res, "Missing coordinates", 400)
         }
 
@@ -46,12 +45,10 @@ router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.
             }
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         res.set("Cache-Control", "public, max-age=300")
         webserver.renderJson(req, res, result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        res.status(500).json({error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -67,7 +64,6 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
         if (!user) return
 
         if (!req.query.data) {
-            logger.error("Routes", req.method, req.originalUrl, "Missing request query")
             return webserver.renderError(req, res, "Missing request query", 400)
         }
 
@@ -84,7 +80,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
                 queryResult.timestamp = parseInt(arrData[2])
                 queryResult.forecast = await weather.getLocationWeather({user: user, coordinates: queryResult.coordinates, dDate: dayjs.unix(queryResult.timestamp)})
             } catch (weatherEx) {
-                logger.warn("Routes", req.method, req.path, query, weatherEx.message)
+                logger.warn("Routes.weather", req.method, req.originalUrl, weatherEx.message)
                 hadError = true
                 queryResult.error = weatherEx
             } finally {
@@ -98,12 +94,10 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
             await Promise.all(arrQuery.splice(0, batchSize).map(getForecast))
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         res.set("Cache-Control", `public, max-age=${hadError ? "60" : "600"}`)
         webserver.renderJson(req, res, result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        res.status(500).json({error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 

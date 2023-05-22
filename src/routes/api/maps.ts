@@ -3,7 +3,6 @@
 import {maps} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
-import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
@@ -20,8 +19,7 @@ router.get("/:userId/geocode", async (req: express.Request, res: express.Respons
 
         webserver.renderJson(req, res, results)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -40,8 +38,7 @@ router.get("/:userId/reverse-geocode", async (req: express.Request, res: express
 
         webserver.renderJson(req, res, result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -97,8 +94,7 @@ router.get("/:userId/image", async (req: express.Request, res: express.Response)
         res.contentType("image/png")
         res.send(result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 

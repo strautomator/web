@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {gdpr, paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -61,11 +61,9 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             user.profile = profile
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, user)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -82,7 +80,6 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
 
         // User has no subscription? Stop here.
         if (!user.subscription) {
-            logger.error("Routes", req.method, req.originalUrl, "User has no valid subscription")
             return webserver.renderJson(req, res, "User has no valid subscription", 404)
         }
 
@@ -90,23 +87,27 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
 
         // Subscribed via GitHub or PayPal, or something else?
         if (user.subscription.source == "github") {
-            subscription = await users.subscriptions.getById(user.subscription.source)
+            subscription = await users.subscriptions.getById(user.subscription.id)
         } else if (user.subscription.source == "paypal") {
             try {
                 subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
             } catch (paypalEx) {
-                logger.error("Routes", req.method, req.originalUrl, "Failed to get subscription details from PayPal")
+                logger.error("Routes", req.method, req.originalUrl, paypalEx)
                 subscription = await users.subscriptions.getById(user.subscription.source)
             }
         } else {
             subscription = user.subscription
         }
 
-        subscription.userId = userId
+        if (subscription) {
+            subscription.userId = userId
+        } else {
+            logger.warn("Routes", req.method, req.originalUrl, `Failed to get ${user.subscription.source} subscription`)
+        }
+
         webserver.renderJson(req, res, {[user.subscription.source]: subscription})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -122,12 +123,9 @@ router.delete("/:userId", async (req: express.Request, res: express.Response) =>
 
         // Delete the user from the database.
         await users.delete(user)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {deleted: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -215,8 +213,7 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
                 const dateResetCounter = dayjs(`2000-${req.body.dateResetCounter}`)
 
                 if (!dateResetCounter.isValid()) {
-                    logger.error("Routes", req.method, req.originalUrl, `Invalid counter reset date: ${req.body.dateResetCounter}`)
-                    return webserver.renderError(req, res, "Invalid counter reset date", 400)
+                    return webserver.renderError(req, res, `Invalid counter reset date: ${req.body.dateResetCounter}`, 400)
                 }
 
                 preferences.dateResetCounter = req.body.dateResetCounter
@@ -244,11 +241,8 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
         }
 
         await users.update(data)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, preferences)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 400)
     }
 })
@@ -267,11 +261,8 @@ router.post("/:userId/email", async (req: express.Request, res: express.Response
 
         // Try updating the email address.
         await users.setEmail(user, email)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {email: email})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 400)
     }
 })
@@ -294,11 +285,8 @@ router.post("/:userId/url-token", async (req: express.Request, res: express.Resp
 
         // Generate a new URL token.
         const newToken = await users.setUrlToken(user)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {urlToken: newToken})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 400)
     }
 })
@@ -315,7 +303,6 @@ const routeUserRecipe = async (req: any, res: any) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const method = req.method.toUpperCase()
         const userId = req.params.userId
         const validated = await auth.requestValidator(req, res)
         if (!validated) return
@@ -325,19 +312,17 @@ const routeUserRecipe = async (req: any, res: any) => {
         const user: UserData = await users.getById(userId)
 
         // Make sure recipe was sent in the correct format.
-        if (method != "DELETE") {
+        if (req.method != "DELETE") {
             try {
                 recipes.validate(user, recipe)
             } catch (ex) {
-                logger.error("Routes", req.method, req.originalUrl, ex, req.body)
                 return webserver.renderError(req, res, ex, 400)
             }
         }
 
         // User not found?
         if (!user) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${userId} not found`)
-            return webserver.renderError(req, res, "User not found", 404)
+            return webserver.renderError(req, res, `User ${userId} not found`, 404)
         }
 
         // If 2 conditions or less, we don't need to set a value for samePropertyOp, as we only use the default op.
@@ -345,14 +330,12 @@ const routeUserRecipe = async (req: any, res: any) => {
             delete recipe.samePropertyOp
         }
 
-        const username = user.displayName
-        const operatorLog = recipe.op == recipe.samePropertyOp ? recipe.op : `${recipe.samePropertyOp} ${recipe.op}`
+        const operatorLog = !recipe.samePropertyOp || recipe.op == recipe.samePropertyOp ? recipe.op : `${recipe.samePropertyOp} ${recipe.op}`
 
         // Creating a new recipe?
-        if (!recipe.id && method == "POST") {
+        if (!recipe.id && req.method == "POST") {
             if (!user.isPro && user.recipeCount >= settings.plans.free.maxRecipes) {
-                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, "Can't create recipe, reached free plan's maximum")
-                return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed`, 429)
+                return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed on the free plan`, 402)
             }
 
             const now = dayjs.utc().toDate()
@@ -361,30 +344,28 @@ const routeUserRecipe = async (req: any, res: any) => {
 
             // Add to user's recipe list.
             user.recipes[recipe.id] = recipe
-            logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `New recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
+            logger.info("Routes.users", logHelper.user(user), `New recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
         } else {
             const existingRecipe = user.recipes[recipeId]
 
             // Recipe not found?
             if (!existingRecipe) {
-                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, `Recipe ${recipeId} not found`)
-                return webserver.renderError(req, res, "Recipe not found", 404)
+                return webserver.renderError(req, res, `Recipe ${recipeId} not found`, 404)
             }
 
             // Updating an existing recipe?
-            if (method == "POST") {
+            if (req.method == "POST") {
                 user.recipes[recipe.id] = recipe
-                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Updated recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
+                logger.info("Routes.users", logHelper.user(user), `Updated recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
             }
             // Deleting a recipe?
-            else if (method == "DELETE") {
+            else if (req.method == "DELETE") {
                 delete user.recipes[recipeId]
-                logger.info("Routes", req.method, req.originalUrl, `User ${username}`, `Deleted recipe ${recipeId}: ${recipe.title}`)
+                logger.info("Routes.users", logHelper.user(user), `Deleted recipe ${recipeId}: ${recipe.title}`)
             }
             // Invalid call.
             else {
-                logger.error("Routes", req.method, req.originalUrl, `User ${username}`, `Recipe ${recipeId}`, `Invalid call: ${method}`)
-                return webserver.renderError(req, res, "Invalid call", 400)
+                return webserver.renderError(req, res, `Invalid method for recipe ${recipeId}`, 405)
             }
         }
 
@@ -398,8 +379,7 @@ const routeUserRecipe = async (req: any, res: any) => {
         await users.update(user, true)
         webserver.renderJson(req, res, recipe)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 }
 
@@ -426,11 +406,9 @@ router.post("/:userId/recipes/order", async (req: express.Request, res: express.
         const recipesOrder = req.body
         await users.setRecipesOrder(user, recipesOrder)
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -448,12 +426,9 @@ router.get("/:userId/recipes/stats", async (req: express.Request, res: express.R
 
         // We don't need full list of activity IDs sent to the client.
         arrStats.forEach((s) => delete s.activities)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, arrStats)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -473,12 +448,9 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
         }
 
         const stats = (await recipes.stats.getStats(user, user.recipes[recipeId])) as RecipeStatsData
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, stats)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -504,12 +476,9 @@ router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res
         }
 
         await recipes.stats.setCounter(user, user.recipes[recipeId], parseInt(counter))
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {counter: counter})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -532,11 +501,9 @@ router.get("/:userId/archive-download", async (req: express.Request, res: expres
             throw new Error("Could not generate archive, please try again in a few hours")
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {url: archiveUrl})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 

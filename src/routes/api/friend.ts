@@ -2,7 +2,6 @@
 
 import {mailer, users, UserData} from "strautomator-core"
 import express = require("express")
-import logger = require("anyhow")
 import webserver = require("../../webserver")
 import auth from "../auth"
 const settings = require("setmeup").settings
@@ -30,7 +29,6 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
 
         webserver.renderJson(req, res, user.subscription)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })

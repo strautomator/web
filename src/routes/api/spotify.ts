@@ -3,7 +3,6 @@
 import {spotify, strava, users, UserData} from "strautomator-core"
 import auth from "../auth"
 import express from "express"
-import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
@@ -16,12 +15,9 @@ router.get("/auth/url", async (req: express.Request, res: express.Response) => {
         if (!user) return
 
         const authUrl = await spotify.generateAuthUrl(user)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {url: authUrl})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -37,11 +33,9 @@ router.get("/auth/unlink", async (req: express.Request, res: express.Response) =
         delete user.spotifyAuthState
         await users.update(user, true)
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {unlinked: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -51,12 +45,9 @@ router.get("/auth/unlink", async (req: express.Request, res: express.Response) =
 router.get("/auth/callback", async (req: express.Request, res: express.Response) => {
     try {
         await spotify.processAuthCode(req)
-
-        logger.info("Routes", req.method, req.originalUrl)
         res.redirect("/account?spotify=linked")
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -71,11 +62,9 @@ router.get("/:userId/activity-tracks/:activityId", async (req: express.Request, 
         const activity = await strava.activities.getActivity(user, req.params.activityId)
         const tracks = await spotify.getActivityTracks(user, activity)
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, tracks)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 

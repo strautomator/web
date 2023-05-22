@@ -229,7 +229,7 @@ class WebServer {
                 data = JSON.parse(data)
             } catch (ex) {
                 logger.error("WebServer.renderJson", ex)
-                return this.renderError(req, res, ex, 500)
+                return this.renderError(req, res, ex)
             }
         }
 
@@ -257,20 +257,22 @@ class WebServer {
      */
     renderError = (req: express.Request, res: express.Response, error: any, status?: number | string) => {
         let message
-        logger.debug("WebServer.renderError", req.originalUrl, status, error)
 
-        /* istanbul ignore next */
-        if (typeof error == "undefined" || error == null) {
-            error = "Unknown error"
-            logger.warn("WebServer.renderError", "Called with null error")
-        }
-
-        // Status default statuses.
+        // Default statuses.
         if (status == null) {
             status = error.statusCode || error.status || error.code
         }
-        if (status == "ETIMEDOUT") {
+        if (status == "ECONNRESET" || status == "ECONNABORTED" || status == "ETIMEDOUT") {
             status = 408
+        }
+
+        if (_.isNil(error)) {
+            error = "Unknown error"
+            logger.warn("Routes", req.method, req.originalUrl, "Called with empty error")
+        } else if (["POST", "PUT", "PATCH"].includes(req.method) && req.body) {
+            logger.error("Routes", req.method, req.originalUrl, error, `Body: ${JSON.stringify(req.body, null, 0)}`)
+        } else {
+            logger.error("Routes", req.method, req.originalUrl, error)
         }
 
         // Error defaults to 500 if not a valid number.
@@ -291,7 +293,6 @@ class WebServer {
                 message.message = error.message || error.error_description || error.description
 
                 // No message found? Just use the default .toString() then.
-                /* istanbul ignore next */
                 if (!message.message) {
                     message.message = error.toString()
                 }
@@ -309,7 +310,6 @@ class WebServer {
                 }
             }
         } catch (ex) {
-            /* istanbul ignore next */
             logger.error("WebServer.renderError", ex)
         }
 

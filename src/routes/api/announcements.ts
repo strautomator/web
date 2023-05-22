@@ -3,7 +3,6 @@
 import {announcements, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
-import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
@@ -27,8 +26,7 @@ router.get("/:userId/active", async (req: express.Request, res: express.Response
 
         webserver.renderJson(req, res, result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        return webserver.renderError(req, res, ex, 500)
+        return webserver.renderError(req, res, ex)
     }
 })
 
@@ -49,7 +47,6 @@ router.post("/:userId/read", async (req: express.Request, res: express.Response)
         await announcements.setReadCount(user, id)
         webserver.renderJson(req, res, {read: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderJson(req, res, {read: false})
     }
 })

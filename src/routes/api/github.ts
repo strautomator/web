@@ -3,7 +3,6 @@
 import {database, github} from "strautomator-core"
 import crypto = require("crypto")
 import express = require("express")
-import logger = require("anyhow")
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings
 const router: express.Router = express.Router()
@@ -12,8 +11,6 @@ const router: express.Router = express.Router()
  * Validate webhooks dispatched by GitHub.
  */
 const validateWebhook = (req, res): boolean => {
-    const details = []
-
     try {
         const hubHeader = req.headers["x-hub-signature"]
 
@@ -37,8 +34,7 @@ const validateWebhook = (req, res): boolean => {
 
         return true
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, details.join(", "), ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex, 400)
         return false
     }
 }
@@ -51,11 +47,9 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
         if (!validateWebhook(req, res)) return
 
         await github.processWebhook(req.body)
-
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -67,8 +61,7 @@ router.get("/changelog", async (req: express.Request, res: express.Response) => 
         const changelog = await database.appState.get("changelog")
         webserver.renderJson(req, res, changelog)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -80,8 +73,7 @@ router.get("/last-commits", async (req: express.Request, res: express.Response) 
         const commits = await github.getLastCommits()
         webserver.renderJson(req, res, commits)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 

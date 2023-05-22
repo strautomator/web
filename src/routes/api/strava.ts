@@ -30,7 +30,6 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
         // Then we check if any data is missing.
         if (method == "POST") {
             if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
-                logger.error("Routes", req.method, req.originalUrl, "Missing event data", obj)
                 webserver.renderError(req, res, "Missing event data", 400)
                 return false
             }
@@ -46,7 +45,7 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
             // Only want to process new activities, so skip the rest.
             if (obj.object_type != "activity" || obj.aspect_type != "create") {
                 if (obj.object_type == "activity" && obj.aspect_type == "delete") {
-                    logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, `Deleted activity ${obj.object_id}`)
+                    logger.info("Routes.strava", `User ${obj.owner_id} deleted activity ${obj.object_id}`)
                 } else {
                     logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
                 }
@@ -55,8 +54,7 @@ const webhookValidator = (req: express.Request, res: express.Response): boolean 
             }
         }
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex, 400)
         return false
     }
 
@@ -95,11 +93,9 @@ router.get("/:userId/activities/recent", async (req: express.Request, res: expre
             activities = activities.slice(0, limit)
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -132,11 +128,9 @@ router.get("/:userId/activities/since/:timestamp", async (req: express.Request, 
             _.remove(activities, (a) => !a.gear || a.gear.id != req.query.gear)
         }
 
-        logger.info("Routes", req.method, req.originalUrl, `Got ${activities.length} activities`)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -154,12 +148,9 @@ router.get("/:userId/activities/processed", async (req: express.Request, res: ex
         let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
 
         const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -173,14 +164,11 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
         if (!req.params.id) throw new Error("Missing activity ID")
 
         const activity = await strava.activities.getActivity(user, req.params.id.toString())
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, activity)
     } catch (ex) {
-        logger.warn("Routes", req.method, req.originalUrl, ex)
-        const errorMessage = ex.toString().toLowerCase()
+        const errorMessage = ex.message || ex.toString().toLowerCase()
         const status = errorMessage.includes("not found") ? 404 : 500
-        webserver.renderError(req, res, {error: errorMessage}, status)
+        webserver.renderError(req, res, errorMessage, status)
     }
 })
 
@@ -224,9 +212,8 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
 
         webserver.renderJson(req, res, {activityCount: activityCount, processed: activityCount <= settings.strava.processingQueue.batchSize})
     } catch (ex) {
-        const errorMessage = ex.toString()
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, {error: ex.toString()}, errorMessage.includes("single batch operation") ? 429 : 500)
+        const errorMessage = ex.message || ex.toString()
+        webserver.renderError(req, res, ex, errorMessage.includes("single batch operation") ? 429 : 500)
     }
 })
 
@@ -244,10 +231,8 @@ router.get("/:userId/process-activity/:activityId", async (req: express.Request,
         const processedActivity = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
         webserver.renderJson(req, res, processedActivity || {processed: false})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         const errorMessage = ex.toString()
-        const status = errorMessage.includes("not found") ? 404 : 500
-        webserver.renderError(req, res, {error: errorMessage}, status)
+        webserver.renderError(req, res, ex, errorMessage.includes("not found") ? 404 : 500)
     }
 })
 
@@ -262,13 +247,12 @@ router.get("/:userId/athlete-records", async (req: express.Request, res: express
         const records = await strava.athletes.getAthleteRecords(user)
         webserver.renderJson(req, res, records)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
 /**
- * Prepar and refresh athlete's personal records based on all Strava activities.
+ * Prepare and refresh athlete's personal records based on all Strava activities.
  */
 router.get("/:userId/athlete-records/refresh", async (req: express.Request, res: express.Response) => {
     try {
@@ -281,7 +265,7 @@ router.get("/:userId/athlete-records/refresh", async (req: express.Request, res:
 
         // Stop here if records were recently refreshed.
         if (existing && minDate.isBefore(existing.dateRefreshed)) {
-            logger.warn("Routes", req.method, req.originalUrl, `Recently refreshed, will not proceed`)
+            logger.warn("Routes.strava", req.method, req.originalUrl, "Recently refreshed, will not proceed")
             webserver.renderJson(req, res, {recentlyRefreshed: true})
             return
         }
@@ -298,8 +282,7 @@ router.get("/:userId/athlete-records/refresh", async (req: express.Request, res:
 
         webserver.renderJson(req, res, records)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -343,8 +326,7 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
         await strava.athletes.setAthleteRecords(user, records)
         webserver.renderJson(req, res, records)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -366,11 +348,8 @@ router.post("/:userId/activity-fortune", async (req: express.Request, res: expre
         if (activity.dateEnd) activity.dateEnd = new Date(activity.dateEnd)
 
         const name = await getActivityFortune(user, activity)
-
-        logger.info("Routes", req.method, req.originalUrl, `Activity ${req.body.id}`)
         webserver.renderJson(req, res, {name: name})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 400)
     }
 })
@@ -392,8 +371,7 @@ router.get("/:userId/ftp/estimate", async (req: express.Request, res: express.Re
         const data = await strava.ftp.estimateFtp(user)
         webserver.renderJson(req, res, data || false)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -417,8 +395,7 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
         const result = updated ? {ftp: estimation.ftpWatts} : false
         webserver.renderJson(req, res, result)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -445,23 +422,18 @@ router.get("/:userId/clubs/upcoming-events", async (req: express.Request, res: e
 
         // Coordinates were passed? Geocode the country.
         if (req.query.coordinates) {
-            try {
-                const queryCoords = req.query.coordinates.toString()
-                const coordinates = queryCoords.split(",").map((c) => parseFloat(c)) as [number, number]
-                const address = await maps.getReverseGeocode(coordinates, "locationiq")
-                if (address && address.country != user.profile.country) {
-                    countries.push(address.country)
-                }
-            } catch (geoEx) {
-                logger.error("Routes", req.method, req.originalUrl, "Could not get current user's country")
+            const queryCoords = req.query.coordinates.toString()
+            const coordinates = queryCoords.split(",").map((c) => parseFloat(c)) as [number, number]
+            const address = await maps.getReverseGeocode(coordinates, "locationiq")
+            if (address && address.country != user.profile.country) {
+                countries.push(address.country)
             }
         }
 
         const events = await strava.clubs.getUpcomingClubEvents(user, days, countries)
         webserver.renderJson(req, res, events)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -483,18 +455,10 @@ router.get("/:userId/:urlToken/routes.zip", async (req: express.Request, res: ex
             throw new Error("Missing route IDs")
         }
 
-        // Maximum of just a few files can be zipped at the same time.
-        let routeIds = routes.split(",")
-        if (routeIds.length > settings.strava.routes.zipLimit) {
-            logger.warn("Routes", req.method, req.originalUrl, `Only first ${settings.strava.routes.zipLimit} of the passed ${routeIds.length} routes will be processed`)
-            routeIds = routeIds.slice(0, settings.strava.routes.zipLimit)
-        }
-
-        const zip = await strava.routes.zipGPX(user, routeIds)
+        const zip = await strava.routes.zipGPX(user, routes.split(","))
         zip.pipe(res).on("error", (err) => logger.error("Routes", req.method, req.originalUrl, err))
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -515,21 +479,19 @@ router.get(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Reque
 
         // Validate token from Strava.
         if (verifyToken != settings.strava.api.verifyToken) {
-            logger.error("Routes", req.method, req.originalUrl, "Invalid verify_token")
-            return webserver.renderError(req, res, "Invalid token", 401)
+            return webserver.renderError(req, res, "Invalid verify_token", 401)
         }
 
         // Validate challenge from Strava.
         if (!challenge || challenge == "") {
-            logger.error("Routes", req.method, req.originalUrl, "Missing hub challenge")
             return webserver.renderError(req, res, "Missing hub challenge", 401)
         }
 
         // Echo hub challenge back to Strava.
         webserver.renderJson(req, res, {"hub.challenge": challenge})
-        logger.info("Routes", `Subscription challenge by Strava: ${challenge}`, `IP ${clientIP}`)
+        logger.info("Routes.strava", `Subscription challenge by Strava: ${challenge}`, `IP ${clientIP}`)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
+        webserver.renderError(req, res, ex, 401)
     }
 })
 
@@ -546,12 +508,12 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
 
         // Stop here if user is ignored.
         if (ignoredUsers.includes(obj.owner_id.toString())) {
-            logger.warn("Routes", req.method, req.originalUrl, `User ${obj.owner_id} is ignored, won't proceed`, obj.aspect_type, obj.object_type, obj.object_id)
+            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${obj.owner_id} is ignored, won't proceed`, obj.aspect_type, obj.object_type, obj.object_id)
             return webserver.renderJson(req, res, {ok: false})
         }
 
         const clientIP = jaul.network.getClientIP(req)
-        logger.info("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, `IP ${clientIP}`)
+        logger.info("Routes.strava", `Webhook user ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, `IP ${clientIP}`)
 
         // Make a call back to the API to do the actual activity processing, so we can return
         // the response right now to Strava (within the 2 seconds max).
@@ -565,8 +527,7 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -586,13 +547,13 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         if (!user) {
             ignoredUsers.push(userId.toString())
             await database.appState.set("users", {ignored: ignoredUsers})
-            logger.warn("Routes", req.method, req.originalUrl, `User ${userId} not found, added to list of ignored users`)
+            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} not found, added to list of ignored users`)
             return webserver.renderError(req, res, "User not found", 404)
         } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
-            logger.warn("Routes", req.method, req.originalUrl, `User ${user.id} has no access tokens`)
+            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} has no access tokens`)
             return webserver.renderError(req, res, "User has no access tokens", 400)
         } else if (user.suspended) {
-            return webserver.renderJson(req, res, {ok: false, message: `User ${user.id} is suspended`})
+            return webserver.renderJson(req, res, {ok: false, message: `User ${userId} is suspended`})
         }
 
         // Process the passed activity now, or queue later, depending on user preferences.
@@ -611,8 +572,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -626,8 +586,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/process-activity-queue`, as
         await strava.activityProcessing.processQueuedActivities()
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderJson(req, res, {error: ex.toString()})
+        webserver.renderError(req, res, ex)
     }
 })
 

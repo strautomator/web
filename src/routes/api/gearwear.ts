@@ -4,7 +4,6 @@ import {logHelper, gearwear, GearWearConfig, strava, UserData} from "strautomato
 import auth from "../auth"
 import _ from "lodash"
 import express = require("express")
-import logger = require("anyhow")
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 const settings = require("setmeup").settings
@@ -30,11 +29,9 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             gearwear.refreshGearDetails(user)
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, gearwearConfigs)
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -55,15 +52,12 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
 
         // Stop here if owner of the specified gear is not the logged user.
         if (config && config.userId != user.id) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} has no access to GearWear ${gearId}`)
-            return webserver.renderError(req, res, "No permissions to access this GearWear", 403)
+            return webserver.renderError(req, res, `${logHelper.user(user)} has no access to GearWear ${gearId}`, 403)
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {config: config, gear: gear})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -85,8 +79,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         // Check if user has reached the limit of gearwear configs on free accounts.
         if (!user.isPro && configs.length >= max) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} reached limit of ${max} GearWear on free accounts`)
-            return webserver.renderError(req, res, `Reached the limit of GearWear on free accounts`, 400)
+            return webserver.renderError(req, res, `${logHelper.user(user)} reached limit of ${max} GearWear on free accounts`, 400)
         }
 
         const bike = _.find(user.profile.bikes, {id: gearId})
@@ -94,11 +87,10 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         // Make sure gear exists on the user profile.
         if (!bike && !shoe) {
-            logger.error("Routes", req.method, req.originalUrl, logHelper.user(user), `Gear ${gearId} not found`)
-            return webserver.renderError(req, res, "Gear not found", 404)
+            return webserver.renderError(req, res, `Gear ${gearId} for user ${userId} not found`, 404)
         }
 
-        // Is it a GearWear config upate, or a reset distance request?
+        // Is it a GearWear config update, or a reset distance request?
         if (!req.body.resetTracking) {
             const config = {
                 id: gearId,
@@ -116,11 +108,9 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
             await gearwear.resetTracking(user, existingConfig[0], compName)
         }
 
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 
@@ -140,24 +130,19 @@ router.delete("/:userId/:gearId", async (req: express.Request, res: express.Resp
 
         // GearWear does not exist? Log error.
         if (!config) {
-            logger.error("Routes", req.method, req.originalUrl, `GearWear ${gearId} does not exist`)
-            return webserver.renderJson(req, res, {deleted: false})
+            return webserver.renderError(req, res, `GearWear ${gearId} for user ${user.id} does not exist`, 404)
         }
 
         // Stop here if owner of the specified gear is not the logged user.
         if (config.userId != user.id) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} has no access to GearWear ${gearId}`)
-            return webserver.renderError(req, res, "No permissions to access this GearWear", 403)
+            return webserver.renderError(req, res, `${logHelper.user(user)} has no access to GearWear ${gearId}`, 403)
         }
 
         // Delete the GearWear from the database.
         await gearwear.delete(config)
-
-        logger.info("Routes", req.method, req.originalUrl)
         webserver.renderJson(req, res, {deleted: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
-        webserver.renderError(req, res, ex, 500)
+        webserver.renderError(req, res, ex)
     }
 })
 

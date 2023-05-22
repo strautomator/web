@@ -45,11 +45,8 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
             calendarTemplate: calendarTemplate
         }
         await users.update(data)
-
-        logger.info("Routes", req.method, req.originalUrl, "Updated template")
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex, 400)
     }
 })
@@ -92,8 +89,6 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         const cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
         const expires = now.add(cacheAge, "seconds")
 
-        logger.info("Routes", req.method, req.originalUrl)
-
         // Update cache headers and send response.
         res.setHeader("Content-Type", "text/calendar")
         res.setHeader("Cache-Control", `public, max-age=${cacheAge}`)
@@ -103,8 +98,9 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         const redirectUrl = await calendar.generate(user, options)
         res.redirect(302, redirectUrl)
     } catch (ex) {
-        if (ex.toString().includes(" not found")) {
-            logger.warn("Routes", req.method, req.originalUrl, ex)
+        const message = ex.message || ex.toString()
+        if (message.includes(" not found")) {
+            logger.warn("Routes.calendar", req.method, req.originalUrl, "Not found")
             res.status(404)
         } else {
             logger.error("Routes", req.method, req.originalUrl, ex)
