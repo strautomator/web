@@ -1,6 +1,6 @@
 // Strautomator API: GearWear
 
-import {gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
+import {logHelper, gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
 import auth from "../auth"
 import _ from "lodash"
 import express = require("express")
@@ -94,7 +94,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         // Make sure gear exists on the user profile.
         if (!bike && !shoe) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName}`, `Gear ${gearId} not found`)
+            logger.error("Routes", req.method, req.originalUrl, logHelper.user(user), `Gear ${gearId} not found`)
             return webserver.renderError(req, res, "Gear not found", 404)
         }
 

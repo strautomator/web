@@ -1,6 +1,6 @@
 // Strautomator API: PayPal
 
-import {mailer, paypal, UserData} from "strautomator-core"
+import {logHelper, mailer, paypal, UserData} from "strautomator-core"
 import express = require("express")
 import logger = require("anyhow")
 import webserver = require("../../webserver")
@@ -136,7 +136,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         // Get and validate subscription info from PayPal.
         const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
         if (!subscription) {
-            logger.error("Routes", req.method, req.originalUrl, `User ${user.id} ${user.displayName}`, `Subscription ${user.subscription.id} is invalid`)
+            logger.error("Routes", req.method, req.originalUrl, logHelper.user(user), `Subscription ${user.subscription.id} is invalid`)
             return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 400)
         }
 
