@@ -609,9 +609,6 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         const updatedUser = {id: user.id, displayName: user.displayName, dateLastActivity: user.dateLastActivity, dateLastProcessedActivity: user.dateLastProcessedActivity}
         await users.update(updatedUser)
 
-        // Check if there are activities on the queue waiting to be processed.
-        strava.activityProcessing.checkQueuedActivities()
-
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
@@ -626,7 +623,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/process-activity-queue`, as
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        await strava.activityProcessing.processQueuedActivities(50)
+        await strava.activityProcessing.processQueuedActivities()
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes", req.method, req.originalUrl, ex)
