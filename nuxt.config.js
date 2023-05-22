@@ -102,7 +102,7 @@ module.exports = {
     server: {},
 
     // Root route to redirect to /home or /dashboard.
-    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/global.js"],
+    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}],
 
     // Vuetify general options.
     vuetify: {
