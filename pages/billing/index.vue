@@ -26,7 +26,7 @@
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
-                <p v-else-if="$store.state.beta || subscription.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
+                <p v-else-if="$store.state.beta || subscription?.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
                 <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> on {{ nextPaymentDate }}.</p>
 
                 <v-card outlined>
