@@ -384,7 +384,7 @@ export default {
         if (!this.$route.query.id || !this.$store.state.user.recipes[this.$route.query.id]) return
 
         try {
-            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}a`)
+            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}`)
 
             if (recipeStats) {
                 this.recipeStats = recipeStats
