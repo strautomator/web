@@ -310,7 +310,7 @@ class WebServer {
                 }
             }
         } catch (ex) {
-            logger.error("WebServer.renderError", ex)
+            logger.error("WebServer.renderError", error, ex)
         }
 
         // Send error JSON to client.
