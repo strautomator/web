@@ -106,6 +106,7 @@ export const state = () => ({
     mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {},
+    country: null,
     expectedCurrency: null,
     archiveDownloadDays: null,
     beta: false
@@ -201,6 +202,9 @@ export const mutations = {
     },
     setGearWearCount(state, count) {
         state.gearwearCount = count
+    },
+    setCountry(state, country) {
+        state.country = country
     },
     setExpectedCurrency(state, currency) {
         state.expectedCurrency = currency
@@ -302,6 +306,7 @@ export const actions = {
                 currency = "EUR"
             }
 
+            commit("setCountry", country)
             commit("setExpectedCurrency", currency)
         }
     },
