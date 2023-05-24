@@ -32,7 +32,8 @@
             <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
 
             <v-container class="width-wrapper" fluid>
-                <nuxt v-if="$store.state?.user" @onError="" />
+                <nuxt v-if="$store.state?.user" />
+                <ads-panel />
             </v-container>
 
             <div class="mt-3 text-center">
@@ -140,11 +141,12 @@
 </template>
 
 <script>
+import AdsPanel from "~/components/AdsPanel.vue"
 import TopNotifications from "~/components/TopNotifications.vue"
 
 export default {
     authenticated: true,
-    components: {TopNotifications},
+    components: {AdsPanel, TopNotifications},
     head: {
         meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
     },

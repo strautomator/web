@@ -126,7 +126,7 @@ export default {
             let now = this.$dayjs()
             const datasets = []
 
-            // Default colours.
+            // Default colors.
             const bgColors = ["#F44336AA", "#9C27B0AA", "#3F51B5AA", "#00BCD4AA", "#009688AA", "#CDDC39AA", "#795548AA", "#607D8BAA", "#4CAF50AA"]
 
             // Duplicate downloaded activities so we can process them.

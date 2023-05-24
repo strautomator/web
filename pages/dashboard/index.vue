@@ -125,8 +125,6 @@
                         Try the <n-link to="/activities/sync" title="Try your automations" nuxt>manual automation sync</n-link>.
                     </div>
                 </v-alert>
-
-                <ads-panel />
             </template>
         </v-container>
     </v-layout>
@@ -137,13 +135,12 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import AdsPanel from "~/components/AdsPanel.vue"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import ProcessedActivities from "~/components/ProcessedActivities.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, CreateFirst, ProcessedActivities},
+    components: {CreateFirst, ProcessedActivities},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {

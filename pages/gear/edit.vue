@@ -100,8 +100,6 @@
                 </v-btn>
             </div>
 
-            <ads-panel />
-
             <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
             </v-dialog>
@@ -201,13 +199,12 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import gearwearMixin from "~/mixins/gearwearMixin.js"
-import AdsPanel from "~/components/AdsPanel.vue"
 import EditComponent from "~/components/gearwear/EditComponent.vue"
 import PastUsagePanel from "~/components/gearwear/PastUsagePanel.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, EditComponent, PastUsagePanel},
+    components: {EditComponent, PastUsagePanel},
     mixins: [userMixin, gearwearMixin],
     head() {
         return {

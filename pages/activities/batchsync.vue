@@ -108,8 +108,6 @@
                         </v-btn>
                     </v-card-text>
                 </v-card>
-
-                <ads-panel />
             </template>
         </v-container>
     </v-layout>
@@ -120,12 +118,11 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import AdsPanel from "~/components/AdsPanel.vue"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, CreateFirst},
+    components: {CreateFirst},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {

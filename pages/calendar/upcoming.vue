@@ -403,7 +403,7 @@ export default {
                 const infoWindow = new google.maps.InfoWindow({
                     content: `<div class="black--text">
                                 <h3 class="mb-2">${e.title}</h3>
-                                <div>Next: ${this.$dayjs(e.dates[0]).format("lll")}</div>
+                                <div>Next: ${this.$dayjs(_.min(e.dates)).format("lll")}</div>
                                 <div>Distance: ${this.getDistance(e)}</div>
                                 <div>Duration: ${this.getEstimatedTime(e)}</div>
                                 <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>

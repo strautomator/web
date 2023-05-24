@@ -131,8 +131,6 @@
                         <br v-if="!$breakpoint.mdAndUp" />
                         <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try another</v-btn>
                     </div>
-
-                    <ads-panel />
                 </div>
             </template>
         </v-container>
@@ -144,12 +142,11 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import AdsPanel from "~/components/AdsPanel.vue"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, CreateFirst},
+    components: {CreateFirst},
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {

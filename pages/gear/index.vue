@@ -95,8 +95,6 @@
                     </v-btn>
                 </v-alert>
             </template>
-
-            <ads-panel />
         </v-container>
         <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
             Your email was set to {{ $store.state.user.email }}!
@@ -123,13 +121,12 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import gearwearMixin from "~/mixins/gearwearMixin.js"
-import AdsPanel from "~/components/AdsPanel.vue"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import GearCard from "~/components/gearwear/GearCard.vue"
 
 export default {
     authenticated: true,
-    components: {AdsPanel, EmailDialog, GearCard},
+    components: {EmailDialog, GearCard},
     mixins: [userMixin, gearwearMixin],
     head() {
         return {
