@@ -55,6 +55,7 @@
                                     <v-col cols="12">
                                         <div class="mt-n2">
                                             {{ comp.currentDistance }} {{ distanceUnits }}
+                                            {{ comp.disabled ? " (tracking disabled)" : "" }}
                                             <span class="float-right" v-if="comp.alertDistance">{{ comp.alertDistance }} {{ distanceUnits }}</span>
                                             <v-progress-linear class="mt-2" color="secondary" v-if="comp.alertDistance" :background-color="getProgressBg(comp, 'distance')" :value="getProgressValue(comp, 'distance')" rounded></v-progress-linear>
                                         </div>
@@ -68,8 +69,8 @@
                                 <v-divider class="mt-4 mb-6"></v-divider>
                             </template>
                         </template>
-                        <div v-else>
-                            <p>You haven't registered components for this gear yet. If you want you can kickstart with the defaults:</p>
+                        <div class="pl-5 pr-5" v-else>
+                            <p>You haven't registered components for this gear yet. Want to kickstart with the defaults?</p>
                             <ul class="pl-4 mb-4">
                                 <li v-for="comp in defaultComponents" :key="comp.name">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
                             </ul>
@@ -259,7 +260,7 @@ export default {
                         name: "Rear tire",
                         currentDistance: 0,
                         currentTime: 0,
-                        alertDistance: imperial ? 3100 : 5000,
+                        alertDistance: imperial ? 3700 : 6000,
                         alertTime: 0
                     },
                     {
