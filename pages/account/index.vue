@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>Account</h1>
-            <v-snackbar v-if="$route.query.spotify == 'linked' && user && user.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-if="$route.query.spotify == 'linked' && user?.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
                 Spotify account "{{ this.user.spotify.email }}" linked successfully!
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>

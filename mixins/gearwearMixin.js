@@ -11,5 +11,17 @@ export default {
             if (!seconds) return 0
             return (seconds / 3600).toFixed(1).replace(".0", "")
         },
+        getComponentIcon(comp) {
+            const name = comp?.name.toLowerCase().replace(/ /g, "") || ""
+            if (name.includes("battery")) return "mdi-battery-70"
+            if (name.includes("bearing")) return "mdi-dots-circle"
+            if (name.includes("cassette")) return "mdi-cog-outline"
+            if (name.includes("chain")) return "mdi-link"
+            if (name.includes("cleat")) return "mdi-shoe-cleat"
+            if (name.includes("pedal")) return "mdi-bike-pedal"
+            if (name.includes("tire") || name.includes("tyre")) return "mdi-tire"
+            if (name.includes("shoe")) return "mdi-shoe-sneaker"
+            return "mdi-package-variant"
+        }
     }
 }
