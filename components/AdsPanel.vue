@@ -35,7 +35,7 @@ export default {
         return {
             linkAliExpress: "https://links.devv.com/l/aliexpress-cycling-components",
             linkDecathlon: "https://links.devv.com/l/decathlon",
-            linkHalfords: "https://links.devv.com/l/harolds",
+            linkHalfords: "https://links.devv.com/l/halfords",
             linkNextDns: "https://links.devv.com/l/nextdns",
             linkIcan: "https://links.devv.com/l/ican",
             linkRibble: "https://links.devv.com/l/ribble"
