@@ -36,6 +36,17 @@
                         <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="20" :rules="alertRules" suffix="h" outlined rounded></v-text-field>
                     </div>
                 </div>
+                <div class="mt-n1 mb-3 ml-md-2 text-center text-md-left">
+                    <div class="mb-1">Send a first reminder when usage reaches:</div>
+                    <div class="d-flex">
+                        <v-radio-group v-model="preAlertPercent" class="mt-0 mb-0" row>
+                            <v-radio label="Don't" :value="0"></v-radio>
+                            <v-radio label="50%" :value="50"></v-radio>
+                            <v-radio label="70%" :value="70"></v-radio>
+                            <v-radio label="90%" :value="90"></v-radio>
+                        </v-radio-group>
+                    </div>
+                </div>
                 <div class="text-center">
                     <v-btn color="primary" :disabled="!hasAlert" @click="save" title="Save component details" rounded>
                         <v-icon left>mdi-check</v-icon>
@@ -62,7 +73,8 @@ export default {
             currentDistance: 0,
             currentHours: 0,
             alertDistance: 0,
-            alertHours: 0
+            alertHours: 0,
+            preAlertPercent: 0
         }
     },
     computed: {
@@ -94,8 +106,8 @@ export default {
         }
     },
     watch: {
-        component: function(newVal, oldVal) {
-            if (newVal && newVal.name) {
+        component: function (newVal, oldVal) {
+            if (newVal?.name) {
                 this.fill(newVal)
             } else {
                 this.name = ""
@@ -118,6 +130,7 @@ export default {
             this.alertDistance = newVal.alertDistance
             this.currentHours = newVal.currentTime ? Math.round(newVal.currentTime / 3600) : 0
             this.alertHours = newVal.alertHours ? Math.round(newVal.alertHours / 3600) : 0
+            this.preAlertPercent = newVal.preAlertPercent || 0
         },
         cancel() {
             this.$emit("closed", false)
@@ -129,12 +142,16 @@ export default {
                 const compAlertDistance = parseInt(this.alertDistance)
                 const compCurrentHours = parseInt(this.currentHours)
                 const compAlertHours = parseInt(this.alertHours)
+                const compPreAlertPercent = parseInt(this.preAlertPercent)
 
                 // Base component details.
                 const component = {
                     name: compName,
                     currentDistance: compCurrentDistance,
-                    alertDistance: compAlertDistance
+                    alertDistance: compAlertDistance,
+                    currentTime: compCurrentHours > 0 ? compCurrentHours * 3600 : 0,
+                    alertTime: compAlertHours > 0 ? compAlertHours * 3600 : 0,
+                    preAlertPercent: compPreAlertPercent
                 }
 
                 let currentTrackingChanged = true
@@ -144,14 +161,11 @@ export default {
                     if (this.component.currentDistance != compCurrentDistance) {
                         currentTrackingChanged = true
                     }
-
                     if (Math.round(this.component.currentTime / 3600) != compCurrentHours) {
                         currentTrackingChanged = true
-                        component.currentTime = compCurrentHours > 0 ? compCurrentHours * 3600 : 0
                     }
-
                     if (Math.round(this.component.alertTime / 3600) != compAlertHours) {
-                        component.alertTime = compAlertHours > 0 ? compAlertHours * 3600 : 0
+                        currentTrackingChanged = true
                     }
                 }
 
