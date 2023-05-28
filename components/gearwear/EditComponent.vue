@@ -129,7 +129,7 @@ export default {
             this.currentDistance = newVal.currentDistance
             this.alertDistance = newVal.alertDistance
             this.currentHours = newVal.currentTime ? Math.round(newVal.currentTime / 3600) : 0
-            this.alertHours = newVal.alertHours ? Math.round(newVal.alertHours / 3600) : 0
+            this.alertHours = newVal.alertTime ? Math.round(newVal.alertTime / 3600) : 0
             this.preAlertPercent = newVal.preAlertPercent || 0
         },
         cancel() {
