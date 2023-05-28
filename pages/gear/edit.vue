@@ -378,7 +378,7 @@ export default {
                 const gearwearHistory = entries.map(([date, history]) => {
                     return {date: date, history: history}
                 })
-                this.gearwearHistory = _.sortBy(gearwearHistory, "date")
+                this.gearwearHistory = _.orderBy(gearwearHistory, "date", "desc")
             }
 
             if (this.$route.query.reset) {
@@ -485,20 +485,21 @@ export default {
                 if (!this.gearwearConfig.id) {
                     this.gearwearConfig.id = this.gear.id
                 }
-
-                // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
-                const wasNotResetToday = component.lastResetDate != this.$dayjs().format("ll")
-                if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
-                    this.resetDialog = true
+                if (this.gearwearComponent.name) {
+                    _.assign(this.gearwearComponent, component)
                 } else {
-                    if (this.gearwearComponent.name) {
-                        _.assign(this.gearwearComponent, component)
-                    } else {
-                        this.gearwearConfig.components.push(component)
-                    }
+                    this.gearwearConfig.components.push(component)
                 }
 
                 this.hasChanges = true
+
+                // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
+                const wasNotResetToday = component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
+                if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
+                    this.componentDialog = false
+                    this.resetDialog = true
+                    return
+                }
             }
 
             this.gearwearComponent = {}
@@ -530,7 +531,7 @@ export default {
                 this.gearwearComponent.currentDistance = 0
                 this.gearwearComponent.currentTime = 0
                 this.gearwearComponent.dateAlertSent = null
-                this.gearwearComponent.lastResetDate = this.$dayjs().format("ll")
+                this.gearwearComponent.lastResetDate = this.$dayjs().format("YYYY-MM-DD")
                 this.gearwearComponent = {}
             } catch (ex) {
                 this.$webError(this, "GearEdit.resetTracking", ex)
