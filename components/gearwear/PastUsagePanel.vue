@@ -14,7 +14,7 @@
                     </v-menu>
                 </div>
                 <div class="flex-grow-0">
-                    <v-btn color="primary" title="Get distance and hours from Strava activities" @click="getPastUsage" :disabled="pastLoading || !dateSince" rounded>
+                    <v-btn color="primary" class="ml-md-2" title="Get distance and hours from Strava activities" @click="getPastUsage" :disabled="pastLoading || !dateSince" rounded>
                         <v-icon left>mdi-calculator</v-icon>
                         Get expected usage
                     </v-btn>

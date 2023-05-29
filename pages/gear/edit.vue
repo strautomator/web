@@ -109,11 +109,11 @@
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
             <div class="text-center text-md-left mt-5">
-                <v-btn color="primary" title="Save this configuration" :disabled="!configValid || overMaxGearWear" @click="saveConfig" rounded>
+                <v-btn color="primary" title="Save this configuration" :disabled="!isConfigValid() || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
                 </v-btn>
-                <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!configValid" @click.stop="showDeleteGearWearDialog" rounded outlined>
+                <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!isConfigValid()" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
                 </v-btn>
@@ -303,9 +303,6 @@ export default {
         }
     },
     computed: {
-        configValid() {
-            return this.gearwearConfig?.components.length > 0
-        },
         overMaxGearWear() {
             if (!this.user) return false
             return !this.user.isPro && !this.gearwearConfig && this.$store.state.gearwearCount >= this.$store.state.freePlanDetails.maxGearWearCount
@@ -468,6 +465,9 @@ export default {
         hasDisabledComponents() {
             const found = this.gearwearConfig.components.find((c) => c.disabled)
             return found ? true : false
+        },
+        isConfigValid() {
+            return this.gearwearConfig?.components.length > 0
         },
         // EDIT COMPONENTS
         // --------------------------------------------------------------------------
