@@ -5,7 +5,7 @@
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Automate your Strava</h1>
+                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Enhance your Strava</h1>
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
@@ -18,14 +18,30 @@
 
                 <v-card color="black" class="mb-2 home-panel">
                     <v-card-text>
+                        <div class="home-faq mt-4 px-1 text-left">
+                            <h2>What can it do?</h2>
+                            <div>
+                                <ul class="ml-4 pl-0">
+                                    <li>Tag your commutes</li>
+                                    <li>Set the correct gear based on the activity details</li>
+                                    <li>Set the default shoes for runs, walks and hikes</li>
+                                    <li>Set the default bike for road, MTB and gravel rides</li>
+                                    <li>Add weather data to activity names or descriptions</li>
+                                    <li>Add the Spotify tracks (or lyrics) that you were listening to during your workouts</li>
+                                    <li>Give your activities cool and unique names, powered by ChatGPT</li>
+                                    <li>Track the usage and get notified when you need to replace your bike components</li>
+                                    <li>Export your past activities and upcoming club events to .ics calendars</li>
+                                    <li>Show your upcoming club events directly on a map, with weather forecasts</li>
+                                    <li>Estimate and automatically update your cycling FTP based on your recent performance</li>
+                                    <li>And a lot more!</li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <div class="home-faq mt-2 px-1 text-left">
                             <h2>How does it work?</h2>
                             <div>
-                                <p>
-                                    First you connect Strautomator to your Strava account. Then you create automations to automagically update your activities based on its properties like distance, speed, heart rate, time, location, weather, and many
-                                    more.
-                                </p>
-                                <p>You can also register your bike components to get an email letting you know when it's time to replace them. Never forget to swap a chain again!</p>
+                                <p>All you need to do is connect your Strava account to Strautomator and start using its features.</p>
                             </div>
                         </div>
 
@@ -40,41 +56,23 @@
                             </div>
                         </v-responsive>
 
-                        <div class="home-faq mt-4 px-1 text-left">
-                            <h2>What else does it do?</h2>
-                            <div>
-                                <p>Strautomator can also:</p>
-                                <ul class="ml-4 pl-0">
-                                    <li>Set the default shoes for runs, walks and hikes.</li>
-                                    <li>Set the default bike for road, MTB and gravel cycling.</li>
-                                    <li>Add weather data to activity names or descriptions</li>
-                                    <li>Export your past activities and upcoming club events to .ics calendars</li>
-                                    <li>Show your upcoming club events directly on a map, with weather forecasts</li>
-                                    <li>Automatically estimate and update your cycling FTP on Strava</li>
-                                </ul>
-                                <p class="mt-4">New features possibilities are being constantly added!</p>
-                            </div>
-                        </div>
-
                         <div class="home-faq mt-8 px-1 text-left">
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
                                     Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users. Unlimited
                                     automations, GearWear and extra other features can be unlocked with a PRO subscription for {{ $store.state.proPlanDetails.price.year }} {{ $store.state.expectedCurrency }}
-                                    / year, paid via PayPal.
+                                    / year, paid via PayPal or via a GitHub sponsorship.
                                 </p>
                             </div>
                             <free-pro-table />
                         </div>
 
-                        <div class="mt-6 mb-6">
+                        <div class="mt-6">
                             <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                         </div>
                     </v-card-text>
                 </v-card>
-
-                <feature-links />
 
                 <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
 
@@ -103,6 +101,8 @@
                         Help section
                     </v-btn>
                 </div>
+
+                <feature-links />
             </div>
         </v-container>
         <div id="cookie-panel" class="hidden">
