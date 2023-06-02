@@ -75,10 +75,10 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         const max = settings.plans.free.maxGearWear
         let configs = await gearwear.getForUser(user)
-        let existingConfig: GearWearConfig[] = _.remove(configs, {id: gearId})
+        let existingConfig: GearWearConfig = _.find(configs, {id: gearId})
 
         // Check if user has reached the limit of gearwear configs on free accounts.
-        if (!user.isPro && configs.length >= max) {
+        if (!user.isPro && !existingConfig && configs.length >= max) {
             return webserver.renderError(req, res, `${logHelper.user(user)} reached limit of ${max} GearWear on free accounts`, 400)
         }
 
@@ -101,11 +101,13 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
             // Save GearWear configuration to the database.
             await gearwear.upsert(user, config)
-        } else {
+        } else if (existingConfig) {
             const compName = req.body.resetTracking
 
             // Reset distance for the specified component.
-            await gearwear.resetTracking(user, existingConfig[0], compName)
+            await gearwear.resetTracking(user, existingConfig, compName)
+        } else {
+            return webserver.renderError(req, res, `Configuration for gear ${gearId} not found`, 404)
         }
 
         webserver.renderJson(req, res, {ok: true})
