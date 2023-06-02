@@ -93,7 +93,7 @@
                 </v-card-title>
                 <v-card-text class="pt-4 pb-2">
                     <div class="mb-4" v-for="data in gearwearHistory">
-                        <h3>{{ data.date }}</h3>
+                        <h3>{{ $dayjs(data.date).format("LL") }}</h3>
                         <ul class="ml-n2">
                             <li v-for="h in data.history">{{ h.message }}</li>
                         </ul>
@@ -221,6 +221,8 @@ import gearwearMixin from "~/mixins/gearwearMixin.js"
 import EditComponent from "~/components/gearwear/EditComponent.vue"
 import PastUsagePanel from "~/components/gearwear/PastUsagePanel.vue"
 
+const historyDateFormat = "YYYY-MM-DD"
+
 export default {
     authenticated: true,
     components: {EditComponent, PastUsagePanel},
@@ -342,46 +344,20 @@ export default {
             if (this.gearwearConfig.components.length > 0) {
                 for (let comp of config.components) {
                     if (comp.history && comp.history.length > 0) {
-                        comp.lastResetDate = this.$dayjs(comp.history[comp.history.length - 1].date).format("YYYY-MM-DD")
+                        comp.lastResetDate = this.$dayjs(comp.history[comp.history.length - 1].date).format(historyDateFormat)
                     }
                 }
             }
 
             // Build the history data (only for existing components).
             if (!this.isNew) {
-                const dateHistory = {}
-
-                for (let c of this.gearwearConfig.components) {
-                    if (c.history?.length > 0) {
-                        for (let h of c.history) {
-                            const hDate = this.$dayjs(h.date).format("LL")
-                            if (!dateHistory[hDate]) {
-                                dateHistory[hDate] = []
-                            }
-                            dateHistory[hDate].push({message: `${c.name} changed after ${h.distance} ${this.distanceUnits}`, reset: true})
-                        }
-                    }
-
-                    if (c.dateAlertSent) {
-                        const hDate = this.$dayjs(c.dateAlertSent).format("LL")
-                        if (!dateHistory[hDate]) {
-                            dateHistory[hDate] = []
-                        }
-                        dateHistory[hDate].push({message: `Alert sent for ${c.name}`, alert: true})
-                    }
-                }
-
-                const entries = Object.entries(dateHistory)
-                const gearwearHistory = entries.map(([date, history]) => {
-                    return {date: date, history: history}
-                })
-                this.gearwearHistory = _.orderBy(gearwearHistory, "date", "desc")
+                this.buildHistory()
             }
 
             if (this.$route.query.reset) {
                 const component = _.find(this.gearwearConfig.components, {name: this.$route.query.reset})
 
-                if (component) {
+                if (component && !component.history.find((h) => this.$dayjs(h.date).format(historyDateFormat) == this.$dayjs().format(historyDateFormat))) {
                     this.showResetDialog(component)
                 }
             } else if (this.$route.query.comp) {
@@ -469,6 +445,35 @@ export default {
         isConfigValid() {
             return this.gearwearConfig?.components.length > 0
         },
+        buildHistory() {
+            const dateHistory = {}
+
+            for (let c of this.gearwearConfig.components) {
+                if (c.history?.length > 0) {
+                    for (let h of c.history) {
+                        const hDate = this.$dayjs(h.date).format(historyDateFormat)
+                        if (!dateHistory[hDate]) {
+                            dateHistory[hDate] = []
+                        }
+                        dateHistory[hDate].push({message: `${c.name} changed after ${h.distance} ${this.distanceUnits}`, reset: true})
+                    }
+                }
+
+                if (c.dateAlertSent) {
+                    const hDate = this.$dayjs(c.dateAlertSent).format(historyDateFormat)
+                    if (!dateHistory[hDate]) {
+                        dateHistory[hDate] = []
+                    }
+                    dateHistory[hDate].push({message: `Alert sent for ${c.name}`, alert: true})
+                }
+            }
+
+            const entries = Object.entries(dateHistory)
+            const gearwearHistory = entries.map(([date, history]) => {
+                return {date: date, history: history}
+            })
+            this.gearwearHistory = _.orderBy(gearwearHistory, "date", "desc")
+        },
         // EDIT COMPONENTS
         // --------------------------------------------------------------------------
         setComponentState(component) {
@@ -526,8 +531,12 @@ export default {
 
                 const currentDistance = this.gearwearComponent.currentDistance
                 const currentTime = this.gearwearComponent.currentTime
-                this.gearwearComponent.history.push({date: new Date(), distance: currentDistance, time: currentTime})
 
+                // Update the history.
+                this.gearwearComponent.history.push({date: new Date(), distance: currentDistance, time: currentTime})
+                this.buildHistory()
+
+                // Reset component data.
                 this.gearwearComponent.currentDistance = 0
                 this.gearwearComponent.currentTime = 0
                 this.gearwearComponent.dateAlertSent = null

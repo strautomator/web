@@ -75,7 +75,7 @@
                         You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
                         GearWear configurations on your free account.
                         <br v-if="$breakpoint.mdAndUp" />
-                        To use this feature with more bikes or shoes, you'll need a PRO account, or simply delete an existing configuration.
+                        To use this feature with more bikes or shoes you'll need a PRO account.
                     </p>
                     <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
                         <v-icon left>mdi-credit-card</v-icon>
