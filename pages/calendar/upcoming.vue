@@ -161,7 +161,7 @@ export default {
     },
     computed: {
         days() {
-            return this.user.isPro ? 10 : this.$store.state.freePlanDetails.futureCalendarDays
+            return this.user.isPro ? 10 : 5
         },
         routeIds() {
             if (!this.events || this.events.length == 0) return null
@@ -253,6 +253,9 @@ export default {
                 if (this.currentPosition) {
                     this.mapSetPosition()
                 }
+
+                const trafficLayer = new google.maps.TrafficLayer()
+                trafficLayer.setMap(this.map)
 
                 const routeColors = ["#FFFF11", "#FF66CC", "#1133AA", "#00AA11", "#0011FF", "#AA1111", "#FF11FF", "#FF1100"]
 
@@ -500,7 +503,6 @@ export default {
                 map: this.map
             })
         },
-
         tableRouteClick(e) {
             this.mapRouteSelect(e)
         },
