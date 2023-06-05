@@ -6,17 +6,25 @@
                 <v-card-text>
                     <div class="mt-1 text-center text-md-left" v-if="loading">
                         <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                        Loading upcoming club events, please wait, this can take up to a minute...
+                        Loading upcoming club events, please wait, this can take up to 2 minutes...
                     </div>
                     <div class="googlemaps-canvas" ref="googlemaps" v-if="events && events.length > 0"></div>
                     <div v-if="!loading && events">
+                        <v-sheet class="d-flex flex-column flex-md-row pl-2 pt-3 pt-md-4" color="accent">
+                            <div class="flex-grow-0 ma-0 pa-0">
+                                <v-checkbox v-model="mapOptionNoRoutes" class="ma-0 pa-0" label="Show events without routes" dense />
+                            </div>
+                            <div class="flex-grow-1 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
+                                <v-checkbox v-model="mapOptionTraffic" class="ma-0 pa-0" label="Show traffic and road blocks" dense />
+                            </div>
+                        </v-sheet>
+
                         <template v-if="events.length > 0">
-                            <v-divider v-if="!$breakpoint.mdAndUp"></v-divider>
-                            <v-simple-table class="mt-2" v-if="$breakpoint.mdAndUp">
+                            <v-simple-table v-if="$breakpoint.mdAndUp">
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Date</th>
+                                        <th>Date (next {{ days }} days)</th>
                                         <th>Title</th>
                                         <th class="text-center">Details</th>
                                         <th class="text-center">Weather</th>
@@ -32,8 +40,7 @@
                                             {{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}
                                         </td>
                                         <td class="pt-2 pb-2">
-                                            <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
-                                            <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
+                                            <a @click="tableRouteClick(ed.event)" @mouseover="mapHighlightRoute(ed.event, true)" @mouseout="mapHighlightRoute(ed.event, false)">{{ ed.event.title }}</a>
                                             <v-icon color="primary" small v-if="ed.event.route">mdi-download</v-icon>
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
@@ -46,8 +53,8 @@
                                                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                                 <template v-else-if="ed.weather.length == 0">-</template>
                                                 <div v-else>
-                                                    <template v-for="weather in ed.weather">
-                                                        {{ weather.icon }}
+                                                    <template v-for="icon in ed.weatherIcons">
+                                                        {{ icon }}
                                                     </template>
                                                 </div>
                                             </template>
@@ -60,30 +67,26 @@
                                     </tr>
                                 </tbody>
                             </v-simple-table>
-                            <div class="mt-1" v-else>
+                            <div class="mt-2" v-else>
                                 <div class="text-truncate mt-3" v-for="ed in eventDates" :key="ed.date + ed.event.id">
                                     <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(ed.event.type) }}</v-icon>
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>
                                     <v-icon v-if="ed.event.joined" small>mdi-check-circle</v-icon>
-                                    <span class="ml-1 float-right">{{ ed.weather.map((w) => w.icon).join(" ") }}</span>
+                                    <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
+                                    <span class="ml-1 float-right" v-else>{{ ed.weatherIcons.join(" ") }}</span>
                                     <br />
-                                    <a v-if="ed.event.route" @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
-                                    <a v-else :href="getEventUrl(ed.event)" :title="`Open event ${ed.event.id} on Strava`" target="strava">{{ ed.event.title }}</a>
+                                    <a @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <br />
                                     <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
                                     <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
-                                    <v-divider class="mt-1 mb-1"></v-divider>
+                                    <v-divider class="mt-3 mb-1"></v-divider>
                                 </div>
                             </div>
-                            <div class="text-center text-md-left mt-3">
+                            <div class="text-center text-md-left mt-4 mt-md-3">
                                 <v-btn color="primary" title="Download routes" @click.stop="showDownloadDialog" :disabled="!routeIds || !user.isPro" small rounded>
                                     <v-icon left>mdi-folder-download</v-icon>
                                     {{ !routeIds ? "No routes to download" : !user.isPro ? "Download routes (PRO only)" : "Download routes" }}
                                 </v-btn>
-                            </div>
-                            <div class="mt-5">
-                                Showing club events for the next {{ days }} days.<br />
-                                Weather forecast only for events happening in the next {{ weatherDays }} days.
                             </div>
                         </template>
                         <div v-else>
@@ -137,6 +140,19 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 
+const mapRouteColors = ["#e31a1c", "#ff7f00", "#6a3d9a", "#1f78b4", "#fb9a99", "#fdbf6f", "#cab2d6", "#b15928", "#a6cee3", "#33a02c"]
+
+const mapStrokeOpacity = {
+    default: 0.7,
+    highlight: 0.9,
+    click: 1
+}
+const mapStrokeWeight = {
+    default: 5,
+    highlight: 7,
+    click: 8
+}
+
 export default {
     authenticated: true,
     mixins: [userMixin, stravaMixin],
@@ -150,11 +166,16 @@ export default {
             loading: true,
             loadingWeather: true,
             weatherDays: 5,
-            map: null,
             events: null,
             eventDates: [],
             eventObjects: {},
             selectedEvent: null,
+            map: null,
+            mapMarkers: null,
+            mapInfoWindow: null,
+            mapTrafficLayer: null,
+            mapOptionNoRoutes: true,
+            mapOptionTraffic: true,
             currentPosition: null,
             downloadDialog: false
         }
@@ -166,6 +187,20 @@ export default {
         routeIds() {
             if (!this.events || this.events.length == 0) return null
             return this.events.filter((e) => e.route).map((e) => e.route.idString)
+        }
+    },
+    watch: {
+        mapOptionNoRoutes: function (newVal, oldVal) {
+            const noRouteEvents = Object.values(this.eventObjects).filter((e) => !e.polyline && e.marker)
+            for (let e of noRouteEvents) {
+                const options = newVal ? {opacity: 1, zIndex: e.zIndex} : {opacity: 0, zIndex: 0}
+                e.hidden = !newVal
+                e.marker.main.setOptions(options)
+                e.marker.shadow.setOptions(options)
+            }
+        },
+        mapOptionTraffic: function (newVal, oldVal) {
+            this.mapTrafficLayer.setMap(newVal ? this.map : null)
         }
     },
     async mounted() {
@@ -243,6 +278,7 @@ export default {
                 await new Promise((r) => setTimeout(r, 80))
 
                 this.loading = false
+
                 this.map = new google.maps.Map(this.$refs.googlemaps, {
                     gestureHandling: "greedy",
                     fullscreenControl: false,
@@ -254,24 +290,26 @@ export default {
                     this.mapSetPosition()
                 }
 
-                const trafficLayer = new google.maps.TrafficLayer()
-                trafficLayer.setMap(this.map)
+                this.mapMarkers = []
 
-                const routeColors = ["#FFFF11", "#FF66CC", "#1133AA", "#00AA11", "#0011FF", "#AA1111", "#FF11FF", "#FF1100"]
+                this.mapTrafficLayer = new google.maps.TrafficLayer()
+                this.mapTrafficLayer.setMap(this.map)
 
-                let zIndex = 10
-                for (let e of this.events) {
-                    const color = routeColors.pop()
+                let zIndex = 35
+                const routeColors = _.cloneDeep(mapRouteColors)
+                const sortedEvents = _.sortBy(this.events, (e) => (e.route?.polyline ? 0 : 1))
+                for (let e of sortedEvents) {
+                    const color = e.route?.polyline ? routeColors.shift() : routeColors.pop()
 
                     try {
                         this.eventObjects[e.id] = {zIndex: zIndex}
 
-                        if (e.route && e.route.polyline) {
+                        if (e.route?.polyline) {
                             this.mapDrawRoute(e, color)
-                            zIndex--
+                            zIndex -= 2
                         }
 
-                        if (e.komootRoute && e.komootRoute.locationStart) {
+                        if (e.komootRoute?.locationStart) {
                             e.position = {lat: e.komootRoute.locationStart[0], lng: e.komootRoute.locationStart[1]}
                         }
                         if (!e.position) {
@@ -290,6 +328,17 @@ export default {
                         console.error("UpcomingEventsMap.loadMap.events", e.id, eventEx)
                     }
                 }
+
+                // Info window.
+                this.mapInfoWindow = new google.maps.InfoWindow({
+                    content: `<div class="black--text">Loading...</div>`
+                })
+                this.mapInfoWindow.addListener("closeclick", () => {
+                    const evObject = this.eventObjects[this.selectedEvent.id]
+                    evObject.marker.main.setOptions({zIndex: evObject.zIndex})
+                    evObject.marker.shadow.setOptions({zIndex: evObject.zIndex})
+                    this.selectedEvent = null
+                })
 
                 this.loadWeather()
             } catch (ex) {
@@ -323,6 +372,7 @@ export default {
                 // Iterate the events to build the query data, using the format "eventId-start/mid/end:coordinates:timestamp".
                 for (let ed of this.eventDates) {
                     ed.weather = []
+                    ed.weatherIcons = []
 
                     const event = ed.event
                     const route = event.route || event.komootRoute || null
@@ -355,7 +405,7 @@ export default {
                 if (query.length == 0) return
 
                 // Fetch weather for all relevant event locations and timestamps. Query data separated by a | pipe.
-                const weatherForecasts = await this.$axios.$get(`/api/weather/${this.user.id}/multi-forecast?data=${query.join("|")}`)
+                const weatherForecasts = await this.$axios.$get(`/api/weather/${this.user.id}/multi-forecast?provider=openmeteo&data=${query.join("|")}`)
 
                 // Here we translate the result back to start / mid / end forecasts.
                 for (let data of weatherForecasts) {
@@ -364,13 +414,17 @@ export default {
                         const coordinateString = data.coordinates.join(",")
                         const eventDate = this.eventDates.find((ed) => {
                             const route = ed.event.route || ed.event.komootRoute || {}
-                            const isStart = route.locationStart && route.locationStart.join(",") == coordinateString
-                            const isMid = route.locationMid && route.locationMid.join(",") == coordinateString
-                            const isEnd = route.locationEnd && route.locationEnd.join(",") == coordinateString
+                            const isStart = route.locationStart?.join(",") == coordinateString
+                            const isMid = route.locationMid?.join(",") == coordinateString
+                            const isEnd = route.locationEnd?.join(",") == coordinateString
                             return Math.round(this.$dayjs(ed.date).unix()) == data.timestamp && (isStart || isMid || isEnd)
                         })
 
                         eventDate.weather.push(data.forecast)
+
+                        if (!eventDate.weatherIcons.includes(data.forecast.icon)) {
+                            eventDate.weatherIcons.push(data.forecast.icon)
+                        }
                     } catch (forecastEx) {
                         console.error(forecastEx)
                     }
@@ -383,8 +437,16 @@ export default {
         },
         mapCreateMarker(e, color) {
             try {
-                const svgMarker = {
-                    path: "M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z",
+                const svgPath = "M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"
+                const svgShadow = {
+                    path: svgPath,
+                    strokeColor: "white",
+                    strokeWeight: 2,
+                    rotation: 0,
+                    scale: 0.7
+                }
+                const svgMain = {
+                    path: svgPath,
                     fillColor: color,
                     fillOpacity: 1,
                     strokeWeight: 0,
@@ -392,52 +454,83 @@ export default {
                     scale: 0.7
                 }
 
-                const marker = new google.maps.Marker({
+                const dropShadowMarker = new google.maps.Marker({
+                    icon: {
+                        url: "/images/map/shadow.png",
+                        size: new google.maps.Size(37, 34),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(10, 34)
+                    },
                     position: e.position,
-                    icon: svgMarker,
-                    title: e.title,
+                    zIndex: 0,
                     map: this.map
                 })
-                marker.addListener("click", () => this.mapMarkerClick(e))
-                marker.addListener("mouseover", () => this.mapHighlightRoute(e, true))
-                marker.addListener("mouseout", () => this.mapHighlightRoute(e, false))
-
-                // Info window.
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div class="black--text">
-                                <h3 class="mb-2">${e.title}</h3>
-                                <div>Next: ${this.$dayjs(_.min(e.dates)).format("lll")}</div>
-                                <div>Distance: ${this.getDistance(e)}</div>
-                                <div>Duration: ${this.getEstimatedTime(e)}</div>
-                                <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
-                              </div>`
+                const shadowMarker = new google.maps.Marker({
+                    position: e.position,
+                    icon: svgShadow,
+                    title: e.title,
+                    zIndex: this.eventObjects[e.id].zIndex - 1,
+                    map: this.map
                 })
-                infoWindow.addListener("closeclick", () => {
-                    this.selectedEvent = null
+                const mainMarker = new google.maps.Marker({
+                    position: e.position,
+                    icon: svgMain,
+                    title: e.title,
+                    zIndex: this.eventObjects[e.id].zIndex,
+                    map: this.map
                 })
 
-                this.eventObjects[e.id].marker = marker
-                this.eventObjects[e.id].infoWindow = infoWindow
+                mainMarker.addListener("click", () => this.mapMarkerClick(e))
+                mainMarker.addListener("mouseover", () => this.mapHighlightRoute(e, true))
+                mainMarker.addListener("mouseout", () => this.mapHighlightRoute(e, false))
+
+                const markerObj = {main: mainMarker, shadow: shadowMarker}
+                this.eventObjects[e.id].marker = markerObj
+                this.mapMarkers.push(markerObj)
             } catch (ex) {
                 console.error("UpcomingEventsMap.mapCreateMarker", e.id, ex)
             }
         },
         mapDrawRoute(e, color) {
             try {
+                const lineSymbol = {
+                    path: "M 0,0 5,15 -5,15 0,0 z",
+                    fillColor: color,
+                    fillOpacity: mapStrokeOpacity.default,
+                    strokeColor: "black",
+                    strokeWeight: 1,
+                    scale: 0.65
+                }
+
                 const points = google.maps.geometry.encoding.decodePath(e.route.polyline)
-                const poly = new google.maps.Polyline({
+                const polyShadow = new google.maps.Polyline({
+                    path: points,
+                    strokeColor: "white",
+                    strokeOpacity: mapStrokeOpacity.default,
+                    strokeWeight: mapStrokeWeight.default + 2,
+                    zIndex: this.eventObjects[e.id].zIndex - 1,
+                    map: this.map
+                })
+                const polyMain = new google.maps.Polyline({
                     path: points,
                     strokeColor: color,
-                    strokeOpacity: 0.55,
-                    strokeWeight: 4,
+                    strokeOpacity: mapStrokeOpacity.default,
+                    strokeWeight: mapStrokeWeight.default,
                     zIndex: this.eventObjects[e.id].zIndex,
+                    icons: [
+                        {
+                            icon: lineSymbol,
+                            repeat: "80px",
+                            offset: "100%"
+                        }
+                    ],
                     map: this.map
                 })
 
                 // Append start of the route as the event position.
                 e.position = points[0]
 
-                this.eventObjects[e.id].polyline = poly
+                this.eventObjects[e.id].polyline = {main: polyMain, shadow: polyShadow}
             } catch (ex) {
                 console.error("UpcomingEventsMap.mapDrawRoute", e.id, ex)
             }
@@ -455,19 +548,30 @@ export default {
             if (!this.eventObjects[e.id].polyline) return
 
             const bounds = new google.maps.LatLngBounds()
-            const points = this.eventObjects[e.id].polyline.getPath().getArray()
+            const points = this.eventObjects[e.id].polyline.main.getPath().getArray()
             points.forEach((p) => bounds.extend(p))
             this.map.fitBounds(bounds)
         },
         mapHighlightRoute(e, highlight, clicked) {
             if (!this.eventObjects[e.id].polyline) return
 
+            let mainOptions = null
+            let shadowOptions = null
+
             if (clicked) {
-                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.95, strokeWeight: 6, zIndex: 20})
+                mainOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click, zIndex: 50}
+                shadowOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click + 2, zIndex: 49}
             } else if (highlight) {
-                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.85, strokeWeight: 5, zIndex: 19})
+                mainOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight, zIndex: 40}
+                shadowOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight + 2, zIndex: 39}
             } else if (!this.selectedEvent || this.selectedEvent.id != e.id) {
-                this.eventObjects[e.id].polyline.setOptions({strokeOpacity: 0.55, strokeWeight: 4, zIndex: this.eventObjects[e.id].zIndex})
+                mainOptions = {strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default, zIndex: this.eventObjects[e.id].zIndex}
+                shadowOptions = {strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default + 2, zIndex: this.eventObjects[e.id].zIndex - 1}
+            }
+
+            if (mainOptions) {
+                this.eventObjects[e.id].polyline.main.setOptions(mainOptions)
+                this.eventObjects[e.id].polyline.shadow.setOptions(shadowOptions)
             }
         },
         mapRouteSelect(e) {
@@ -484,27 +588,59 @@ export default {
 
                 if (previousEvent) {
                     this.mapHighlightRoute(previousEvent, false)
-                    this.eventObjects[previousEvent.id].infoWindow.close()
                 }
             }
 
             this.mapHighlightRoute(e, true, true)
         },
         mapMarkerClick(e) {
+            if (this.eventObjects[e.id].hidden) {
+                return
+            }
+
             const previousEvent = this.selectedEvent || null
-            const marker = this.eventObjects[e.id].marker
-            const infoWindow = this.eventObjects[e.id].infoWindow
+            const evObject = this.eventObjects[e.id]
+            const marker = evObject.marker.main
+            const evDate = this.eventDates.find((ed) => ed.event.id == e.id)
+            const weather = evDate?.weather.map((w) => w.summary) || null
+
+            this.mapMarkers.forEach((m) => {
+                const zIndex = {zIndex: m.main == marker ? 99 : evObject.zIndex}
+                m.main.setOptions(zIndex)
+                m.shadow.setOptions(zIndex)
+            })
 
             this.mapRouteSelect(e)
             this.map.setCenter(marker.getPosition())
 
-            infoWindow.open({
+            // If weather is the same at the start and end, only show a single row.
+            let htmlWeather
+            if (weather?.length > 0) {
+                const htmlWeatherSingle = `${weather[0]}`
+                const htmlWeatherMulti = `Start: ${weather[0]}<br />End: ${weather[weather.length - 1]}`
+                htmlWeather = _.uniq(weather).length == 1 ? htmlWeatherSingle : htmlWeatherMulti
+            } else {
+                htmlWeather = "Not available"
+            }
+
+            this.mapInfoWindow.setContent(`
+                <div class="black--text">
+                <h3 class="mb-2">${e.title}</h3>
+                <div>Next: ${this.$dayjs(_.min(e.dates)).format("lll")}</div>
+                <div>Distance: ${this.getDistance(e)}</div>
+                <div>Duration: ${this.getEstimatedTime(e)}</div>
+                <div class="mt-2">Weather:</div>
+                <div>${htmlWeather}</div>
+                <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
+                </div>`)
+
+            this.mapInfoWindow.open({
                 anchor: marker,
                 map: this.map
             })
         },
         tableRouteClick(e) {
-            this.mapRouteSelect(e)
+            this.mapMarkerClick(e)
         },
         getDistance(event) {
             if (!event.route && !event.komootRoute) return "-"
