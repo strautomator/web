@@ -67,6 +67,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
             return webserver.renderError(req, res, "Missing request query", 400)
         }
 
+        const provider = req.query.provider && settings.weather[req.query.provider.toString()] ? req.query.provider.toString() : null
         const arrQuery = req.query.data.toString().split("|")
         const result: MultiForecastResult[] = []
         let hadError = false
@@ -78,7 +79,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
                 const arrData = query.split(":")
                 queryResult.coordinates = arrData[1].split(",").map((c) => parseFloat(c)) as [number, number]
                 queryResult.timestamp = parseInt(arrData[2])
-                queryResult.forecast = await weather.getLocationWeather({user: user, coordinates: queryResult.coordinates, dDate: dayjs.unix(queryResult.timestamp)})
+                queryResult.forecast = await weather.getLocationWeather({user: user, coordinates: queryResult.coordinates, dDate: dayjs.unix(queryResult.timestamp), provider: provider})
             } catch (weatherEx) {
                 logger.warn("Routes.weather", req.method, req.originalUrl, weatherEx.message)
                 hadError = true
