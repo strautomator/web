@@ -11,6 +11,7 @@ const router: express.Router = express.Router()
 
 // Multi forecast result.
 interface MultiForecastResult {
+    id?: string | number
     coordinates?: [number, number]
     timestamp?: number
     forecast?: WeatherSummary
@@ -77,6 +78,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
             let queryResult: MultiForecastResult = {}
             try {
                 const arrData = query.split(":")
+                queryResult.id = arrData[0]
                 queryResult.coordinates = arrData[1].split(",").map((c) => parseFloat(c)) as [number, number]
                 queryResult.timestamp = parseInt(arrData[2])
                 queryResult.forecast = await weather.getLocationWeather({user: user, coordinates: queryResult.coordinates, dDate: dayjs.unix(queryResult.timestamp), provider: provider})
