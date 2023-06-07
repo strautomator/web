@@ -1,7 +1,12 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Upcoming Events Map</h1>
+            <h1>
+                Upcoming Events Map
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/calendar" title="Calendar Export" x-small fab rounded nuxt>
+                    <v-icon small>mdi-calendar-month</v-icon>
+                </v-btn>
+            </h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <div class="mt-1 text-center text-md-left" v-if="loading">
@@ -14,8 +19,11 @@
                             <div class="flex-grow-0 ma-0 pa-0">
                                 <v-checkbox v-model="mapOptionNoRoutes" class="ma-0 pa-0" label="Show events without routes" dense />
                             </div>
-                            <div class="flex-grow-1 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
+                            <div class="flex-grow-0 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
                                 <v-checkbox v-model="mapOptionTraffic" class="ma-0 pa-0" label="Show traffic and road blocks" dense />
+                            </div>
+                            <div class="flex-grow-1 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
+                                <v-checkbox v-model="mapOptionBicycling" class="ma-0 pa-0" label="Show cycling lanes and paths" dense />
                             </div>
                         </v-sheet>
 
@@ -46,7 +54,7 @@
                                         <td class="pt-2 pb-2 text-center">
                                             {{ getDistance(ed.event) }}
                                             <br />
-                                            {{ getEstimatedTime(ed.event) }}
+                                            {{ getEstimatedHours(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
                                             <template v-if="ed.event.route || ed.event.komootRoute">
@@ -78,7 +86,7 @@
                                     <a @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <br />
                                     <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getDistance(ed.event) }}</v-chip>
-                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedTime(ed.event) }}</v-chip>
+                                    <v-chip class="mr-1" v-if="ed.event.route || ed.event.komootRoute" x-small>{{ getEstimatedHours(ed.event) }}</v-chip>
                                     <v-divider class="mt-3 mb-1"></v-divider>
                                 </div>
                             </div>
@@ -140,11 +148,11 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 
+let zIndexMax = 100
 const mapRouteColors = ["#e31a1c", "#ff7f00", "#6a3d9a", "#1f78b4", "#fb9a99", "#fdbf6f", "#cab2d6", "#b15928", "#a6cee3", "#33a02c"]
-
 const mapStrokeOpacity = {
-    default: 0.7,
-    highlight: 0.9,
+    default: 0.75,
+    highlight: 0.95,
     click: 1
 }
 const mapStrokeWeight = {
@@ -173,8 +181,10 @@ export default {
             map: null,
             mapMarkers: null,
             mapInfoWindow: null,
+            mapBicyclingLayer: null,
             mapTrafficLayer: null,
             mapOptionNoRoutes: true,
+            mapOptionBicycling: false,
             mapOptionTraffic: true,
             currentPosition: null,
             downloadDialog: false
@@ -195,12 +205,15 @@ export default {
             for (let e of noRouteEvents) {
                 const options = newVal ? {opacity: 1, zIndex: e.zIndex} : {opacity: 0, zIndex: 0}
                 e.hidden = !newVal
-                e.marker.main.setOptions(options)
                 e.marker.shadow.setOptions(options)
+                e.marker.main.setOptions(options)
             }
         },
         mapOptionTraffic: function (newVal, oldVal) {
             this.mapTrafficLayer.setMap(newVal ? this.map : null)
+        },
+        mapOptionBicycling: function (newVal, oldVal) {
+            this.mapBicyclingLayer.setMap(newVal ? this.map : null)
         }
     },
     async mounted() {
@@ -283,19 +296,23 @@ export default {
                     gestureHandling: "greedy",
                     fullscreenControl: false,
                     zoom: 9,
-                    center: {lat: 0, lng: 0}
+                    center: {lat: 0, lng: 0},
+                    mapTypeControlOptions: {
+                        mapTypeIds: ["roadmap", "satellite", "hybrid", "terrain", "styled_map"]
+                    }
                 })
 
                 if (this.currentPosition) {
                     this.mapSetPosition()
                 }
 
-                this.mapMarkers = []
-
+                // Setup extra map layers.
+                this.mapBicyclingLayer = new google.maps.BicyclingLayer()
                 this.mapTrafficLayer = new google.maps.TrafficLayer()
                 this.mapTrafficLayer.setMap(this.map)
 
-                let zIndex = 35
+                // Iterate events and add their objects to the map.
+                let zIndex = zIndexMax
                 const routeColors = _.cloneDeep(mapRouteColors)
                 const sortedEvents = _.sortBy(this.events, (e) => (e.route?.polyline ? 0 : 1))
                 for (let e of sortedEvents) {
@@ -306,7 +323,6 @@ export default {
 
                         if (e.route?.polyline) {
                             this.mapDrawRoute(e, color)
-                            zIndex -= 2
                         }
 
                         if (e.komootRoute?.locationStart) {
@@ -324,6 +340,7 @@ export default {
                         }
 
                         this.mapCreateMarker(e, color)
+                        zIndex -= 3
                     } catch (eventEx) {
                         console.error("UpcomingEventsMap.loadMap.events", e.id, eventEx)
                     }
@@ -335,8 +352,11 @@ export default {
                 })
                 this.mapInfoWindow.addListener("closeclick", () => {
                     const evObject = this.eventObjects[this.selectedEvent.id]
-                    evObject.marker.main.setOptions({zIndex: evObject.zIndex})
-                    evObject.marker.shadow.setOptions({zIndex: evObject.zIndex})
+
+                    if (evObject.polyline) {
+                        evObject.polyline.shadow.setOptions({strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default})
+                        evObject.polyline.main.setOptions({strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default})
+                    }
                     this.selectedEvent = null
                 })
 
@@ -367,6 +387,7 @@ export default {
         },
         async loadWeather() {
             try {
+                const idDateFormat = "MMDD-HHmm"
                 const query = []
 
                 // Iterate the events to build the query data, using the format "eventId-start/mid/end:coordinates:timestamp".
@@ -378,26 +399,23 @@ export default {
                     const route = event.route || event.komootRoute || null
 
                     // Abort if event has no route or is not happening within the next few days.
-                    if (!route) {
-                        continue
-                    }
-                    if (this.$dayjs().add(this.weatherDays, "days").isBefore(ed.date)) {
+                    if (!route || this.$dayjs().add(this.weatherDays, "days").isBefore(ed.date)) {
                         continue
                     }
 
-                    const eDate = this.$dayjs(ed.date)
-                    const timestamp = Math.round(eDate.utc().unix())
+                    const eDate = this.$dayjs(ed.date).utc()
+                    const timestamp = Math.round(eDate.unix())
 
                     if (route.locationStart) {
-                        query.push(`${event.id}:${route.locationStart.join(",")}:${timestamp}`)
+                        query.push(`${event.id}-${eDate.format(idDateFormat)}:${route.locationStart.join(",")}:${timestamp}`)
                     }
                     // Mid point weather will only be fetched for events longer than 3 hours.
-                    if (route.locationMid && route.estimatedTime >= 10800) {
-                        query.push(`${event.id}:${route.locationMid.join(",")}:${timestamp}`)
+                    if (route.locationMid && route.totalTime >= 10800) {
+                        query.push(`${event.id}-${eDate.format(idDateFormat)}:${route.locationMid.join(",")}:${timestamp + Math.round(route.totalTime / 2)}`)
                     }
                     // End point weather will only be fetched for events longer than 1.5 hours.
-                    if (route.locationEnd && route.estimatedTime >= 5400) {
-                        query.push(`${event.id}:${route.locationEnd.join(",")}:${timestamp}`)
+                    if (route.locationEnd && route.totalTime >= 5400) {
+                        query.push(`${event.id}-${eDate.format(idDateFormat)}:${route.locationEnd.join(",")}:${timestamp + route.totalTime}`)
                     }
                 }
 
@@ -412,18 +430,14 @@ export default {
                     if (!data.forecast) continue
                     try {
                         const coordinateString = data.coordinates.join(",")
-                        const eventDate = this.eventDates.find((ed) => {
-                            const route = ed.event.route || ed.event.komootRoute || {}
-                            const isStart = route.locationStart?.join(",") == coordinateString
-                            const isMid = route.locationMid?.join(",") == coordinateString
-                            const isEnd = route.locationEnd?.join(",") == coordinateString
-                            return Math.round(this.$dayjs(ed.date).unix()) == data.timestamp && (isStart || isMid || isEnd)
-                        })
+                        const eventDate = this.eventDates.find((ed) => data.id == `${ed.event.id}-${this.$dayjs(ed.date).utc().format(idDateFormat)}`)
 
-                        eventDate.weather.push(data.forecast)
+                        if (eventDate) {
+                            eventDate.weather.push(data.forecast)
 
-                        if (!eventDate.weatherIcons.includes(data.forecast.icon)) {
-                            eventDate.weatherIcons.push(data.forecast.icon)
+                            if (!eventDate.weatherIcons.includes(data.forecast.icon)) {
+                                eventDate.weatherIcons.push(data.forecast.icon)
+                            }
                         }
                     } catch (forecastEx) {
                         console.error(forecastEx)
@@ -441,9 +455,9 @@ export default {
                 const svgShadow = {
                     path: svgPath,
                     strokeColor: "white",
-                    strokeWeight: 2,
+                    strokeWeight: 3,
                     rotation: 0,
-                    scale: 0.7
+                    scale: 0.65
                 }
                 const svgMain = {
                     path: svgPath,
@@ -451,7 +465,7 @@ export default {
                     fillOpacity: 1,
                     strokeWeight: 0,
                     rotation: 0,
-                    scale: 0.7
+                    scale: 0.65
                 }
 
                 const dropShadowMarker = new google.maps.Marker({
@@ -559,11 +573,11 @@ export default {
             let shadowOptions = null
 
             if (clicked) {
-                mainOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click, zIndex: 50}
-                shadowOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click + 2, zIndex: 49}
+                mainOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click, zIndex: zIndexMax}
+                shadowOptions = {strokeOpacity: mapStrokeOpacity.click, strokeWeight: mapStrokeWeight.click + 2, zIndex: zIndexMax - 1}
             } else if (highlight) {
-                mainOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight, zIndex: 40}
-                shadowOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight + 2, zIndex: 39}
+                mainOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight, zIndex: zIndexMax - 2}
+                shadowOptions = {strokeOpacity: mapStrokeOpacity.highlight, strokeWeight: mapStrokeWeight.highlight + 2, zIndex: zIndexMax - 3}
             } else if (!this.selectedEvent || this.selectedEvent.id != e.id) {
                 mainOptions = {strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default, zIndex: this.eventObjects[e.id].zIndex}
                 shadowOptions = {strokeOpacity: mapStrokeOpacity.default, strokeWeight: mapStrokeWeight.default + 2, zIndex: this.eventObjects[e.id].zIndex - 1}
@@ -574,53 +588,51 @@ export default {
                 this.eventObjects[e.id].polyline.shadow.setOptions(shadowOptions)
             }
         },
-        mapRouteSelect(e) {
-            const previousEvent = this.selectedEvent || null
-            this.selectedEvent = e
-
-            if (previousEvent && previousEvent.id == e.id) {
-                this.selectedEvent = null
-                this.mapHighlightRoute(previousEvent, false)
-            } else {
-                this.selectedEvent = e
-                this.mapHighlightRoute(e, true, true)
-                this.mapSetBounds(e)
-
-                if (previousEvent) {
-                    this.mapHighlightRoute(previousEvent, false)
-                }
-            }
-
-            this.mapHighlightRoute(e, true, true)
-        },
         mapMarkerClick(e) {
             if (this.eventObjects[e.id].hidden) {
                 return
             }
+            if (e.noMap) {
+                window.open(this.getEventUrl(e), "strava")
+                return
+            }
 
             const previousEvent = this.selectedEvent || null
+            const isSameClick = previousEvent?.id == e.id || false
             const evObject = this.eventObjects[e.id]
             const marker = evObject.marker.main
-            const evDate = this.eventDates.find((ed) => ed.event.id == e.id)
-            const weather = evDate?.weather.map((w) => w.summary) || null
 
-            this.mapMarkers.forEach((m) => {
-                const zIndex = {zIndex: m.main == marker ? 99 : evObject.zIndex}
-                m.main.setOptions(zIndex)
-                m.shadow.setOptions(zIndex)
-            })
+            if (isSameClick) {
+                return
+            }
 
-            this.mapRouteSelect(e)
+            this.selectedEvent = e
+
+            zIndexMax += 3
+            evObject.marker.main.setOptions({zIndex: zIndexMax})
+            evObject.marker.shadow.setOptions({zIndex: zIndexMax - 1})
+
+            this.mapHighlightRoute(e, true, true)
+            this.mapSetBounds(e)
+
+            if (previousEvent) {
+                this.mapHighlightRoute(previousEvent, false)
+            }
+
+            this.mapHighlightRoute(e, true, true)
             this.map.setCenter(marker.getPosition())
+
+            const evDate = this.eventDates.find((ed) => ed.event.id == e.id)
+            const weather = evDate?.weather.map((w) => `${w.temperature} ${w.summary}`) || null
 
             // If weather is the same at the start and end, only show a single row.
             let htmlWeather
             if (weather?.length > 0) {
-                const htmlWeatherSingle = `${weather[0]}`
+                const htmlWeatherSingle = weather[0]
                 const htmlWeatherMulti = `Start: ${weather[0]}<br />End: ${weather[weather.length - 1]}`
                 htmlWeather = _.uniq(weather).length == 1 ? htmlWeatherSingle : htmlWeatherMulti
             } else {
-                htmlWeather = "Not available"
+                htmlWeather = "No weather forecast available"
             }
 
             this.mapInfoWindow.setContent(`
@@ -628,10 +640,9 @@ export default {
                 <h3 class="mb-2">${e.title}</h3>
                 <div>Next: ${this.$dayjs(_.min(e.dates)).format("lll")}</div>
                 <div>Distance: ${this.getDistance(e)}</div>
-                <div>Duration: ${this.getEstimatedTime(e)}</div>
-                <div class="mt-2">Weather:</div>
-                <div>${htmlWeather}</div>
-                <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">More info...</a></div>
+                <div>Duration: ${this.getEstimatedHours(e)}</div>
+                <div class="mt-2">${htmlWeather}</div>
+                <div class="mt-3 font-weight-bold"><a href="${this.getEventUrl(e)}" target="strava">View on Strava...</a></div>
                 </div>`)
 
             this.mapInfoWindow.open({
@@ -643,17 +654,15 @@ export default {
             this.mapMarkerClick(e)
         },
         getDistance(event) {
-            if (!event.route && !event.komootRoute) return "-"
-            const distance = event.route ? event.route.distance : event.komootRoute.distance
+            if (!event.route?.distance && !event.komootRoute?.distance) return "-"
+            const distance = event.route?.distance || event.komootRoute?.distance
             const suffix = this.$store.state.user.profile.units == "imperial" ? " mi" : " km"
             return `${distance}${suffix}`
         },
-        getEstimatedTime(event) {
+        getEstimatedHours(event) {
             if (!event.route && !event.komootRoute) return "-"
-            const seconds = event.route ? event.route.estimatedTime : event.komootRoute.estimatedTime
-            const baseDuration = this.$dayjs.duration(seconds * 1100)
-            const toQuarter = 15 - (baseDuration.minutes() % 15)
-            const duration = baseDuration.add(toQuarter, "minutes")
+            const totalTime = event.route?.totalTime || event.komootRoute?.totalTime
+            const duration = this.$dayjs.duration(totalTime, "seconds")
             return `${duration.days() * 24 + duration.hours()}:${duration.format("mm")} h`
         },
         getEventUrl(e) {
