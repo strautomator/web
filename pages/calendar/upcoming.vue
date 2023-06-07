@@ -64,6 +64,10 @@
                                                     <template v-for="icon in ed.weatherIcons">
                                                         {{ icon }}
                                                     </template>
+                                                    <div class="text-caption">
+                                                        <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
+                                                        <template v-else>{{ ed.minTemperature }} - {{ ed.maxTemperature }}</template>
+                                                    </div>
                                                 </div>
                                             </template>
                                             <template v-else>-</template>
@@ -81,7 +85,14 @@
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>
                                     <v-icon v-if="ed.event.joined" small>mdi-check-circle</v-icon>
                                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
-                                    <span class="ml-1 float-right" v-else>{{ ed.weatherIcons.join(" ") }}</span>
+                                    <div class="ml-1 float-right text-right" v-else>
+                                        <span>{{ ed.weatherIcons.join(" ") }}</span>
+                                        <div class="text-caption">
+                                            <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
+                                            <template v-else>{{ ed.minTemperature }} - {{ ed.maxTemperature }}</template>
+                                        </div>
+                                    </div>
+
                                     <br />
                                     <a @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <br />
@@ -437,6 +448,12 @@ export default {
 
                             if (!eventDate.weatherIcons.includes(data.forecast.icon)) {
                                 eventDate.weatherIcons.push(data.forecast.icon)
+                            }
+                            if (!eventDate.minTemperature || data.forecast.temperature < eventDate.minTemperature) {
+                                eventDate.minTemperature = data.forecast.temperature
+                            }
+                            if (!eventDate.maxTemperature || data.forecast.temperature > eventDate.maxTemperature) {
+                                eventDate.maxTemperature = data.forecast.temperature
                             }
                         }
                     } catch (forecastEx) {
