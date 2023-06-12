@@ -144,6 +144,12 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
 
         const preferences: UserPreferences = {}
 
+        // Make sure preferences were set to avoid clearing it from the user data.
+        if (Object.keys(req.body).length == 0) {
+            logger.warn("Routes.users", logHelper.user(user), "Empty request body was sent, preferences not saved")
+            return webserver.renderJson(req, res, user.preferences)
+        }
+
         // Helper to validate if preference has changed.
         const preferenceChanged = (field: string) => !_.isNil(req.body[field]) && req.body[field] !== user.preferences[field]
 
