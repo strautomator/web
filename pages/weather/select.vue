@@ -89,7 +89,7 @@
                 <div class="mt-1 text-center text-md-left">
                     <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
-                        Use {{ weatherProvider }}
+                        Confirm {{ weatherProvider }}
                     </v-btn>
                 </div>
             </template>
@@ -117,13 +117,6 @@ export default {
             weatherProvider: this.$store.state.user.preferences.weatherProvider || "openmeteo",
             weatherSummaries: []
         }
-    },
-    async beforeRouteLeave(to, from, next) {
-        if (!this.saved) {
-            await this.savePreferences()
-        }
-
-        next()
     },
     methods: {
         setProvider(id) {
