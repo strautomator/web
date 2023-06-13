@@ -219,7 +219,7 @@
                 </v-card-text>
             </v-card>
 
-            <v-card class="mt-4" v-if="hasCounter" outlined>
+            <v-card class="mt-4" v-if="hasCounter && recipe.id" outlined>
                 <v-card-text class="mb-0 pb-0">
                     <div>This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.</div>
                     <div class="mt-4 d-flex">
