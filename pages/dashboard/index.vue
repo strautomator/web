@@ -16,13 +16,15 @@
             </v-alert>
             <v-alert v-else-if="lastAnnouncement" v-model="alertAnnouncement" color="accent" border="top" class="mb-4" dismissible>
                 <v-icon v-if="lastAnnouncement.newFeature" class="float-left mr-1">mdi-new-box</v-icon>
+                <v-icon v-else-if="lastAnnouncement.affiliate" class="float-left mr-1">mdi-cart</v-icon>
                 <div class="font-weight-bold mb-1">
                     {{ lastAnnouncement.title }}
                 </div>
                 <div>
                     {{ lastAnnouncement.body }}
                     <br v-if="!$breakpoint.mdAndUp" />
-                    <n-link color="primary" v-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>More...</n-link>
+                    <a v-if="lastAnnouncement.affiliate" target="strautoaffiliate" :title="lastAnnouncement.title" :href="lastAnnouncement.href" @click="readAnnouncement()" nuxt>Open affiliate link...</a>
+                    <n-link color="primary" v-else-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>More...</n-link>
                 </div>
             </v-alert>
             <div class="mb-4">
