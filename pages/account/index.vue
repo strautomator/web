@@ -29,8 +29,12 @@
                     Account ID {{ user.id }}
                     <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" class="ml-1 mt-n1" small>mdi-open-in-new</v-icon></a>
                 </div>
+                <div v-if="user.fitnessLevel">
+                    Fitness level: {{ user.fitnessLevel }}/5 ({{ $store.state.fitnessLevel[user.fitnessLevel] }})
+                    <n-link to="/help?q=fitness level" title="Your estimated fitness from 1 (Untrained) to 5 (Elite)" nuxt><v-icon color="primary" class="ml-1 mt-n1" small>mdi-help-circle-outline</v-icon></n-link>
+                </div>
                 <div>Registered on {{ dateRegistered }}</div>
-                <div>Units: {{ user.profile.units }}</div>
+                <div>Units on Strava: {{ user.profile.units }}</div>
                 <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
                 <div class="ml-n1 mt-3 text-left">
                     <v-btn class="ma-1" color="primary" title="My notifications" @click="spotifyDialog = true" nuxt small rounded>
@@ -68,7 +72,7 @@
                     </div>
                     <div class="mt-n1">
                         <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
-                        <div class="body-2">Strautomator can automatically update your cycling FTP based on your recent rides with a power meter.</div>
+                        <div class="body-2">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
                     <div class="mb-8 mt-n2 text-center text-md-left">
@@ -226,7 +230,7 @@
                 <v-card-text>
                     <p class="mt-4" v-if="ftpResult === null">
                         <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
-                        Estimating your FTP, please wait...
+                        Estimating your FTP, please wait, this can take up to 2 minutes...
                     </p>
                     <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
