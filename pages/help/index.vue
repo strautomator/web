@@ -88,7 +88,7 @@ export default {
             {tag: "gearwear", title: "GearWear"},
             {tag: "calendar", title: "Calendar"},
             {tag: "records", title: "Personal records"},
-            {tag: "ftp", title: "FTP estimation"},
+            {tag: "performance", title: "Performance estimation"},
             {tag: "subscription", title: "Free vs. PRO"},
             {tag: "spotify", title: "Spotify integration"},
             {tag: "security", title: "Security and privacy"},
