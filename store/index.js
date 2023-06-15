@@ -106,6 +106,7 @@ export const state = () => ({
     mapStyles: [],
     freePlanDetails: {},
     proPlanDetails: {},
+    fitnessLevel: {},
     country: null,
     expectedCurrency: null,
     archiveDownloadDays: null,
@@ -162,6 +163,9 @@ export const mutations = {
     setPlanDetails(state, data) {
         state.freePlanDetails = data.free
         state.proPlanDetails = data.pro
+    },
+    setFitnessLevel(state, data) {
+        state.fitnessLevel = data
     },
     setFtpWeeks(state, data) {
         state.ftpWeeks = data
@@ -278,6 +282,9 @@ export const actions = {
 
             // Set free / PRO plan details.
             commit("setPlanDetails", settings.plans)
+
+            // Set fitness level enum.
+            commit("setFitnessLevel", core.StravaFitnessLevel)
 
             // Set the FTP weeks default.
             commit("setFtpWeeks", settings.strava.ftp.weeks)
