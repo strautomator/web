@@ -499,7 +499,7 @@ export default {
                 this.hasChanges = true
 
                 // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
-                const wasNotResetToday = component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
+                const wasNotResetToday = !this.isNew && component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
                 if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
                     this.componentDialog = false
                     this.resetDialog = true
