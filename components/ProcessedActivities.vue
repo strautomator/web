@@ -11,7 +11,7 @@
         <tbody>
             <tr v-for="activity in activities" :key="activity.id">
                 <td width="1" class="text-center table-align-top pr-0 pt-4">
-                    <v-icon>{{ getSportIcon(activity.sportType || activity.type) }}</v-icon>
+                    <v-icon>{{ getSportIcon(activity.sportType) }}</v-icon>
                 </td>
                 <td class="pt-2 pb-2 table-align-top" :nowrap="$breakpoint.mdAndUp">
                     <template v-if="!$breakpoint.mdAndUp">
