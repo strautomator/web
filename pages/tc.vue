@@ -10,9 +10,9 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: February 21st, 2023</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: June 17th, 2023</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
-                        <p>This website and its services were developed, are maintained and represented by a single individual: Igor Ramadas.</p>
+                        <p>This website and its services were developed and are maintained by a single individual: Igor Ramadas.</p>
                         <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
 
                         <h2 class="mt-6 mb-4">Privacy</h2>
@@ -41,6 +41,7 @@
                             <li>Social media profile from Strava</li>
                             <li>Activity metadata from Strava</li>
                             <li>Addresses used in automations</li>
+                            <li>Information that you provide about your bikes and shoes</li>
                         </ul>
 
                         <h3 class="mt-1 mb-2">Legitimate Reasons for Processing Your Personal Information</h3>
@@ -73,7 +74,8 @@
                         <h3 class="mt-1 mb-2">How Long We Keep Your Personal Information</h3>
                         <p>
                             We keep your personal information only for as long as we need to. This time period may depend on what we are using your information for, in accordance with this policy. If your personal information is no longer required,
-                            we will delete it or make it anonymous by removing all details that identify you.
+                            we will delete it or make it anonymous by removing all details that identify you after a certain period. Information stored in the server's access log cannot be removed on-demand, but it will be automatically discarded
+                            after 30 days.
                         </p>
 
                         <h3 class="mt-1 mb-2">Feature: "Privacy Mode"</h3>
@@ -90,6 +92,7 @@
                         <ul class="mb-6">
                             <li>Tracking of personal activity records</li>
                             <li>Activity sharing on Twitter</li>
+                            <li>History log for GearWear components</li>
                         </ul>
 
                         <h2 class="mt-6 mb-4">Disclosure of Personal Information to Third Parties</h2>
@@ -101,7 +104,7 @@
                         <p>
                             You always retain the right to withhold personal information from us, with the understanding that your experience of our website may be affected. We will not discriminate against you for exercising any of your rights over
                             your personal information. If you do provide us with personal information you understand that we will collect, hold, use and disclose it in accordance with this policy. You retain the right to request details of any
-                            personal information we hold about you.
+                            personal information we hold about you. You can request a download of all the data we store about you in our database, archived in a ZIP file, directly from your Account page.
                         </p>
                         <p>
                             If we receive personal information about you from a third party, we will protect it as set out in this policy. If you are a third party providing personal information about somebody else, you represent and warrant that you
@@ -126,27 +129,6 @@
                         <h2 class="mt-6 mb-4">Subscription Plans</h2>
                         <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via special promotions.</p>
 
-                        <h3 class="mt-4 mb-2">Updates to Subscription Plans</h3>
-                        <p>Planned changes to subscription plans will be usually communicated to subscribers at least 14 days in advance.</p>
-
-                        <h3 class="mt-4 mb-2">Cancellation of Subscription Plans</h3>
-                        <p>
-                            Cancellation of existing subscription plans are usually communicated to subscribers at least 14 days in advance. Cancellation due to legal reasons or external factors, such as changes to the the Strava API, are not
-                            guaranteed to be communicated beforehand.
-                        </p>
-
-                        <h3 class="mt-4 mb-2">Payment Processing</h3>
-                        <p>Subscription payments are currently handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
-                        <p>Subscriptions paid in form of a Sponsorship via GitHub are handled by Stripe, via GitHub.</p>
-
-                        <h3 class="mt-4 mb-2">Refunds</h3>
-                        <p>We do not guarantee refunds by default. Refunds are handled on a per-case basis.</p>
-                        <p>
-                            Users can request a partial refund of up to 50% of the last subscription payment, if they're not happy with changes made to their subscription plan after the subscription has started. Such requests must be made no later
-                            than 30 days after the changes go into production. On exceptional cases, we might offer a partial refund on your last subscription payment for other reasons, if we find it justifiable, or if you created a new subscription
-                            by mistake.
-                        </p>
-
                         <h3 class="mt-4 mb-2">PRO Account</h3>
                         <p>
                             The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be updated or enhanced as needed, according to usage and third party
@@ -157,11 +139,26 @@
 
                         <free-pro-table no-footer="true" />
 
-                        <h3 class="mt-6 mb-4">Strava API Dependency</h3>
+                        <h3 class="mt-4 mb-2">Updates to Subscription Plans</h3>
+                        <p>Planned changes to subscription plans will be usually communicated to subscribers at least 14 days in advance.</p>
+
+                        <h3 class="mt-4 mb-2">Cancellation of Subscription Plans</h3>
+                        <p>We reserve the right to cancel any existing subscription plans. Cancellation due to legal reasons or external factors, such as changes to the the Strava API, are not guaranteed to be communicated beforehand.</p>
+
+                        <h3 class="mt-4 mb-2">Payment Processing</h3>
+                        <p>Subscription payments are primarily handled by a third party service, PayPal. We do not collect, process or store any card or bank details whatsoever.</p>
+                        <p>Subscriptions paid in form of a Sponsorship via GitHub are handled by Stripe, via GitHub.</p>
+
+                        <h3 class="mt-4 mb-2">Refunds</h3>
+                        <p>We do not guarantee refunds by default. Refunds are handled on a per-case basis.</p>
+                        <p>
+                            Users can request a partial refund of up to 50% of the last subscription payment, if they're not happy with changes made to their subscription plan after the subscription has started. Such requests must be made no later
+                            than 30 days after the changes go into production. On exceptional cases, we might offer a partial refund on your last subscription payment for other reasons, if we find it justifiable.
+                        </p>
                         <p>
                             All of our services are fully dependent on the Strava API, which is a third party service. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable
-                            their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work. In such case, subscribers that had their last payment made less than 28 days before
-                            the service shutdown are entitled to a refund for that last payment alone.
+                            their API, or in the unlikely event that they decide to cancel our connection to their API, all of our core services will cease to work. In such case, subscribers that had their last payment made in the last 30 days the
+                            are entitled to a refund for that last payment alone.
                         </p>
 
                         <h2 class="mt-6 mb-4">Limits of Our Policy</h2>
@@ -173,7 +170,7 @@
                         <h2 class="mt-6 mb-4">Changes to This Policy</h2>
                         <p>
                             At our discretion, we may change our terms and conditions to reflect updates to our services, current acceptable practices, or legislative or regulatory changes. If we decide to change this policy, we will post the changes
-                            here at the same link by which you are accessing this policy.
+                            here at the same link by which you are accessing this policy. The full history of changes of this policy can be tracked via source control.
                         </p>
                         <p>If required by law, we will get your permission or give you the opportunity to opt in to or opt out of, as applicable, any new uses of your personal information.</p>
 
