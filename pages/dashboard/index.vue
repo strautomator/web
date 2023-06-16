@@ -29,7 +29,7 @@
             </v-alert>
             <div class="mb-4">
                 See something new? Check the
-                <n-link to="/changelog" title="Full changelog" nuxt>changelog</n-link>
+                <n-link to="/changelog" title="Strautomator updates" nuxt>changelog</n-link>
                 to keep track of new features and bug fixes.
             </div>
             <div v-if="!recipes || recipes.length == 0">
@@ -101,9 +101,9 @@
                         </v-simple-table>
                         <v-divider />
                         <div class="ml-md-4 mt-4 text-center text-md-left">
-                            <v-btn color="primary" title="View all my personal records" to="/dashboard/records" small nuxt rounded>
+                            <v-btn color="primary" title="Go to my personal records" to="/dashboard/records" small nuxt rounded>
                                 <v-icon left>mdi-medal</v-icon>
-                                Go to my personal records
+                                My personal records
                             </v-btn>
                         </div>
                     </template>

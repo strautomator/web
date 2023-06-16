@@ -77,7 +77,7 @@
                 </v-simple-table>
                 <v-card class="mt-4" outlined>
                     <v-card-text>
-                        <div>Want to execute your automations on existing activities in a single batch?</div>
+                        <div>Want to execute your automations on many activities in a single batch?</div>
                         <v-btn color="primary" class="mt-4" to="/activities/batchsync" rounded small>
                             <v-icon left>mdi-animation-play</v-icon>
                             Proceed to batch processing

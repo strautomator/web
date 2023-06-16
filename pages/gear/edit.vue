@@ -113,6 +113,7 @@
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
                 </v-btn>
+                <br v-if="!$breakpoint.mdAndUp" />
                 <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!isConfigValid()" @click.stop="showDeleteGearWearDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete configuration
