@@ -48,21 +48,23 @@
                         </v-row>
                     </div>
 
+                    <div class="mt-5 mb-5">
+                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                    </div>
+
                     <div class="text-center text-md-left">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
                         </v-btn>
-                        <v-btn color="primary" class="ml-md-2 mt-3 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :small="!$breakpoint.mdAndUp" :disabled="newUrlToken" outlined rounded nuxt>
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        <v-btn color="primary" class="ml-md-2 mt-3 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :disabled="newUrlToken" outlined rounded nuxt>
                             <v-icon left>mdi-reload-alert</v-icon>
                             Reset URL token
                         </v-btn>
                         <v-alert v-if="newUrlToken" color="success" icon="mdi-arrow-up-bold" rounded dense>
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
                         </v-alert>
-                    </div>
-                    <div class="mt-5">
-                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
                     </div>
                 </v-card-text>
             </v-card>

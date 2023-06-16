@@ -11,7 +11,7 @@
                 <v-card-text>
                     <div class="mt-1 text-center text-md-left" v-if="loading">
                         <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                        Loading upcoming club events, please wait, this can take up to 2 minutes...
+                        Loading upcoming club events, weather and routes, please wait, this can take up to 2 minutes...
                     </div>
                     <div class="googlemaps-canvas" ref="googlemaps" v-if="events && events.length > 0"></div>
                     <div v-if="!loading && events">
@@ -22,7 +22,7 @@
                             <div class="flex-grow-0 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
                                 <v-checkbox v-model="mapOptionTraffic" class="ma-0 pa-0" label="Show traffic and road blocks" dense />
                             </div>
-                            <div class="flex-grow-1 ma-0 pa-0 mt-n4 mt-md-0 ml-md-6 mb-n2">
+                            <div class="flex-grow-1 ma-0 pa-0 mt-n2 mt-md-0 ml-md-6 mb-n2">
                                 <v-checkbox v-model="mapOptionBicycling" class="ma-0 pa-0" label="Show cycling lanes and paths" dense />
                             </div>
                         </v-sheet>
@@ -79,7 +79,7 @@
                                     </tr>
                                 </tbody>
                             </v-simple-table>
-                            <div class="mt-2" v-else>
+                            <div class="mt-4" v-else>
                                 <div class="text-truncate mt-3" v-for="ed in eventDates" :key="ed.date + ed.event.id">
                                     <v-icon class="mt-n1 mr-1" small>{{ getSportIcon(ed.event.type) }}</v-icon>
                                     <span class="mr-2">{{ $dayjs(ed.date).format("ddd, DD MMM YYYY, HH:mm") }}</span>

@@ -59,17 +59,18 @@
                         <processed-activities :activities="activities" v-else></processed-activities>
 
                         <v-divider />
+                        <div class="caption mt-2 ml-5 mr-5 text-center text-md-left">The list above doesn't include activities not updated by Strautomator.</div>
+
                         <div class="ml-md-4 mt-4 text-center text-md-left">
                             <v-btn color="primary" title="Go to my automations history" to="/automations/history" class="mr-md-2 mb-4 mb-md-0" small nuxt rounded>
                                 <v-icon left>mdi-history</v-icon>
-                                Go to automation history
+                                Automation history
                             </v-btn>
-                            <v-btn color="primary" title="View my upcoming club events" to="/calendar/upcoming" small nuxt rounded>
+                            <v-btn color="primary" title="View my upcoming club events" to="/calendar/upcoming" class="mb-4 mb-md-0 ml-2 ml-md-0" small nuxt rounded>
                                 <v-icon left>mdi-calendar-check</v-icon>
                                 Upcoming club events
                             </v-btn>
                         </div>
-                        <div class="caption mt-4 ml-5 mr-5">Please note that the list above doesn't include activities that were not updated by Strautomator.</div>
                     </v-card-text>
                 </v-card>
             </div>
