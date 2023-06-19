@@ -155,6 +155,13 @@ a {
     display: none !important;
 }
 
+.gm-style .gm-style-iw-t::after {
+    display: none;
+}
+.gm-style .gm-style-iw-tc::after {
+    display: none;
+}
+
 .stripe {
     position: fixed;
     display: -webkit-box;
