@@ -687,21 +687,23 @@ export default {
 
             const baseOptions = e.visible ? {opacity: 1, zIndex: zIndexMax - 1, strokeOpacity: mapStrokeOpacity.default} : {opacity: 0, zIndex: 0, strokeOpacity: 0}
 
-            for (let obj of [evObj.marker.shadow, evObj.polyline.shadow]) {
-                obj.setOptions(baseOptions)
+            for (let obj of [evObj.marker.shadow, evObj.polyline?.shadow]) {
+                obj?.setOptions(baseOptions)
             }
 
             if (baseOptions.zIndex > 0) {
                 baseOptions.zIndex++
             }
 
-            for (let obj of [evObj.marker.main, evObj.polyline.main]) {
-                obj.setOptions(baseOptions)
+            for (let obj of [evObj.marker.main, evObj.polyline?.main]) {
+                obj?.setOptions(baseOptions)
             }
-            for (let obj of evObj.polyline.main.icons) {
-                obj.strokeOpacity = e.visible ? 1 : 0
+            if (evObj.polyline) {
+                for (let obj of evObj.polyline.main.icons) {
+                    obj.strokeOpacity = e.visible ? 1 : 0
+                }
+                evObj.polyline.main.set("icons", evObj.polyline.main.icons)
             }
-            evObj.polyline.main.set("icons", evObj.polyline.main.icons)
         },
         getDistance(event) {
             if (!event.route?.distance) return "-"
