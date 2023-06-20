@@ -161,7 +161,7 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import mapStyles from "~/plugins/mapStyles.js"
+import mapStyles from "~/plugins/mapstyles.js"
 
 let zIndexMax = 100
 const mapRouteColors = ["#e31a1c", "#ff7f00", "#6a3d9a", "#1f78b4", "#fb9a99", "#fdbf6f", "#cab2d6", "#b15928", "#a6cee3", "#33a02c"]
