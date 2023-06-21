@@ -399,8 +399,25 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
     }
 })
 
-// CLUB EVENTS
+// CLUBS, EVENTS AND ROUTES
 // --------------------------------------------------------------------------
+
+/**
+ * Gets list of routes for the user.
+ */
+router.get("/:userId/routes", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const routes = await strava.routes.getUserRoutes(user)
+        webserver.renderJson(req, res, routes)
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
 
 /**
  * Get upcoming club events for the user.
