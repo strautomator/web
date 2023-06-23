@@ -5,7 +5,7 @@ import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
 import express = require("express")
-import logger = require("anyhow")
+import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 const settings = require("setmeup").settings

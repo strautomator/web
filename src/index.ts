@@ -1,6 +1,6 @@
 // Strautomator Index / startup
 
-import logger = require("anyhow")
+import logger from "anyhow"
 
 async function start() {
     try {

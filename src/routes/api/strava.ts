@@ -5,8 +5,8 @@ import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
 import express = require("express")
-import jaul = require("jaul")
-import logger = require("anyhow")
+import jaul from "jaul"
+import logger from "anyhow"
 import webserver = require("../../webserver")
 const axios = require("axios").default
 const settings = require("setmeup").settings

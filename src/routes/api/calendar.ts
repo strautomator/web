@@ -4,7 +4,7 @@ import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import express = require("express")
-import logger = require("anyhow")
+import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 const settings = require("setmeup").settings

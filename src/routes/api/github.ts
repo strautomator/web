@@ -1,7 +1,7 @@
 // Strautomator API: GitHub
 
 import {database, github} from "strautomator-core"
-import crypto = require("crypto")
+import crypto from "crypto"
 import express = require("express")
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings

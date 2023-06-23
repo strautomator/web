@@ -2,7 +2,7 @@
 
 import {logHelper, mailer, paypal, UserData} from "strautomator-core"
 import express = require("express")
-import logger = require("anyhow")
+import logger from "anyhow"
 import webserver = require("../../webserver")
 import auth from "../auth"
 const settings = require("setmeup").settings

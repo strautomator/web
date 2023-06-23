@@ -6,7 +6,7 @@ import _ from "lodash"
 import fs = require("fs")
 import http = require("http")
 import https = require("https")
-import logger = require("anyhow")
+import logger from "anyhow"
 import path = require("path")
 const settings = require("setmeup").settings
 

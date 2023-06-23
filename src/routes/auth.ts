@@ -2,7 +2,7 @@
 
 import {strava, users, UserData} from "strautomator-core"
 import fs = require("fs")
-import logger = require("anyhow")
+import logger from "anyhow"
 import webserver = require("../webserver")
 const settings = require("setmeup").settings
 
