@@ -89,8 +89,8 @@ export default {
             {tag: "calendar", title: "Calendar"},
             {tag: "records", title: "Personal records"},
             {tag: "performance", title: "Performance estimation"},
-            {tag: "subscription", title: "Free vs. PRO"},
             {tag: "spotify", title: "Spotify integration"},
+            {tag: "subscription", title: "Free vs. PRO"},
             {tag: "security", title: "Security and privacy"},
             {tag: "issues", title: "Common issues"}
         ]

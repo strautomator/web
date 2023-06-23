@@ -1,12 +1,7 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>
-                Calendar Export
-                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/calendar/upcoming" title="Upcoming Events Map" x-small fab rounded nuxt>
-                    <v-icon small>mdi-map-clock-outline</v-icon>
-                </v-btn>
-            </h1>
+            <h1>Calendar Export</h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <p>

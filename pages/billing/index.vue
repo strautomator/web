@@ -121,7 +121,7 @@
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
                                     <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        {{ $store.state.proPlanDetails.githubPrice.toFixed(2) }} USD / month via GitHub
+                                        {{ $store.state.proPlanDetails.price.github.toFixed(2) }} USD / month via GitHub
                                     </v-btn>
                                 </a>
                             </v-col>

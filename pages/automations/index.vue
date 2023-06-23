@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>
-                Automations
+                My Automations
                 <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
                     <v-icon small>mdi-history</v-icon>
