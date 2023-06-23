@@ -12,17 +12,19 @@
                 <v-btn to="/automations" router nuxt>Automations</v-btn>
                 <v-btn to="/gear" router nuxt>Gear</v-btn>
                 <v-btn to="/calendar" router nuxt>Calendar</v-btn>
-                <v-btn to="/account" router nuxt>Account</v-btn>
+                <v-btn to="/map" router nuxt>Map</v-btn>
                 <v-btn to="/help" router nuxt>Help</v-btn>
             </v-toolbar-items>
 
             <v-spacer></v-spacer>
             <top-notifications />
 
-            <v-icon v-if="$store.state.user?.preferences?.privacyMode" class="ml-1" large>mdi-incognito</v-icon>
-            <v-avatar class="ml-4" v-else-if="$store.state.user?.profile?.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
-                <img :src="$store.state.user?.profile.urlAvatar" />
-            </v-avatar>
+            <router-link to="/account" title="Go to My Account" router nuxt>
+                <v-icon v-if="$store.state.user?.preferences?.privacyMode" class="ml-1" large>mdi-incognito</v-icon>
+                <v-avatar class="ml-4" v-else-if="$store.state.user?.profile?.urlAvatar" :size="$breakpoint.mdAndUp ? 48 : 32">
+                    <img :src="$store.state.user?.profile.urlAvatar" />
+                </v-avatar>
+            </router-link>
             <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="showLogoutDialog" rounded text router nuxt>
                 <v-icon>mdi-logout</v-icon>
                 <span v-if="!$breakpoint.smAndDown" class="hidden-sm-and-down caption">Logout</span>
@@ -41,6 +43,7 @@
                     <img src="/images/strava-powered.svg" width="130" />
                 </div>
                 <div>
+                    <n-link to="/account" title="My Account"><v-icon class="ml-2 mr-2">mdi-account</v-icon></n-link>
                     <n-link to="/help" title="Need help?"><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
                     <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-2 mr-2">mdi-github</v-icon></a>
                     <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2 mr-2">mdi-twitter</v-icon></a>
@@ -70,13 +73,17 @@
                 <span>Calendar</span>
                 <v-icon>mdi-calendar</v-icon>
             </v-btn>
-            <v-btn value="/account" to="/account" router nuxt>
-                <span>Account</span>
-                <v-icon>mdi-account</v-icon>
+            <v-btn value="/map" to="/map" router nuxt>
+                <span>Map</span>
+                <v-icon>mdi-map</v-icon>
             </v-btn>
             <v-btn value="/help" to="/help" v-show="false" router nuxt>
                 <span>Help</span>
                 <v-icon>mdi-help</v-icon>
+            </v-btn>
+            <v-btn value="/account" to="/account" v-show="false" router nuxt>
+                <span>Account</span>
+                <v-icon>mdi-account</v-icon>
             </v-btn>
         </v-bottom-navigation>
 
