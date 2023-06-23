@@ -84,14 +84,15 @@ export default {
     data() {
         const categories = [
             {tag: "about", title: "About"},
+            {tag: "security", title: "Security and privacy"},
+            {tag: "subscription", title: "Free vs. PRO"},
             {tag: "automations", title: "Automations"},
             {tag: "gearwear", title: "GearWear"},
             {tag: "calendar", title: "Calendar"},
             {tag: "records", title: "Personal records"},
             {tag: "performance", title: "Performance estimation"},
             {tag: "spotify", title: "Spotify integration"},
-            {tag: "subscription", title: "Free vs. PRO"},
-            {tag: "security", title: "Security and privacy"},
+            {tag: "garmin", title: "Garmin integration"},
             {tag: "issues", title: "Common issues"}
         ]
         const betaCategories = [{tag: "beta", title: "Beta"}]
