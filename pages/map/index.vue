@@ -1,12 +1,7 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>
-                Upcoming Events Map
-                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/calendar" title="Calendar Export" x-small fab rounded nuxt>
-                    <v-icon small>mdi-calendar-month</v-icon>
-                </v-btn>
-            </h1>
+            <h1>My Map</h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <div class="mt-1 text-center text-md-left" v-if="loading">
@@ -75,7 +70,7 @@
                                             <span v-else>-</span>
                                         </td>
                                         <td class="pt-2 pb-2">
-                                            <v-checkbox class="float-right mr-n2 mt-1" title="Visible on the map" v-model="ed.event.visible" :disabled="ed.event.noMap" @click="tableRouteToggle(ed.event)" dense />
+                                            <v-checkbox class="float-right mr-n1 mt-1" title="Visible on the map" v-model="ed.event.visible" :disabled="ed.event.noMap" @click="tableRouteToggle(ed.event)" dense />
                                         </td>
                                     </tr>
                                 </tbody>
@@ -164,6 +159,7 @@ import stravaMixin from "~/mixins/stravaMixin.js"
 import mapStyles from "~/plugins/mapstyles.js"
 
 let zIndexMax = 100
+const fullscreenEvents = ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange"]
 const mapRouteColors = ["#e31a1c", "#ff7f00", "#6a3d9a", "#1f78b4", "#fb9a99", "#fdbf6f", "#cab2d6", "#b15928", "#a6cee3", "#33a02c"]
 const mapStrokeOpacity = {
     default: 0.75,
@@ -188,6 +184,7 @@ export default {
         return {
             loading: true,
             loadingWeather: true,
+            fullscreen: false,
             weatherDays: 5,
             events: null,
             eventDates: [],
@@ -199,6 +196,7 @@ export default {
             mapTrafficLayer: null,
             mapOptionBicycling: false,
             mapOptionTraffic: false,
+            mapFullscreenListener: false,
             currentPosition: null,
             downloadDialog: false
         }
@@ -219,6 +217,9 @@ export default {
         mapOptionBicycling: function (newVal, oldVal) {
             this.mapBicyclingLayer.setMap(newVal ? this.map : null)
         }
+    },
+    beforeUnmount() {
+        fullscreenEvents.map((e) => document.removeEventListener(e, this.onFullScreen))
     },
     async mounted() {
         try {
@@ -302,7 +303,7 @@ export default {
 
                 this.map = new google.maps.Map(this.$refs.googlemaps, {
                     gestureHandling: "greedy",
-                    fullscreenControl: false,
+                    fullscreenControl: true,
                     zoom: 9,
                     center: {lat: 0, lng: 0},
                     mapTypeControlOptions: {
@@ -310,6 +311,9 @@ export default {
                     }
                 })
                 this.map.mapTypes.set("bike_light", bikeLightStyle)
+
+                // Fullscreen toggle.
+                fullscreenEvents.map((e) => document.addEventListener(e, this.onFullScreen))
 
                 if (this.currentPosition) {
                     this.mapSetPosition()
@@ -466,6 +470,9 @@ export default {
                 this.loadingWeather = false
             }
         },
+        onFullScreen() {
+            this.fullscreen = document["fullScreen"] || document["mozFullScreen"] || document["webkitIsFullScreen"] || false
+        },
         mapCreateMarker(e, color) {
             try {
                 const svgPath = "M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"
@@ -577,7 +584,7 @@ export default {
             }
         },
         mapSetBounds(e) {
-            if (!this.eventObjects[e.id].polyline) return
+            if (!this.eventObjects[e.id].polyline || this.fullscreen) return
 
             const bounds = new google.maps.LatLngBounds()
             const points = this.eventObjects[e.id].polyline.main.getPath().getArray()
