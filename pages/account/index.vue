@@ -1,7 +1,13 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Account</h1>
+            <h1>My Account</h1>
+            <v-snackbar v-if="$route.query.garmin == 'linked' && user?.garmin" v-model="garminLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Garmin account "{{ this.user.garmin.id }}" linked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
             <v-snackbar v-if="$route.query.spotify == 'linked' && user?.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
                 Spotify account "{{ this.user.spotify.email }}" linked successfully!
                 <template v-slot:action="{attrs}">
@@ -37,7 +43,11 @@
                 <div>Units on Strava: {{ user.profile.units }}</div>
                 <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
                 <div class="ml-n1 mt-3 text-left">
-                    <v-btn class="ma-1" color="primary" title="My notifications" @click="spotifyDialog = true" nuxt small rounded>
+                    <v-btn class="ma-1" color="primary" title="Garmina ccount" @click="garminDialog = true" nuxt small rounded>
+                        <v-icon left>mdi-triangle</v-icon>
+                        {{ user.garmin ? "Unlink Garmin account" : "Link Garmin account" }}
+                    </v-btn>
+                    <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
                         {{ user.spotify ? "Unlink Spotify account" : "Link Spotify account" }}
                     </v-btn>
@@ -183,6 +193,39 @@
             </v-snackbar>
         </v-container>
 
+        <v-dialog v-model="garminDialog" width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Garmin account</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideGarminDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4" v-if="!user.garmin">You can link your Garmin account to your Strautomator profile to use ANT+ sensor IDs and other Garmin data on your automations.</p>
+                    <p class="mt-4" v-else>You have linked the Garmin account {{ user.garmin.id }} to your profile. If you unlink it, existing automations having Garmin related properties will stop working.</p>
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideGarminDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" title="Proceed to authentication with Garmin" @click="linkGarmin" v-if="!user.garmin" rounded>
+                            <v-icon left>mdi-link</v-icon>
+                            Go to Garmin
+                        </v-btn>
+                        <v-btn color="primary" title="Unlink my Garmin account" @click="unlinkGarmin" v-else rounded>
+                            <v-icon left>mdi-link-off</v-icon>
+                            Unlink
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="spotifyDialog" width="540" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
@@ -272,8 +315,8 @@
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <p class="mt-4">If you enable the privacy mode, some of your profile data will be anonymized, your personal records will be cleared, and some metadata from processed activities will be cleared.</p>
-                    <p>This action is irreversible!</p>
+                    <p class="mt-4">If you enable the privacy mode, some of your profile data will be anonymized, your personal records won't be tracked, and most of your processed activities metadata will be discarded.</p>
+                    <p>This action is irreversible! If you enable the Privacy Mode and then disable it again, the data previously discarded cannot be recovered.</p>
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
@@ -360,6 +403,9 @@ export default {
             savePending: false,
             emailDialog: false,
             emailSaved: false,
+            garminDialog: this.$route.query.garmin == "link",
+            garminLinked: this.$route.query.garmin == "linked",
+            garminUnlinked: this.$route.query.garmin == "unlinked",
             spotifyDialog: this.$route.query.spotify == "link",
             spotifyLinked: this.$route.query.spotify == "linked",
             spotifyUnlinked: this.$route.query.spotify == "unlinked",
@@ -475,10 +521,32 @@ export default {
             this.emailDialog = false
             this.emailSaved = emailSaved
         },
+        hideGarminDialog() {
+            this.garminDialog = false
+        },
+        async linkGarmin() {
+            try {
+                const result = await this.$axios.$get("/api/garmin/auth/url")
+                document.location.href = result.url
+            } catch (ex) {
+                this.$webError(this, "Account.linkGarmin", ex)
+            }
+        },
+        async unlinkGarmin(unlink) {
+            try {
+                await this.$axios.$get("/api/garmin/auth/unlink")
+                await this.refreshUser()
+
+                this.garminUnlinked = true
+                this.hideGarminDialog()
+            } catch (ex) {
+                this.$webError(this, "Account.unlinkGarmin", ex)
+            }
+        },
         hideSpotifyDialog() {
             this.spotifyDialog = false
         },
-        async linkSpotify(unlink) {
+        async linkSpotify() {
             try {
                 const result = await this.$axios.$get("/api/spotify/auth/url")
                 document.location.href = result.url
@@ -486,7 +554,7 @@ export default {
                 this.$webError(this, "Account.linkSpotify", ex)
             }
         },
-        async unlinkSpotify(unlink) {
+        async unlinkSpotify() {
             try {
                 await this.$axios.$get("/api/spotify/auth/unlink")
                 await this.refreshUser()
