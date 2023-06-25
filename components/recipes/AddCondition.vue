@@ -127,6 +127,9 @@ export default {
         isWeekday() {
             return this.selectedProperty?.value == "weekday"
         },
+        isGarmin() {
+            return this.selectedProperty?.value == "garmin.sensor"
+        },
         isSpotify() {
             return this.selectedProperty?.value == "spotify.track"
         },
@@ -210,9 +213,19 @@ export default {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
             }
 
+            // Disable Garmin if user has no account linked.
+            const garminProp = _.find(recipeProperties, {value: "garmin.sensor"})
+            if (!user.isPro) {
+                garminProp.text += " (PRO only)"
+                garminProp.disabled = true
+            } else if (!user.garmin) {
+                garminProp.text += " (needs linked Garmin)"
+                garminProp.disabled = true
+            }
+
             // Disable Spotify if user has no account linked.
+            const spotifyProp = _.find(recipeProperties, {value: "spotify.track"})
             if (!user.spotify) {
-                const spotifyProp = _.find(recipeProperties, {value: "spotify.track"})
                 spotifyProp.text += " (needs linked Spotify)"
                 spotifyProp.disabled = true
             }
