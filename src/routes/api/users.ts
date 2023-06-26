@@ -34,7 +34,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         }
 
         // Refresh profile from Strava?
-        if (req.query && req.query.refresh) {
+        if (req.query?.refresh) {
             const profile = await strava.athletes.getAthlete(user.stravaTokens)
 
             // Merge bikes and shoes.
@@ -61,7 +61,16 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             user.profile = profile
         }
 
-        webserver.renderJson(req, res, user)
+        // Clone user object and remove 3rd party sensitive data.
+        const result = _.cloneDeep(user)
+        if (result.garmin) {
+            delete result.garmin.tokens
+        }
+        if (result.spotify) {
+            delete result.spotify.tokens
+        }
+
+        webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

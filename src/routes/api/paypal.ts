@@ -90,7 +90,7 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
             }
 
             // User hasn't approved it yet, and it's still valid?
-            else if (existingSub.billingPlan && existingSub.billingPlan.id == billingPlan.id && existingSub.status == "APPROVAL_PENDING") {
+            else if (existingSub.billingPlan?.id == billingPlan.id && existingSub.status == "APPROVAL_PENDING") {
                 logger.info("Routes.paypal", `Redirecting user ${user.id} to previous subscription ${existingSub.id}`)
                 return webserver.renderJson(req, res, existingSub)
             }
@@ -136,7 +136,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         await paypal.subscriptions.cancelSubscription(subscription)
 
         // User provided a reason? Notify it.
-        if (req.body && req.body.reason) {
+        if (req.body?.reason) {
             mailer.send({
                 to: settings.mailer.from,
                 subject: `Strautomator PayPal subscription cancelled: ${user.id}`,

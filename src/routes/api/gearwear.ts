@@ -25,7 +25,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
 
         // If a refresh query was passed, trigger an async call to
         // refresh gear details from Strava.
-        if (req.query && req.query.refresh) {
+        if (req.query?.refresh) {
             gearwear.refreshGearDetails(user)
         }
 
@@ -51,7 +51,7 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         const gear = await strava.athletes.getGear(user, gearId)
 
         // Stop here if owner of the specified gear is not the logged user.
-        if (config && config.userId != user.id) {
+        if (config?.userId != user.id) {
             return webserver.renderError(req, res, `${logHelper.user(user)} has no access to GearWear ${gearId}`, 403)
         }
 

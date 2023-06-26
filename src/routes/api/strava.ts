@@ -17,7 +17,7 @@ const packageVersion = require("../../../package.json").version
  * Cache list of ignored users.
  */
 const ignoredUsers: string[] = []
-database.appState.get("users").then((data) => (data && data.ignored ? ignoredUsers.push.apply(ignoredUsers, data.ignored) : null))
+database.appState.get("users").then((data) => (data?.ignored ? ignoredUsers.push.apply(ignoredUsers, data.ignored) : null))
 
 /**
  * Helper to validate incoming webhook events sent by Strava.
@@ -579,7 +579,9 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
             user.dateLastProcessedActivity = now
         } else {
             const processed = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
-            if (processed && !processed.error) user.dateLastProcessedActivity = now
+            if (processed && !processed.error) {
+                user.dateLastProcessedActivity = now
+            }
         }
 
         // Update user.

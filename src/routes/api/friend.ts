@@ -19,7 +19,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         user.subscription.enabled = false
 
         // User provided a reason? Notify it.
-        if (req.body && req.body.reason) {
+        if (req.body?.reason) {
             mailer.send({
                 to: settings.mailer.from,
                 subject: `Strautomator friend subscription cancelled: ${user.id}`,
