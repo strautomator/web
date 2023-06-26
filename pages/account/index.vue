@@ -98,6 +98,7 @@
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
+                        <v-alert color="accent" v-if="user.garmin" dense>Delayed processing is recommended if you have automations with Garmin based conditions.</v-alert>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">GearWear delay</h3>
