@@ -446,6 +446,7 @@ export default {
                 {value: "es", text: "Español"},
                 {value: "fr", text: "Français"},
                 {value: "it", text: "Italiano"},
+                {value: "nl", text: "Nederlands"},
                 {value: "pl", text: "Polski"},
                 {value: "pt", text: "Português"}
             ]
