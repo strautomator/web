@@ -562,10 +562,15 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
 
         // User not found, suspended or missing tokens? Stop here.
         if (!user) {
-            ignoredUsers.push(userId.toString())
-            await database.appState.set("users", {ignored: ignoredUsers})
-            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} not found, added to list of ignored users`)
-            return webserver.renderError(req, res, "User not found", 404)
+            if (!settings.beta.enabled) {
+                ignoredUsers.push(userId.toString())
+                await database.appState.set("users", {ignored: ignoredUsers})
+                logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} not found, added to list of ignored users`)
+                return webserver.renderError(req, res, "User not found", 404)
+            } else {
+                logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} not found, probably already deleted from the beta database`)
+                return webserver.renderJson(req, res, {ok: false, message: `User ${userId} not found`})
+            }
         } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
             logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} has no access tokens`)
             return webserver.renderError(req, res, "User has no access tokens", 400)
