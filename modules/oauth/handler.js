@@ -67,9 +67,9 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         // Check for existing user and create a new one if necessary.
-        // Beta environments are restricted to PRO users.
+        // Beta environments are restricted to PRO and beta-allowed users.
         const user = await core.users.upsert(athlete, stravaTokens, true)
-        if (!user.isPro && settings.beta.enabled) {
+        if (!user.isPro && !user.isBeta && settings.beta.enabled) {
             return this.redirect("/error?status=402")
         }
 
