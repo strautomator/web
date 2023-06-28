@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>My Map</h1>
+            <h1>Upcoming Events Map</h1>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <div class="mt-1 text-center text-md-left" v-if="loading">
