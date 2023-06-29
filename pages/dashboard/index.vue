@@ -24,6 +24,7 @@
                     {{ lastAnnouncement.body }}
                     <br v-if="!$breakpoint.mdAndUp" />
                     <a v-if="lastAnnouncement.affiliate" target="strautoaffiliate" :title="lastAnnouncement.title" :href="lastAnnouncement.href" @click="readAnnouncement()" nuxt>Open affiliate link...</a>
+                    <a v-else-if="lastAnnouncement.href?.substring(0, 4) == 'http'" :title="lastAnnouncement.title" :href="lastAnnouncement.href" @click="readAnnouncement()" nuxt>Open...</a>
                     <n-link color="primary" v-else-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>More...</n-link>
                 </div>
             </v-alert>
