@@ -43,9 +43,9 @@
                 <div>Units on Strava: {{ user.profile.units }}</div>
                 <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
                 <div class="ml-n1 mt-3 text-left">
-                    <v-btn class="ma-1" color="primary" title="Garmina ccount" @click="garminDialog = true" nuxt small rounded>
+                    <v-btn class="ma-1" color="primary" title="Garmin account" @click="garminDialog = true" :disabled="!user.isPro" nuxt small rounded>
                         <v-icon left>mdi-triangle</v-icon>
-                        {{ user.garmin ? "Unlink Garmin account" : "Link Garmin account" }}
+                        {{ !user.isPro ? "Link Garmin account (PRO only)" : user.garmin ? "Unlink Garmin account" : "Link Garmin account" }}
                     </v-btn>
                     <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
