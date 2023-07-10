@@ -1,6 +1,6 @@
 // Strautomator API: Announcements
 
-import {announcements, UserData} from "strautomator-core"
+import {announcements, maps, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import webserver = require("../../webserver")
@@ -18,7 +18,7 @@ router.get("/:userId/active", async (req: express.Request, res: express.Response
         all.forEach((a) => delete a.readCount)
 
         // User filtering properties.
-        const country = (user.profile.country || (req.headers["cf-ipcountry"] as string) || "us").toLowerCase()
+        const country = ((req.headers["cf-ipcountry"] as string) || maps.getCountryCode(user.profile.country) || "us").toLowerCase()
         const bikes = user.profile.bikes || []
         const shoes = user.profile.shoes || []
 
