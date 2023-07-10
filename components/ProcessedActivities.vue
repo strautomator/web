@@ -4,8 +4,8 @@
             <tr>
                 <th></th>
                 <th>Original activity</th>
-                <th>Automation</th>
-                <th>Updates</th>
+                <th>Automations</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -18,6 +18,7 @@
                         <div class="float-right text-right ml-2">
                             {{ getDate(activity).format("ll") }}<br />
                             {{ getDate(activity).format("LT") }}
+                            {{ activity.totalTime ? "- " + getDate(activity).add(activity.totalTime, "seconds").format("LT") : "" }}
                         </div>
                         <a class="font-weight-bold" :href="`https://www.strava.com/activities/${activity.id}`" :title="`Open activity ${activity.id} on Strava`" target="strava">{{ activity.name || "Activity *" }}</a>
                         <v-icon class="ml-1" v-if="isActivityRecord(activity)" x-small>mdi-medal</v-icon>
@@ -25,8 +26,8 @@
                             {{ recipe.title }}
                         </div>
                         <div class="mt-1 ml-n1">
-                            <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" x-small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
-                            <v-chip class="mb-1" title="Link to strautomator.com" x-small outlined>linkback</v-chip>
+                            <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
+                            <v-chip class="mb-1" v-if="activity.linkback" title="Link to strautomator.com" small outlined>linkback</v-chip>
                         </div>
                     </template>
                     <template v-else>
@@ -34,6 +35,7 @@
                         <v-icon class="ml-1" v-if="isActivityRecord(activity)" x-small>mdi-medal</v-icon>
                         <br />
                         {{ getDate(activity).format("lll") }}
+                        {{ activity.totalTime ? "- " + getDate(activity).add(activity.totalTime, "seconds").format("LT") : "" }}
                     </template>
                 </td>
                 <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp" nowrap>
@@ -43,7 +45,7 @@
                 </td>
                 <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
                     <v-chip class="mr-1 mb-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fm-${propName}`" small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
-                    <v-chip class="mb-1" title="Link to strautomator.com" small outlined>linkback</v-chip>
+                    <v-chip class="mb-1" v-if="activity.linkback" title="Link to strautomator.com" small outlined>linkback</v-chip>
                 </td>
             </tr>
         </tbody>
