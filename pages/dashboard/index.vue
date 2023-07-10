@@ -67,7 +67,7 @@
                                 <v-icon left>mdi-history</v-icon>
                                 Automation history
                             </v-btn>
-                            <v-btn color="primary" title="View my upcoming club events" to="/calendar/upcoming" class="mb-4 mb-md-0 ml-2 ml-md-0" small nuxt rounded>
+                            <v-btn color="primary" title="View my upcoming club events" to="/map" class="mb-4 mb-md-0 ml-2 ml-md-0" small nuxt rounded>
                                 <v-icon left>mdi-calendar-check</v-icon>
                                 Upcoming club events
                             </v-btn>

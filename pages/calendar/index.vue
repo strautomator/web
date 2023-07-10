@@ -168,7 +168,7 @@
             </v-card>
 
             <v-alert class="mt-4 text-center text-md-left">
-                <div class="mb-3 mb-md-0">Want to see an overview of your upcoming club events? Try the <n-link to="/calendar/upcoming" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.</div>
+                <div class="mb-3 mb-md-0">Want to see an overview of your upcoming club events? Try the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.</div>
             </v-alert>
 
             <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">

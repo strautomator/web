@@ -26,7 +26,7 @@ vue
 
                 <div class="mt-6 mb-2">
                     <div v-if="$store.state.user">
-                        <v-btn color="primary" to="/calendar/upcoming" title="Upcoming Events Map" rounded nuxt>
+                        <v-btn color="primary" to="/map" title="Upcoming Events Map" rounded nuxt>
                             <v-icon left>mdi-link</v-icon>
                             Go to upcoming events map
                         </v-btn>

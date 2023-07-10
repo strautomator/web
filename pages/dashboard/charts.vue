@@ -35,7 +35,7 @@
                 <div class="mb-3 mb-md-0">
                     Thinking about the future instead?
                     <br v-if="!$breakpoint.mdAndUp" />
-                    Try the <n-link to="/calendar/upcoming" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.
+                    Try the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.
                 </div>
             </v-alert>
         </v-container>
