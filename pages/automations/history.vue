@@ -16,7 +16,7 @@
                                 <template v-slot:activator="{on, attrs}">
                                     <v-text-field v-model="dateFrom" v-bind="attrs" v-on="on" label="From date" type="text" :disabled="loading" outlined readonly rounded dense></v-text-field>
                                 </template>
-                                <v-date-picker v-model="dateFrom" :max="dateTo" @input="dateFromMenu = false"></v-date-picker>
+                                <v-date-picker v-model="dateFrom" :max="dateTo" :min="minDateFrom" @input="dateFromMenu = false"></v-date-picker>
                             </v-menu>
                         </v-col>
                         <v-col cols="6" md="3" class="text-center text-md-left pb-0 pt-0 pr-6">
@@ -52,7 +52,7 @@
                 </v-card-text>
             </v-card>
 
-            <div class="caption ml-1 mt-3" v-if="user && user.preferences.privacyMode">* Privacy mode is enabled, some details about processed activities are not saved.</div>
+            <div class="caption ml-1 mt-3" v-if="user?.preferences?.privacyMode">* Privacy mode is enabled, some details about processed activities are not saved.</div>
         </v-container>
     </v-layout>
 </template>
@@ -74,15 +74,14 @@ export default {
         }
     },
     data() {
-        const dateTo = this.$dayjs().format("YYYY-MM-DD")
-
         return {
             loading: true,
             activities: null,
             dateFromMenu: false,
             dateFrom: null,
             dateToMenu: false,
-            dateTo: dateTo
+            dateTo: this.$dayjs().format("YYYY-MM-DD"),
+            minDateFrom: this.$dayjs().subtract(2, "years")
         }
     },
     async fetch() {
