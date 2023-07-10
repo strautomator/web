@@ -101,8 +101,8 @@ module.exports = {
     // Server settings are defined on runtime.
     server: {},
 
-    // Root route to redirect to /home or /dashboard.
-    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}],
+    // Root route to redirect to /home or /dashboard, and follow redirects.
+    serverMiddleware: [{path: "/", handler: "~/server/routes/index.js"}, "~/server/routes/redirects.js"],
 
     // Vuetify general options.
     vuetify: {
