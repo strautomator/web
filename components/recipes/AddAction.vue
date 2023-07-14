@@ -173,6 +173,7 @@ export default {
                 {key: "climbingRatio", text: "Climbing ratio"},
                 {key: "totalTime", text: "Total time"},
                 {key: "movingTime", text: "Moving time"},
+                {key: "weekday", text: "Weekday"},
                 {key: "weekOfYear", text: "Week of year"},
                 {key: "device", text: "Device"},
                 {key: "cityStart", text: "City (start)", pro: true},
