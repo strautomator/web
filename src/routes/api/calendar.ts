@@ -10,49 +10,7 @@ const router: express.Router = express.Router()
 const settings = require("setmeup").settings
 
 /**
- * Update the user calendar template.
- */
-router.post("/:userId/template", async (req: express.Request, res: express.Response) => {
-    try {
-        if (!req.params) throw new Error("Missing request params")
-
-        const user: UserData = (await auth.requestValidator(req, res)) as UserData
-        if (!user) return
-
-        // Template is only available for PRO users.
-        if (!user.isPro) {
-            throw new Error("Custom calendar templates are not available on free accounts")
-        }
-
-        // Get template from body.
-        const calendarTemplate: UserCalendarTemplate = {
-            eventSummary: req.body.eventSummary,
-            eventDetails: req.body.eventDetails
-        }
-
-        // If template is empty, force set to null.
-        if (!calendarTemplate.eventSummary || calendarTemplate.eventSummary == "") {
-            calendarTemplate.eventSummary = null
-        }
-        if (!calendarTemplate.eventDetails || calendarTemplate.eventDetails == "") {
-            calendarTemplate.eventDetails = null
-        }
-
-        // Set user calendar template and save to the database.
-        const data: Partial<UserData> = {
-            id: user.id,
-            displayName: user.displayName,
-            calendarTemplate: calendarTemplate
-        }
-        await users.update(data)
-        webserver.renderJson(req, res, {ok: true})
-    } catch (ex) {
-        webserver.renderError(req, res, ex, 400)
-    }
-})
-
-/**
- * Return the Strava activities calendar for the specified user.
+ * Return the Strava calendar for the specified user.
  */
 router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: express.Response) => {
     try {
@@ -108,6 +66,70 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         }
 
         return res.send(ex.toString())
+    }
+})
+
+/**
+ * Update the user calendar template.
+ */
+router.post("/:userId/template", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Template is only available for PRO users.
+        if (!user.isPro) {
+            throw new Error("Custom calendar templates are not available on free accounts")
+        }
+
+        // Get template from body.
+        const calendarTemplate: UserCalendarTemplate = {
+            eventSummary: req.body.eventSummary,
+            eventDetails: req.body.eventDetails
+        }
+
+        // If template is empty, force set to null.
+        if (!calendarTemplate.eventSummary || calendarTemplate.eventSummary == "") {
+            calendarTemplate.eventSummary = null
+        }
+        if (!calendarTemplate.eventDetails || calendarTemplate.eventDetails == "") {
+            calendarTemplate.eventDetails = null
+        }
+
+        // Set user calendar template and save to the database.
+        const data: Partial<UserData> = {
+            id: user.id,
+            displayName: user.displayName,
+            calendarTemplate: calendarTemplate
+        }
+        await users.update(data)
+        webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Delete the cached calendars for the specified user.
+ */
+router.delete("/:userId/cache", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Template is only available for PRO users.
+        if (!user.isPro) {
+            throw new Error("Only PRO users are allowed to delete the calendar cache")
+        }
+
+        const count = await calendar.deleteCache(user)
+        webserver.renderJson(req, res, {count: count})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
     }
 })
 
