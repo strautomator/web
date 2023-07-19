@@ -72,14 +72,17 @@ export default {
         // Returns a condition summary.
         conditionSummary(condition) {
             const property = _.find(this.$store.state.recipeProperties, {value: condition.property})
-
-            // Invalid or deprecated property!
             if (!property) {
                 return `!!! ERROR !!! Invalid property: ${condition.property}`
             }
 
+            const operator = _.find(property.operators, {value: condition.operator})
+            if (!operator) {
+                return `!!! ERROR !!! Invalid condition operator: ${condition.operator}`
+            }
+
             let fieldText = property.text
-            let operatorText = _.find(property.operators, {value: condition.operator}).text
+            let operatorText = operator.text
             let valueText = condition.friendlyValue || condition.value
 
             // Has a suffix?
