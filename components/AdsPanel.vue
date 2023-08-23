@@ -4,23 +4,8 @@
         <v-card class="mr-3 ml-3 pt-1" outlined>
             <v-card-text class="grey lighten-2">
                 <v-row>
-                    <v-col cols="4">
-                        <a :href="linkIcan" target="ican" title="Carbon wheels and frames @ ICAN"><v-img src="/images/affiliates/ican.png" max-height="58px" class="mt-1" /></a>
-                    </v-col>
-                    <v-col cols="4">
-                        <a :href="linkRibble" target="ribble" title="Bikes and components @ Ribble"><v-img src="/images/affiliates/ribble.png" max-height="58px" /></a>
-                    </v-col>
-                    <v-col cols="4" v-if="isUK">
-                        <a :href="linkHalfords" target="halfords" title="Bikes and components @ Halfords"><v-img src="/images/affiliates/halfords.png" max-height="58px" class="mt-1" /></a>
-                    </v-col>
-                    <v-col cols="4" v-else-if="isDecathlon">
-                        <a :href="linkDecathlon" target="decathlon" title="Sports gear @ Decathlon"><v-img src="/images/affiliates/decathlon.png" max-height="58px" /></a>
-                    </v-col>
-                    <v-col cols="4" v-else-if="isAmerica">
-                        <a :href="linkAliExpress" target="aliexpress" title="Bikes, components and gadgets @ AliExpress"><v-img src="/images/affiliates/aliexpress.png" max-height="58px" class="mt-1" /></a>
-                    </v-col>
-                    <v-col cols="4" v-else>
-                        <a :href="linkNextDns" target="nextdns" title="Turbocharge your internet experience with NextDNS"><v-img src="/images/affiliates/nextdns.png" max-height="58px" class="mt-1" /></a>
+                    <v-col cols="4" v-for="link in links" :key="`affiliate-${link.id}`">
+                        <a :href="linkWiggle" :target="link.id" :title="link.title"><v-img :src="'/images/affiliates/' + link.id + '.png'" max-height="58px" class="mt-1" /></a>
                     </v-col>
                 </v-row>
                 <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win: you get the best deals, and Strautomator gets a small commission to keep the servers running.</div>
@@ -30,29 +15,30 @@
 </template>
 
 <script>
+import _ from "lodash"
+
 export default {
     data() {
+        const affiliates = [
+            {id: "aliexpress", title: "AliExpress", url: "https://links.devv.com/l/aliexpress-cycling-components"},
+            {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["de", "it"]},
+            {id: "halfords", title: "Halfords", url: "https://links.devv.com/l/halfords", country: ["gb", "ie", "im", "uk"]},
+            {id: "ican", title: "ICAN", url: "https://links.devv.com/l/ican"},
+            {id: "nextdns", title: "NextDNS", url: "https://links.devv.com/l/nextdns"},
+            {id: "ribble", title: "Ribble", url: "https://links.devv.com/l/ribble", country: ["at", "de", "gb", "ie", "im", "uk"]},
+            {id: "wiggle", title: "Wiggle", url: "https://links.devv.com/l/wiggle", country: ["de", "uk"]}
+        ]
+
+        const country = this.$store.state.country || "us"
+        const links = affiliates.filter((a) => !a.country || a.country.includes(country))
+
         return {
-            linkAliExpress: "https://links.devv.com/l/aliexpress-cycling-components",
-            linkDecathlon: "https://links.devv.com/l/decathlon",
-            linkHalfords: "https://links.devv.com/l/halfords",
-            linkNextDns: "https://links.devv.com/l/nextdns",
-            linkIcan: "https://links.devv.com/l/ican",
-            linkRibble: "https://links.devv.com/l/ribble"
+            links: _.sortBy(_.sampleSize(links, 3), "id")
         }
     },
     computed: {
         hidden() {
             return this.$store.state.user?.isPro
-        },
-        isAmerica() {
-            return ["ar", "br", "ca", "cl", "co", "mx", "us"].includes(this.$store.state.country)
-        },
-        isDecathlon() {
-            return ["de", "it"].includes(this.$store.state.country)
-        },
-        isUK() {
-            return ["gb", "ie", "im", "uk"].includes(this.$store.state.country)
         }
     }
 }
