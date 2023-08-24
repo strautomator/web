@@ -38,7 +38,7 @@ export default {
     },
     computed: {
         hidden() {
-            return this.$store.state.user?.isPro
+            return !this.$store.state.beta && this.$store.state.user?.isPro
         }
     }
 }
