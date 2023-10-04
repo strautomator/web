@@ -4,7 +4,7 @@ export default {
     // Share recipe rules used to validate conditions.
     computed: {
         booleanActions() {
-            return ["commute", "generateName", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower"]
+            return ["generateName", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower"]
         },
         recipeRules() {
             return {

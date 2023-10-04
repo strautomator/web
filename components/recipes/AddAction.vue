@@ -17,7 +17,10 @@
                         <v-col cols="12">
                             <v-autocomplete v-model="selectedAction" label="Select an action..." :items="recipeActions" dense outlined rounded return-object></v-autocomplete>
                             <template v-if="selectedAction">
-                                <div v-if="selectedAction.value == 'gear'">
+                                <div v-if="selectedAction.value == 'commute'">
+                                    <v-select label="Commute tag..." v-model="selectedCommute" item-value="id" item-text="name" :items="commuteFlags" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'gear'">
                                     <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'sportType'">
@@ -139,6 +142,11 @@ export default {
         initialData(filter) {
             let recipeActions = this.filterActions(this.disabledActions)
 
+            const commuteFlags = [
+                {id: true, name: "Yes"},
+                {id: false, name: "No"}
+            ]
+
             // Get bikes and shoes and create gears list.
             const bikes = _.cloneDeep(this.$store.state.user.profile.bikes)
             for (let bike of bikes) {
@@ -254,10 +262,12 @@ export default {
                 valid: true,
                 recipeActions: recipeActions,
                 selectedAction: {},
+                selectedCommute: {},
                 selectedGear: {},
                 selectedSportType: {},
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
+                commuteFlags: commuteFlags,
                 gears: gears,
                 sportTypes: sportTypes,
                 workoutTypes: workoutTypes,
@@ -328,7 +338,10 @@ export default {
                     type: this.selectedAction.value
                 }
 
-                if (result.type == "gear") {
+                if (result.type == "commute") {
+                    result.value = this.selectedCommute.id
+                    result.friendlyValue = this.selectedCommute.id ? "yes" : "no"
+                } else if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
                 } else if (result.type == "sportType") {
