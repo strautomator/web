@@ -272,6 +272,13 @@ export default {
                         currentTime: 0,
                         alertDistance: imperial ? 3700 : 6000,
                         alertTime: 0
+                    },
+                    {
+                        name: "Brake pads",
+                        currentDistance: 0,
+                        currentTime: 0,
+                        alertDistance: imperial ? 6500 : 10000,
+                        alertTime: 0
                     }
                 ]
             } else {
