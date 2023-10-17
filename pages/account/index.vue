@@ -133,7 +133,7 @@
                     <div class="mt-4">
                         <h3 class="mb-2">Omit tag suffixes</h3>
                         <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit, keep the appended suffixes'"></v-switch>
+                        <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit, keep the appended suffixes'"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Privacy mode</h3>
@@ -142,11 +142,6 @@
                             <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
                         <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'" @change="confirmPrivacyDialog"></v-switch>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="mb-2">Twitter sharing</h3>
-                        <div class="body-2">Opt-in to have your processed activities occasionally shared on Strautomator's twitter account.</div>
-                        <v-switch class="mt-2" title="Twitter sharing" v-model="twitterShare" :label="twitterShare ? 'Yes, share some of my activities' : 'No, do not share my activities'" :disabled="privacyMode"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
@@ -366,7 +361,6 @@ export default {
         const delayedProcessing = preferences.delayedProcessing || false
         const gearwearDelayDays = preferences.gearwearDelayDays || 2
         const hashtag = preferences.activityHashtag || false
-        const twitterShare = preferences.twitterShare || false
         const privacyMode = preferences.privacyMode || false
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
@@ -414,7 +408,6 @@ export default {
             delayedProcessing: delayedProcessing,
             gearwearDelayDays: gearwearDelayDays,
             activityHashtag: hashtag,
-            twitterShare: twitterShare,
             noSuffixes: noSuffixes,
             privacyMode: privacyMode,
             privacyDialog: false,
@@ -491,9 +484,6 @@ export default {
             this.preferenceChanged(newValue, oldValue)
         },
         language(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        twitterShare(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         },
         privacyMode(newValue, oldValue) {
@@ -627,7 +617,6 @@ export default {
                     delayedProcessing: this.delayedProcessing,
                     gearwearDelayDays: this.gearwearDelayDays,
                     activityHashtag: this.activityHashtag,
-                    twitterShare: this.twitterShare,
                     noSuffixes: this.noSuffixes,
                     privacyMode: this.privacyMode,
                     weatherProvider: this.weatherProvider,
