@@ -91,7 +91,6 @@
                         <p>Additionally, some of the website features will be disabled, including:</p>
                         <ul class="mb-6">
                             <li>Tracking of personal activity records</li>
-                            <li>Activity sharing on Twitter</li>
                             <li>History log for GearWear components</li>
                         </ul>
 
