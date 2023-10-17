@@ -499,6 +499,9 @@ export default {
             try {
                 if (this.asJson) {
                     this.updateJson()
+                    this.recipe.asJson = true
+                } else {
+                    delete this.recipe.asJson
                 }
 
                 this.hasChanges = false

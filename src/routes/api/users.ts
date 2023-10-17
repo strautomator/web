@@ -197,11 +197,6 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.activityHashtag = req.body.activityHashtag ? true : false
         }
 
-        // Set twitter share preference?
-        if (preferenceChanged("twitterShare")) {
-            preferences.twitterShare = req.body.twitterShare ? true : false
-        }
-
         // Set delayed processing preference?
         if (preferenceChanged("delayedProcessing")) {
             preferences.delayedProcessing = req.body.delayedProcessing ? true : false
@@ -325,12 +320,21 @@ const routeUserRecipe = async (req: any, res: any) => {
         let recipe: RecipeData = req.body
         const recipeId = req.params.recipeId || recipe.id
         const user: UserData = await users.getById(userId)
+        const asJson = recipe ? recipe["asJson"] || false : false
+
+        if (asJson) {
+            delete recipe["asJson"]
+        }
 
         // Make sure recipe was sent in the correct format.
         if (req.method != "DELETE") {
             try {
                 recipes.validate(user, recipe)
             } catch (ex) {
+                if (asJson && ex.message) {
+                    ex.message += " (recipe edited as JSON)"
+                }
+
                 return webserver.renderError(req, res, ex, 400)
             }
         }
