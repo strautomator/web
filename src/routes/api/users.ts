@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, paypal, recipes, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -83,38 +83,20 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // User has no subscription? Stop here.
-        if (!user.subscription) {
+        if (!user.subscriptionId) {
             return webserver.renderJson(req, res, "User has no valid subscription", 404)
         }
 
-        let subscription
-
-        // Subscribed via GitHub or PayPal, or something else?
-        if (user.subscription.source == "github") {
-            subscription = await users.subscriptions.getById(user.subscription.id)
-        } else if (user.subscription.source == "paypal") {
-            try {
-                subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
-            } catch (paypalEx) {
-                logger.error("Routes", req.method, req.originalUrl, paypalEx)
-                subscription = await users.subscriptions.getById(user.subscription.source)
-            }
-        } else {
-            subscription = user.subscription
+        let subscription = await subscriptions.getById(user.subscriptionId)
+        if (!subscription) {
+            return webserver.renderJson(req, res, "User subscription was not found", 404)
         }
 
-        if (subscription) {
-            subscription.userId = userId
-        } else {
-            logger.warn("Routes", req.method, req.originalUrl, `Failed to get ${user.subscription.source} subscription`)
-        }
-
-        webserver.renderJson(req, res, {[user.subscription.source]: subscription})
+        webserver.renderJson(req, res, subscription)
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

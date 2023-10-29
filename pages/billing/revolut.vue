@@ -114,8 +114,8 @@ export default {
     },
     computed: {
         subscriptionSource() {
-            if (this.user.isPro && this.user.subscription) {
-                return this.user.subscription.source
+            if (this.user.isPro && this.subscription) {
+                return this.subscription.source
             }
             return null
         }

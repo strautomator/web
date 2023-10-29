@@ -16,7 +16,7 @@ router.get("/:userId/unread", async (req: express.Request, res: express.Response
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const result = await notifications.getForUser(user, false)
+        const result = await notifications.getByUser(user, false)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         return webserver.renderError(req, res, ex)
@@ -31,7 +31,7 @@ router.get("/:userId/all", async (req: express.Request, res: express.Response) =
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const result = await notifications.getForUser(user, true)
+        const result = await notifications.getByUser(user, true)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         return webserver.renderError(req, res, ex)

@@ -163,19 +163,18 @@ export default {
     computed: {
         paymentAmount() {
             if (!this.subscription) return "free"
-            if (["Friend", "Revolut", "Trial"].includes(this.subscriptionSource)) return "free"
+            if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "free"
             return this.subscription.lastPayment.amount + " " + this.subscription.lastPayment.currency
         },
         lastPaymentDate() {
             if (!this.subscription) return ""
-            if (["Friend", "Revolut", "Trial"].includes(this.subscriptionSource)) return "never"
+            if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "never"
             return this.$dayjs(this.subscription.lastPayment.date).format("ll")
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
             if (this.subscriptionSource == "Revolut") return "when the universe ends"
-            if (this.subscriptionSource == "Trial") return `hopefully on ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
             return this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll")
         }
     },
@@ -190,27 +189,22 @@ export default {
         }
 
         try {
-            if (this.user.isPro && this.user.subscription) {
+            if (this.user.isPro) {
                 this.loading = true
                 const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
                 this.loading = false
 
-                if (subscription.friend) {
+                if (subscription.source == "friend")) {
                     this.subscriptionSource = "Friend"
-                    this.subscription = subscription.friend
-                } else if (subscription.github) {
+                } else if (subscription.source == "github") {
                     this.subscriptionSource = "GitHub"
-                    this.subscription = subscription.github
-                } else if (subscription.paypal) {
+                } else if (subscription.source == "paypal") {
                     this.subscriptionSource = "PayPal"
-                    this.subscription = subscription.paypal
-                } else if (subscription.revolut) {
+                } else if (subscription.source == "revolut") {
                     this.subscriptionSource = "Revolut"
-                    this.subscription = subscription.revolut
-                } else if (subscription.trial) {
-                    this.subscriptionSource = "Trial"
-                    this.subscription = subscription.trial
                 }
+
+                this.subscription = subscription
             }
         } catch (ex) {
             this.$webError(this, "Billing.fetch", ex)
@@ -240,15 +234,10 @@ export default {
                 this.loading = true
 
                 if (this.unsubReason) this.unsubReason = this.unsubReason.trim()
-                await this.$axios.$post(`/api/${this.user.subscription.source}/${this.user.id}/unsubscribe`, {reason: this.unsubReason || null})
+                await this.$axios.$post(`/api/${this.subscription.source}/${this.user.id}/unsubscribe`, {reason: this.unsubReason || null})
 
                 this.loading = false
                 this.unsubscribed = true
-
-                const subscription = JSON.parse(JSON.stringify(this.user.subscription, null, 0))
-                subscription.enabled = false
-
-                this.$store.commit("setUserSubscription", subscription)
             } catch (ex) {
                 ex.title = "Error trying to unsubscribe your account"
                 this.$webError(ex)

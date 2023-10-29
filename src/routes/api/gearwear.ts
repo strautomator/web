@@ -21,7 +21,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const gearwearConfigs = await gearwear.getForUser(user)
+        const gearwearConfigs = await gearwear.getByUser(user)
 
         // If a refresh query was passed, trigger an async call to
         // refresh gear details from Strava.
@@ -74,7 +74,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
         if (!user) return
 
         const max = settings.plans.free.maxGearWear
-        let configs = await gearwear.getForUser(user)
+        let configs = await gearwear.getByUser(user)
         let existingConfig: GearWearConfig = _.find(configs, {id: gearId})
 
         // Check if user has reached the limit of gearwear configs on free accounts.

@@ -1,6 +1,6 @@
 // Strautomator API: PayPal
 
-import {logHelper, mailer, paypal, UserData} from "strautomator-core"
+import {mailer, paypal, subscriptions, UserData} from "strautomator-core"
 import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
@@ -80,13 +80,17 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
             throw new Error("Invalid billing plan")
         }
 
-        // User already has a subscription running? Try getting its details.
-        if (user.subscription && user.subscription.id && user.subscription.source == "paypal") {
-            const existingSub = await paypal.subscriptions.getSubscription(user.subscription.id)
+        const userSubs = await subscriptions.getByUser(user)
+        const paypalSubs = userSubs.filter((s) => s.source == "paypal")
+
+        // User already has a PayPal subscription running? Try getting its details.
+        for (let sub of paypalSubs) {
+            const existingSub = await paypal.subscriptions.getSubscription(sub.id)
 
             // Subscription expired? Log and continue with the subscription creation further below.
             if (!existingSub) {
-                logger.debug("Routes", req.method, req.originalUrl, "Subscription not found on PayPal, will create a new one")
+                logger.info("Routes.paypal", `Subscription not found on PayPal: ${sub.id}`)
+                continue
             }
 
             // User hasn't approved it yet, and it's still valid?
@@ -97,7 +101,7 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
 
             // User has a valid subscription? Update the database and activate PRO again.
             else if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
-                logger.warn("Routes.paypal", req.method, req.originalUrl, `Already subscribed (${existingSub.id}), will fix it`)
+                logger.warn("Routes.paypal", `Already subscribed (${existingSub.id}), will fix it`)
                 existingSub.userId = user.id
                 await paypal.subscriptions.fixSubscription(existingSub)
                 return webserver.renderJson(req, res, existingSub)
@@ -120,20 +124,16 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Subscription not active?
-        if (!user.subscription && !user.subscription.enabled) {
-            return webserver.renderError(req, res, `${logHelper.user(user)} has no active subscription`, 409)
-        }
-
         // Get and validate subscription info from PayPal.
-        const subscription = await paypal.subscriptions.getSubscription(user.subscription.id)
+        const subscription = await paypal.subscriptions.getSubscription(user.subscriptionId)
         if (!subscription) {
-            return webserver.renderError(req, res, `Subscription ${user.subscription.id} is invalid`, 409)
+            return webserver.renderError(req, res, `Subscription ${user.subscriptionId} is invalid`, 409)
         }
 
         // Force set user ID on subscription and request cancellation on PayPal.
         subscription.userId = user.id
         await paypal.subscriptions.cancelSubscription(subscription)
+        delete user.subscriptionId
 
         // User provided a reason? Notify it.
         if (req.body?.reason) {

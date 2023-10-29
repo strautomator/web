@@ -197,10 +197,6 @@ export const mutations = {
     setUserUrlToken(state, token) {
         state.user.urlToken = token
     },
-    setUserSubscription(state, data) {
-        state.user.subscription = data
-        if (data.enabled === false) state.user.isPro = false
-    },
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
     },
@@ -290,7 +286,7 @@ export const actions = {
             commit("setFtpWeeks", settings.strava.ftp.weeks)
 
             // Set GDPR archive days interval.
-            commit("setArchiveDownloadDays", settings.users.archiveDownloadDays)
+            commit("setArchiveDownloadDays", settings.gdpr.requestDays)
 
             // Beta environment?
             if (settings.beta.enabled) {
@@ -339,16 +335,12 @@ export const actions = {
                     commit("setUser", loggedUser)
 
                     let country = (loggedUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
-                    let currency = loggedUser.isPro && loggedUser.subscription ? loggedUser.subscription.currency || "USD" : null
+                    let currency = "USD"
 
-                    if (!currency && country) {
-                        if (countryListGbp.includes(country)) {
-                            currency = "GBP"
-                        } else if (countryListEur.includes(country)) {
-                            currency = "EUR"
-                        } else {
-                            currency = "USD"
-                        }
+                    if (countryListGbp.includes(country)) {
+                        currency = "GBP"
+                    } else if (countryListEur.includes(country)) {
+                        currency = "EUR"
                     }
 
                     // Set the expected PRO currency based on existing user data and country.

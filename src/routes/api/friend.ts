@@ -16,7 +16,6 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         if (!user) return
 
         await users.switchToFree(user)
-        user.subscription.enabled = false
 
         // User provided a reason? Notify it.
         if (req.body?.reason) {
@@ -27,7 +26,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             })
         }
 
-        webserver.renderJson(req, res, user.subscription)
+        webserver.renderJson(req, res, {subscription: false})
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }
