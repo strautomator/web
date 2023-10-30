@@ -194,7 +194,7 @@ export default {
                 const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
                 this.loading = false
 
-                if (subscription.source == "friend")) {
+                if (subscription.source == "friend") {
                     this.subscriptionSource = "Friend"
                 } else if (subscription.source == "github") {
                     this.subscriptionSource = "GitHub"
