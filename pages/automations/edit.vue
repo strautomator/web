@@ -453,9 +453,9 @@ export default {
             try {
                 const jsonData = data
 
-                if (!jsonData.defaultFor && !jsonData.conditions) {
+                if (!jsonData.defaultFor && (!jsonData.conditions || jsonData.conditions.length == 0)) {
                     vErrors.push({message: `A "defaultFor" or "conditions" list is mandatory`, path: []})
-                } else if (jsonData.defaultFor && jsonData.conditions) {
+                } else if (jsonData.defaultFor && jsonData.conditions?.length > 0) {
                     vErrors.push({message: `Automation cannot have "defaultFor" and "conditions", please use just one`, path: []})
                 }
 
