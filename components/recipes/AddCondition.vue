@@ -345,7 +345,7 @@ export default {
 
                 // User typed the coordinates directly?
                 if (_.isString(value) && value.indexOf(",") > 0) {
-                    const arrValue = value.split(",")
+                    const arrValue = decodeURIComponent(value).split(",")
                     let lat = arrValue[0].trim()
                     let long = arrValue[1].trim()
 
