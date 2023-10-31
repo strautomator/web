@@ -164,18 +164,20 @@ export default {
         paymentAmount() {
             if (!this.subscription) return "free"
             if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "free"
-            return this.subscription.lastPayment.amount + " " + this.subscription.lastPayment.currency
+            return this.subscription.price + " " + this.subscription.currency
         },
         lastPaymentDate() {
             if (!this.subscription) return ""
             if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "never"
-            return this.$dayjs(this.subscription.lastPayment.date).format("ll")
+            if (["GitHub"].includes(this.subscriptionSource)) return "managed by GitHub"
+            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).format("ll") : "managed via PayPal"
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
+            if (this.subscription.dateExpiry) return this.$dayjs(this.subscription.dateExpiry).format("ll")
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
             if (this.subscriptionSource == "Revolut") return "when the universe ends"
-            return this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll")
+            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll") : "managed via PayPal"
         }
     },
     async fetch() {
@@ -202,6 +204,8 @@ export default {
                     this.subscriptionSource = "PayPal"
                 } else if (subscription.source == "revolut") {
                     this.subscriptionSource = "Revolut"
+                } else {
+                    this.subscriptionSource = "?"
                 }
 
                 this.subscription = subscription

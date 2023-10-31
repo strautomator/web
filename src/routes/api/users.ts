@@ -88,12 +88,12 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
 
         // User has no subscription? Stop here.
         if (!user.subscriptionId) {
-            return webserver.renderJson(req, res, "User has no valid subscription", 404)
+            return webserver.renderError(req, res, "User has no valid subscription", 404)
         }
 
         let subscription = await subscriptions.getById(user.subscriptionId)
         if (!subscription) {
-            return webserver.renderJson(req, res, "User subscription was not found", 404)
+            return webserver.renderError(req, res, "User subscription was not found", 404)
         }
 
         webserver.renderJson(req, res, subscription)
