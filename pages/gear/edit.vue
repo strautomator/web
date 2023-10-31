@@ -89,7 +89,7 @@
 
             <v-card class="mt-4" v-if="gearwearHistory?.length > 0" outlined>
                 <v-card-title class="accent">
-                    <span>History</span>
+                    <span>Recent history</span>
                 </v-card-title>
                 <v-card-text class="pt-4 pb-2">
                     <div class="mb-4" v-for="data in gearwearHistory">
@@ -495,23 +495,23 @@ export default {
         },
         closedComponentDialog(component, changed) {
             if (component) {
+                this.hasChanges = true
+
                 if (!this.gearwearConfig.id) {
                     this.gearwearConfig.id = this.gear.id
                 }
                 if (this.gearwearComponent.name) {
                     _.assign(this.gearwearComponent, component)
+
+                    // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
+                    const wasNotResetToday = !this.isNew && component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
+                    if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
+                        this.componentDialog = false
+                        this.resetDialog = true
+                        return
+                    }
                 } else {
                     this.gearwearConfig.components.push(component)
-                }
-
-                this.hasChanges = true
-
-                // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
-                const wasNotResetToday = !this.isNew && component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
-                if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
-                    this.componentDialog = false
-                    this.resetDialog = true
-                    return
                 }
             }
 
