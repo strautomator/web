@@ -137,6 +137,16 @@ a {
     position: relative;
 }
 
+.mention-item {
+    border-radius: 4px;
+    font-family: Roboto, sans-serif;
+    padding: 5px 8px;
+}
+
+.mention-selected {
+    background: rgb(145, 145, 145);
+}
+
 .jse-contents {
     width: 100% !important;
 }

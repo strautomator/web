@@ -33,56 +33,16 @@
                                     <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="actionIsDescription">
-                                    <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
+                                    <Mentionable :keys="['$']" :items="activityTags" offset="6">
+                                        <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
+                                    </Mentionable>
                                 </div>
                                 <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
-                                    <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
+                                    <Mentionable :keys="['$']" :items="activityTags" offset="6">
+                                        <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
+                                    </Mentionable>
                                 </div>
-                                <div v-if="actionIsText">
-                                    <v-btn v-if="!showTags" class="mb-4" title="View activity and weather tags" @click="showTags = true" rounded x-small>
-                                        <v-icon>mdi-chevron-down</v-icon>
-                                        View available tags
-                                    </v-btn>
-                                    <v-tabs v-if="showTags" height="36" background-color="accent" :fixed-tabs="!$breakpoint.mdAndUp" v-model="tabTags">
-                                        <v-tab>Activity tags</v-tab>
-                                        <v-tab>Weather tags</v-tab>
-                                        <v-tab>Music tags</v-tab>
-                                    </v-tabs>
-                                    <v-tabs-items class="action-activity-tags" v-model="tabTags">
-                                        <v-tab-item class="pt-4">
-                                            <template v-for="aTags in activityTags">
-                                                <h3>{{ aTags.title }} stats</h3>
-                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                    <v-chip v-for="tag in aTags.tags" @click="addTag(tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
-                                                </v-card>
-                                            </template>
-                                        </v-tab-item>
-                                        <v-tab-item class="pt-4">
-                                            <template v-for="wTags in weatherTags">
-                                                <h3>{{ wTags.title }} of activity</h3>
-                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                    <v-chip v-for="tag in wTags.tags" @click="addTag('weather.' + wTags.title.toLowerCase() + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{
-                                                        getChipText(tag)
-                                                    }}</v-chip>
-                                                </v-card>
-                                            </template>
-                                        </v-tab-item>
-                                        <v-tab-item class="pt-4">
-                                            <template v-if="!user.spotify">
-                                                <div class="ml-2 mr-2 mb-2">
-                                                    To use music tags, you need to link your Spotify
-                                                    <n-link to="/account?spotify=link" title="My account" nuxt>account</n-link> first.
-                                                </div>
-                                            </template>
-                                            <template v-for="mTags in musicTags" v-else>
-                                                <h3>{{ mTags.title }}</h3>
-                                                <v-card class="grey darken-4 pl-2 pt-2 mb-4" outlined>
-                                                    <v-chip v-for="tag in mTags.tags" @click="addTag(mTags.source + '.' + tag.key)" :key="'tag-' + tag.key" :disabled="tag.pro && !user.isPro" small>{{ getChipText(tag) }}</v-chip>
-                                                </v-card>
-                                            </template>
-                                        </v-tab-item>
-                                    </v-tabs-items>
-                                </div>
+                                <div v-if="actionIsText" class="mt-n4 text-caption">Type $ to display the available activity tags.</div>
                                 <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
                                     You can try some auto-generated names
                                     <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
@@ -111,12 +71,15 @@
 </style>
 
 <script>
+import "floating-vue/dist/style.css"
+import {Mentionable} from "vue-mention"
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
+    components: {Mentionable},
     mixins: [userMixin, recipeMixin, stravaMixin],
     props: ["disabled-actions"],
     data() {
@@ -166,95 +129,105 @@ export default {
             const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
 
             // Activity general tags.
-            const activityGeneralTags = [
-                {key: "sportType", text: "Sport type"},
-                {key: "counter", text: "Counter"},
-                {key: "distance", text: "Distance"},
-                {key: "speedAvg", text: "Avg speed"},
-                {key: "speedMax", text: "Max speed"},
-                {key: "paceAvg", text: "Avg pace"},
-                {key: "paceMax", text: "Max pace"},
-                {key: "cadenceAvg", text: "Avg cadence (RPM)"},
-                {key: "cadenceSpm", text: "Avg cadence (SPM)"},
-                {key: "elevationGain", text: "Elevation gain"},
-                {key: "elevationMax", text: "Max elevation"},
-                {key: "climbingRatio", text: "Climbing ratio"},
-                {key: "totalTime", text: "Total time"},
-                {key: "movingTime", text: "Moving time"},
-                {key: "weekday", text: "Weekday"},
-                {key: "weekOfYear", text: "Week of year"},
-                {key: "device", text: "Device"},
-                {key: "cityStart", text: "City (start)", pro: true},
-                {key: "cityEnd", text: "City (end)", pro: true}
+            const generalTags = [
+                {value: "sportType", label: "Sport type"},
+                {value: "counter", label: "Counter"},
+                {value: "distance", label: "Distance"},
+                {value: "speedAvg", label: "Avg speed"},
+                {value: "speedMax", label: "Max speed"},
+                {value: "paceAvg", label: "Avg pace"},
+                {value: "paceMax", label: "Max pace"},
+                {value: "cadenceAvg", label: "Avg cadence (RPM)"},
+                {value: "cadenceSpm", label: "Avg cadence (SPM)"},
+                {value: "elevationGain", label: "Elevation gain"},
+                {value: "elevationMax", label: "Max elevation"},
+                {value: "climbingRatio", label: "Climbing ratio"},
+                {value: "totalTime", label: "Total time"},
+                {value: "movingTime", label: "Moving time"},
+                {value: "weekday", label: "Weekday"},
+                {value: "weekOfYear", label: "Week of year"},
+                {value: "device", label: "Device"}
             ]
 
             // Activity performance tags.
-            const activityPerfTags = [
-                {key: "wattsAvg", text: "Avg watts"},
-                {key: "wattsWeighted", text: "Weighted watts"},
-                {key: "wattsMax", text: "Max watts"},
-                {key: "wattsKg", text: "Watts / kg"},
-                {key: "tss", text: "TSS"},
-                {key: "hrAvg", text: "Avg HR"},
-                {key: "hrMax", text: "Max HR"},
-                {key: "calories", text: "Calories"},
-                {key: "relativeEffort", text: "Relative effort"},
-                {key: "perceivedExertion", text: "Perceived exertion"}
+            const performanceTags = [
+                {value: "wattsAvg", label: "Avg watts"},
+                {value: "wattsWeighted", label: "Weighted watts"},
+                {value: "wattsMax", label: "Max watts"},
+                {value: "wattsKg", label: "Watts / kg"},
+                {value: "tss", label: "TSS"},
+                {value: "hrAvg", label: "Avg HR"},
+                {value: "hrMax", label: "Max HR"},
+                {value: "calories", label: "Calories"},
+                {value: "relativeEffort", label: "Relative effort"},
+                {value: "perceivedExertion", label: "Perceived exertion"}
             ]
 
             // Activity lap tags.
-            const activityLapTags = [
-                {key: "lapCount", text: "Lap count"},
-                {key: "lapDistance", text: "Lap distance"},
-                {key: "lapTime", text: "Lap time"}
+            const lapTags = [
+                {value: "lapCount", label: "Lap count"},
+                {value: "lapDistance", label: "Lap distance"},
+                {value: "lapTime", label: "Lap time"}
+            ]
+
+            // Activity location tags.
+            const locationTags = []
+            const locationBaseTags = [
+                {value: "country", label: "Country name"},
+                {value: "countryFlag", label: "Country flag"},
+                {value: "city", label: "City", pro: true}
+            ]
+            for (let t of locationBaseTags) {
+                locationTags.push({
+                    value: `${t.value}Start`,
+                    label: `${t.label} (start)`
+                })
+                locationTags.push({
+                    value: `${t.value}End`,
+                    label: `${t.label} (end)`
+                })
+            }
+
+            // Weather tags.
+            const weatherTags = []
+            const weatherBaseTags = [
+                {value: "icon", label: "Icon"},
+                {value: "summary", label: "Summary"},
+                {value: "temperature", label: "Temp. (real)"},
+                {value: "feelsLike", label: "Temp. (feels like)"},
+                {value: "humidity", label: "Humidity"},
+                {value: "pressure", label: "Pressure"},
+                {value: "windSpeed", label: "Wind speed"},
+                {value: "windDirection", label: "Wind direction"},
+                {value: "precipitation", label: "Precipitation"},
+                {value: "aqi", label: "AQI (0 to 5)"},
+                {value: "aqiIcon", label: "AQI Icon"}
+            ]
+            for (let t of weatherBaseTags) {
+                locationTags.push({
+                    value: `weather.start.${t.value}`,
+                    label: `${t.label} (start)`
+                })
+                locationTags.push({
+                    value: `weather.end.${t.value}`,
+                    label: `${t.label} (end)`
+                })
+            }
+
+            // Music track tags.
+            const musicTags = [
+                {value: "trackList", label: "Full track list"},
+                {value: "trackStart", label: "Starting track title"},
+                {value: "trackEnd", label: "Last track title"},
+                {value: "lyricsStart", label: "Starting track lyrics", pro: true},
+                {value: "lyricsEnd", label: "Last track lyrics", pro: true}
             ]
 
             // Combine activity tags.
-            const mapActivityTags = [
-                {title: "General", tags: activityGeneralTags},
-                {title: "Performance", tags: activityPerfTags},
-                {title: "Lap", tags: activityLapTags}
-            ]
-
-            // Weather tags.
-            const weatherTags = [
-                {key: "icon", text: "Icon"},
-                {key: "summary", text: "Summary"},
-                {key: "temperature", text: "Temp. (real)"},
-                {key: "feelsLike", text: "Temp. (feels like)"},
-                {key: "humidity", text: "Humidity"},
-                {key: "pressure", text: "Pressure"},
-                {key: "windSpeed", text: "Wind speed"},
-                {key: "windDirection", text: "Wind direction"},
-                {key: "precipitation", text: "Precipitation"},
-                {key: "aqi", text: "AQI (0 to 5)"},
-                {key: "aqiIcon", text: "AQI Icon"}
-            ]
-
-            // Combine weather tags.
-            const mapWeatherTags = [
-                {title: "Start", tags: weatherTags},
-                {title: "End", tags: weatherTags}
-            ]
-
-            // Music track tags.
-            const trackTags = [
-                {key: "trackList", text: "Full track list"},
-                {key: "trackStart", text: "Starting track title"},
-                {key: "trackEnd", text: "Last track title"}
-            ]
-
-            // Music lyrics tags.
-            const lyricsTags = [
-                {key: "lyricsStart", text: "Starting track lyrics", pro: true},
-                {key: "lyricsEnd", text: "Last track lyrics", pro: true}
-            ]
-
-            // Combine music tags.
-            const mapMusicTags = [
-                {title: "Tracks", source: "spotify", tags: trackTags},
-                {title: "Lyrics", source: "spotify", tags: lyricsTags}
-            ]
+            const activityTags = _.concat(generalTags, performanceTags, lapTags, locationTags, musicTags, weatherTags)
+            for (let t of activityTags) {
+                t.value = "{" + t.value + "}"
+            }
 
             return {
                 action: {},
@@ -273,10 +246,7 @@ export default {
                 workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
                 showTags: false,
-                tabTags: null,
-                activityTags: mapActivityTags,
-                weatherTags: mapWeatherTags,
-                musicTags: mapMusicTags,
+                activityTags: activityTags,
                 valueInput: ""
             }
         },
