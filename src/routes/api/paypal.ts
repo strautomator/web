@@ -99,11 +99,9 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
                 return webserver.renderJson(req, res, existingSub)
             }
 
-            // User has a valid subscription? Update the database and activate PRO again.
+            // User still has a valid subscription? Update the database and activate PRO again.
             else if (existingSub.status == "ACTIVE" && existingSub.dateNextPayment) {
-                logger.warn("Routes.paypal", `Already subscribed (${existingSub.id}), will fix it`)
-                existingSub.userId = user.id
-                await paypal.subscriptions.fixSubscription(existingSub)
+                logger.warn("Routes.paypal", `Already subscribed (${existingSub.id})`)
                 return webserver.renderJson(req, res, existingSub)
             }
         }
