@@ -51,7 +51,7 @@
                     <div class="mt-5 text-center text-md-left">
                         <a href="https://links.devv.com/l/revolut" title="Sign up to Revolut" target="revolut"
                             ><v-btn color="primary" rounded nuxt>
-                                <v-img src="/images/affiliates/revolut-logo.png" width="16" height="16" class="mr-2" />
+                                <v-img src="/images/affiliates/revolut.png" width="16" height="16" class="mr-2" />
                                 Sign up to Revolut
                             </v-btn></a
                         >

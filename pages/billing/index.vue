@@ -10,7 +10,9 @@
                 <v-card outlined>
                     <v-card-text>
                         <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
-                        <div>Your account will be downgraded back to the free version. Thanks for your previous support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator.</div>
+                        <div>
+                            Your account will be downgraded back to the free version later. Thanks for your support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator reactivated.
+                        </div>
                         <div class="mt-4">
                             <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
@@ -27,7 +29,7 @@
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
                 <p v-else-if="$store.state.beta || subscription?.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
-                <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> on {{ nextPaymentDate }}.</p>
+                <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> in the upcoming days.</p>
 
                 <v-card outlined>
                     <v-card-text>
@@ -170,14 +172,15 @@ export default {
             if (!this.subscription) return ""
             if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "never"
             if (["GitHub"].includes(this.subscriptionSource)) return "managed by GitHub"
-            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).format("ll") : "managed via PayPal"
+            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).format("ll") : "managed by PayPal"
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscription.dateExpiry) return this.$dayjs(this.subscription.dateExpiry).format("ll")
             if (this.subscriptionSource == "Friend") return "maybe a beer?"
             if (this.subscriptionSource == "Revolut") return "when the universe ends"
-            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll") : "managed via PayPal"
+            if (this.subscription.dateNextPayment) return this.$dayjs(this.subscription.dateNextPayment)
+            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll") : "managed by PayPal"
         }
     },
     async fetch() {
