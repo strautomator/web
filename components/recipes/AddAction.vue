@@ -15,7 +15,7 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12">
-                            <v-autocomplete v-model="selectedAction" label="Select an action..." :items="recipeActions" dense outlined rounded return-object></v-autocomplete>
+                            <v-autocomplete v-model="selectedAction" label="Select an action..." :items="recipeActions" @change="actionOnChange" dense outlined rounded return-object></v-autocomplete>
                             <template v-if="selectedAction">
                                 <div v-if="selectedAction.value == 'commute'">
                                     <v-select label="Commute tag..." v-model="selectedCommute" item-value="id" item-text="name" :items="commuteFlags" dense outlined rounded return-object></v-select>
@@ -32,14 +32,21 @@
                                 <div v-else-if="selectedAction.value == 'mapStyle'">
                                     <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="actionIsDescription">
-                                    <Mentionable :keys="['$']" :items="activityTags" offset="6">
-                                        <v-textarea label="Notes..." v-model="valueInput" height="160" :rules="[recipeRules.required]" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined no-resize></v-textarea>
-                                    </Mentionable>
-                                </div>
                                 <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
-                                    <Mentionable :keys="['$']" :items="activityTags" offset="6">
-                                        <v-text-field v-model="valueInput" :label="selectedAction.text" :rules="actionRules" :maxlength="$store.state.recipeMaxLength.actionValue" dense outlined rounded></v-text-field>
+                                    <Mentionable :keys="['$']" :items="activityTags" offset="1">
+                                        <v-textarea
+                                            v-model="valueInput"
+                                            :css="actionIsDescription ? '' : 'overflow-hidden'"
+                                            :height="actionIsDescription ? 160 : 30"
+                                            :label="actionIsDescription ? 'Notes...' : selectedAction.text"
+                                            :rules="actionRules"
+                                            :maxlength="$store.state.recipeMaxLength.actionValue"
+                                            @keydown="inputKeyDown($event)"
+                                            dense
+                                            outlined
+                                            rounded
+                                            no-resize
+                                        ></v-textarea>
                                     </Mentionable>
                                 </div>
                                 <div v-if="actionIsText" class="mt-n4 text-caption">Type $ to display the available activity tags.</div>
@@ -71,7 +78,6 @@
 </style>
 
 <script>
-import "floating-vue/dist/style.css"
 import {Mentionable} from "vue-mention"
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
@@ -216,11 +222,11 @@ export default {
 
             // Music track tags.
             const musicTags = [
-                {value: "trackList", label: "Full track list"},
-                {value: "trackStart", label: "Starting track title"},
-                {value: "trackEnd", label: "Last track title"},
-                {value: "lyricsStart", label: "Starting track lyrics", pro: true},
-                {value: "lyricsEnd", label: "Last track lyrics", pro: true}
+                {value: "trackList", label: "Spotify: Full track list"},
+                {value: "trackStart", label: "Spotify: track title (start)"},
+                {value: "trackEnd", label: "Spotify: track title (end)"},
+                {value: "lyricsStart", label: "Spotify: track lyrics (first)", pro: true},
+                {value: "lyricsEnd", label: "Spotify: track lyrics (last)", pro: true}
             ]
 
             // Combine activity tags.
@@ -296,6 +302,19 @@ export default {
         },
         getChipText(tag) {
             return tag.pro && !this.user.isPro ? `${tag.text} - PRO only` : tag.text
+        },
+        actionOnChange() {
+            if (!this.actionIsDescription && this.actionIsText && this.valueInput) {
+                this.valueInput = this.valueInput.replace(/(?:\r\n|\r|\n)/g, " ")
+            }
+        },
+        inputKeyDown(e) {
+            if (!this.actionIsDescription && e.keyCode == 13) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
+                return false
+            }
         },
         cancel() {
             this.$emit("closed", false)
