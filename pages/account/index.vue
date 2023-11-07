@@ -81,7 +81,7 @@
                         </n-link>
                     </div>
                     <div class="mt-n1">
-                        <h3 class="mb-2">{{ user.isPro ? "FTP auto update" : "FTP auto update (PRO only)" }}</h3>
+                        <h3 class="mb-2">FTP auto update{{ user.isPro ? "" : " (PRO only)" }}</h3>
                         <div class="body-2">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
@@ -157,6 +157,14 @@
                                 <v-radio :label="user.isPro ? 'No links' : 'No links (PRO only)'" :value="0" :disabled="!user.isPro"></v-radio>
                             </v-radio-group>
                         </div>
+                    </div>
+                    <div class="mt-4" v-if="$store.state.beta">
+                        <h3 class="mb-2">ChatGPT custom prompt{{ user.isPro ? "" : " (PRO only)" }}</h3>
+                        <div class="body-2">
+                            You can enhance the generated activity names with ChatGPT by using your own custom prompt, that will be appended to the default one.
+                            <n-link to="/help?q=chatgpt prompt" title="More details about the privacy mode" nuxt>More details...</n-link>
+                        </div>
+                        <v-text-field v-model="chatGptPrompt" class="mt-2" label="Prompt" maxlength="100" @blur="delaySavePreferences()" outlined rounded></v-text-field>
                     </div>
                 </v-card-text>
             </v-card>
@@ -365,6 +373,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
+        const chatGptPrompt = preferences.chatGptPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
         const windSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : weatherUnit == "f" ? "mph" : "kph"
@@ -420,6 +429,7 @@ export default {
             minDateReset: this.$dayjs().format(dateFormat),
             maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
             language: language,
+            chatGptPrompt: chatGptPrompt,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             windSpeedUnit: windSpeedUnit,
@@ -623,6 +633,7 @@ export default {
                     weatherUnit: this.weatherUnit,
                     windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
+                    chatGptPrompt: this.chatGptPrompt,
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 

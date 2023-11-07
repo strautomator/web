@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, openai, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -149,14 +149,14 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             preferences.weatherProvider = req.body.weatherProvider
         }
 
-        // Make sure linksOn is valid.
-        if (preferenceChanged("linksOn")) {
-            preferences.linksOn = req.body.linksOn
-        }
-
         // Make sure ftpAutoUpdate is valid.
         if (preferenceChanged("ftpAutoUpdate") && user.isPro) {
             preferences.ftpAutoUpdate = req.body.ftpAutoUpdate ? true : false
+        }
+
+        // Make sure linksOn is valid.
+        if (preferenceChanged("linksOn")) {
+            preferences.linksOn = req.body.linksOn
         }
 
         // Make sure weather unit is valid.
@@ -212,6 +212,19 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             } else {
                 preferences.dateResetCounter = false
             }
+        }
+
+        // Set the ChatGPT custom prompt? Make sure it ends with a period and passes the OpenAI moderation.
+        if (preferenceChanged("chatGptPrompt") && user.isPro && user.isBeta) {
+            const lastChar = req.body.chatGptPrompt.substring(req.body.chatGptPrompt.length - 1)
+            if (![".", "!", "?"].includes(lastChar)) {
+                req.body.chatGptPrompt += "."
+            }
+            const failedCategories = await openai.validatePrompt(user, req.body.chatGptPrompt)
+            if (failedCategories?.length > 0) {
+                throw new Error(`ChatGPt prompt failed moderation: ${failedCategories.join(", ")}`)
+            }
+            preferences.chatGptPrompt = req.body.chatGptPrompt.substring(0, 100).trim()
         }
 
         // User details to be updated.
