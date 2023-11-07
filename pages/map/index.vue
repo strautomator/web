@@ -294,8 +294,9 @@ export default {
             try {
                 if (this.events.length == 0) return
 
-                // 90ms delay to make sure the Vue rendering is ready.
-                await new Promise((r) => setTimeout(r, 90))
+                // 100ms delay to make sure the Vue rendering is ready and div reference is set.
+                await new Promise((r) => setTimeout(r, 100))
+                if (!this.$refs.googlemaps) return
 
                 this.loading = false
 
@@ -584,7 +585,7 @@ export default {
             }
         },
         mapSetBounds(e) {
-            if (!this.eventObjects[e.id].polyline || this.fullscreen) return
+            if (!this.eventObjects[e.id] || !this.eventObjects[e.id].polyline || this.fullscreen) return
 
             const bounds = new google.maps.LatLngBounds()
             const points = this.eventObjects[e.id].polyline.main.getPath().getArray()
@@ -592,7 +593,7 @@ export default {
             this.map.fitBounds(bounds)
         },
         mapHighlightRoute(e, highlight, clicked) {
-            if (!this.eventObjects[e.id].polyline) return
+            if (!this.eventObjects[e.id] || !this.eventObjects[e.id].polyline) return
 
             const evObj = this.eventObjects[e.id]
             if (!e.visible) return
