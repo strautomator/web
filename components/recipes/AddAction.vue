@@ -49,7 +49,11 @@
                                         ></v-textarea>
                                     </Mentionable>
                                 </div>
-                                <div v-if="actionIsText" class="mt-n4 text-caption">Type $ to display the available activity tags.</div>
+                                <div v-if="actionIsText" class="mt-n1 text-caption text-center text-md-left">
+                                    Type $ to display the available activity tags, then keep typing to search for the desired tag.
+                                    <br />
+                                    Examples: ${distance} ${speedAvg} ${totalTime}
+                                </div>
                                 <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
                                     You can try some auto-generated names
                                     <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
