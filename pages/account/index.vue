@@ -98,7 +98,7 @@
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
-                        <v-alert color="accent" v-if="user.garmin" dense>Delayed processing is recommended if you have automations with Garmin based conditions.</v-alert>
+                        <v-alert color="accent" class="body-2" v-if="user.garmin" dense>Delayed processing is recommended if you have automations with Garmin based conditions.</v-alert>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">GearWear delay</h3>
@@ -158,13 +158,22 @@
                             </v-radio-group>
                         </div>
                     </div>
-                    <div class="mt-4" v-if="$store.state.beta">
+                    <div class="mt-4">
                         <h3 class="mb-2">ChatGPT custom prompt{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="body-2">
-                            You can enhance the generated activity names with ChatGPT by using your own custom prompt, that will be appended to the default one.
+                        <div class="body-2 mb-4">
+                            You can enhance the generated activity names with ChatGPT by appending a custom prompt.
                             <n-link to="/help?q=chatgpt prompt" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
-                        <v-text-field v-model="chatGptPrompt" class="mt-2" label="Prompt" maxlength="100" @blur="delaySavePreferences()" outlined rounded></v-text-field>
+                        <v-text-field
+                            v-model="chatGptPrompt"
+                            label="ChatGPT prompt"
+                            maxlength="100"
+                            @blur="delaySavePreferences()"
+                            :placeholder="user.isPro ? 'Enter a custom prompt or leave it blank' : 'PRO only feature'"
+                            :disabled="!user.isPro"
+                            outlined
+                            rounded
+                        ></v-text-field>
                     </div>
                 </v-card-text>
             </v-card>
@@ -633,7 +642,7 @@ export default {
                     weatherUnit: this.weatherUnit,
                     windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
-                    chatGptPrompt: this.chatGptPrompt,
+                    chatGptPrompt: this.chatGptPrompt.trim().length > 2 ? this.chatGptPrompt : "",
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 
@@ -642,6 +651,9 @@ export default {
                 await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)
             } catch (ex) {
                 this.$webError(this, "Account.savePreferences", ex)
+                if (ex.response?.data?.message?.includes("ChatGPT")) {
+                    this.chatGptPrompt = ""
+                }
             }
         },
         closeAlert() {
