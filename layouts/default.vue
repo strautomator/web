@@ -130,11 +130,11 @@
                 <v-card-text>
                     <p class="mt-3">Reference method: {{ $store.state.errorMethod }}</p>
                     <p>{{ $store.state.errorMessage }}</p>
-                    <div class="text-right">
+                    <div class="text-center text-md-right">
                         <v-spacer></v-spacer>
                         <v-btn class="mr-2" color="accent" title="Back to the Dashboard" @click.stop="goToDashboard" rounded>
                             <v-icon left>mdi-refresh</v-icon>
-                            Reload the app
+                            Reload
                         </v-btn>
                         <v-btn color="accent" title="Ignore this error and continue" @click.stop="hideErrorDialog" rounded>
                             <v-icon left>mdi-cancel</v-icon>
