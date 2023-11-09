@@ -1,6 +1,7 @@
 // Strautomator API: Users
 
 import {logHelper, gdpr, openai, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {FieldValue} from "@google-cloud/firestore"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -144,87 +145,104 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
         // Helper to validate if preference has changed.
         const preferenceChanged = (field: string) => !_.isNil(req.body[field]) && req.body[field] !== user.preferences[field]
 
-        // Make sure weather provider is valid.
-        if (preferenceChanged("weatherProvider") && user.isPro) {
-            preferences.weatherProvider = req.body.weatherProvider
+        // Helper to set the preference or delete it in case it's the default value.
+        const setOrDelete = (field: string, defaultValue: any, isBoolean?: boolean) => {
+            const value = isBoolean ? (req.body[field] ? true : false) : req.body[field]
+
+            if (value != defaultValue) {
+                preferences[field] = value
+            } else if (user.preferences[field] == defaultValue) {
+                preferences[field] = FieldValue.delete()
+            }
         }
 
-        // Make sure ftpAutoUpdate is valid.
-        if (preferenceChanged("ftpAutoUpdate") && user.isPro) {
-            preferences.ftpAutoUpdate = req.body.ftpAutoUpdate ? true : false
+        if (preferenceChanged("weatherProvider")) {
+            if (!user.isPro) {
+                req.body.weatherProvider = ""
+            }
+            setOrDelete("weatherProvider", "")
         }
 
-        // Make sure linksOn is valid.
-        if (preferenceChanged("linksOn")) {
-            preferences.linksOn = req.body.linksOn
-        }
-
-        // Make sure weather unit is valid.
         if (preferenceChanged("weatherUnit")) {
-            preferences.weatherUnit = req.body.weatherUnit != "c" ? "f" : "c"
+            setOrDelete("weatherUnit", "c")
         }
 
-        // Make sure wind speed unit is valid.
         if (preferenceChanged("windSpeedUnit") && ["m/s", "kph", "mph"].includes(req.body.windSpeedUnit)) {
-            preferences.windSpeedUnit = req.body.windSpeedUnit
+            setOrDelete("weatherUnit", "m/s")
         }
 
-        // Make sure language is valid.
         if (preferenceChanged("language")) {
-            preferences.language = req.body.language.toString().substring(0, 2)
+            req.body.language = req.body.language.toString().substring(0, 2)
+            setOrDelete("language", "en")
         }
 
-        // Set activity hashtag preference?
-        if (preferenceChanged("activityHashtag")) {
-            preferences.activityHashtag = req.body.activityHashtag ? true : false
+        if (preferenceChanged("ftpAutoUpdate")) {
+            if (!user.isPro) {
+                req.body.ftpAutoUpdate = false
+            }
+            setOrDelete("ftpAutoUpdate", false, true)
         }
 
-        // Set delayed processing preference?
         if (preferenceChanged("delayedProcessing")) {
-            preferences.delayedProcessing = req.body.delayedProcessing ? true : false
+            setOrDelete("delayedProcessing", false, true)
         }
 
-        // Set GearWear delay preference?
         if (preferenceChanged("gearwearDelayDays")) {
-            preferences.gearwearDelayDays = req.body.gearwearDelayDays
+            setOrDelete("gearwearDelayDays", settings.gearwear.delayDays)
         }
 
-        // Set privacy mode?
-        if (preferenceChanged("privacyMode")) {
-            preferences.privacyMode = req.body.privacyMode ? true : false
-        }
-
-        // Set the omit suffixes preference?
-        if (preferenceChanged("noSuffixes")) {
-            preferences.noSuffixes = req.body.noSuffixes ? true : false
-        }
-
-        // Set counter reset date?
         if (preferenceChanged("dateResetCounter")) {
             if (req.body.dateResetCounter) {
                 const dateResetCounter = dayjs(`2000-${req.body.dateResetCounter}`)
-
                 if (!dateResetCounter.isValid()) {
-                    return webserver.renderError(req, res, `Invalid counter reset date: ${req.body.dateResetCounter}`, 400)
+                    throw new Error(`Invalid counter reset date: ${req.body.dateResetCounter}`)
                 }
-
-                preferences.dateResetCounter = req.body.dateResetCounter
             } else {
-                preferences.dateResetCounter = false
+                req.body.dateResetCounter = false
             }
+            setOrDelete("dateResetCounter", false)
         }
 
-        // Set the ChatGPT custom prompt? Make sure it ends with a period and passes the OpenAI moderation.
-        if (preferenceChanged("chatGptPrompt") && user.isPro && user.isBeta) {
-            const lastChar = req.body.chatGptPrompt.substring(req.body.chatGptPrompt.length - 1)
-            if (![".", "!", "?"].includes(lastChar)) {
-                req.body.chatGptPrompt += "."
+        if (preferenceChanged("noSuffixes")) {
+            setOrDelete("noSuffixes", false, true)
+        }
+
+        if (preferenceChanged("privacyMode")) {
+            setOrDelete("privacyMode", false, true)
+        }
+
+        if (preferenceChanged("linksOn")) {
+            if (!user.isPro) {
+                req.body.linksOn = settings.plans.free.linksOn
             }
-            const failedCategories = await openai.validatePrompt(user, req.body.chatGptPrompt)
-            if (failedCategories?.length > 0) {
-                throw new Error(`ChatGPt prompt failed moderation: ${failedCategories.join(", ")}`)
+            setOrDelete("linksOn", settings.plans.free.linksOn)
+        }
+
+        if (preferenceChanged("activityHashtag")) {
+            setOrDelete("activityHashtag", false, true)
+        }
+
+        // ChatGPT prompt requires OpenAI moderation.
+        if (preferenceChanged("chatGptPrompt")) {
+            if (!user.isPro) {
+                req.body.chatGptPrompt = ""
             }
-            preferences.chatGptPrompt = req.body.chatGptPrompt.substring(0, 100).trim()
+
+            const hasValue = req.body.chatGptPrompt.trim().length > 2
+            req.body.chatGptPrompt = hasValue ? req.body.chatGptPrompt.substring(0, 100).trim() : ""
+
+            if (hasValue) {
+                const lastChar = req.body.chatGptPrompt.substring(req.body.chatGptPrompt.length - 1)
+                if (![".", "!", "?"].includes(lastChar)) {
+                    req.body.chatGptPrompt += "."
+                }
+                const failedCategories = await openai.validatePrompt(user, req.body.chatGptPrompt)
+                if (failedCategories?.length > 0) {
+                    throw new Error(`ChatGPT prompt failed moderation: ${failedCategories.join(", ")}`)
+                }
+            }
+
+            setOrDelete("chatGptPrompt", "")
         }
 
         // User details to be updated.
