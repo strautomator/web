@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {garmin, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, getActivityFortune, StravaActivityFilter} from "strautomator-core"
+import {garmin, maps, strava, users, generateNameAction, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -339,9 +339,9 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
 // --------------------------------------------------------------------------
 
 /**
- * Get the fortune (auto generated name or quote) for the specified activity details.
+ * Get the fortune (auto generated name or quote) for the specified activity.
  */
-router.post("/:userId/activity-fortune", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/activity-generate-name", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -352,8 +352,8 @@ router.post("/:userId/activity-fortune", async (req: express.Request, res: expre
         if (activity.dateStart) activity.dateStart = new Date(activity.dateStart)
         if (activity.dateEnd) activity.dateEnd = new Date(activity.dateEnd)
 
-        const name = await getActivityFortune(user, activity)
-        webserver.renderJson(req, res, {name: name})
+        await generateNameAction(user, activity)
+        webserver.renderJson(req, res, {name: activity.name})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
     }
