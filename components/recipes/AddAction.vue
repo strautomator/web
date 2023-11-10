@@ -56,7 +56,7 @@
                                 </div>
                                 <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
                                     You can try some auto-generated names
-                                    <a href="/activities/fortune" title="Activity fortune" target="activityFortune">here</a>.
+                                    <a href="/activities/fortune" title="Fortune cookies (aka. ChatGPT name generator)" target="activityFortune">here</a>.
                                 </div>
                             </template>
                         </v-col>
