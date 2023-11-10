@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>Activity fortune</h1>
-            <div>Try out Strautomator's auto generated activity names. Just like fortune cookies!</div>
+            <div>Try out Strautomator's auto generated activity names, just like fortune cookies!</div>
             <v-card class="mt-6" outlined>
                 <v-card-text class="pb-2 pb-md-0">
                     <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
@@ -34,9 +34,6 @@
                         <li v-if="activity.distance">Distance: {{ activity.distance }} {{ user.profile.units == "imperial" ? "mi" : "km" }}</li>
                         <li v-if="activity.speedAvg">Speed: {{ activity.speedAvg }} {{ user.profile.units == "imperial" ? "mph" : "kph" }}</li>
                     </ul>
-                    <div class="mt-4 text-center text-md-left">
-                        <v-btn color="primary" title="Get a new activity name" @click="getFortune()" small rounded outlined>Get new fortune</v-btn>
-                    </div>
                 </v-card-text>
             </v-card>
             <div class="text-caption mt-2" v-if="activity">
@@ -72,6 +69,7 @@ export default {
     },
     methods: {
         async getActivity() {
+            this.activityName = null
             this.activity = null
 
             if (this.activityId.trim() == "") {
@@ -102,7 +100,6 @@ export default {
             try {
                 this.loading = true
                 this.syncError = null
-                this.activityName = null
                 this.activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
 
                 if (this.activity) {
@@ -111,10 +108,10 @@ export default {
                     this.syncError = "Activity not available."
                 }
             } catch (ex) {
-                if (ex.response && ex.response.status == 404) {
+                if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {
                     this.syncError = "Activity not found."
                 } else {
-                    this.syncError = ex.response && ex.response.data.error ? ex.response.data.error : ex.toString()
+                    this.syncError = ex.response?.data?.error ? ex.response.data.error : ex.toString()
                 }
 
                 this.loading = false
@@ -126,7 +123,7 @@ export default {
                 this.syncError = null
 
                 const timestamp = Math.round(new Date().valueOf() / 1000)
-                const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-fortune?ts=${timestamp}`, this.activity)
+                const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-generate-name?ts=${timestamp}`, this.activity)
 
                 this.activityName = result.name
                 this.loading = false
