@@ -168,7 +168,7 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
         }
 
         if (preferenceChanged("windSpeedUnit") && ["m/s", "kph", "mph"].includes(req.body.windSpeedUnit)) {
-            setOrDelete("weatherUnit", "m/s")
+            setOrDelete("windSpeedUnit", "m/s")
         }
 
         if (preferenceChanged("language")) {
