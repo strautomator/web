@@ -166,10 +166,10 @@
                         </div>
                         <v-text-field
                             v-model="chatGptPrompt"
-                            label="ChatGPT prompt"
                             maxlength="100"
+                            placeholder="Enter a custom prompt or leave it blank"
                             @blur="delaySavePreferences()"
-                            :placeholder="user.isPro ? 'Enter a custom prompt or leave it blank' : 'PRO only feature'"
+                            :label="user.isPro ? 'ChatGPT prompt' : 'ChatGPT prompt (PRO Only)'"
                             :disabled="!user.isPro"
                             outlined
                             rounded
