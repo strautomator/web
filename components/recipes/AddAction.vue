@@ -210,6 +210,7 @@ export default {
                 {value: "windSpeed", label: "Wind speed"},
                 {value: "windDirection", label: "Wind direction"},
                 {value: "precipitation", label: "Precipitation"},
+                {value: "airDensity", label: "Air density"},
                 {value: "aqi", label: "AQI (0 to 5)"},
                 {value: "aqiIcon", label: "AQI Icon"}
             ]
