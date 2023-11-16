@@ -9,6 +9,9 @@
                         <div class="flex-grow-1">
                             <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
                         </div>
+                        <div class="flex-grow-0" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                            <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-4 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                        </div>
                         <div class="flex-grow-0 text-center text-md-right">
                             <v-btn color="primary" class="ml-md-4 mt-n4 mt-md-0" @click="getActivity()" :loading="loading" rounded>
                                 <v-icon left>mdi-lightbulb</v-icon>
@@ -34,6 +37,10 @@
                         <li v-if="activity.distance">Distance: {{ activity.distance }} {{ user.profile.units == "imperial" ? "mi" : "km" }}</li>
                         <li v-if="activity.speedAvg">Speed: {{ activity.speedAvg }} {{ user.profile.units == "imperial" ? "mph" : "kph" }}</li>
                     </ul>
+                    <div class="mt-4">
+                        Prompt sent to ChatGPT:
+                        <div class="body-2 font-italic">{{ prompt }}</div>
+                    </div>
                 </v-card-text>
             </v-card>
             <div class="text-caption mt-2" v-if="activity">
@@ -59,11 +66,19 @@ export default {
         }
     },
     data() {
+        const aiHumours = _.cloneDeep(this.$store.state.aiHumours).map((h) => {
+            return {value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}
+        })
+        aiHumours.unshift({value: "", text: "Random"})
+
         return {
             loading: false,
+            prompt: null,
             activity: false,
             activityName: null,
             activityId: "",
+            aiHumours: aiHumours,
+            selectedAiHumour: aiHumours[0],
             syncError: null
         }
     },
@@ -121,11 +136,13 @@ export default {
             try {
                 this.loading = true
                 this.syncError = null
+                this.activity.humour = this.selectedAiHumour.value
 
                 const timestamp = Math.round(new Date().valueOf() / 1000)
                 const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-generate-name?ts=${timestamp}`, this.activity)
 
-                this.activityName = result.name
+                this.activityName = result.response
+                this.prompt = result.prompt
                 this.loading = false
             } catch (ex) {
                 this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
