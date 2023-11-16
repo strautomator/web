@@ -227,7 +227,7 @@ export default {
         }
     },
     data() {
-        const calendarTemplate = this.$store.state.user.calendarTemplate || {}
+        const calendarTemplate = this.$store.state.user.preferences?.calendarTemplate || {}
         const freePlan = this.$store.state.freePlanDetails
         const proPlan = this.$store.state.proPlanDetails
 
