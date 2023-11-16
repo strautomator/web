@@ -110,6 +110,7 @@ export const state = () => ({
     country: null,
     expectedCurrency: null,
     archiveDownloadDays: null,
+    aiHumours: null,
     beta: false
 })
 
@@ -188,8 +189,8 @@ export const mutations = {
         state.user.preferences = Object.assign(state.user.preferences, data)
     },
     setUserCalendarTemplate(state, data) {
-        if (!state.user.calendarTemplate) state.user.calendarTemplate = {}
-        state.user.calendarTemplate = Object.assign(state.user.calendarTemplate, data)
+        if (!state.user.preferences.calendarTemplate) state.user.preferences.calendarTemplate = {}
+        state.user.preferences.calendarTemplate = Object.assign(state.user.preferences.calendarTemplate, data)
     },
     setUserEmail(state, email) {
         state.user.email = email
@@ -211,6 +212,9 @@ export const mutations = {
     },
     setArchiveDownloadDays(state, days) {
         state.archiveDownloadDays = days
+    },
+    setAiHumours(state, data) {
+        state.aiHumours = data
     },
     setUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe
@@ -287,6 +291,9 @@ export const actions = {
 
             // Set GDPR archive days interval.
             commit("setArchiveDownloadDays", settings.gdpr.requestDays)
+
+            // Set AI generative humours.
+            commit("setAiHumours", settings.openai.humours)
 
             // Beta environment?
             if (settings.beta.enabled) {

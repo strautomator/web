@@ -151,7 +151,7 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
 
             if (value != defaultValue) {
                 preferences[field] = value
-            } else if (user.preferences[field] == defaultValue) {
+            } else if (user.preferences[field] == defaultValue || (user.preferences[field] && value == defaultValue)) {
                 preferences[field] = FieldValue.delete()
             }
         }
