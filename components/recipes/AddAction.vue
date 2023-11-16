@@ -32,6 +32,9 @@
                                 <div v-else-if="selectedAction.value == 'mapStyle'">
                                     <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
+                                <div v-else-if="selectedAction.value == 'generateName'">
+                                    <v-select label="Select a humour..." v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                </div>
                                 <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
                                     <Mentionable :keys="['$']" :items="activityTags" offset="1">
                                         <v-textarea
@@ -131,12 +134,16 @@ export default {
             }
             const gears = _.concat([{id: "none", name: "None"}], bikes, shoes)
 
-            // Activity / sport, workout types and map styles.
+            // Activity / sport, workout types, map styles and AI humours.
             const sportTypes = this.$store.state.sportTypes.map((st) => {
                 return {value: st, text: this.getSportName(st)}
             })
             const workoutTypes = _.cloneDeep(this.$store.state.workoutTypes)
             const mapStyles = _.cloneDeep(this.$store.state.mapStyles)
+            const aiHumours = _.cloneDeep(this.$store.state.aiHumours).map((h) => {
+                return {value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}
+            })
+            aiHumours.unshift({value: "", text: "Random"})
 
             // Activity general tags.
             const generalTags = [
@@ -154,6 +161,7 @@ export default {
                 {value: "climbingRatio", label: "Climbing ratio"},
                 {value: "totalTime", label: "Total time"},
                 {value: "movingTime", label: "Moving time"},
+                {value: "co2Saved", label: "CO2 saved"},
                 {value: "weekday", label: "Weekday"},
                 {value: "weekOfYear", label: "Week of year"},
                 {value: "device", label: "Device"}
@@ -251,11 +259,13 @@ export default {
                 selectedSportType: {},
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
+                selectedAiHumour: aiHumours[0],
                 commuteFlags: commuteFlags,
                 gears: gears,
                 sportTypes: sportTypes,
                 workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
+                aiHumours: aiHumours,
                 showTags: false,
                 activityTags: activityTags,
                 valueInput: ""
@@ -347,6 +357,9 @@ export default {
                 } else if (result.type == "mapStyle") {
                     result.value = this.selectedMapStyle.value
                     result.friendlyValue = this.selectedMapStyle.text
+                } else if (result.type == "generateName" && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
+                    result.value = this.selectedAiHumour.value
+                    result.friendlyValue = this.selectedAiHumour.text
                 } else {
                     result.value = this.valueInput || true
                 }
