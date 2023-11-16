@@ -58,11 +58,16 @@ export default {
         actionSummary(action) {
             const actionType = _.find(this.$store.state.recipeActions, {value: action.type}).text
             const valueText = action.friendlyValue || action.value
+            const isBoolean = this.booleanActions.includes(action.type)
 
-            if (action.value && !this.booleanActions.includes(action.type)) {
-                return `${actionType}: ${valueText}`
-            } else {
+            if (isBoolean) {
+                if (action.value != true) {
+                    return `${actionType} (${valueText})`
+                }
+
                 return `${actionType}`
+            } else {
+                return `${actionType}: ${valueText}`
             }
         },
         // Returns the text for the specified action.
