@@ -102,7 +102,7 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
         const data: Partial<UserData> = {
             id: user.id,
             displayName: user.displayName,
-            calendarTemplate: calendarTemplate
+            preferences: {calendarTemplate: calendarTemplate}
         }
         await users.update(data)
         webserver.renderJson(req, res, {ok: true})
