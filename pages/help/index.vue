@@ -91,6 +91,7 @@ export default {
             {tag: "calendar", title: "Calendar"},
             {tag: "records", title: "Personal records"},
             {tag: "performance", title: "Performance estimation"},
+            {tag: "chatgpt", title: "ChatGPT integration"},
             {tag: "spotify", title: "Spotify integration"},
             {tag: "garmin", title: "Garmin integration"},
             {tag: "issues", title: "Common issues"}
