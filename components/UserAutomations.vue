@@ -16,31 +16,19 @@
                         </n-link>
                     </v-hover>
                     <v-card-text class="white--text pb-2">
-                        <ul class="mt-0 pl-4 condition-list">
-                            <li v-if="recipe.defaultFor">Default automation for all "{{ getSportName(recipe.defaultFor) }}" activities</li>
-                            <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
-                            <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</li>
-                            <li v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</li>
-                            <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions">
-                                <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>{{ recipe.op }}</v-chip>
-                                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && codeLogicalOperator(recipe) == 'SOME'}">
-                                    <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toLowerCase() }}</span>
-                                    {{ conditionSummary(condition) }}
-                                </li>
-                            </template>
-                        </ul>
-                        <ul class="mt-2 mb-1 pl-4 action-list">
-                            <li v-if="!recipe.defaultFor && recipe.conditions.length > 1" class="if-then">Then execute these actions:</li>
-                            <li class="font-weight-medium" v-for="(action, index) in recipe.actions" :key="`action-${index}`">
-                                {{ actionSummary(action) }}
-                            </li>
-                        </ul>
+                        <conditions-actions-list :recipe="recipe" />
                         <div class="mt-2 mb-2" v-if="recipe.killSwitch">
                             <v-chip class="mb-0 ml-1" color="removal" title="Stop processing further automations if this one is triggered" outlined small>STOP HERE</v-chip>
                         </div>
+                        <v-btn v-if="user.isPro" class="font-weight-bold float-right mr-n1" color="primary" title="Share this automation" @click="showShareDialog(recipe.id)" small icon rounded nuxt>
+                            <v-icon small>mdi-share-variant</v-icon>
+                        </v-btn>
                         <div class="mt-2 mb-2 mb-md-0" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
                             <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activityCount }}+ times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                             <v-chip class="mb-0 ml-1" v-if="hasCounter(recipe)" disabled outlined small>Counter: {{ recipeStats[recipe.id].counter }}</v-chip>
+                        </div>
+                        <div v-else>
+                            <v-chip class="mb-0 ml-1" disabled outlined small>Never executed before</v-chip>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -78,6 +66,34 @@
                 </v-alert>
             </div>
         </div>
+        <v-dialog v-if="sharingRecipe" v-model="shareDialog" width="440" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Share automation</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideShareDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <h3 class="mt-4">{{ sharingRecipe.title }}</h3>
+                    <p class="mt-2">You can share this automation recipe with other users. Shared automations can be accessed by anyone with the generated link, and will contain the same conditions and actions as the original automation. Proceed?</p>
+                    <div class="text-right">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-2" color="grey" title="Cancel and close" @click.stop="hideShareDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" title="Confirm and share" @click="shareRecipe" rounded>
+                            <v-icon left>mdi-share-variant</v-icon>
+                            Share
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -105,6 +121,7 @@ li.if-then {
 
 <script>
 import _ from "lodash"
+import ConditionsActionsList from "~/components/recipes/ConditionsActionsList.vue"
 import draggable from "vuedraggable"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
@@ -113,11 +130,13 @@ import stravaMixin from "~/mixins/stravaMixin.js"
 export default {
     authenticated: true,
     mixins: [userMixin, recipeMixin, stravaMixin],
-    components: {draggable},
+    components: {ConditionsActionsList, draggable},
     data() {
         return {
             hasChanges: false,
             dragging: false,
+            shareDialog: false,
+            sharingRecipe: null,
             recipeStats: {},
             recipes: []
         }
@@ -192,6 +211,34 @@ export default {
                 await this.$axios.$post(`/api/users/${this.user.id}/recipes/order`, data)
             } catch (ex) {
                 this.$webError(this, "UserAutomations.saveOrder", ex)
+            }
+        },
+        showShareDialog(recipeId) {
+            this.sharingRecipe = this.user.recipes[recipeId]
+            this.shareDialog = true
+        },
+        hideShareDialog() {
+            this.sharingRecipe = null
+            this.shareDialog = false
+        },
+        async shareRecipe() {
+            const recipe = this.sharingRecipe
+            const data = {
+                title: recipe.title,
+                actions: recipe.actions,
+                conditions: recipe.conditions,
+                defaultFor: recipe.defaultFor,
+                op: recipe.op,
+                samePropertyOp: recipe.samePropertyOp
+            }
+
+            try {
+                const sharedRecipe = await this.$axios.$post(`/api/shared-recipes/${this.user.id}/new`, data)
+                this.shareDialog = false
+                this.$router.push({path: `/automations/shared?new=${sharedRecipe.id}&title=${sharedRecipe.title}`})
+            } catch (ex) {
+                this.shareDialog = false
+                this.$webError(this, "UserAutomations.shareRecipe", ex)
             }
         }
     }

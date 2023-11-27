@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>
-                My Automations
+                Automations
                 <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" fab x-small rounded nuxt>+</v-btn>
                 <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
                     <v-icon small>mdi-history</v-icon>
@@ -39,6 +39,8 @@
                     Want to check what Strautomator has updated in the past?
                     <br v-if="!$breakpoint.mdAndUp" />
                     Go to the <n-link to="/automations/history" title="Automation history" nuxt>automation history.</n-link>
+                    <br />
+                    Or if you want to see your previously shared automations, <n-link to="/automations/shared" title="Your shared automations" nuxt>check them here.</n-link>
                 </v-alert>
             </div>
         </v-container>

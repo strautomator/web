@@ -370,9 +370,7 @@ const routeUserRecipe = async (req: any, res: any) => {
                 return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed on the free plan`, 402)
             }
 
-            const now = dayjs.utc().toDate()
-            const hex = Math.round(now.getTime() / 1000).toString(16)
-            recipe.id = "r" + hex.toLowerCase()
+            recipe.id = recipes.generateId()
 
             // Add to user's recipe list.
             user.recipes[recipe.id] = recipe

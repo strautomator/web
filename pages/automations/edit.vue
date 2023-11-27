@@ -309,7 +309,80 @@ export default {
         }
     },
     data() {
-        let recipe, valid, isNew, templateId
+        return {
+            recipe: null,
+            recipeStats: {counter: 0},
+            recipePropertiesActions: [],
+            currentCounter: 0,
+            valid: false,
+            disabledActions: [],
+            actionDialog: false,
+            conditionDialog: false,
+            deleteItemSelected: false,
+            deleteDialog: false,
+            hasChanges: false,
+            asJson: false,
+            jsonSpecsDialog: false,
+            jsonSpecsItem: null,
+            jsonData: null,
+            jsonErrors: [],
+            isNew: false,
+            templateId: false,
+            sharedRecipe: null
+        }
+    },
+    computed: {
+        overMaxRecipes() {
+            if (!this.user) return false
+            return !this.user.isPro && Object.keys(this.user.recipes).length > this.$store.state.freePlanDetails.maxRecipes
+        },
+        hasCounter() {
+            if (!this.recipe) return false
+            return _.find(this.recipe.actions, (a) => _.isString(a.value) && a.value.indexOf("${counter}") >= 0)
+        },
+        changedCounter() {
+            return this.recipeStats.counter != this.currentCounter
+        },
+        groupedConditions() {
+            if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
+            return _.groupBy(this.recipe.conditions, "property")
+        }
+    },
+    watch: {
+        sharedRecipe: function (newVal) {
+            if (newVal) {
+                const recipe = _.cloneDeep(_.pick(newVal, ["conditions", "defaultFor", "actions", "op", "samePropertyOp", "title"]))
+                this.recipe = recipe
+                this.valid = false
+                this.isNew = true
+            }
+        }
+    },
+    async fetch() {
+        if (this.$route.query?.template.substring(0, 1) == "s") {
+            const sharedRecipe = await this.$axios.$get(`/api/shared-recipes/${this.user.id}/${this.$route.query.template}`)
+            this.sharedRecipe = sharedRecipe
+            return
+        }
+
+        if (!this.$route.query.id || !this.$store.state.user.recipes[this.$route.query.id]) {
+            return
+        }
+
+        try {
+            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}`)
+
+            if (recipeStats) {
+                this.recipeStats = recipeStats
+                this.currentCounter = recipeStats.counter
+            }
+        } catch (ex) {
+            this.$webError(this, "AutomationEdit.fetch", ex)
+        }
+    },
+    mounted() {
+        let valid, isNew, templateId
+        let recipe = {conditions: [], actions: []}
 
         if (this.$route.query?.id) {
             recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.id])
@@ -317,13 +390,14 @@ export default {
             isNew = false
         } else if (this.$route.query?.template) {
             templateId = this.$route.query.template
-            recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.template])
-            recipe.title += " (copy)"
-            delete recipe.id
-            valid = false
-            isNew = true
+            if (templateId.substring(0, 1) != "s") {
+                recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.template])
+                recipe.title += " (copy)"
+                delete recipe.id
+                valid = false
+                isNew = true
+            }
         } else {
-            recipe = {conditions: [], actions: []}
             valid = false
             isNew = true
         }
@@ -344,57 +418,10 @@ export default {
         recipeActions.forEach((a) => (a.value = `Action: ${a.value}`))
         const recipePropertiesActions = _.concat([{value: "defaultFor", text: "Default automation for specific sport types"}], recipeProperties, recipeActions)
 
-        return {
-            recipe: recipe,
-            recipeStats: {counter: 0},
-            recipePropertiesActions: recipePropertiesActions,
-            currentCounter: 0,
-            valid: valid,
-            disabledActions: [],
-            actionDialog: false,
-            conditionDialog: false,
-            deleteItemSelected: false,
-            deleteDialog: false,
-            hasChanges: false,
-            asJson: false,
-            jsonSpecsDialog: false,
-            jsonSpecsItem: null,
-            jsonData: null,
-            jsonErrors: [],
-            isNew: isNew,
-            templateId: templateId
-        }
-    },
-    computed: {
-        overMaxRecipes() {
-            if (!this.user) return false
-            return !this.user.isPro && Object.keys(this.user.recipes).length > this.$store.state.freePlanDetails.maxRecipes
-        },
-        hasCounter() {
-            if (!this.recipe) return false
-            return _.find(this.recipe.actions, (a) => _.isString(a.value) && a.value.indexOf("${counter}") >= 0)
-        },
-        changedCounter() {
-            return this.recipeStats.counter != this.currentCounter
-        },
-        groupedConditions() {
-            if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
-            return _.groupBy(this.recipe.conditions, "property")
-        }
-    },
-    async fetch() {
-        if (!this.$route.query.id || !this.$store.state.user.recipes[this.$route.query.id]) return
-
-        try {
-            const recipeStats = await this.$axios.$get(`/api/users/${this.user.id}/recipes/stats/${this.$route.query.id}`)
-
-            if (recipeStats) {
-                this.recipeStats = recipeStats
-                this.currentCounter = recipeStats.counter
-            }
-        } catch (ex) {
-            this.$webError(this, "AutomationEdit.fetch", ex)
-        }
+        this.recipe = recipe
+        this.valid = valid
+        this.isNew = isNew
+        this.recipePropertiesActions = recipePropertiesActions
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges || this.changedCounter) {
@@ -644,7 +671,8 @@ export default {
 
             this.$store.commit("deleteUserRecipe", this.recipe)
             this.$router.push({path: `/automations?deleted=${recipeId}&title=${recipeTitle}`})
-        }
+        },
+        async fromShared() {}
     }
 }
 </script>
