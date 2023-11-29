@@ -1,6 +1,6 @@
 // Strautomator API: Recipes
 
-import {recipes, UserData} from "strautomator-core"
+import {recipes, users, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import webserver = require("../../webserver")
@@ -27,7 +27,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
 })
 
 /**
- * Get a shared recipe by ID.
+ * Get a shared recipe by ID. The user ID on the route is used for logging purposes only.
  */
 router.get("/:userId/:id", async (req: express.Request, res: express.Response) => {
     try {
@@ -38,6 +38,8 @@ router.get("/:userId/:id", async (req: express.Request, res: express.Response) =
 
         const recipeId = req.params.id
         const result = await recipes.getSharedRecipe(user, recipeId)
+        const owner = await users.getById(result.userId)
+        result.userDisplayName = owner.displayName || owner.id
         webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)

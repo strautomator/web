@@ -26,17 +26,18 @@
             </div>
             <div v-else-if="notFound">A shared automation with ID {{ $route.query.id }} could not be found. Please double check the URL again, or ask the automation's owner for the correct link.</div>
             <div v-else-if="selectedRecipe">
-                <v-card class="mb-5" outlined>
+                <v-card outlined>
                     <v-card-title class="accent">
                         <span>{{ selectedRecipe.title }}</span>
                     </v-card-title>
-                    <v-card-text class="white--text pb-2">
-                        <div class="ml-4 mb-2 mt-2">ID: {{ selectedRecipe.id }}</div>
+                    <v-card-text class="white--text pb-2 pt-4">
                         <conditions-actions-list :recipe="selectedRecipe" />
                     </v-card-text>
                 </v-card>
-                <p>If you trust the owner of this recipe and the details above, you can create a new automation based on this one.</p>
-                <div class="mt-3 text-center text-md-left">
+                <v-alert class="mb-2 mt-2">
+                    ID {{ selectedRecipe.id }}, created by <a target="strava" :href="'https://www.strava.com/athletes/5649845' + selectedRecipe.userId">{{ selectedRecipe.userDisplayName }}</a>
+                </v-alert>
+                <div class="mt-5 text-center text-md-left">
                     <v-btn color="primary" title="Create a new automation based on this" :to="'/automations/edit?template=' + selectedRecipe.id" rounded nuxt>
                         <v-icon left>mdi-content-copy</v-icon>
                         Use this automation
@@ -73,9 +74,10 @@
                         </div>
                     </v-card-text>
                 </v-card>
+                <v-alert class="mt-6 text-center text-md-left">To share an automation recipe, use the "Copy URL" button to copy the full URL which you can share with other users.</v-alert>
             </div>
 
-            <v-dialog v-if="selectedRecipe" v-model="deleteDialog" width="440" overlay-opacity="0.95">
+            <v-dialog v-if="deletingRecipe" v-model="deleteDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
                         <v-toolbar-title>Delete shared automation</v-toolbar-title>
@@ -87,7 +89,7 @@
                         </v-toolbar-items>
                     </v-toolbar>
                     <v-card-text>
-                        <h3 class="mt-4">{{ selectedRecipe.title }}</h3>
+                        <h3 class="mt-4">{{ deletingRecipe.title }}</h3>
                         <p class="mt-2">Are you sure you want to delete this shared automation? Users won't be able to copy it, but existing user automations based on this one won't be affected.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>

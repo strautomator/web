@@ -352,6 +352,8 @@ export default {
         sharedRecipe: function (newVal) {
             if (newVal) {
                 const recipe = _.cloneDeep(_.pick(newVal, ["conditions", "defaultFor", "actions", "op", "samePropertyOp", "title"]))
+                recipe.sharedRecipeId = newVal.id
+
                 this.recipe = recipe
                 this.valid = false
                 this.isNew = true
