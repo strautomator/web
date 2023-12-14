@@ -159,17 +159,17 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">ChatGPT custom prompt{{ user.isPro ? "" : " (PRO only)" }}</h3>
+                        <h3 class="mb-2">AI custom prompt{{ user.isPro ? "" : " (PRO only)" }}</h3>
                         <div class="body-2 mb-4">
-                            You can enhance the generated activity names with ChatGPT by appending a custom prompt.
+                            You can enhance the generated activity names with ChatGPT / Gemini by appending a custom prompt.
                             <n-link to="/help?q=chatgpt prompt" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
                         <v-text-field
-                            v-model="chatGptPrompt"
+                            v-model="aiPrompt"
                             maxlength="100"
                             placeholder="Enter a custom prompt or leave it blank"
                             @blur="delaySavePreferences()"
-                            :label="user.isPro ? 'ChatGPT prompt' : 'ChatGPT prompt (PRO Only)'"
+                            :label="user.isPro ? 'AI prompt' : 'AI prompt (PRO Only)'"
                             :disabled="!user.isPro"
                             outlined
                             rounded
@@ -382,7 +382,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
-        const chatGptPrompt = preferences.chatGptPrompt || ""
+        const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
         const windSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : weatherUnit == "f" ? "mph" : "kph"
@@ -438,7 +438,7 @@ export default {
             minDateReset: this.$dayjs().format(dateFormat),
             maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
             language: language,
-            chatGptPrompt: chatGptPrompt,
+            aiPrompt: aiPrompt,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             windSpeedUnit: windSpeedUnit,
@@ -642,7 +642,7 @@ export default {
                     weatherUnit: this.weatherUnit,
                     windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
-                    chatGptPrompt: this.chatGptPrompt.trim().length > 2 ? this.chatGptPrompt : "",
+                    aiPrompt: this.aiPrompt.trim().length > 2 ? this.aiPrompt : "",
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 
@@ -652,7 +652,7 @@ export default {
             } catch (ex) {
                 this.$webError(this, "Account.savePreferences", ex)
                 if (ex.response?.data?.message?.includes("ChatGPT")) {
-                    this.chatGptPrompt = ""
+                    this.aiPrompt = ""
                 }
             }
         },

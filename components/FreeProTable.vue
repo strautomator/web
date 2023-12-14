@@ -53,7 +53,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>ChatGPT integration</td>
+                            <td>AI integration</td>
                             <td class="text-center">Limited</td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>

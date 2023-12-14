@@ -10,7 +10,7 @@
                 <v-card color="black" class="mb-4 home-panel">
                     <v-card-text>
                         <div class="text-left">
-                            <p>Strautomator's activity name generation just got a major boost: it can now use ChatGPT to bring an unique and cool name for each of your cycling and running activities.</p>
+                            <p>Strautomator's activity name generation just got a major boost: it can now use ChatGPT and Gemini to bring an unique and cool name for each of your cycling and running activities.</p>
                             <v-img class="mb-8" src="/images/feature/chat-gpt-prompt.png"></v-img>
 
                             <p>To use this feature, simply select the "Auto generate the activity name" action on your automation.</p>

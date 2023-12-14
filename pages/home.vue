@@ -28,7 +28,7 @@
                                     <li>Set the default bike for road, MTB and gravel rides</li>
                                     <li>Add weather data to activity names or descriptions</li>
                                     <li>Add the Spotify tracks (or lyrics) that you were listening to during your workouts</li>
-                                    <li>Give your activities cool and unique names, powered by ChatGPT</li>
+                                    <li>Give your activities cool and unique names, powered by ChatGPT and Gemini</li>
                                     <li>Track the usage and get notified when you need to replace your bike components</li>
                                     <li>Export your past activities and upcoming club events to .ics calendars</li>
                                     <li>Show your upcoming club events directly on a map, with weather forecasts</li>

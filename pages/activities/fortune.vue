@@ -38,7 +38,8 @@
                         <li v-if="activity.speedAvg">Speed: {{ activity.speedAvg }} {{ user.profile.units == "imperial" ? "mph" : "kph" }}</li>
                     </ul>
                     <div class="mt-4">
-                        Prompt sent to ChatGPT:
+                        <div>Provider: {{ provider }}</div>
+                        Prompt:
                         <div class="body-2 font-italic">{{ prompt }}</div>
                     </div>
                 </v-card-text>

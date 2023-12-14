@@ -293,7 +293,7 @@ export const actions = {
             commit("setArchiveDownloadDays", settings.gdpr.requestDays)
 
             // Set AI generative humours.
-            commit("setAiHumours", settings.openai.humours)
+            commit("setAiHumours", settings.ai.humours)
 
             // Beta environment?
             if (settings.beta.enabled) {

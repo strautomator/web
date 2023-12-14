@@ -222,27 +222,27 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("activityHashtag", false, true)
         }
 
-        // ChatGPT prompt requires OpenAI moderation.
-        if (preferenceChanged("chatGptPrompt")) {
+        // AI prompt requires special moderation.
+        if (preferenceChanged("aiPrompt")) {
             if (!user.isPro) {
-                req.body.chatGptPrompt = ""
+                req.body.aiPrompt = ""
             }
 
-            const hasValue = req.body.chatGptPrompt.trim().length > 2
-            req.body.chatGptPrompt = hasValue ? req.body.chatGptPrompt.substring(0, 100).trim() : ""
+            const hasValue = req.body.aiPrompt.trim().length > 2
+            req.body.aiPrompt = hasValue ? req.body.aiPrompt.substring(0, 100).trim() : ""
 
             if (hasValue) {
-                const lastChar = req.body.chatGptPrompt.substring(req.body.chatGptPrompt.length - 1)
+                const lastChar = req.body.aiPrompt.substring(req.body.aiPrompt.length - 1)
                 if (![".", "!", "?"].includes(lastChar)) {
-                    req.body.chatGptPrompt += "."
+                    req.body.aiPrompt += "."
                 }
-                const failedCategories = await openai.validatePrompt(user, req.body.chatGptPrompt)
+                const failedCategories = await openai.validatePrompt(user, req.body.aiPrompt)
                 if (failedCategories?.length > 0) {
-                    throw new Error(`ChatGPT prompt failed moderation: ${failedCategories.join(", ")}`)
+                    throw new Error(`AI prompt failed moderation: ${failedCategories.join(", ")}`)
                 }
             }
 
-            setOrDelete("chatGptPrompt", "")
+            setOrDelete("aiPrompt", "")
         }
 
         // User details to be updated.
