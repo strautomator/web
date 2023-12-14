@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {garmin, maps, openai, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {ai, garmin, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -364,7 +364,7 @@ router.post("/:userId/activity-generate-name", async (req: express.Request, res:
             logger.warn("Routes.strava", req.method, req.originalUrl, "Failed to get weather summary, will proceed without")
         }
 
-        const result = await openai.generateActivityName(user, activity, req.body.humour, weatherSummaries)
+        const result = await ai.generateActivityName(user, activity, req.body.humour, weatherSummaries)
         user.preferences.language = language
 
         webserver.renderJson(req, res, result)

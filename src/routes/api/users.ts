@@ -222,6 +222,10 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("activityHashtag", false, true)
         }
 
+        if (preferenceChanged("aiProvider")) {
+            setOrDelete("aiProvider", "openai")
+        }
+
         // AI prompt requires special moderation.
         if (preferenceChanged("aiPrompt")) {
             if (!user.isPro) {

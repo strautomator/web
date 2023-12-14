@@ -2,7 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <h1>Activity fortune</h1>
-            <div>Try out Strautomator's auto generated activity names, just like fortune cookies!</div>
+            <div>Try out Strautomator's generated activity names, powered by ChatGPT and Gemini!</div>
             <v-card class="mt-6" outlined>
                 <v-card-text class="pb-2 pb-md-0">
                     <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
@@ -38,8 +38,7 @@
                         <li v-if="activity.speedAvg">Speed: {{ activity.speedAvg }} {{ user.profile.units == "imperial" ? "mph" : "kph" }}</li>
                     </ul>
                     <div class="mt-4">
-                        <div>Provider: {{ provider }}</div>
-                        Prompt:
+                        Prompt sent to {{ provider.toUpperCase() }}:
                         <div class="body-2 font-italic">{{ prompt }}</div>
                     </div>
                 </v-card-text>
@@ -75,6 +74,7 @@ export default {
         return {
             loading: false,
             prompt: null,
+            provider: null,
             activity: false,
             activityName: null,
             activityId: "",
@@ -143,6 +143,7 @@ export default {
                 const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-generate-name?ts=${timestamp}`, this.activity)
 
                 this.activityName = result.response
+                this.provider = result.provider
                 this.prompt = result.prompt
                 this.loading = false
             } catch (ex) {

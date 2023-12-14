@@ -133,7 +133,7 @@
                     <div class="mt-4">
                         <h3 class="mb-2">Omit tag suffixes</h3>
                         <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
-                        <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit, keep the appended suffixes'"></v-switch>
+                        <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit'"></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Privacy mode</h3>
@@ -159,11 +159,13 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">AI custom prompt{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="body-2 mb-4">
-                            You can enhance the generated activity names with ChatGPT / Gemini by appending a custom prompt.
-                            <n-link to="/help?q=chatgpt prompt" title="More details about the privacy mode" nuxt>More details...</n-link>
-                        </div>
+                        <h3 class="mb-2">AI preferences</h3>
+                        <div class="body-2 mb-4">You can select your preferred AI provider.</div>
+                        <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp">
+                            <v-radio label="OpenAI (ChatGPT)" :value="'openai'"></v-radio>
+                            <v-radio label="Google (Gemini)" :value="'gemini'"></v-radio>
+                        </v-radio-group>
+                        <div class="body-2 mb-4">You can also enhance the generated activity names with by appending a custom prompt (PRO only).</div>
                         <v-text-field
                             v-model="aiPrompt"
                             maxlength="100"
@@ -382,6 +384,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
+        const aiProvider = preferences.aiProvider || "openai"
         const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
@@ -438,6 +441,7 @@ export default {
             minDateReset: this.$dayjs().format(dateFormat),
             maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
             language: language,
+            aiProvider: aiProvider,
             aiPrompt: aiPrompt,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
@@ -512,6 +516,9 @@ export default {
             this.preferenceChanged(newValue, oldValue)
         },
         dateResetCounter(newValue, oldValue) {
+            this.preferenceChanged(newValue, oldValue)
+        },
+        aiProvider(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         }
     },
@@ -642,6 +649,7 @@ export default {
                     weatherUnit: this.weatherUnit,
                     windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
+                    aiProvider: this.aiProvider,
                     aiPrompt: this.aiPrompt.trim().length > 2 ? this.aiPrompt : "",
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
