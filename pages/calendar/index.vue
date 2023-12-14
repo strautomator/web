@@ -27,8 +27,8 @@
                         <h3>Sport types</h3>
                         <v-radio-group class="mt-1" v-model="calendarSports" :row="$breakpoint.mdAndUp">
                             <v-radio label="All sports" value="all"></v-radio>
-                            <v-radio label="Rides" value="Ride,EBikeRide,VirtualRide"></v-radio>
-                            <v-radio label="Runs" value="Run,Walk"></v-radio>
+                            <v-radio label="Rides" value="Ride,MountainBikeRide,EBikeRide,EMountainBikeRide,VirtualRide"></v-radio>
+                            <v-radio label="Runs" value="Walk,Run,TrailRun,VirtualRun"></v-radio>
                         </v-radio-group>
                     </div>
                     <div>
