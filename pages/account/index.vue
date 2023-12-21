@@ -336,7 +336,9 @@
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <p class="mt-4">If you enable the privacy mode, some of your profile data will be anonymized, your personal records won't be tracked, and most of your processed activities metadata will be discarded.</p>
+                    <p class="mt-4">
+                        If you enable the privacy mode, some of your profile data will be anonymized, your personal records won't be tracked, and most of your processed activities metadata will be discarded. AI integrations will also be disabled.
+                    </p>
                     <p>This action is irreversible! If you enable the Privacy Mode and then disable it again, the data previously discarded cannot be recovered.</p>
 
                     <div class="text-right mt-1">
