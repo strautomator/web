@@ -339,16 +339,16 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
 // --------------------------------------------------------------------------
 
 /**
- * Get the fortune (auto generated name or quote) for the specified activity.
+ * Get the AI generated name or description for the specified activity.
  */
-router.post("/:userId/activity-generate-name", async (req: express.Request, res: express.Response) => {
+router.post("/:userId/activity-ai-generate", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
-        if (!req.body || Object.keys(req.body).length == 0) throw new Error("Missing activity details")
+        if (!req.body || !req.body.activity || Object.keys(req.body.activity).length == 0) throw new Error("Missing activity details")
 
         // Activity dates must be transformed.
-        const activity = req.body
+        const activity = req.body.activity
         if (activity.dateStart) activity.dateStart = new Date(activity.dateStart)
         if (activity.dateEnd) activity.dateEnd = new Date(activity.dateEnd)
 
@@ -356,7 +356,7 @@ router.post("/:userId/activity-generate-name", async (req: express.Request, res:
         const language = user.preferences.language
         user.preferences.language = "en"
 
-        // Get weather (optional).
+        // Get weather.
         let weatherSummaries
         try {
             weatherSummaries = await weather.getActivityWeather(user, activity, true)
@@ -364,10 +364,13 @@ router.post("/:userId/activity-generate-name", async (req: express.Request, res:
             logger.warn("Routes.strava", req.method, req.originalUrl, "Failed to get weather summary, will proceed without")
         }
 
-        const result = await ai.generateActivityName(user, activity, req.body.humour, weatherSummaries)
+        const provider = req.body.provider
+        const humour = req.body.humour
+        const name = await ai.generateActivityName(user, {activity, humour, provider, weatherSummaries})
+        const description = await ai.generateActivityDescription(user, {activity, humour, provider, weatherSummaries})
         user.preferences.language = language
 
-        webserver.renderJson(req, res, result)
+        webserver.renderJson(req, res, {name, description})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
     }

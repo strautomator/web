@@ -159,13 +159,13 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">AI preferences</h3>
+                        <h3 class="mb-2">AI preferences (PRO only)</h3>
                         <div class="body-2 mb-4">You can select your preferred AI provider.</div>
-                        <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp">
-                            <v-radio label="OpenAI (ChatGPT)" :value="'openai'"></v-radio>
-                            <v-radio label="Google (Gemini)" :value="'gemini'"></v-radio>
+                        <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
+                            <v-radio label="ChatGPT" :value="'openai'"></v-radio>
+                            <v-radio label="Gemini" :value="'gemini'"></v-radio>
                         </v-radio-group>
-                        <div class="body-2 mb-4">You can also enhance the generated activity names with by appending a custom prompt (PRO only).</div>
+                        <div class="body-2 mb-4">You can also enhance the generated activity names and descriptions by appending a custom prompt.</div>
                         <v-text-field
                             v-model="aiPrompt"
                             maxlength="100"
@@ -176,6 +176,12 @@
                             outlined
                             rounded
                         ></v-text-field>
+                    </div>
+                    <div class="mt-n2 text-center text-md-left">
+                        <n-link title="Help me selecting a weather provider" to="/activities/fortune" nuxt router>
+                            <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
+                            Want to test the AI generated features?
+                        </n-link>
                     </div>
                 </v-card-text>
             </v-card>

@@ -32,7 +32,7 @@
                                 <div v-else-if="selectedAction.value == 'mapStyle'">
                                     <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'generateName'">
+                                <div v-else-if="actionIsAI">
                                     <v-select label="Select a humour..." v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
@@ -57,9 +57,9 @@
                                     <br />
                                     Examples: ${distance} ${speedAvg} ${totalTime}
                                 </div>
-                                <div class="text-center mb-2 mt-n2" v-if="selectedAction.value == 'generateName'">
-                                    You can try some auto-generated names
-                                    <a href="/activities/fortune" title="Fortune cookies (aka. ChatGPT name generator)" target="activityFortune">here</a>.
+                                <div class="text-center mb-2 mt-n2" v-if="actionIsAI">
+                                    You can try some auto-generated features
+                                    <a href="/activities/fortune" title="Fortune cookies (aka. AI name and poem generator)" target="activityFortune">here</a>.
                                 </div>
                             </template>
                         </v-col>
@@ -107,6 +107,9 @@ export default {
         },
         actionIsText() {
             return this.selectedAction && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
+        },
+        actionIsAI() {
+            return this.selectedAction && ["generateName", "generateDescription"].includes(this.selectedAction.value)
         }
     },
     watch: {
@@ -277,6 +280,7 @@ export default {
 
             // Make sure we disable related actions that were already set.
             if (arr.includes("name")) {
+                arr.push("generateName")
                 arr.push("prependName")
                 arr.push("appendName")
             }
@@ -287,6 +291,7 @@ export default {
                 arr.push("name")
             }
             if (arr.includes("description")) {
+                arr.push("generateDescription")
                 arr.push("prependDescription")
                 arr.push("appendDescription")
             }
@@ -305,11 +310,15 @@ export default {
                 item.disabled = true
             }
 
-            // Webhook is enabled only on PRO accounts.
+            // Some actions are enabled only on PRO accounts.
             if (!this.$store.state.user.isPro) {
+                const proText = " (PRO only)"
                 const webhook = _.find(recipeActions, {value: "webhook"})
                 webhook.disabled = true
-                webhook.text += " (PRO only)"
+                webhook.text += proText
+                const generateDescription = _.find(recipeActions, {value: "generateDescription"})
+                generateDescription.disabled = true
+                generateDescription.text += proText
             }
 
             this.recipeActions = recipeActions
@@ -357,7 +366,7 @@ export default {
                 } else if (result.type == "mapStyle") {
                     result.value = this.selectedMapStyle.value
                     result.friendlyValue = this.selectedMapStyle.text
-                } else if (result.type == "generateName" && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
+                } else if (this.actionIsAI && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
                     result.value = this.selectedAiHumour.value
                     result.friendlyValue = this.selectedAiHumour.text
                 } else {
