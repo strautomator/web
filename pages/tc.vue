@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: June 17th, 2023</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: December 21st, 2023</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>This website and its services were developed and are maintained by a single individual: Igor Ramadas.</p>
                         <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
@@ -90,12 +90,14 @@
                         </ul>
                         <p>Additionally, some of the website features will be disabled, including:</p>
                         <ul class="mb-6">
+                            <li>Processing of activity data via external AI providers</li>
                             <li>Tracking of personal activity records</li>
                             <li>History log for GearWear components</li>
                         </ul>
 
                         <h2 class="mt-6 mb-4">Disclosure of Personal Information to Third Parties</h2>
                         <p>We do not disclose any of your personal information to third parties or individuals.</p>
+                        <p>If you decide to use AI-based features, some of your activity metadata might be sent out to an external AI provider, but this metadata cannot be directly linked back to you using just the data provided by Strautomator.</p>
                         <p>Third party services (Strava, and possibly PayPal or GitHub) will disclose some of your personal information to Strautomator. But we do not send any extra information about you to them, that they don't already have.</p>
                         <p>We might, however, disclose your personal information to legal authorities if we are presented with a warrant to do so.</p>
 
