@@ -233,7 +233,7 @@ router.get("/:userId/process-activity/:activityId", async (req: express.Request,
         if (!user) return
 
         // Process the passed activity.
-        const processedActivity = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
+        const processedActivity = await strava.activityProcessing.processActivity(user, {id: parseInt(req.params.activityId)})
         webserver.renderJson(req, res, processedActivity || {processed: false})
     } catch (ex) {
         const errorMessage = ex.toString()
@@ -604,7 +604,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
             await strava.activityProcessing.queueActivity(user, parseInt(req.params.activityId))
             user.dateLastProcessedActivity = now
         } else {
-            const processed = await strava.activityProcessing.processActivity(user, parseInt(req.params.activityId))
+            const processed = await strava.activityProcessing.processActivity(user, {id: parseInt(req.params.activityId)})
             if (processed && !processed.error) {
                 user.dateLastProcessedActivity = now
             }
