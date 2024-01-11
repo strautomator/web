@@ -1,7 +1,7 @@
 <template>
     <div class="mt-4 mb-2 text-center" v-if="!hidden">
         <div class="text-h6">Affiliate links</div>
-        <v-card class="mr-3 ml-3 pt-1" outlined>
+        <v-card class="mr-3 ml-3" outlined>
             <v-card-text class="grey lighten-2">
                 <v-row>
                     <v-col cols="4" v-for="link in links" :key="`affiliate-${link.id}`">
