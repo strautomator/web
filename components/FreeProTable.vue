@@ -87,13 +87,12 @@
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
-
                         <tr v-if="!noPrice">
                             <td>Price / year</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">
                                 <n-link to="/billing" v-if="!$store.state.user?.isPro" nuxt>{{ $store.state.proPlanDetails.price.year }} {{ currency }}</n-link>
-                                <span v-else>{{ $store.state.proPlanDetails.price.year }} {{ currency }}</span>
+                                <span v-else>{{ $store.state.proPlanDetails.price.year }} {{ currency }} *</span>
                             </td>
                         </tr>
                     </tbody>
@@ -102,7 +101,8 @@
         </v-card>
         <ul v-if="!noFooter" class="caption mt-2 mb-5 pl-4">
             <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
-            <li>Some features might be released first to PRO users so they can give their feedback.</li>
+            <li>PRO users can test their feature requests on a dedicated beta environment.</li>
+            <li>The yearly subscription price via PayPal will increase to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ currency }} soon.</li>
         </ul>
     </div>
 </template>

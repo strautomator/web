@@ -9,10 +9,11 @@
             <div v-if="unsubscribed">
                 <v-card outlined>
                     <v-card-text>
-                        <h3 class="error--text mb-2">Your subscription was cancelled!</h3>
+                        <h3 class="error--text mb-2">You are now using a Free account!</h3>
                         <div>
-                            Your account will be downgraded back to the free version later. Thanks for your support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator reactivated.
+                            {{ unsubMessage }}
                         </div>
+                        <div>Thanks for your support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator reactivated.</div>
                         <div class="mt-4">
                             <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
@@ -108,9 +109,10 @@
                     Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
                     and give me the motivation to keep adding new features.
                 </p>
-                <div class="mt-4 mb-6">You can subscribe via PayPal or GitHub.</div>
+                <p class="mt-4 mb-6">You can subscribe via PayPal or GitHub.</p>
+
                 <v-card class="mb-6" outlined>
-                    <v-card-title class="accent">PRO subscription</v-card-title>
+                    <v-card-title class="accent">Subscribe to PRO</v-card-title>
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
@@ -128,6 +130,10 @@
                                 </a>
                             </v-col>
                         </v-row>
+                        <p class="text-center" v-if="$store.state.proPlanDetails.price.upcoming">
+                            Hurry up! The yearly subscription price for new users will increase from
+                            {{ activeBillingPlan.price.toFixed(2) }} {{ $store.state.expectedCurrency }} to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ $store.state.expectedCurrency }} soon.
+                        </p>
                     </v-card-text>
                 </v-card>
                 <free-pro-table />
@@ -159,7 +165,8 @@ export default {
             subscriptionSource: null,
             unsubscribed: false,
             unsubDialog: false,
-            unsubReason: ""
+            unsubReason: "",
+            unsubMessage: null
         }
     },
     computed: {
@@ -241,8 +248,9 @@ export default {
                 this.loading = true
 
                 if (this.unsubReason) this.unsubReason = this.unsubReason.trim()
-                await this.$axios.$post(`/api/${this.subscription.source}/${this.user.id}/unsubscribe`, {reason: this.unsubReason || null})
 
+                const res = await this.$axios.$post(`/api/users/${this.user.id}/unsubscribe`, {reason: this.unsubReason || null})
+                this.unsubMessage = res.message
                 this.loading = false
                 this.unsubscribed = true
             } catch (ex) {
