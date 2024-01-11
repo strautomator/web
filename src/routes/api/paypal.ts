@@ -1,6 +1,6 @@
 // Strautomator API: PayPal
 
-import {mailer, paypal, subscriptions, UserData} from "strautomator-core"
+import {paypal, subscriptions, UserData} from "strautomator-core"
 import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
@@ -108,40 +108,6 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
 
         // Create subscription and update it on the user.
         const subscription = await paypal.subscriptions.createSubscription(billingPlan, user.id)
-        webserver.renderJson(req, res, subscription)
-    } catch (ex) {
-        webserver.renderError(req, res, ex)
-    }
-})
-
-/**
- * Cancel an existing PayPal subscription.
- */
-router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Response) => {
-    try {
-        const user: UserData = (await auth.requestValidator(req, res)) as UserData
-        if (!user) return
-
-        // Get and validate subscription info from PayPal.
-        const subscription = await paypal.subscriptions.getSubscription(user.subscriptionId)
-        if (!subscription) {
-            return webserver.renderError(req, res, `Subscription ${user.subscriptionId} is invalid`, 409)
-        }
-
-        // Force set user ID on subscription and request cancellation on PayPal.
-        subscription.userId = user.id
-        await paypal.subscriptions.cancelSubscription(subscription)
-        delete user.subscriptionId
-
-        // User provided a reason? Notify it.
-        if (req.body?.reason) {
-            mailer.send({
-                to: settings.mailer.from,
-                subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
-                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${req.body.reason.toString()}`
-            })
-        }
-
         webserver.renderJson(req, res, subscription)
     } catch (ex) {
         webserver.renderError(req, res, ex)

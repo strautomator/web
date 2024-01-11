@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, openai, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, mailer, openai, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
 import auth from "../auth"
 import dayjs from "../../dayjs"
@@ -92,9 +92,9 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
             return webserver.renderError(req, res, "User has no valid subscription", 404)
         }
 
-        let subscription = await subscriptions.getById(user.subscriptionId)
+        const subscription = await subscriptions.getById(user.subscriptionId)
         if (!subscription) {
-            return webserver.renderError(req, res, "User subscription was not found", 404)
+            return webserver.renderError(req, res, "User subscription not found", 404)
         }
 
         webserver.renderJson(req, res, subscription)
@@ -104,7 +104,63 @@ router.get("/:userId/subscription", async (req: express.Request, res: express.Re
 })
 
 /**
- * Delete user and cancel its pending jobs / webhooks.
+ * Cancel an existing PRO subscription.
+ */
+router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const subscription = await subscriptions.getById(user.subscriptionId)
+        if (!subscription) {
+            return webserver.renderError(req, res, "User subscription not found", 404)
+        }
+
+        let message = "Your subscription has been cancelled."
+
+        // Cancel PayPal subscription.
+        if (subscription.source == "paypal") {
+            const paypalSubscription = await paypal.subscriptions.getSubscription(user.subscriptionId)
+            if (!paypalSubscription) {
+                return webserver.renderError(req, res, `Subscription ${user.subscriptionId} is invalid`, 404)
+            }
+
+            // Trigger the cancellation on PayPal.
+            paypalSubscription.userId = user.id
+            await paypal.subscriptions.cancelSubscription(paypalSubscription)
+
+            message = "Your subscription was cancelled on PayPal, and you will not be charged again."
+        } else {
+            const data: Partial<UserData> = {
+                id: user.id,
+                displayName: user.displayName,
+                isPro: false,
+                subscriptionId: null
+            }
+            await users.update(data)
+
+            if (subscription.source == "github") {
+                message = "Your subscription is managed via GitHub. Please go to https://github.com/sponsors/accounts to cancel your sponsorship."
+            } else if (subscription.source == "revolut") {
+                message = `Your subscription is tied to a Revolut referral. If you wish to re-enable it in the future, please contact me at ${settings.mailer.contact}`
+            }
+        }
+
+        // Notify the developer.
+        await mailer.send({
+            to: settings.mailer.contact,
+            subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
+            body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${req.body.reason.toString() || "none given"}`
+        })
+
+        webserver.renderJson(req, res, {message: message})
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
+ * Delete user account.
  */
 router.delete("/:userId", async (req: express.Request, res: express.Response) => {
     try {
