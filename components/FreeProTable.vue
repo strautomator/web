@@ -102,7 +102,7 @@
         <ul v-if="!noFooter" class="caption mt-2 mb-5 pl-4">
             <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
             <li>PRO users can test their feature requests on a dedicated beta environment.</li>
-            <li>The yearly subscription price via PayPal will increase to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ currency }} soon.</li>
+            <li v-if="$store.state.proPlanDetails.price.upcoming">The yearly subscription price will increase to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ currency }} soon.</li>
         </ul>
     </div>
 </template>
