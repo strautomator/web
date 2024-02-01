@@ -21,7 +21,7 @@ export default {
     data() {
         const affiliates = [
             {id: "aliexpress", title: "AliExpress", url: "https://links.devv.com/l/aliexpress-cycling-components"},
-            {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["de", "it"]},
+            {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["at", "de", "it", "uk"]},
             {id: "halfords", title: "Halfords", url: "https://links.devv.com/l/halfords", country: ["gb", "ie", "im", "uk"]},
             {id: "ican", title: "ICAN", url: "https://links.devv.com/l/ican"},
             {id: "nextdns", title: "NextDNS", url: "https://links.devv.com/l/nextdns"},
