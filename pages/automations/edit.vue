@@ -248,7 +248,7 @@
                     Duplicate automation
                 </v-btn>
                 <br v-if="!$breakpoint.mdAndUp" />
-                <v-btn color="removal" title="Delete this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" :disabled="!valid" @click.stop="showDeleteDialog" rounded outlined>
+                <v-btn color="removal" title="Delete this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" @click.stop="showDeleteDialog" rounded outlined>
                     <v-icon left>mdi-delete</v-icon>
                     Delete automation
                 </v-btn>
@@ -662,6 +662,8 @@ export default {
         async deleteRecipe() {
             const recipeId = this.recipe.id
             const recipeTitle = this.recipe.title
+
+            this.hasChanges = false
 
             try {
                 this.$axios.$delete(`/api/users/${this.user.id}/recipes/${this.recipe.id}`)
