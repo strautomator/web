@@ -172,9 +172,9 @@ export default {
 
             // Activity performance tags.
             const performanceTags = [
-                {value: "wattsAvg", label: "Avg watts"},
-                {value: "wattsWeighted", label: "Weighted watts"},
-                {value: "wattsMax", label: "Max watts"},
+                {value: "wattsAvg", label: "Avg power"},
+                {value: "wattsWeighted", label: "Normalized power"},
+                {value: "wattsMax", label: "Max power"},
                 {value: "wattsKg", label: "Watts / kg"},
                 {value: "tss", label: "TSS"},
                 {value: "hrAvg", label: "Avg HR"},
@@ -182,6 +182,16 @@ export default {
                 {value: "calories", label: "Calories"},
                 {value: "relativeEffort", label: "Relative effort"},
                 {value: "perceivedExertion", label: "Perceived exertion"}
+            ]
+
+            // Garmin tags.
+            const garminTags = [
+                {value: "garmin.tss", label: "Garmin: TSS"},
+                {value: "garmin.trainingLoad", label: "Garmin: Training load"},
+                {value: "garmin.aerobicTrainingEffect", label: "Garmin: Aerobic t. effect"},
+                {value: "garmin.anaerobicTrainingEffect", label: "Garmin: Anaerobic t. effect"},
+                {value: "garmin.pedalSmoothness", label: "Garmin: Pedal smoothness"},
+                {value: "garmin.pedalTorqueEffect", label: "Garmin: Torque effectiveness"}
             ]
 
             // Activity lap tags.
@@ -208,6 +218,15 @@ export default {
                     label: `${t.label} (end)`
                 })
             }
+
+            // Music track tags.
+            const musicTags = [
+                {value: "trackList", label: "Spotify: Full track list"},
+                {value: "trackStart", label: "Spotify: Track title (start)"},
+                {value: "trackEnd", label: "Spotify: Track title (end)"},
+                {value: "lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
+                {value: "lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true}
+            ]
 
             // Weather tags.
             const weatherTags = []
@@ -236,17 +255,8 @@ export default {
                 })
             }
 
-            // Music track tags.
-            const musicTags = [
-                {value: "trackList", label: "Spotify: Full track list"},
-                {value: "trackStart", label: "Spotify: track title (start)"},
-                {value: "trackEnd", label: "Spotify: track title (end)"},
-                {value: "lyricsStart", label: "Spotify: track lyrics (first)", pro: true},
-                {value: "lyricsEnd", label: "Spotify: track lyrics (last)", pro: true}
-            ]
-
             // Combine activity tags.
-            const activityTags = _.concat(generalTags, performanceTags, lapTags, locationTags, musicTags, weatherTags)
+            const activityTags = _.concat(generalTags, performanceTags, garminTags, lapTags, locationTags, musicTags, weatherTags)
             for (let t of activityTags) {
                 t.value = "{" + t.value + "}"
             }
