@@ -1,6 +1,6 @@
 // Strautomator API: Garmin
 
-import {garmin, UserData} from "strautomator-core"
+import {garmin, strava, UserData} from "strautomator-core"
 import auth from "../auth"
 import express from "express"
 import webserver = require("../../webserver")
@@ -57,6 +57,32 @@ router.post(`/webhook/${settings.garmin.api.urlToken}`, async (req: express.Requ
     try {
         await garmin.webhooks.processWebhook(req)
         webserver.renderJson(req, res, {ok: true})
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
+ * Get the specified Garmin activity (if there's any). Please note that the ID is the
+ */
+router.post("/:userId/match-activity/:stravaId", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // If the Strava activity data was not passed, get it from their API first.
+        const activity = req.body?.id && req.body?.type ? req.body : await strava.activities.getActivity(user, req.params.stravaId.toString())
+        if (!activity) {
+            throw new Error("Activity not found")
+        }
+
+        // Fetch processed Garmin activity (if there's one).
+        const garminActivity = await garmin.activities.getMatchingActivity(user, activity)
+        if (!garminActivity) {
+            throw new Error("Could not find a matching Garmin activity")
+        }
+
+        webserver.renderJson(req, res, garminActivity)
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }
