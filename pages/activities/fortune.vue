@@ -31,12 +31,6 @@
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
-                            <div class="flex-grow-1"></div>
-                            <div class="flex-grow-0 flex-shrink-1" :class="{'flex-column': !$breakpoint.mdAndUp}"></div>
-                            <div class="flex-grow-0 flex-shrink-1" :class="{'flex-column': !$breakpoint.mdAndUp}"></div>
-                            <div class="flex-grow-0 text-center text-md-right"></div>
-                        </div>
                         <div v-if="activity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above, or leave blank to pick a recently processed activity.</div>
 
                         <v-alert class="mt-4 mt-md-0" border="top" color="error" v-else-if="syncError">
