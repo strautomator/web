@@ -361,7 +361,7 @@ export default {
         }
     },
     async fetch() {
-        if (this.$route.query?.template.substring(0, 1) == "s") {
+        if (this.$route.query?.template?.substring(0, 1) == "s") {
             const sharedRecipe = await this.$axios.$get(`/api/shared-recipes/${this.user.id}/${this.$route.query.template}`)
             this.sharedRecipe = sharedRecipe
             return
@@ -392,7 +392,7 @@ export default {
             isNew = false
         } else if (this.$route.query?.template) {
             templateId = this.$route.query.template
-            if (templateId.substring(0, 1) != "s") {
+            if (templateId?.substring(0, 1) != "s") {
                 recipe = _.cloneDeep(this.$store.state.user.recipes[this.$route.query.template])
                 recipe.title += " (copy)"
                 delete recipe.id
