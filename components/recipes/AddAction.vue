@@ -55,7 +55,7 @@
                                 <div v-if="actionIsText" class="mt-n1 text-caption text-center text-md-left">
                                     Type $ to display the available activity tags, then keep typing to search for the desired tag.
                                     <br />
-                                    Examples: ${distance} ${speedAvg} ${totalTime}
+                                    Example: ${distance} ${speedAvg} ${totalTime}
                                 </div>
                                 <div class="text-center mb-2 mt-n2" v-if="actionIsAI">
                                     You can try some auto-generated features
@@ -72,17 +72,29 @@
                             </v-btn>
                         </v-col>
                     </v-row>
+                    <v-row v-if="actionIsText" no-gutters>
+                        <v-col class="text-center mt-4" cols="12">
+                            <v-btn v-if="!showTags" @click="showTags = true" title="View all available tags" rounded x-small>
+                                <v-icon left>mdi-chevron-down</v-icon>
+                                View all tags
+                            </v-btn>
+                            <v-card v-else>
+                                <v-card-text class="pa-0 ma-0">
+                                    <h4 class="mb-1">Available tags</h4>
+                                    <div style="max-height: 140px" class="overflow-y-auto">
+                                        <v-chip v-for="tag in activityTags" :key="tag.value" @click="addTag(tag.value)" :title="getChipText(tag)" :small="$breakpoint.mdAndUp" :x-small="!$breakpoint.mdAndUp" class="ml-1 mr-1 mb-1">{{
+                                            tag.value.substring(1, tag.value.length - 1)
+                                        }}</v-chip>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-container>
             </v-form>
         </v-card-text>
     </v-card>
 </template>
-
-<style>
-.action-activity-tags .v-chip {
-    margin: 0 5px 8px 0;
-}
-</style>
 
 <script>
 import {Mentionable} from "vue-mention"
@@ -388,7 +400,7 @@ export default {
             }
         },
         addTag(tag) {
-            this.valueInput += "${" + tag + "} "
+            this.valueInput += "$" + tag
         }
     }
 }
