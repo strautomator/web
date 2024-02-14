@@ -109,7 +109,10 @@ export default {
 
                 if (this.activity.device?.includes("Garmin")) {
                     try {
-                        this.garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
+                        const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
+                        if (!garminActivity.notFound) {
+                            this.garminActivity = garminActivity
+                        }
                     } catch (garminEx) {
                         this.garminError = garminEx.response?.data?.message || garminEx.toString()
                     }
