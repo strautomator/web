@@ -68,7 +68,7 @@
                             <v-icon left>mdi-trash-can-outline</v-icon>
                             {{ user.isPro ? "Clear cache" : "Clear cache (PRO only)" }}
                         </v-btn>
-                        <v-alert v-if="newUrlToken" color="success" icon="mdi-arrow-up-bold" rounded dense>
+                        <v-alert v-if="newUrlToken" class="mt-2" color="success" icon="mdi-arrow-up-bold" rounded dense>
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
                         </v-alert>
                     </div>
