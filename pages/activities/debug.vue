@@ -33,16 +33,15 @@
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in activity">
                                     <span class="font-weight-bold">{{ key }}</span> -
-                                    {{ value }}
+                                    {{ friendlyValue(value) }}
                                 </li>
                             </ul>
                         </div>
                         <div v-if="garminActivity">
-                            <h4>Garmin metadata:</h4>
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in garminActivity">
                                     <span class="font-weight-bold">garmin.{{ key }}</span> -
-                                    {{ value }}
+                                    {{ friendlyValue(value) }}
                                 </li>
                             </ul>
                         </div>
@@ -101,13 +100,18 @@ export default {
             try {
                 this.loading = true
                 this.syncError = null
-                this.activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
 
-                if (!this.activity) {
-                    this.syncError = "Activity not available."
+                const activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
+                if (!activity) {
+                    this.syncError = "Activity not found."
+                    return
                 }
 
-                if (this.activity.device?.includes("Garmin")) {
+                // Polyline string is useless here, so take it out before assigning the activity.
+                delete activity.polyline
+                this.activity = activity
+
+                if (activity.device?.includes("Garmin")) {
                     try {
                         const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
                         if (!garminActivity.notFound) {
@@ -126,6 +130,17 @@ export default {
             }
 
             this.loading = false
+        },
+        friendlyValue(value) {
+            if (_.isArray(value)) {
+                return value.join(", ")
+            }
+            if (_.isObject(value)) {
+                const keys = Object.keys(value)
+                return keys.map((k) => `${k}: ${value[k]}`).join(", ")
+            }
+
+            return value
         }
     }
 }
