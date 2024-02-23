@@ -279,7 +279,7 @@ export default {
                 valid: true,
                 recipeActions: recipeActions,
                 selectedAction: {},
-                selectedCommute: {},
+                selectedCommute: commuteFlags[0],
                 selectedGear: {},
                 selectedSportType: {},
                 selectedWorkoutType: {},
