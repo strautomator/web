@@ -8,7 +8,7 @@
                 </v-btn>
             </h1>
             <v-form v-model="valid" class="mb-0" ref="form">
-                <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" outlined rounded></v-text-field>
+                <v-text-field v-model="recipe.title" :rules="[recipeRules.required]" label="Automation name" :maxlength="$store.state.recipeMaxLength.title" @keyup="checkValid()" outlined rounded></v-text-field>
             </v-form>
 
             <template v-if="asJson">
@@ -284,12 +284,6 @@
         </v-container>
     </v-layout>
 </template>
-
-<style>
-.recipe-stats-counter {
-    max-width: 100px;
-}
-</style>
 
 <script>
 import _ from "lodash"
