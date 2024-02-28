@@ -35,7 +35,8 @@
                         <h3 class="mb-4">Other options</h3>
                         <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="calendarType != 'clubs'" dense />
                         <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="calendarType != 'activities'" dense />
-                        <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include club events outside my country" v-if="calendarType != 'activities'" dense />
+                        <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include events outside my country" v-if="calendarType != 'activities'" dense />
+                        <v-checkbox class="mt-n4" v-model="compact" label="Compact descriptions" dense />
                     </div>
                     <div v-if="calendarType != 'clubs'">
                         <h3>Days of activities</h3>
@@ -85,56 +86,29 @@
                 </div>
             </v-alert>
             <v-card v-if="user && user.isPro" class="mt-5" outlined>
-                <v-card-title class="accent"> Activities template </v-card-title>
+                <v-card-title class="accent">Activity template</v-card-title>
                 <v-card-text>
                     <p class="mt-4">As a PRO user, you can customize the details of your activities (not club events) on exported calendars. Simply edit the fields below or leave them blank to use the defaults.</p>
                     <div>
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
                     <div>
-                        <v-textarea
-                            ref="eventDetailsInput"
-                            class="mt-3"
-                            label="Event details"
-                            v-model="calendarTemplate.eventDetails"
-                            height="160"
-                            maxlength="255"
-                            @focus="setActiveField('eventDetails')"
-                            hide-details
-                            dense
-                            outlined
-                            rounded
-                            no-resize
-                        ></v-textarea>
-                    </div>
-                    <div class="mt-2 text-center text-md-left">
-                        <div class="caption mb-2 text-center text-md-left">Available tags, format: ${tagName}</div>
-                        <v-chip class="mr-1 mb-2" @click="addTag('icon')" small>Icon</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('name')" small>Name</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('gear')" small>Gear</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('distance')" small>Distance</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('elevationGain')" small>Elevation gain</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('elevationMax')" small>Max elevation</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('climbingRatio')" small>Climbing ratio</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('speedAvg')" small>Avg speed</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('speedMax')" small>Max speed</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('paceAvg')" small>Avg pace</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('paceMax')" small>Max pace</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('cadenceAvg')" small>Avg cadence</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hasPower')" small>Has power</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsAvg')" small>Avg watts</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsWeighted')" small>Weighted watts</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('wattsMax')" small>Max watts</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hrAvg')" small>Avg HR</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hrMax')" small>Max HR</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('perceivedExertion')" small>Perceived exertion</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('tss')" small>TSS</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('relativeEffort')" small>Relative effort</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('device')" small>Device</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('commute')" small>Is commute</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('manual')" small>Is manual</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('hasPhotos')" small>Has photos</v-chip>
-                        <v-chip class="mr-1 mb-2" @click="addTag('temperature')" small>Temperature *</v-chip>
+                        <Mentionable :keys="['$']" :items="mainActivityTags" offset="1">
+                            <v-textarea
+                                ref="eventDetailsInput"
+                                class="mt-3"
+                                label="Event details"
+                                v-model="calendarTemplate.eventDetails"
+                                height="160"
+                                maxlength="255"
+                                @focus="setActiveField('eventDetails')"
+                                hide-details
+                                dense
+                                outlined
+                                rounded
+                                no-resize
+                            ></v-textarea>
+                        </Mentionable>
                     </div>
                     <div class="mt-2 text-center text-md-left">
                         <v-btn color="primary" title="Save your custom calendar template" :outlined="!changedTemplate" :disabled="!changedTemplate" @click="saveTemplate" rounded nuxt>
@@ -146,9 +120,6 @@
                             Sample
                         </v-btn>
                     </div>
-                    <ul class="caption mt-4 pl-4">
-                        <li>The temperature tag is the value measured by the GPS device itself</li>
-                    </ul>
                     <v-alert v-model="templateWarning" color="secondary" class="mt-4" icon="mdi-alert" rounded outlined dense>The new template will be applied once your calendar gets refreshed with new activities from Strava.</v-alert>
                 </v-card-text>
             </v-card>
@@ -178,10 +149,6 @@
                     </ul>
                 </v-card-text>
             </v-card>
-
-            <v-alert class="mt-4 text-center text-md-left">
-                <div class="mb-3 mb-md-0">Want to see an overview of your upcoming club events? Try the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.</div>
-            </v-alert>
 
             <v-dialog v-model="resetDialog" width="440" overlay-opacity="0.95">
                 <v-card>
@@ -215,12 +182,15 @@
 </template>
 
 <script>
+import {Mentionable} from "vue-mention"
 import _ from "lodash"
+import recipeMixin from "~/mixins/recipeMixin.js"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
+    components: {Mentionable},
     authenticated: true,
-    mixins: [userMixin],
+    mixins: [recipeMixin, userMixin],
     head() {
         return {
             title: "Calendar"
@@ -238,6 +208,7 @@ export default {
             excludeCommutes: false,
             excludeNotJoined: false,
             includeAllCountries: false,
+            compact: false,
             templateWarning: false,
             activeField: "eventDetails",
             daysFrom: freePlan.pastCalendarDays,
@@ -272,10 +243,12 @@ export default {
             const urlToken = this.$store.state.user.urlToken
 
             const params = []
+
             if (this.calendarSports != "all") params.push(`sports=${this.calendarSports}`)
             if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
             if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
             if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            if (this.compact) params.push("compact=1")
             if (this.daysFrom != this.$store.state.freePlanDetails.pastCalendarDays) params.push(`daysfrom=${this.daysFrom}`)
 
             const querystring = params.length > 0 ? `?${params.join("&")}` : ""
@@ -308,26 +281,6 @@ export default {
         },
         setActiveField(field) {
             this.activeField = field
-        },
-        addTag(tag) {
-            const textInput = this.$refs[`${this.activeField}Input`].$refs.input
-            const sentence = textInput.value
-            const len = sentence.length
-            const pos = textInput.selectionStart || 0
-
-            const before = sentence.substring(0, pos)
-            const after = sentence.substring(pos, len)
-
-            this.calendarTemplate[this.activeField] = before + "${" + tag + "}" + after
-
-            this.$nextTick().then(() => {
-                textInput.focus()
-
-                if (textInput.setSelectionRange) {
-                    const range = pos + tag.length + 3
-                    textInput.setSelectionRange(range, range)
-                }
-            })
         },
         showResetDialog() {
             this.resetDialog = true
