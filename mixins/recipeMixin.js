@@ -1,7 +1,132 @@
 import _ from "lodash"
 
 export default {
-    // Share recipe rules used to validate conditions.
+    data() {
+        // Activity general tags.
+        const generalTags = [
+            {value: "icon", label: "Activity icon"},
+            {value: "name", label: "Activity name"},
+            {value: "description", label: "Activity description"},
+            {value: "sportType", label: "Sport type"},
+            {value: "counter", label: "Counter"},
+            {value: "distance", label: "Distance"},
+            {value: "speedAvg", label: "Avg speed"},
+            {value: "speedMax", label: "Max speed"},
+            {value: "paceAvg", label: "Avg pace"},
+            {value: "paceMax", label: "Max pace"},
+            {value: "cadenceAvg", label: "Avg cadence (RPM)"},
+            {value: "cadenceSpm", label: "Avg cadence (SPM)"},
+            {value: "elevationGain", label: "Elevation gain"},
+            {value: "elevationMax", label: "Max elevation"},
+            {value: "climbingRatio", label: "Climbing ratio"},
+            {value: "totalTime", label: "Total time"},
+            {value: "movingTime", label: "Moving time"},
+            {value: "co2Saved", label: "CO2 saved"},
+            {value: "weekday", label: "Weekday"},
+            {value: "weekOfYear", label: "Week of year"},
+            {value: "device", label: "Device"}
+        ]
+
+        // Activity performance tags.
+        const performanceTags = [
+            {value: "wattsAvg", label: "Avg power"},
+            {value: "wattsWeighted", label: "Normalized power"},
+            {value: "wattsMax", label: "Max power"},
+            {value: "wattsKg", label: "Watts / kg"},
+            {value: "tss", label: "TSS"},
+            {value: "hrAvg", label: "Avg HR"},
+            {value: "hrMax", label: "Max HR"},
+            {value: "calories", label: "Calories"},
+            {value: "relativeEffort", label: "Relative effort"},
+            {value: "perceivedExertion", label: "Perceived exertion"}
+        ]
+
+        // Garmin tags.
+        const garminTags = [
+            {value: "garmin.tss", label: "Garmin: TSS"},
+            {value: "garmin.trainingLoad", label: "Garmin: Training load"},
+            {value: "garmin.aerobicTrainingEffect", label: "Garmin: Aerobic t. effect"},
+            {value: "garmin.anaerobicTrainingEffect", label: "Garmin: Anaerobic t. effect"},
+            {value: "garmin.pedalSmoothness", label: "Garmin: Pedal smoothness"},
+            {value: "garmin.pedalTorqueEffect", label: "Garmin: Torque effectiveness"}
+        ]
+
+        // Activity lap tags.
+        const lapTags = [
+            {value: "lapCount", label: "Lap count"},
+            {value: "lapDistance", label: "Lap distance"},
+            {value: "lapTime", label: "Lap time"}
+        ]
+
+        // Activity location tags.
+        const locationTags = []
+        const locationBaseTags = [
+            {value: "country", label: "Country name"},
+            {value: "countryFlag", label: "Country flag"},
+            {value: "city", label: "City", pro: true}
+        ]
+        for (let t of locationBaseTags) {
+            locationTags.push({
+                value: `${t.value}Start`,
+                label: `${t.label} (start)`
+            })
+            locationTags.push({
+                value: `${t.value}End`,
+                label: `${t.label} (end)`
+            })
+        }
+
+        // Music track tags.
+        const musicTags = [
+            {value: "trackList", label: "Spotify: Full track list"},
+            {value: "trackStart", label: "Spotify: Track title (start)"},
+            {value: "trackEnd", label: "Spotify: Track title (end)"},
+            {value: "lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
+            {value: "lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true}
+        ]
+
+        // Weather tags.
+        const weatherTags = []
+        const weatherBaseTags = [
+            {value: "icon", label: "Icon"},
+            {value: "summary", label: "Summary"},
+            {value: "temperature", label: "Temp. (real)"},
+            {value: "feelsLike", label: "Temp. (feels like)"},
+            {value: "humidity", label: "Humidity"},
+            {value: "pressure", label: "Pressure"},
+            {value: "windSpeed", label: "Wind speed"},
+            {value: "windDirection", label: "Wind direction"},
+            {value: "precipitation", label: "Precipitation"},
+            {value: "airDensity", label: "Air density"},
+            {value: "aqi", label: "AQI (0 to 5)"},
+            {value: "aqiIcon", label: "AQI Icon"}
+        ]
+        for (let t of weatherBaseTags) {
+            locationTags.push({
+                value: `weather.start.${t.value}`,
+                label: `${t.label} (start)`
+            })
+            locationTags.push({
+                value: `weather.end.${t.value}`,
+                label: `${t.label} (end)`
+            })
+        }
+
+        // Combine main and extra activity tags.
+        const mainActivityTags = _.concat(generalTags, performanceTags, lapTags, locationTags)
+        for (let t of mainActivityTags) {
+            t.value = "{" + t.value + "}"
+        }
+        const extraActivityTags = _.concat(garminTags, musicTags, weatherTags)
+        for (let t of extraActivityTags) {
+            t.value = "{" + t.value + "}"
+        }
+
+        return {
+            mainActivityTags: mainActivityTags,
+            extraActivityTags: extraActivityTags
+        }
+    },
     computed: {
         booleanActions() {
             return ["generateName", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower"]
