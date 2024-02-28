@@ -37,14 +37,18 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.commutes === "0") options.excludeCommutes = true
         if (req.query.joined === "1") options.excludeNotJoined = true
         if (req.query.countries === "1") options.includeAllCountries = true
-        if (req.query.fresher === "1") options.shorterCache = true
+        if (req.query.link === "1") options.linkInDescription = true
+        if (req.query.compact === "1") options.compact = true
         if (req.query.sports?.toString().length > 1) options.sportTypes = req.query.sports.toString().split(",")
         if (req.query.clubs?.toString().length > 1) options.clubIds = req.query.clubs.toString().split(",")
         if (req.query.daysfrom) options.dateFrom = getQueryDate(req.query.daysfrom).startOf("day")
         if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day")
 
-        // Generate and render Strava activities as an iCalendar.
-        const cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
+        // Set the correct cache TTL based on user plan and preferences.
+        let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
+        if (user.isPro && user.preferences.calendarFresher) {
+            cacheAge = cacheAge / 2
+        }
         const expires = now.add(cacheAge, "seconds")
 
         // Update cache headers and send response.
