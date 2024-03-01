@@ -12,7 +12,10 @@
             </v-toolbar>
             <v-card-text>
                 <v-form v-model="emailValid" ref="emailForm">
-                    <p class="mt-3">Please enter your email address below...</p>
+                    <p class="mt-3">
+                        Please enter your email address below.<br />
+                        You'll get a message with a link to confirm it.
+                    </p>
                     <div>
                         <v-text-field v-model="userEmail" label="Email" placeholder="@" maxlength="150" :loading="saving" :rules="inputRules" :error-messages="serverError" validate-on-blur outlined rounded></v-text-field>
                     </div>
@@ -73,12 +76,15 @@ export default {
         async saveEmail() {
             try {
                 if (this.$refs.emailForm.validate()) {
-                    this.saving = true
-                    await this.$axios.$post(`/api/users/${this.user.id}/email`, {email: this.userEmail})
-                    this.saving = false
+                    if (this.userEmail != this.$store.state.user.email) {
+                        this.saving = true
+                        await this.$axios.$post(`/api/users/${this.user.id}/email`, {email: this.userEmail})
+                        this.saving = false
 
-                    this.$store.commit("setUserEmail", this.userEmail)
-                    this.emailSaved = true
+                        this.$store.commit("setUserConfirmEmail", this.userEmail)
+                        this.emailSaved = true
+                    }
+
                     this.hideDialog()
                 }
             } catch (ex) {

@@ -27,8 +27,11 @@
                 </div>
                 <div class="mb-3">
                     <span class="mr-1" v-if="user.email">{{ user.email }}</span>
-                    <br v-if="user.email && $breakpoint.mdAndDown" />
-                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{ user.email ? "change email" : "add email address" }}</v-btn>
+                    <span class="mr-1" v-else-if="user.confirmEmail">{{ user.confirmEmail }} <v-icon color="secondary" small>mdi-alert-circle</v-icon></span>
+                    <br v-if="(user.email || user.confirmEmail) && $breakpoint.mdAndDown" />
+                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{
+                        user.confirmEmail ? "pending confirmation" : user.email ? "change email" : "set email address"
+                    }}</v-btn>
                 </div>
 
                 <div>
@@ -98,7 +101,7 @@
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
-                        <v-alert color="accent" class="body-2" v-if="user.garmin" dense>Delayed processing is recommended if you have automations with Garmin based conditions.</v-alert>
+                        <v-alert color="accent" class="body-2" v-if="user.isPro && user.garmin" dense>Delayed processing is recommended if you're having issues Garmin automation conditions.</v-alert>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">GearWear delay</h3>
@@ -207,9 +210,15 @@
             </div>
             <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
             <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Your email was updated to {{ $store.state.user.email }}!
+                Please open your inbox and confirm your email address.
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
+            <v-snackbar v-model="emailConfirmed" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Your email {{ $store.state.user.email }} was confirmed successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="emailConfirmed = false">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
         </v-container>
@@ -427,6 +436,7 @@ export default {
             savePending: false,
             emailDialog: false,
             emailSaved: false,
+            emailConfirmed: false,
             garminDialog: this.$route.query.garmin == "link",
             garminLinked: this.$route.query.garmin == "linked",
             garminUnlinked: this.$route.query.garmin == "unlinked",
@@ -528,6 +538,18 @@ export default {
         },
         aiProvider(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
+        }
+    },
+    async fetch() {
+        try {
+            if (this.$route.query?.email && this.$route.query?.token) {
+                await this.$axios.$post(`/api/users/${this.$store.state.user.id}/email/confirm`, {email: this.$route.query.email, token: this.$route.query.token})
+                this.$store.commit("setUserConfirmEmail", null)
+                this.$store.commit("setUserEmail", this.$route.query.email)
+                this.emailConfirmed = true
+            }
+        } catch (ex) {
+            this.$webError(this, "Account.fetch", ex)
         }
     },
     async beforeRouteLeave(to, from, next) {

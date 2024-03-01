@@ -54,7 +54,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             const data: Partial<UserData> = {
                 id: userId,
                 profile: profile,
-                displayName: profile.username || profile.firstName || profile.lastName || "strava-user"
+                displayName: user.preferences.privacyMode ? user.displayName : profile.username || profile.firstName || profile.lastName
             }
             users.update(data)
 
@@ -62,8 +62,11 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             user.profile = profile
         }
 
-        // Clone user object and remove 3rd party sensitive data.
+        // Clone user object and remove sensitive data.
         const result = _.cloneDeep(user)
+        if (result.confirmEmail) {
+            result.confirmEmail = result.confirmEmail.substring(result.confirmEmail.indexOf(":") + 1)
+        }
         if (result.garmin) {
             delete result.garmin.tokens
         }
@@ -334,7 +337,7 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
 })
 
 /**
- * Set user email address.
+ * Set user's email address (pending confirmation).
  */
 router.post("/:userId/email", async (req: express.Request, res: express.Response) => {
     try {
@@ -345,7 +348,34 @@ router.post("/:userId/email", async (req: express.Request, res: express.Response
 
         const email = req.body.email ? req.body.email.trim() : null
 
-        // Try updating the email address.
+        // Set confirmation email.
+        await users.setConfirmEmail(user, email)
+        webserver.renderJson(req, res, {email: email})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Confirm the user's email address with the passed token.
+ */
+router.post("/:userId/email/confirm", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params || !req.body) throw new Error("Missing confirmation token")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!user.confirmEmail) throw new Error("User has no pending email confirmation")
+
+        const arrConfirmEmail = user.confirmEmail.split(":")
+        const token = arrConfirmEmail.shift()
+        const email = arrConfirmEmail.join(":")
+
+        // Make sure the email and token are valid.
+        if (token != req.body.token) throw new Error("Invalid confirmation token")
+        if (email != req.body.email) throw new Error("Invalid confirmation email")
+
+        // Set the user's email address.
         await users.setEmail(user, email)
         webserver.renderJson(req, res, {email: email})
     } catch (ex) {
