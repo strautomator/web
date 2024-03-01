@@ -4,7 +4,7 @@
             <h1>Personal records</h1>
 
             <v-snackbar v-model="savedRecord" class="text-left" color="success" :timeout="5000" rounded bottom>
-                {{ editRecordSport }} - {{ editRecordField }}, personal record updated to {{ editRecordValue }}!
+                {{ editRecordSport }} - {{ camelCaseName(editRecordField) }} new record:{{ editRecordValue }}!
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="savedRecord = false">mdi-close-circle</v-icon>
                 </template>
@@ -72,17 +72,17 @@
                                     <th v-if="$breakpoint.mdAndUp">2nd Best</th>
                                     <th v-if="$breakpoint.mdAndUp">Date</th>
                                     <th class="text-center pr-0 pl-0" width="1">Activity</th>
-                                    <th class="text-center pr-0 pl-0" width="1">Edit</th>
+                                    <th class="text-center pr-0 pl-0" width="1" v-if="$breakpoint.mdAndUp">Edit</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="mb-1" v-for="recordField in getRecordFields(recordEntry[1])" :key="'td-' + recordField">
                                     <td class="text-capitalize">
-                                        <v-icon class="mr-1">{{ getRecordIcon(recordField) }}</v-icon>
-                                        {{ camelCaseName(recordField) }}
+                                        <v-icon class="mr-1" :small="!$breakpoint.mdAndUp">{{ getRecordIcon(recordField) }}</v-icon>
+                                        <span :class="!$breakpoint.mdAndUp ? 'caption' : ''">{{ camelCaseName(recordField) }}</span>
                                     </td>
                                     <td>
-                                        {{ getRecordValue(recordEntry[1], recordField) }}
+                                        <a @click="showEditDialog(recordEntry, recordField)">{{ getRecordValue(recordEntry[1], recordField) }}</a>
                                     </td>
                                     <td class="grey--text" v-if="$breakpoint.mdAndUp">
                                         {{ getRecordValue(recordEntry[1], recordField, true) }}
@@ -91,12 +91,12 @@
                                         {{ recordEntry[1][recordField] ? $dayjs(recordEntry[1][recordField].date).format($breakpoint.mdAndUp ? "lll" : "ll") : "-" }}
                                     </td>
                                     <td class="text-center">
-                                        <template v-if="recordEntry[1][recordField] && recordEntry[1][recordField].activityId">
+                                        <template v-if="recordHasActivity(recordEntry, recordField)">
                                             <a title="Go to Strava" target="strava" :href="`https://www.strava.com/activities/${recordEntry[1][recordField].activityId}`"><v-icon color="primary">mdi-open-in-new</v-icon></a>
                                         </template>
                                         <span v-else><v-icon title="Unknown activity" color="grey">mdi-help-box</v-icon></span>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" v-if="$breakpoint.mdAndUp">
                                         <v-icon title="Edit record value" color="primary" @click="showEditDialog(recordEntry, recordField)">mdi-pencil-outline</v-icon>
                                     </td>
                                 </tr>
@@ -128,8 +128,8 @@
                 <v-toolbar color="primary">
                     <v-toolbar-title>
                         <v-icon class="mr-1">{{ getSportIcon(editRecordSport) }}</v-icon>
+                        <v-icon class="mr-1">{{ getRecordIcon(editRecordField) }}</v-icon>
                         <span class="text-capitalize">{{ camelCaseName(editRecordField) }}</span>
-                        (new record)
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
@@ -154,7 +154,7 @@
                         </v-btn>
                         <v-btn color="primary" title="Save new record value" :disabled="editRecordValue.length < 1" @click="saveRecord" rounded>
                             <v-icon left>mdi-check</v-icon>
-                            Save record
+                            Save
                         </v-btn>
                     </div>
                 </v-card-text>
@@ -200,6 +200,9 @@ export default {
         }
     },
     methods: {
+        recordHasActivity(recordEntry, recordField) {
+            return recordEntry[1][recordField] && recordEntry[1][recordField].activityId
+        },
         camelCaseName(field) {
             const result = field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
             return result.replace("Hr", "HR")

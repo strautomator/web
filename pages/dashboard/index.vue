@@ -59,24 +59,17 @@
 
                         <processed-activities :activities="activities" v-else></processed-activities>
 
-                        <v-divider />
-                        <div class="caption mt-2 ml-5 mr-5 text-center text-md-left">The list above doesn't include activities not updated by Strautomator.</div>
-
                         <div class="ml-md-4 mt-4 text-center text-md-left">
-                            <v-btn color="primary" title="Go to my automations history" to="/automations/history" class="mr-md-2 mb-4 mb-md-0" small nuxt rounded>
+                            <v-btn color="primary" title="Go to my automations history" to="/automations/history" small nuxt rounded>
                                 <v-icon left>mdi-history</v-icon>
                                 Automation history
-                            </v-btn>
-                            <v-btn color="primary" title="View my upcoming club events" to="/map" class="mb-4 mb-md-0 ml-2 ml-md-0" small nuxt rounded>
-                                <v-icon left>mdi-calendar-check</v-icon>
-                                Upcoming club events
                             </v-btn>
                         </div>
                     </v-card-text>
                 </v-card>
             </div>
 
-            <v-card class="mt-4" outlined>
+            <v-card v-if="!user?.preferences.privacyMode" class="mt-4" outlined>
                 <v-card-title class="accent">Personal records</v-card-title>
                 <v-card-text class="pl-0 pr-0">
                     <template v-if="records">
@@ -109,7 +102,7 @@
                         </div>
                     </template>
                     <template v-else>
-                        <div class="ml-md-4 mt-4 text-center text-md-left">No personal records were found. Want to start tracking your personal records?</div>
+                        <div class="ml-md-4 mt-4 text-center text-md-left">No personal records found. Want to start tracking?</div>
                         <div class="ml-md-4 mt-4 text-center text-md-left">
                             <v-btn color="primary" title="Calculate my personal records" to="/dashboard/records" small nuxt rounded>
                                 <v-icon left>mdi-medal</v-icon>
@@ -119,17 +112,6 @@
                     </template>
                 </v-card-text>
             </v-card>
-
-            <template v-if="recipes && recipes.length > 0">
-                <v-alert class="mt-4 text-center text-md-left">
-                    <div class="mb-3 mb-md-2" v-if="user && user.preferences.privacyMode">Privacy mode is enabled, some details about your processed activities and personal records won't be saved!</div>
-                    <div class="mb-3 mb-md-0">
-                        Missing something?
-                        <br v-if="!$breakpoint.mdAndUp" />
-                        Try the <n-link to="/activities/sync" title="Try your automations" nuxt>manual automation sync</n-link>.
-                    </div>
-                </v-alert>
-            </template>
         </v-container>
     </v-layout>
 </template>

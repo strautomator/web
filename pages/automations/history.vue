@@ -51,8 +51,6 @@
                     <processed-activities :activities="activities" :header="true" v-else></processed-activities>
                 </v-card-text>
             </v-card>
-
-            <div class="caption ml-1 mt-3" v-if="user?.preferences?.privacyMode">* Privacy mode is enabled, some details about processed activities are not saved.</div>
         </v-container>
     </v-layout>
 </template>

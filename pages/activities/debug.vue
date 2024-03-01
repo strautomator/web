@@ -111,7 +111,7 @@ export default {
                 delete activity.polyline
                 this.activity = activity
 
-                if (activity.device?.includes("Garmin")) {
+                if (this.user.isPro && activity.device?.includes("Garmin")) {
                     try {
                         const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
                         if (!garminActivity.notFound) {

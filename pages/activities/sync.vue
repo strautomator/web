@@ -62,7 +62,7 @@
                         </tr>
                         <tr>
                             <td :colspan="$breakpoint.mdAndUp ? 4 : 2" class="pt-4">
-                                <div class="caption ml-6 mb-1">Older activity? Enter its ID below.</div>
+                                <div class="caption ml-4 mb-1">Older activity? Enter its ID below.</div>
                                 <div>
                                     <v-text-field v-model="activityId" label="Activity ID or URL" outlined rounded dense></v-text-field>
                                 </div>
@@ -77,11 +77,13 @@
                 </v-simple-table>
                 <v-card class="mt-4" outlined>
                     <v-card-text>
-                        <div>Want to execute your automations on many activities in a single batch?</div>
-                        <v-btn color="primary" class="mt-4" to="/activities/batchsync" rounded small>
-                            <v-icon left>mdi-animation-play</v-icon>
-                            Proceed to batch processing
-                        </v-btn>
+                        <div class="text-center text-md-left">
+                            <div>Want to execute your automations on many Strava activities at once?</div>
+                            <v-btn color="primary" class="mt-4" to="/activities/batchsync" rounded small>
+                                <v-icon left>mdi-animation-play</v-icon>
+                                Proceed to batch processing
+                            </v-btn>
+                        </div>
                     </v-card-text>
                 </v-card>
             </template>
