@@ -110,7 +110,7 @@ export default {
             this.activity = null
 
             if (this.activityId.trim() == "") {
-                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=10`)
+                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities?limit=10`)
 
                 if (activities.length > 0) {
                     this.activityId = _.sample(activities).id

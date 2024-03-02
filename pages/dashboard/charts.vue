@@ -100,7 +100,7 @@ export default {
     },
     async fetch() {
         try {
-            this.processedActivities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed`)
+            this.processedActivities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities`)
         } catch (ex) {
             this.$webError(this, "Charts.fetch", ex)
         }

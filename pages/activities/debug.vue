@@ -1,8 +1,8 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Activity debug</h1>
-            <v-card class="mt-6" outlined>
+            <h1>Debug</h1>
+            <v-card outlined>
                 <v-card-text class="pb-2 pb-md-0">
                     <v-container class="ma-0 pa-0" fluid>
                         <v-row no-gutters>
@@ -10,7 +10,7 @@
                                 <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
                             </v-col>
                             <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
-                                <v-btn color="primary" class="mt-n4 mt-md-0" @click="getActivity()" :loading="loading" :disabled="activityId.length < 5" rounded>
+                                <v-btn color="primary" class="mt-n6 mt-md-0" @click="setActivityRoute()" :loading="loading" :disabled="activityId.length < 5" rounded>
                                     <v-icon left>mdi-text-search</v-icon>
                                     Inspect
                                 </v-btn>
@@ -25,9 +25,7 @@
             </v-card>
             <template v-if="activity">
                 <v-card class="mt-4" outlined>
-                    <v-card-title class="accent text-center text-md-left nobreak">
-                        {{ activity.name }}
-                    </v-card-title>
+                    <v-card-title class="accent text-center text-md-left nobreak">Activity {{ activity.id }}</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             <ul class="ml-0 pl-4">
@@ -37,13 +35,25 @@
                                 </li>
                             </ul>
                         </div>
-                        <div v-if="garminActivity">
+                        <div v-if="garminActivity" class="mt-4">
+                            <h3 class="mb-1">Garmin metadata:</h3>
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in garminActivity">
                                     <span class="font-weight-bold">garmin.{{ key }}</span> -
                                     {{ friendlyValue(value) }}
                                 </li>
                             </ul>
+                        </div>
+                        <div v-if="processedActivity" class="mt-4">
+                            <h3 class="mb-1">Executed automations:</h3>
+                            <ul class="ml-0 pl-4">
+                                <li v-for="(value, key) in processedActivity.recipes">
+                                    <span class="font-weight-bold">{{ key }}</span>
+                                    <br />
+                                    {{ friendlyValue(value.actions) }}
+                                </li>
+                            </ul>
+                            <div class="mt-4">Last processed: {{ $dayjs(processedActivity.dateProcessed).format("lll") }}</div>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -72,10 +82,25 @@ export default {
             activity: false,
             garminActivity: false,
             garminError: null,
+            processedActivity: null,
             syncError: null
         }
     },
+    async fetch() {
+        try {
+            if (this.$route.query?.id) {
+                this.activityId = this.$route.query.id
+                await this.getActivity()
+            }
+        } catch (ex) {
+            this.$webError(this, "ActivityDebug.fetch", ex)
+        }
+    },
     methods: {
+        async setActivityRoute() {
+            this.$router.push({query: {id: this.activityId}})
+            await this.getActivity()
+        },
         async getActivity() {
             this.activity = null
             this.garminActivity = null
@@ -120,6 +145,13 @@ export default {
                     } catch (garminEx) {
                         this.garminError = garminEx.response?.data?.message || garminEx.toString()
                     }
+                }
+
+                try {
+                    const processedActivity = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities/${this.activityId}`)
+                    this.processedActivity = processedActivity?.id ? processedActivity : null
+                } catch (innerEx) {
+                    this.processedActivity = null
                 }
             } catch (ex) {
                 if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {

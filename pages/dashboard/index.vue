@@ -179,7 +179,7 @@ export default {
             if (cachedActivities) {
                 this.activities = cachedActivities
             } else {
-                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?limit=5`)
+                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities?limit=5`)
                 this.activities = activities
                 this.$setLocalStorage("dashboard-activities", activities, 60)
             }

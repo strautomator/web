@@ -18,12 +18,12 @@
                             <th>Activity</th>
                             <th>Distance</th>
                             <th>Total Time</th>
-                            <th class="text-right">Sync</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="recentActivities.length == 0">
-                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-10">No recent activities found.</td>
+                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-8">No recent activities found.</td>
                         </tr>
                         <tr v-for="activity in recentActivities" :key="activity.id">
                             <td>
@@ -35,9 +35,10 @@
                                         {{ activity.name }}
 
                                         <div class="caption">
-                                            {{ getDate(activity.dateStart).format("ll") }}
-                                            {{ activity.distance }}
-                                            {{ user.profile.units == "imperial" ? "mi" : "km" }}
+                                            {{ getDate(activity.dateStart).format("lll") }}
+                                            <br />
+                                            <template v-if="activity.distance">{{ activity.distance }} {{ user.profile.units == "imperial" ? "mi" : "km" }}</template>
+                                            <template v-else-if="activity.hrAvg">{{ activity.hrAvg }} bpm</template>
                                         </div>
                                     </template>
                                     <template v-else>
@@ -54,22 +55,24 @@
                             <td v-if="$breakpoint.mdAndUp">
                                 {{ getDuration(activity.totalTime) }}
                             </td>
-                            <td class="text-right">
-                                <v-btn color="primary" :title="`Try automations on activity ${activity.id}`" @click="syncActivity(activity.id)" icon>
-                                    <v-icon>mdi-play-circle</v-icon>
+                            <td class="text-md-right">
+                                <v-btn color="primary" :title="`Try automations on activity ${activity.id}`" @click="syncActivity(activity.id)" :icon="!$breakpoint.mdAndUp" :rounded="$breakpoint.mdAndUp">
+                                    <v-icon class="mr-1">mdi-play-circle</v-icon>
+                                    {{ $breakpoint.mdAndUp ? "Sync" : "" }}
                                 </v-btn>
                             </td>
                         </tr>
                         <tr>
                             <td :colspan="$breakpoint.mdAndUp ? 4 : 2" class="pt-4">
-                                <div class="caption ml-4 mb-1">Older activity? Enter its ID below.</div>
+                                <div class="caption ml-4 mb-1">Another activity?</div>
                                 <div>
-                                    <v-text-field v-model="activityId" label="Activity ID or URL" outlined rounded dense></v-text-field>
+                                    <v-text-field v-model="activityId" label="ID or URL" outlined rounded dense></v-text-field>
                                 </div>
                             </td>
-                            <td class="text-right">
-                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Enter the activity ID or URL`" @click="syncActivity()" icon>
-                                    <v-icon>mdi-play-circle</v-icon>
+                            <td class="text-md-right">
+                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Enter the activity ID or URL`" @click="syncActivity()" :icon="!$breakpoint.mdAndUp" :rounded="$breakpoint.mdAndUp">
+                                    <v-icon class="mr-1">mdi-play-circle</v-icon>
+                                    {{ $breakpoint.mdAndUp ? " Sync" : "" }}
                                 </v-btn>
                             </td>
                         </tr>
@@ -109,6 +112,7 @@
                                 </v-alert>
                                 <div class="font-weight-bold">Name: {{ processedActivity.name }}</div>
                                 <div>Date: {{ getDate(processedActivity.dateStart).format("lll") }}</div>
+
                                 <div class="mt-4">Updated fields:</div>
                                 <ul class="mt-1 pl-4 action-list">
                                     <li class="font-weight-medium" v-for="(field, index) in updatedFieldsKeys" :key="`ufield-${index}`">
@@ -125,13 +129,19 @@
                                     </li>
                                 </ul>
                             </div>
-                            <v-alert class="mt-2 text-caption text-center text-md-left">Please note that weather tags might not be available for activities older than 1 week.</v-alert>
+                            <v-alert color="accent" class="mt-4 text-caption text-center text-md-left pa-2 mb-0" v-if="hasWeather">Weather conditions and tags might not be available for activities older than 1 week.</v-alert>
                         </v-card-text>
                     </v-card>
-                    <div class="mt-6 text-center text-md-left">
-                        Want to try with another activity?
+                    <div class="mt-4 text-center text-md-left">
+                        <v-btn color="primary" title="Debug this activity" @click="debugActivity" rounded>
+                            <v-icon left>mdi-text-search</v-icon>
+                            Debug this activity
+                        </v-btn>
                         <br v-if="!$breakpoint.mdAndUp" />
-                        <v-btn color="primary" class="mt-4 mt-md-0 ml-md-1" @click="tryAgain" small rounded outlined>Try another</v-btn>
+                        <v-btn color="primary" title="Try syncing another activity" class="mt-4 mt-md-0 ml-md-2" @click="tryAgain" rounded outlined>
+                            <v-icon left>mdi-reload</v-icon>
+                            Try another activity
+                        </v-btn>
                     </div>
                 </div>
             </template>
@@ -181,6 +191,17 @@ export default {
             }
 
             return Object.keys(this.processedActivity.updatedFields)
+        },
+        hasWeather() {
+            if (!this.processedActivity || !this.processedActivity.recipes) return false
+            const recipeIds = Object.keys(this.processedActivity.recipes)
+            for (let r = 0; r < recipeIds.length; r++) {
+                const recipe = this.user.recipes[r]
+                if (recipe && JSON.stringify(recipe).includes("weather.")) {
+                    return true
+                }
+            }
+            return false
         }
     },
     async fetch() {
@@ -236,6 +257,9 @@ export default {
                 this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
                 this.loading = false
             }
+        },
+        debugActivity() {
+            this.$router.push({path: `/activities/debug?id=${this.activityId}`})
         },
         tryAgain() {
             this.processedActivity = false

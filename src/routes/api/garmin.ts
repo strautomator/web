@@ -63,7 +63,7 @@ router.post(`/webhook/${settings.garmin.api.urlToken}`, async (req: express.Requ
 })
 
 /**
- * Get the specified Garmin activity (if there's any). Please note that the ID is the
+ * Get the specified Garmin activity (if there's any).
  */
 router.post("/:userId/match-activity/:stravaId", async (req: express.Request, res: express.Response) => {
     try {

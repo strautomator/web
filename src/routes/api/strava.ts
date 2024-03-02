@@ -129,17 +129,35 @@ router.get("/:userId/activities/since/:timestamp", async (req: express.Request, 
 })
 
 /**
- * Get logged user's latest activities that were processed by Strautomator.
+ * Get the details for the specified activity.
  */
-router.get("/:userId/activities/processed", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/activities/:id/details", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!req.params.id) throw new Error("Missing activity ID")
+
+        const activity = await strava.activities.getActivity(user, req.params.id.toString())
+        webserver.renderJson(req, res, activity)
+    } catch (ex) {
+        const errorMessage = ex.message || ex.toString().toLowerCase()
+        const status = errorMessage.includes("not found") ? 404 : 500
+        webserver.renderError(req, res, errorMessage, status)
+    }
+})
+
+/**
+ * Get logged user's activities that were processed by Strautomator.
+ */
+router.get("/:userId/processed-activities", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         // Limit number of activities returned?
-        let limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
-        let dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).startOf("day").toDate() : null
-        let dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
+        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
+        const dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).startOf("day").toDate() : null
+        const dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
 
         const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
 
@@ -160,20 +178,17 @@ router.get("/:userId/activities/processed", async (req: express.Request, res: ex
 })
 
 /**
- * Get the details for the specified activity.
+ * Get a single processed activity for the logger user.
  */
-router.get("/:userId/activities/:id/details", async (req: express.Request, res: express.Response) => {
+router.get("/:userId/processed-activities/:id", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
-        if (!req.params.id) throw new Error("Missing activity ID")
 
-        const activity = await strava.activities.getActivity(user, req.params.id.toString())
+        const activity = await strava.activityProcessing.getProcessedActivity(user, req.params.id)
         webserver.renderJson(req, res, activity)
     } catch (ex) {
-        const errorMessage = ex.message || ex.toString().toLowerCase()
-        const status = errorMessage.includes("not found") ? 404 : 500
-        webserver.renderError(req, res, errorMessage, status)
+        webserver.renderError(req, res, ex, 404)
     }
 })
 

@@ -93,7 +93,7 @@ export default {
         async fetchHistory() {
             try {
                 this.loading = true
-                this.activities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/processed?from=${this.dateFrom}&to=${this.dateTo}`)
+                this.activities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities?from=${this.dateFrom}&to=${this.dateTo}`)
             } catch (ex) {
                 this.$webError(this, "History.fetchHistory", ex)
             }
