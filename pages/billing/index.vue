@@ -9,11 +9,11 @@
             <div v-if="unsubscribed">
                 <v-card outlined>
                     <v-card-text>
-                        <h3 class="error--text mb-2">You are now using a Free account!</h3>
+                        <h3 class="error--text mb-2">Your account will switch from PRO back to Free soon!</h3>
                         <div>
                             {{ unsubMessage }}
                         </div>
-                        <div>Thanks for your support, and remember that you can always subscribe again if you wish to have all all the bells and whistles on Strautomator reactivated.</div>
+                        <div>Thanks for your support, and remember that you can always resubscribe if you wish to have all the bells and whistles again.</div>
                         <div class="mt-4">
                             <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
@@ -104,28 +104,28 @@
                 </v-dialog>
             </div>
 
-            <div v-else>
+            <div v-else-if="activeBillingPlan">
                 <p>
                     Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
                     and give me the motivation to keep adding new features.
                 </p>
-                <p class="mt-4 mb-6">You can subscribe via PayPal or GitHub.</p>
+                <p class="mt-4 mb-6">You can subscribe via PayPal (yearly), or sponsor me via GitHub (monthly).</p>
 
                 <v-card class="mb-6" outlined>
                     <v-card-title class="accent">Subscribe to PRO</v-card-title>
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
-                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" :disabled="$store.state.beta" x-large rounded nuxt>
+                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" :disabled="$store.state.beta" :x-large="$breakpoint.mdAndUp" rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
-                                    {{ `${activeBillingPlan.price.toFixed(2)} ${activeBillingPlan.currency} / ${activeBillingPlan.frequency}` }} via PayPal
+                                    {{ currencySymbol }}{{ activeBillingPlan.price.toFixed(2) }} / {{ activeBillingPlan.frequency }} via PayPal
                                 </v-btn>
                             </v-col>
                             <v-col class="text-center mb-2">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
-                                    <v-btn color="primary" title="Sponsorship via GitHub" x-large rounded nuxt>
+                                    <v-btn color="primary" title="Sponsorship via GitHub" :x-large="$breakpoint.mdAndUp" rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        {{ $store.state.proPlanDetails.price.github.toFixed(2) }} USD / month via GitHub
+                                        ${{ $store.state.proPlanDetails.price.github.toFixed(2) }} / month via GitHub
                                     </v-btn>
                                 </a>
                             </v-col>
@@ -136,6 +136,7 @@
                         </p>
                     </v-card-text>
                 </v-card>
+                <p>Not so sure yet? You can also test 1 year of PRO by subscribing to one of my fintech <n-link to="/billing/affiliates" title="Affiliate services" nuxt>affiliate services</n-link>.</p>
                 <free-pro-table />
             </div>
         </v-container>
@@ -170,24 +171,30 @@ export default {
         }
     },
     computed: {
+        isAffiliate() {
+            return ["Friend", "N26", "Revolut", "Scalable Capital", "Trade Republic"].includes(this.subscriptionSource)
+        },
         paymentAmount() {
-            if (!this.subscription) return "free"
-            if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "free"
+            if (!this.subscription || this.isAffiliate) return "free"
             return this.subscription.price + " " + this.subscription.currency
         },
         lastPaymentDate() {
             if (!this.subscription) return ""
-            if (["Friend", "Revolut"].includes(this.subscriptionSource)) return "never"
+            if (this.isAffiliate) return "never"
             if (["GitHub"].includes(this.subscriptionSource)) return "managed by GitHub"
             return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).format("ll") : "managed by PayPal"
         },
         nextPaymentDate() {
             if (!this.subscription) return ""
             if (this.subscription.dateExpiry) return this.$dayjs(this.subscription.dateExpiry).format("ll")
-            if (this.subscriptionSource == "Friend") return "maybe a beer?"
-            if (this.subscriptionSource == "Revolut") return "when the universe ends"
             if (this.subscription.dateNextPayment) return this.$dayjs(this.subscription.dateNextPayment)
+            if (this.subscriptionSource == "Friend") return "maybe a beer?"
             return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll") : "managed by PayPal"
+        },
+        currencySymbol() {
+            if (this.activeBillingPlan?.currency == "EUR") return "€"
+            if (this.activeBillingPlan?.currency == "GBP") return "£"
+            return "$"
         }
     },
     async fetch() {
@@ -206,17 +213,14 @@ export default {
                 const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
                 this.loading = false
 
-                if (subscription.source == "friend") {
-                    this.subscriptionSource = "Friend"
-                } else if (subscription.source == "github") {
-                    this.subscriptionSource = "GitHub"
-                } else if (subscription.source == "paypal") {
-                    this.subscriptionSource = "PayPal"
-                } else if (subscription.source == "revolut") {
-                    this.subscriptionSource = "Revolut"
-                } else {
-                    this.subscriptionSource = "?"
-                }
+                if (subscription.source == "friend") this.subscriptionSource = "Friend"
+                else if (subscription.source == "github") this.subscriptionSource = "GitHub"
+                else if (subscription.source == "paypal") this.subscriptionSource = "PayPal"
+                else if (subscription.source == "n26") this.subscriptionSource = "N26"
+                else if (subscription.source == "revolut") this.subscriptionSource = "Revolut"
+                else if (subscription.source == "scalable") this.subscriptionSource = "Scalable Capital"
+                else if (subscription.source == "traderepublic") this.subscriptionSource = "Trade Republic"
+                else this.subscriptionSource = "?"
 
                 this.subscription = subscription
             }
