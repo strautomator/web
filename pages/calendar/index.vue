@@ -36,6 +36,7 @@
                         <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="calendarType != 'clubs'" dense />
                         <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="calendarType != 'activities'" dense />
                         <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include events outside my country" v-if="calendarType != 'activities'" dense />
+                        <v-checkbox class="mt-n4" v-model="linkInDescription" label="Add activity and event links on descriptions" dense />
                         <v-checkbox class="mt-n4" v-model="compact" label="Compact descriptions" dense />
                     </div>
                     <div v-if="calendarType != 'clubs'">
@@ -208,6 +209,7 @@ export default {
             excludeCommutes: false,
             excludeNotJoined: false,
             includeAllCountries: false,
+            linkInDescription: false,
             compact: false,
             templateWarning: false,
             activeField: "eventDetails",
@@ -248,6 +250,7 @@ export default {
             if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
             if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
             if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            if (this.linkInDescription) params.push("link=1")
             if (this.compact) params.push("compact=1")
             if (this.daysFrom != this.$store.state.freePlanDetails.pastCalendarDays) params.push(`daysfrom=${this.daysFrom}`)
 
