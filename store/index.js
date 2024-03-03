@@ -1,89 +1,46 @@
-const countryListGbp = ["uk", "gb", "england", "great britain", "scotland", "united kingdom"]
+const countryListGbp = ["GB", "IM", "UK"]
 const countryListEur = [
-    "ad",
-    "andorra",
-    "al",
-    "albania",
-    "am",
-    "armenia",
-    "at",
-    "austria",
-    "be",
-    "belgium",
-    "bg",
-    "bulgaria",
-    "by",
-    "belarus",
-    "ch",
-    "switzerland",
-    "cy",
-    "cyprus",
-    "cz",
-    "czech republic",
-    "de",
-    "germany",
-    "dk",
-    "denmark",
-    "ee",
-    "estonia",
-    "es",
-    "spain",
-    "fi",
-    "filand",
-    "fr",
-    "france",
-    "gi",
-    "gibraltar",
-    "gr",
-    "greece",
-    "hr",
-    "croatia",
-    "hu",
-    "hungary",
-    "ie",
-    "ireland",
-    "is",
-    "iceland",
-    "im",
-    "isle of man",
-    "it",
-    "italy",
-    "lt",
-    "lithuania",
-    "lu",
-    "luxembourg",
-    "lv",
-    "slovenia",
-    "mt",
-    "malta",
-    "mc",
-    "monaco",
-    "nl",
-    "holland",
-    "netherlands",
-    "no",
-    "norway",
-    "pl",
-    "poland",
-    "pt",
-    "portugal",
-    "ro",
-    "romania",
-    "ru",
-    "russia",
-    "se",
-    "sweden",
-    "si",
-    "slovenia",
-    "sk",
-    "slovakia",
-    "slovakian republic",
-    "sm",
-    "san marino",
-    "tr",
-    "turkey",
-    "ua",
-    "ukraine"
+    "AD",
+    "AL",
+    "AM",
+    "AT",
+    "BE",
+    "BG",
+    "BY",
+    "CH",
+    "CY",
+    "CZ",
+    "DE",
+    "DK",
+    "EE",
+    "ES",
+    "FI",
+    "FR",
+    "GI",
+    "GR",
+    "HR",
+    "HU",
+    "IE",
+    "IS",
+    "IM",
+    "IT",
+    "LT",
+    "LU",
+    "LV",
+    "MT",
+    "MC",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "RU",
+    "SE",
+    "SI",
+    "SK",
+    "SM",
+    "TR",
+    "UA"
 ]
 
 export const state = () => ({
@@ -314,7 +271,7 @@ export const actions = {
         if (!user && oauth && oauth.accessToken) {
             await dispatch("assignUser", {req})
         } else {
-            let country = (req.headers["cf-ipcountry"] || "us").toLowerCase()
+            let country = user?.countryCode || req.headers["cf-ipcountry"] || "US"
             let currency = "USD"
 
             if (countryListGbp.includes(country)) {
@@ -346,18 +303,18 @@ export const actions = {
             await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
                 .then((res) => {
                     loggedUser = res[0]
-                    commit("setUser", loggedUser)
 
-                    let country = (loggedUser.profile.country || req.headers["cf-ipcountry"] || "us").toLowerCase()
+                    let country = loggedUser.countryCode || req.headers["cf-ipcountry"] || "US"
                     let currency = "USD"
-
                     if (countryListGbp.includes(country)) {
                         currency = "GBP"
                     } else if (countryListEur.includes(country)) {
                         currency = "EUR"
                     }
 
-                    // Set the expected PRO currency based on existing user data and country.
+                    // Set user, country and expected currency.
+                    commit("setUser", loggedUser)
+                    commit("setCountry", country)
                     commit("setExpectedCurrency", currency)
 
                     // Set athlete records.

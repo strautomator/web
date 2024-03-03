@@ -122,13 +122,13 @@ export default {
         }
     },
     data() {
-        const country = this.$store.state.country || "us"
+        const country = this.$store.state.country
 
         return {
             revolut: true,
-            n26: ["at", "be", "de", "es", "fi", "fr", "gr", "ie", "it", "is", "li", "lv", "lt", "nl", "no", "pl", "pt", "se", "si", "sk"].includes(country),
-            scalable: ["at", "de", "es", "fr", "it", "nl"].includes(country),
-            tradeRepublic: ["at", "be", "de", "es", "fr", "it", "pt"].includes(country)
+            n26: ["AT", "BE", "DE", "ES", "FI", "FR", "GR", "IE", "IT", "IS", "LI", "LV", "LT", "NL", "NO", "PL", "PT", "SE", "SI", "SK"].includes(country),
+            scalable: ["AT", "DE", "ES", "FR", "IT", "NL"].includes(country),
+            tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country)
         }
     },
     methods: {

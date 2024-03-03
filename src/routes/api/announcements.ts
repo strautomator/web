@@ -18,7 +18,7 @@ router.get("/:userId/active", async (req: express.Request, res: express.Response
         all.forEach((a) => delete a.readCount)
 
         // User filtering properties.
-        const country = ((req.headers["cf-ipcountry"] as string) || maps.getCountryCode(user.profile.country) || "us").toLowerCase()
+        const country = user.countryCode || (req.headers["cf-ipcountry"] as string) || "US"
         const bikes = user.profile.bikes || []
         const shoes = user.profile.shoes || []
 

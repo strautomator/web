@@ -20,14 +20,14 @@ export default {
     data() {
         const affiliates = [
             {id: "aliexpress", title: "AliExpress", url: "https://links.devv.com/l/aliexpress-cycling-components"},
-            {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["at", "de", "gb", "it", "ie", "uk"]},
-            {id: "halfords", title: "Halfords", url: "https://links.devv.com/l/halfords", country: ["gb", "ie", "im", "uk"]},
+            {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
+            {id: "halfords", title: "Halfords", url: "https://links.devv.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
             {id: "ican", title: "ICAN", url: "https://links.devv.com/l/ican"},
             {id: "nextdns", title: "NextDNS", url: "https://links.devv.com/l/nextdns"},
-            {id: "ribble", title: "Ribble", url: "https://links.devv.com/l/ribble", country: ["at", "de", "gb", "ie", "im", "uk"]}
+            {id: "ribble", title: "Ribble", url: "https://links.devv.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
         ]
 
-        const country = this.$store.state.country || "us"
+        const country = this.$store.state.country
         const links = affiliates.filter((a) => !a.country || a.country.includes(country))
 
         return {
