@@ -15,25 +15,33 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12">
-                            <v-autocomplete v-model="selectedAction" label="Select an action..." :items="recipeActions" @change="actionOnChange" dense outlined rounded return-object></v-autocomplete>
+                            <v-autocomplete v-model="selectedAction" label="Select an action" :items="recipeActions" @change="actionOnChange" dense outlined rounded return-object></v-autocomplete>
                             <template v-if="selectedAction">
                                 <div v-if="selectedAction.value == 'commute'">
-                                    <v-select label="Commute tag..." v-model="selectedCommute" item-value="id" item-text="name" :items="commuteFlags" dense outlined rounded return-object></v-select>
+                                    <v-select label="Commute tag" v-model="selectedCommute" item-value="id" item-text="name" :items="commuteFlags" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'gear'">
-                                    <v-select label="Select a gear..." v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
+                                    <v-select label="Select a gear" v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'sportType'">
-                                    <v-select label="Select a sport..." v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
+                                    <v-select label="Select a sport" v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'workoutType'">
-                                    <v-select label="Select a workout type..." v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
+                                    <v-select label="Select a workout type" v-model="selectedWorkoutType" item-value="value" item-text="text" :items="workoutTypes" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'mapStyle'">
-                                    <v-select label="Select a map style..." v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
+                                    <v-select label="Select a map style" v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="actionIsAI">
-                                    <v-select label="Select a humour..." v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                    <v-select label="Select a humour" v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'webhook'">
+                                    <div>
+                                        <v-select label="HTTP method" v-model="webhookMethod" :items="['POST', 'GET']" dense outlined rounded></v-select>
+                                    </div>
+                                    <div>
+                                        <v-text-field label="Webhook URL" placeholder="https://" v-model="webhookUrl" :rules="webhookActionRules" dense outlined rounded></v-text-field>
+                                    </div>
                                 </div>
                                 <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
                                     <Mentionable :keys="['$']" :items="activityTags" offset="1">
@@ -112,7 +120,10 @@ export default {
     },
     computed: {
         actionRules() {
-            return this.selectedAction?.value == "webhook" ? [this.recipeRules.required, this.recipeRules.url] : [this.recipeRules.required]
+            return this.selectedAction?.value != "webhook" ? [this.recipeRules.required] : []
+        },
+        webhookActionRules() {
+            return this.selectedAction?.value == "webhook" ? [this.recipeRules.required, this.recipeRules.url] : []
         },
         actionIsDescription() {
             return this.selectedAction && ["description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
@@ -172,6 +183,8 @@ export default {
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
                 selectedAiHumour: aiHumours[0],
+                webhookMethod: "POST",
+                webhookUrl: "",
                 commuteFlags: commuteFlags,
                 gears: gears,
                 sportTypes: sportTypes,
@@ -275,6 +288,10 @@ export default {
                 } else if (result.type == "mapStyle") {
                     result.value = this.selectedMapStyle.value
                     result.friendlyValue = this.selectedMapStyle.text
+                } else if (result.type == "webhook") {
+                    const webhookValue = `${this.webhookMethod} ${this.webhookUrl}`
+                    result.value = webhookValue
+                    result.friendlyValue = webhookValue
                 } else if (this.actionIsAI && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
                     result.value = this.selectedAiHumour.value
                     result.friendlyValue = this.selectedAiHumour.text

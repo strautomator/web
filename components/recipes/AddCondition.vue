@@ -15,12 +15,12 @@
                 <v-container class="ma-0 pa-0" fluid>
                     <v-row no-gutters>
                         <v-col cols="12" :sm="12" :md="isLocationImg ? 7 : 12">
-                            <v-autocomplete v-model="selectedProperty" label="Select a condition..." :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-autocomplete>
+                            <v-autocomplete v-model="selectedProperty" label="Select a condition" :items="recipeProperties" @change="propertyChanged" dense outlined rounded return-object></v-autocomplete>
                             <div v-if="selectedProperty?.value">
                                 <v-select
                                     v-if="!isDefaultFor && !isBoolean"
                                     v-model="selectedOperator"
-                                    label="Operator..."
+                                    label="Operator"
                                     :hint="selectedOperator.description"
                                     :items="selectedProperty.operators"
                                     :item-text="(item) => (user.profile.units == 'imperial' ? item.impText || item.text : item.text)"
@@ -50,7 +50,7 @@
                                 <div v-else>
                                     <v-autocomplete
                                         v-model="locationInput"
-                                        label="Location or geo coordinates..."
+                                        label="Location or geo coordinates"
                                         item-text="address"
                                         :items="locations"
                                         :loading="loading"
