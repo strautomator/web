@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">This policy is effective as of: December 21st, 2023</h4>
+                        <h4 class="mt-2 mb-6">This policy is effective as of: March 4th, 2024</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>This website and its services were developed and are maintained by a single individual: Igor Ramadas.</p>
                         <p><i>* As Strautomator is using mostly open-source software, you might find parts of the code which were contributed by third party individuals or companies.</i></p>
@@ -97,7 +97,7 @@
 
                         <h2 class="mt-6 mb-4">Disclosure of Personal Information to Third Parties</h2>
                         <p>We do not disclose any of your personal information to third parties or individuals.</p>
-                        <p>If you decide to use AI-based features, some of your activity metadata might be sent out to an external AI provider, but this metadata cannot be directly linked back to you using just the data provided by Strautomator.</p>
+                        <p>If you decide to use AI-based features, some of your activity metadata will be sent out to an external AI provider (OpenAI or Google) for processing.</p>
                         <p>Third party services (Strava, and possibly PayPal or GitHub) will disclose some of your personal information to Strautomator. But we do not send any extra information about you to them, that they don't already have.</p>
                         <p>We might, however, disclose your personal information to legal authorities if we are presented with a warrant to do so.</p>
 
@@ -128,12 +128,12 @@
                         </p>
 
                         <h2 class="mt-6 mb-4">Subscription Plans</h2>
-                        <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via special promotions.</p>
+                        <p>Some of our services are available via subscription plans, paid on a monthly or yearly basis, or unlocked via affiliate campaigns.</p>
 
                         <h3 class="mt-4 mb-2">PRO Account</h3>
                         <p>
-                            The PRO account, available as a subscription plan or as part of a promotion, unlocks extra features compared to the free account. Those features might be updated or enhanced as needed, according to usage and third party
-                            dependencies.
+                            The PRO account, available as a subscription plan or as part of an affiliate campaign, unlocks extra features compared to the free account. Those features might be updated or enhanced as needed, according to usage and
+                            third party dependencies.
                         </p>
                         <p>The monthly or yearly price of the PRO account varies per country and subscription date. The accepted payment currencies are USD, EUR, and GBP.</p>
                         <p>Below you'll find a comparison between PRO and Free:</p>
