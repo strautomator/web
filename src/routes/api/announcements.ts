@@ -1,6 +1,6 @@
 // Strautomator API: Announcements
 
-import {announcements, maps, UserData} from "strautomator-core"
+import {announcements, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import webserver = require("../../webserver")
