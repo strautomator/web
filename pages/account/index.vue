@@ -165,8 +165,9 @@
                         <h3 class="mb-2">AI preferences (PRO only)</h3>
                         <div class="body-2 mb-4">You can select your preferred AI provider.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
-                            <v-radio label="ChatGPT" :value="'openai'"></v-radio>
+                            <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
+                            <v-radio label="OpenAI" :value="'openai'"></v-radio>
                         </v-radio-group>
                         <div class="body-2 mb-4">You can also enhance the generated activity names and descriptions by appending a custom prompt.</div>
                         <v-text-field

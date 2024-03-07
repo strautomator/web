@@ -62,7 +62,7 @@
                         </v-btn>
                     </v-alert>
                 </template>
-                <div class="text-caption mt-2" v-if="activity">If you want to have AI generated names and poems set on your Strava activities, please use the actions "Generate the activity name" or "Generate a poem" on your automation(s).</div>
+                <div class="text-caption mt-2" v-if="activity">AI features are available via the "Generate the activity name" and "Generate a poem" automation actions.</div>
             </template>
         </v-container>
     </v-layout>
@@ -96,10 +96,11 @@ export default {
             aiHumours: aiHumours,
             selectedAiHumour: aiHumours[0],
             aiProviders: [
-                {value: "openai", text: "ChatGPT"},
-                {value: "gemini", text: "Gemini"}
+                {value: "anthropic", text: "Anthropic"},
+                {value: "gemini", text: "Gemini"},
+                {value: "openai", text: "OpenAI"}
             ],
-            selectedAiProvider: "openai",
+            selectedAiProvider: "gemini",
             syncError: null
         }
     },
