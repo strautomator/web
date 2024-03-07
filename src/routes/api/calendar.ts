@@ -43,10 +43,11 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.clubs?.toString().length > 1) options.clubIds = req.query.clubs.toString().split(",")
         if (req.query.daysfrom) options.dateFrom = getQueryDate(req.query.daysfrom).startOf("day")
         if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day")
+        if (req.query.fresher) options.fresher = true
 
         // Set the correct cache TTL based on user plan and preferences.
         let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
-        if (user.isPro && user.preferences.calendarFresher) {
+        if (user.isPro && (options.fresher || user.preferences?.calendarOptions?.fresher)) {
             cacheAge = cacheAge / 2
         }
         const expires = now.add(cacheAge, "seconds")
