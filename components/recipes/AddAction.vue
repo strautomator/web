@@ -119,6 +119,9 @@ export default {
         return this.initialData()
     },
     computed: {
+        activityTags() {
+            return this.mainActivityTags ? _.concat(this.mainActivityTags, this.extraActivityTags) : []
+        },
         actionRules() {
             return this.selectedAction?.value != "webhook" ? [this.recipeRules.required] : []
         },
@@ -192,7 +195,6 @@ export default {
                 mapStyles: mapStyles,
                 aiHumours: aiHumours,
                 showTags: false,
-                activityTags: _.concat(this.mainActivityTags, this.extraActivityTags),
                 valueInput: ""
             }
         },

@@ -94,7 +94,7 @@
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
                     <div>
-                        <Mentionable :keys="['$']" :items="mainActivityTags" offset="1">
+                        <Mentionable :keys="['$']" :items="activityTags" offset="1">
                             <v-textarea
                                 ref="eventDetailsInput"
                                 class="mt-3"
@@ -231,12 +231,11 @@ export default {
             cacheClearCount: 0
         }
     },
-    mounted() {
-        if (!this.location) {
-            this.location = window.location
-        }
-    },
+
     computed: {
+        activityTags() {
+            return this.mainActivityTags || []
+        },
         urlCalendar() {
             if (!this.location) return ""
 
@@ -260,6 +259,11 @@ export default {
         },
         changedTemplate() {
             return this.currentEventSummary != this.calendarTemplate.eventSummary || this.currentEventDetails != this.calendarTemplate.eventDetails
+        }
+    },
+    mounted() {
+        if (!this.location) {
+            this.location = window.location
         }
     },
     methods: {
