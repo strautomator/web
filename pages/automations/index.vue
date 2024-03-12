@@ -32,15 +32,21 @@
             <div v-else>
                 <user-automations />
                 <v-alert class="mt-6 text-center text-md-left">
-                    Want to test your automations with a specific activity?
-                    <br v-if="!$breakpoint.mdAndUp" />
-                    Try a <n-link to="/activities/sync" title="Manual automation trigger" nuxt>manual sync.</n-link>
-                    <br />
-                    Want to check what Strautomator has updated in the past?
-                    <br v-if="!$breakpoint.mdAndUp" />
-                    Go to the <n-link to="/automations/history" title="Automation history" nuxt>automation history.</n-link>
-                    <br />
-                    Or if you want to see your previously shared automations, <n-link to="/automations/shared" title="Your shared automations" nuxt>check them here.</n-link>
+                    <div>
+                        Want to check what Strautomator has updated for you in the past?
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        Go to the <n-link to="/automations/history" title="Automation history" nuxt>automation history.</n-link>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        Want to test your automations with an activity?
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        Try a <n-link to="/activities/sync" title="Manual automation trigger" nuxt>manual sync.</n-link>
+                    </div>
+                    <div class="mt-2 mt-md-0" v-if="user.isPro">
+                        Want to see your shared automations?
+                        <br v-if="!$breakpoint.mdAndUp" />
+                        You can <n-link to="/automations/shared" title="Your shared automations" nuxt>Check them here.</n-link>
+                    </div>
                 </v-alert>
             </div>
         </v-container>

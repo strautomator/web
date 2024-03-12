@@ -55,6 +55,9 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
             return webserver.renderError(req, res, `${logHelper.user(user)} has no access to GearWear ${gearId}`, 403)
         }
 
+        const sortedComponents = _.sortBy(config.components, (c) => (c.disabled ? `zzz` + c.name : c.name))
+        config.components = sortedComponents
+
         webserver.renderJson(req, res, {config: config, gear: gear})
     } catch (ex) {
         webserver.renderError(req, res, ex)
@@ -62,7 +65,7 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
 })
 
 /**
- * Updated gearwear configuration for the specified GearWear.
+ * Update configuration for the specified GearWear.
  */
 router.post("/:userId/:gearId", async (req: express.Request, res: express.Response) => {
     try {

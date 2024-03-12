@@ -19,9 +19,11 @@ export default {
             if (name.includes("chain")) return "mdi-link"
             if (name.includes("cleat")) return "mdi-shoe-cleat"
             if (name.includes("pedal")) return "mdi-bike-pedal"
+            if (name.includes("suspension") || name.includes("hydro")) return "mdi-hydraulic-oil-level"
             if (name.includes("tire") || name.includes("tyre")) return "mdi-tire"
+            if (name.includes("oil") || name.includes("wax")) return "mdi-oil"
             if (name.includes("shoe")) return "mdi-shoe-sneaker"
-            return "mdi-package-variant"
+            return "mdi-wrench-cog"
         }
     }
 }

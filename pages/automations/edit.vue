@@ -237,6 +237,10 @@
             <div class="mt-n1">
                 <v-switch class="ma-0 pa-0" title="Automation status" v-model="recipe.disabled" label="Disable this automation"></v-switch>
             </div>
+            <v-alert v-if="sharedRecipe"
+                >This automation is based on a template shared by <a target="strava" :href="'https://www.strava.com/athletes/' + sharedRecipe.userId">{{ sharedRecipe.userDisplayName }}</a
+                >.</v-alert
+            >
             <div class="text-center text-md-left mt-2">
                 <v-btn color="primary" title="Save this automation" :disabled="!valid" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
@@ -356,8 +360,13 @@ export default {
     },
     async fetch() {
         if (this.$route.query?.template?.substring(0, 1) == "s") {
-            const sharedRecipe = await this.$axios.$get(`/api/shared-recipes/${this.user.id}/${this.$route.query.template}`)
-            this.sharedRecipe = sharedRecipe
+            try {
+                const sharedRecipe = await this.$axios.$get(`/api/shared-recipes/${this.user.id}/${this.$route.query.template}`)
+                this.sharedRecipe = sharedRecipe
+            } catch (ex) {
+                this.$webError(this, "AutomationEdit.fetch", "Could not fetch the shared recipe template")
+            }
+
             return
         }
 

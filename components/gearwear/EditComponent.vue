@@ -1,7 +1,10 @@
 <template>
     <v-card>
         <v-toolbar color="primary">
-            <v-toolbar-title>{{ component && component.name ? "Edit" : "New" }} component</v-toolbar-title>
+            <v-toolbar-title>
+                <v-icon class="mr-2" v-if="component?.name">{{ getComponentIcon(component) }}</v-icon>
+                {{ component?.name ? "Edit" : "New" }} component
+            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
                 <v-btn icon @click.stop="cancel">
@@ -22,10 +25,10 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertDistance > 0 ? 'primary' : ''">mdi-sign-direction</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="100" :rules="alertRules" :suffix="distanceUnits" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="100" :rules="alertRules" :suffix="distanceUnits" outlined rounded></v-text-field>
                     </div>
                 </div>
-                <div class="d-flex">
+                <div class="d-flex mt-1">
                     <div class="flex-grow-1">
                         <v-text-field v-model="currentHours" type="number" class="mr-1" label="Hours" min="0" suffix="h" outlined rounded></v-text-field>
                     </div>
@@ -33,22 +36,26 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertHours > 0 ? 'primary' : ''">mdi-clock-outline</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="Leave 0 to disable" min="20" :rules="alertRules" suffix="h" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="20" :rules="alertRules" suffix="h" outlined rounded></v-text-field>
                     </div>
                 </div>
-                <div class="mt-n1 mb-3 ml-md-2 text-center text-md-left">
+                <div class="mb-3 ml-md-2 text-center text-md-left">
                     <div class="mb-1">Send a first reminder when usage reaches:</div>
                     <div class="d-flex">
                         <v-radio-group v-model="preAlertPercent" class="mt-0 mb-0" row>
                             <v-radio label="Don't" :value="0"></v-radio>
                             <v-radio label="50%" :value="50"></v-radio>
-                            <v-radio label="70%" :value="70"></v-radio>
-                            <v-radio label="90%" :value="90"></v-radio>
+                            <v-radio label="80%" :value="80"></v-radio>
                         </v-radio-group>
                     </div>
                 </div>
                 <div class="text-center">
-                    <v-btn color="primary" :disabled="!hasAlert" @click="save" title="Save component details" rounded>
+                    <v-btn color="removal" v-if="!isNew" @click="deletePrompt" title="Delete this component" rounded outlined>
+                        <v-icon left>mdi-close-circle</v-icon>
+                        Delete
+                    </v-btn>
+                    <br v-if="!$breakpoint.mdAndUp" />
+                    <v-btn color="primary" class="mt-4 mt-md-0 ml-md-2" :disabled="!hasAlert" @click="save" title="Save component details" rounded>
                         <v-icon left>mdi-check</v-icon>
                         Save component
                     </v-btn>
@@ -68,6 +75,7 @@ export default {
     props: ["gearwear-config", "component"],
     data() {
         return {
+            isNew: true,
             valid: false,
             name: "",
             currentDistance: 0,
@@ -109,7 +117,9 @@ export default {
         component: function (newVal, oldVal) {
             if (newVal?.name) {
                 this.fill(newVal)
+                this.isNew = false
             } else {
+                this.isNew = true
                 this.name = ""
                 this.currentDistance = 0
                 this.alertDistance = 1000
@@ -119,8 +129,11 @@ export default {
         }
     },
     mounted() {
-        if (this.component && this.component.name) {
+        if (this.component?.name) {
             this.fill(this.component)
+            this.isNew = false
+        } else {
+            this.isNew = true
         }
     },
     methods: {
@@ -154,23 +167,26 @@ export default {
                     preAlertPercent: compPreAlertPercent
                 }
 
-                let currentTrackingChanged = true
+                let changes = []
 
                 // Editing an existing component? Check if current tracking has changed.
                 if (this.component.name) {
                     if (this.component.currentDistance != compCurrentDistance) {
-                        currentTrackingChanged = true
+                        changes.push("current distance")
                     }
                     if (Math.round(this.component.currentTime / 3600) != compCurrentHours) {
-                        currentTrackingChanged = true
+                        changes.push("distance alert")
                     }
                     if (Math.round(this.component.alertTime / 3600) != compAlertHours) {
-                        currentTrackingChanged = true
+                        changes.push("time alert")
                     }
                 }
 
-                this.$emit("closed", component, currentTrackingChanged)
+                this.$emit("closed", component, changes)
             }
+        },
+        deletePrompt() {
+            this.$emit("closed", "delete")
         }
     }
 }

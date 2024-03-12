@@ -35,22 +35,33 @@
                     </v-card-text>
                 </v-card>
                 <v-alert class="mb-2 mt-2">
-                    ID {{ selectedRecipe.id }}, created by <a target="strava" :href="'https://www.strava.com/athletes/5649845' + selectedRecipe.userId">{{ selectedRecipe.userDisplayName }}</a>
+                    ID {{ selectedRecipe.id }}, created by <a target="strava" :href="'https://www.strava.com/athletes/' + selectedRecipe.userId">{{ selectedRecipe.userDisplayName }}</a>
                 </v-alert>
                 <div class="mt-5 text-center text-md-left">
-                    <v-btn color="primary" title="Create a new automation based on this" :to="'/automations/edit?template=' + selectedRecipe.id" rounded nuxt>
+                    <v-btn color="primary" title="Create a new automation like this one" :to="'/automations/edit?template=' + selectedRecipe.id" rounded nuxt>
                         <v-icon left>mdi-content-copy</v-icon>
                         Use this automation
                     </v-btn>
                 </div>
             </div>
             <div v-else-if="sharedRecipes.length == 0">
-                <p>You have no shared automations.</p>
-                <p>To share an automation with other users, please use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation card.</p>
+                <template v-if="user.isPro">
+                    <p>You have no shared automations.</p>
+                    <p>To share an automation with other users, please use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation panel.</p>
+                </template>
+                <template v-else>
+                    <v-alert class="text-center text-md-left" border="top" color="primary" colored-border>
+                        <p>Automation sharing is available to PRO users only.</p>
+                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                            <v-icon left>mdi-credit-card</v-icon>
+                            Subscribe to PRO
+                        </v-btn>
+                    </v-alert>
+                </template>
                 <div class="text-center text-md-left">
-                    <v-btn class="mr-2" color="primary" title="Go back to the automations list" to="/automations" small rounded>
+                    <v-btn class="mr-2" color="primary" title="Back to my automations" to="/automations" nuxt small rounded>
                         <v-icon left>mdi-arrow-left</v-icon>
-                        Back to my automations
+                        Back to My Automations
                     </v-btn>
                 </div>
             </div>
@@ -74,7 +85,11 @@
                         </div>
                     </v-card-text>
                 </v-card>
-                <v-alert class="mt-6 text-center text-md-left">To share an automation recipe, use the "Copy URL" button to copy the full URL which you can share with other users.</v-alert>
+                <v-alert class="mt-6 text-center text-md-left">To share more automations, use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation card.</v-alert>
+                <v-btn class="mr-2" color="primary" title="Back to my automations" to="/automations" nuxt small rounded>
+                    <v-icon left>mdi-arrow-left</v-icon>
+                    Back to My Automations
+                </v-btn>
             </div>
 
             <v-dialog v-if="deletingRecipe" v-model="deleteDialog" width="440" overlay-opacity="0.95">
@@ -208,7 +223,8 @@ export default {
 
             this.deleteDialog = false
             this.deletingRecipe = null
-            this.$router.push({path: `/automations/shared?deleted=${recipeId}`})
+
+            window.document.location.href = `/automations/shared?deleted=${recipeId}`
         }
     }
 }

@@ -7,7 +7,7 @@
                         <a :href="link.url" :target="link.id" :title="link.title"><v-img :src="'/images/affiliates/' + link.id + '.png'" max-height="64px" class="mt-1" /></a>
                     </v-col>
                 </v-row>
-                <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win: you get the best deals, and Strautomator gets a small commission to keep the servers running.</div>
+                <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win. You get the best deals, and Strautomator gets a commission to keep the servers running.</div>
             </v-card-text>
         </v-card>
     </div>

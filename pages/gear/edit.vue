@@ -20,10 +20,11 @@
                 {{ gear.name }}
             </h1>
             <div>
-                <span v-if="hasBrandModel">{{ gear.brand }} {{ gear.model }} -</span>
-                {{ gear.distance }} {{ distanceUnits }}
+                <span v-if="hasBrandModel">{{ gear.brand }} {{ gear.model }} </span>
+                <br v-if="!$breakpoint.mdAndUp" />
+                {{ $breakpoint.mdAndUp ? "with" : "" }} {{ gear.distance }} {{ distanceUnits }}
             </div>
-            <v-card class="mt-2" outlined>
+            <v-card class="mt-3" outlined>
                 <v-card-title class="accent">
                     <span>Components</span>
                 </v-card-title>
@@ -43,20 +44,17 @@
                                         </a>
                                     </v-col>
                                     <v-col cols="6" class="text-right">
-                                        <v-icon :color="comp.disabled ? 'accent' : ''" class="float-right">{{ getComponentIcon(comp) }}</v-icon>
-                                        <v-switch class="pa-0 ma-0 mr-1 float-right" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
-                                        <v-btn color="primary" class="mr-2" :title="'Reset ' + comp.name + ' usage'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" rounded x-small>
-                                            <v-icon left>mdi-refresh</v-icon>
-                                            Reset
-                                        </v-btn>
+                                        <v-switch class="pa-0 ma-0 float-right" :class="$breakpoint.mdAndUp ? 'ml-2' : 'mr-n2'" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
                                     </v-col>
                                 </v-row>
                                 <v-row class="pl-5 pr-5" no-gutters>
                                     <v-col cols="12">
                                         <div class="mt-n2">
-                                            {{ comp.currentDistance }} {{ distanceUnits }}
-                                            {{ comp.disabled ? " (tracking disabled)" : "" }}
+                                            <span>{{ comp.currentDistance }} {{ distanceUnits }}</span>
                                             <span class="float-right" v-if="comp.alertDistance">{{ comp.alertDistance }} {{ distanceUnits }}</span>
+                                            <v-btn color="primary" class="mr-2 float-right" :title="'Reset ' + comp.name + ' usage'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" icon outlined rounded x-small>
+                                                <v-icon>mdi-refresh</v-icon>
+                                            </v-btn>
                                             <v-progress-linear class="mt-2" color="secondary" v-if="comp.alertDistance" :background-color="getProgressBg(comp, 'distance')" :value="getProgressValue(comp, 'distance')" rounded></v-progress-linear>
                                         </div>
                                         <div class="mt-1">
@@ -89,21 +87,31 @@
 
             <v-card class="mt-4" v-if="gearwearHistory?.length > 0" outlined>
                 <v-card-title class="accent">
-                    <span>Recent history</span>
+                    <span>History</span>
                 </v-card-title>
-                <v-card-text class="pt-4 pb-2">
-                    <div class="mb-4" v-for="data in gearwearHistory">
-                        <h3>{{ $dayjs(data.date).format("LL") }}</h3>
-                        <ul class="ml-n2">
-                            <li v-for="h in data.history">{{ h.message }}</li>
-                        </ul>
-                    </div>
+                <v-card-text class="pa-0">
+                    <v-simple-table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Components</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="data in gearwearHistory">
+                                <td class="pt-2 pb-2">{{ $dayjs(data.date).format($breakpoint.mdAndUp ? "LL" : "l") }}</td>
+                                <td class="pt-2 pb-2">
+                                    <div v-for="h in data.history">{{ h.message }}</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-simple-table>
+                    <div class="pa-4">Please note that only the last alert date for each component is kept in the history log.</div>
                 </v-card-text>
             </v-card>
 
             <v-alert color="accent" class="mt-4 mb-4" v-if="hasDisabledComponents() || hasHistory">
-                <div v-if="hasDisabledComponents()">Components marked as disabled will not have their usage updated with new activities.</div>
-                <div v-if="hasHistory">Please note that only the last alert date for each component is kept in the history log.</div>
+                <div v-if="hasDisabledComponents()">Components marked as disabled will not have their usage updated with new activities!</div>
             </v-alert>
 
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
@@ -463,7 +471,7 @@ export default {
                         if (!dateHistory[hDate]) {
                             dateHistory[hDate] = []
                         }
-                        dateHistory[hDate].push({message: `${c.name} changed after ${h.distance} ${this.distanceUnits}`, reset: true})
+                        dateHistory[hDate].push({message: `${c.name} changed (${h.distance}${this.distanceUnits})`, reset: true})
                     }
                 }
 
@@ -493,7 +501,11 @@ export default {
             this.deleteComponentDialog = false
             this.componentDialog = true
         },
-        closedComponentDialog(component, changed) {
+        closedComponentDialog(component, changes) {
+            if (component == "delete") {
+                this.showDeleteComponentDialog(this.gearwearComponent)
+                return
+            }
             if (component) {
                 this.hasChanges = true
 
@@ -505,7 +517,7 @@ export default {
 
                     // Distance / hours were set to 0 and reset wasn't today? Ask if user wants to trigger a reset then.
                     const wasNotResetToday = !this.isNew && component.lastResetDate != this.$dayjs().format("YYYY-MM-DD")
-                    if (changed && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
+                    if (changes.length > 0 && wasNotResetToday && component.currentDistance < 1 && component.currentTime < 3600) {
                         this.componentDialog = false
                         this.resetDialog = true
                         return
