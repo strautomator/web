@@ -348,7 +348,7 @@ export default {
 
             this.gear = gearDetails.gear
 
-            if (config) {
+            if (config?.components) {
                 this.gearwearConfig = config
                 this.isNew = false
             } else {
