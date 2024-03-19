@@ -162,20 +162,20 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <h3 class="mb-2">AI preferences (PRO only)</h3>
-                        <div class="body-2 mb-4">You can select your preferred AI provider.</div>
+                        <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
+                        <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
                         </v-radio-group>
-                        <div class="body-2 mb-4">You can also enhance the generated activity names and descriptions by appending a custom prompt.</div>
+                        <div class="body-2 mb-4">You can also enhance the generated content by setting a custom prompt, that will be appended to the default prompt.</div>
                         <v-text-field
                             v-model="aiPrompt"
                             maxlength="100"
                             placeholder="Enter a custom prompt or leave it blank"
                             @blur="delaySavePreferences()"
-                            :label="user.isPro ? 'AI prompt' : 'AI prompt (PRO Only)'"
+                            :label="user.isPro ? 'Append AI prompt' : 'Append AI prompt (PRO Only)'"
                             :disabled="!user.isPro"
                             outlined
                             rounded
@@ -373,6 +373,7 @@ import _ from "lodash"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
+import {user} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
@@ -402,7 +403,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
-        const aiProvider = preferences.aiProvider || "openai"
+        const aiProvider = preferences.aiProvider || "gemini"
         const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
