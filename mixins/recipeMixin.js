@@ -78,11 +78,11 @@ export default {
 
         // Music track tags.
         const musicTags = [
-            {value: "trackList", label: "Spotify: Full track list"},
-            {value: "trackStart", label: "Spotify: Track title (start)"},
-            {value: "trackEnd", label: "Spotify: Track title (end)"},
-            {value: "lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
-            {value: "lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true}
+            {value: "spotify.trackList", label: "Spotify: Full track list"},
+            {value: "spotify.trackStart", label: "Spotify: Track title (start)"},
+            {value: "spotify.trackEnd", label: "Spotify: Track title (end)"},
+            {value: "spotify.lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
+            {value: "spotify.lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true}
         ]
 
         // Weather tags.
