@@ -96,7 +96,8 @@ export default {
             return ""
         },
         getChipColor(comp) {
-            if (comp.currentDistance >= comp.alertDistance) return "error"
+            if (comp.alertDistance > 0 && comp.currentDistance >= comp.alertDistance) return "error"
+            if (comp.alertHours > 0 && comp.currentHours >= comp.alertHours) return "error"
             return ""
         },
         getChipText(comp) {

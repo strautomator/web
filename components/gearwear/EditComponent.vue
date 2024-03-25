@@ -25,7 +25,7 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertDistance > 0 ? 'primary' : ''">mdi-sign-direction</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="100" :rules="alertRules" :suffix="distanceUnits" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertDistance" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="100" :rules="distanceAlertRules" :suffix="distanceUnits" outlined rounded></v-text-field>
                     </div>
                 </div>
                 <div class="d-flex mt-1">
@@ -36,7 +36,7 @@
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertHours > 0 ? 'primary' : ''">mdi-clock-outline</v-icon>
                     </div>
                     <div class="flex-grow-1">
-                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="20" :rules="alertRules" suffix="h" outlined rounded></v-text-field>
+                        <v-text-field v-model="alertHours" type="number" class="ml-1" label="Alert on" hint="0 to disable" min="20" :rules="hoursAlertRules" suffix="h" outlined rounded></v-text-field>
                     </div>
                 </div>
                 <div class="mb-3 ml-md-2 text-center text-md-left">
@@ -99,10 +99,20 @@ export default {
 
             return [rules.required, rules.name]
         },
-        alertRules() {
+        distanceAlertRules() {
             const rules = {
                 number: (value) => {
-                    if (value >= 0 || value == "") return true
+                    if (value >= 100 || value == "0" || value == "") return true
+                    return "Minimum is 0"
+                }
+            }
+
+            return [rules.number]
+        },
+        hoursAlertRules() {
+            const rules = {
+                number: (value) => {
+                    if (value >= 20 || value == "0" || value == "") return true
                     return "Minimum is 0"
                 }
             }
