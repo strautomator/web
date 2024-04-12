@@ -38,16 +38,13 @@
                                 <div v-else-if="isGear">
                                     <v-select label="Gear" v-model="selectedGear" :items="allGear" :rules="gearInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="isBoolean">
+                                <div v-else-if="isBoolean && hasOperators">
                                     <v-select label="Yes or No?" v-model="selectedBoolean" :items="booleans" :rules="booleanInputRules" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="isWeekday">
                                     <v-select label="Weekday" v-model="selectedWeekdays" :items="weekdays" :rules="weekdayInputRules" multiple dense outlined rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="!isLocation">
-                                    <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" dense outlined rounded></v-text-field>
-                                </div>
-                                <div v-else>
+                                <div v-else-if="isLocation">
                                     <v-autocomplete
                                         v-model="locationInput"
                                         label="Location or geo coordinates"
@@ -62,6 +59,9 @@
                                         outlined
                                         no-filter
                                     ></v-autocomplete>
+                                </div>
+                                <div v-else-if="hasOperators">
+                                    <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" dense outlined rounded></v-text-field>
                                 </div>
                             </div>
                             <div class="text-center mb-6" v-if="isDefaultFor">
@@ -114,6 +114,9 @@ export default {
         },
         inputPlaceholder() {
             return this.selectedProperty?.type == "time" ? "00:00" : ""
+        },
+        hasOperators() {
+            return this.selectedProperty?.operators?.length > 0
         },
         isDefaultFor() {
             return this.selectedProperty?.value == "defaultFor"
@@ -331,8 +334,9 @@ export default {
             }
         },
         propertyChanged() {
-            if (this.isDefaultFor) {
-                this.selectedOperator = {value: true}
+            if (this.isDefaultFor || !this.hasOperators) {
+                this.selectedOperator = {value: "=", text: "is"}
+                this.selectedBoolean = {value: true, text: "Yes"}
             } else if (this.selectedProperty?.operators.length == 1) {
                 this.selectedOperator = this.selectedProperty.operators[0]
             } else {
