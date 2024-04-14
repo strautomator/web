@@ -298,6 +298,8 @@ export default {
                 // Condition is default for an activity type?
                 if (this.isDefaultFor) {
                     result = {defaultFor: this.selectedDefaultFor.value}
+                } else if (!this.hasOperators) {
+                    result = {property: this.selectedProperty?.value}
                 } else {
                     result = {
                         property: this.selectedProperty?.value,

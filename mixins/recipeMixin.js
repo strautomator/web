@@ -206,7 +206,11 @@ export default {
                 return `!!! ERROR !!! Invalid property: ${condition.property}`
             }
 
-            const operator = property.operators ? _.find(property.operators, {value: condition.operator}) : {text: "is"}
+            if (!property.operators) {
+                return property.text
+            }
+
+            const operator = _.find(property.operators, {value: condition.operator})
             if (!operator) {
                 return `!!! ERROR !!! Invalid condition operator: ${condition.operator}`
             }
