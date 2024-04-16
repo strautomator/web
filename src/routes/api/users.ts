@@ -583,9 +583,9 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
 router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
-        if (!req.body || !req.body.counter) throw new Error("Missing counter")
+        if (!req.body) throw new Error("Missing counter")
 
-        const counter = req.body.counter
+        const counter = req.body.counter || 0
         const recipeId = req.params.recipeId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
