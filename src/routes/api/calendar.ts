@@ -126,7 +126,7 @@ router.delete("/:userId/cache", async (req: express.Request, res: express.Respon
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Template is only available for PRO users.
+        // Cache clean is only available for PRO users.
         if (!user.isPro) {
             throw new Error("Only PRO users are allowed to delete the calendar cache")
         }
