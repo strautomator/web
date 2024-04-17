@@ -61,7 +61,7 @@
                                     ></v-autocomplete>
                                 </div>
                                 <div v-else-if="hasOperators">
-                                    <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" dense outlined rounded></v-text-field>
+                                    <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
                                 </div>
                             </div>
                             <div class="text-center mb-6" v-if="isDefaultFor">
@@ -343,6 +343,11 @@ export default {
                 this.selectedOperator = this.selectedProperty.operators[0]
             } else {
                 this.selectedOperator = {}
+            }
+        },
+        valueKeyUp(event) {
+            if (event.keyCode == 13) {
+                this.save()
             }
         },
         async fetchLocations(value) {
