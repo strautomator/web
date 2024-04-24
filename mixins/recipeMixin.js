@@ -95,6 +95,7 @@ export default {
             {value: "humidity", label: "Humidity"},
             {value: "pressure", label: "Pressure"},
             {value: "windSpeed", label: "Wind speed"},
+            {value: "windGust", label: "Wind gust"},
             {value: "windDirection", label: "Wind direction"},
             {value: "precipitation", label: "Precipitation"},
             {value: "airDensity", label: "Air density"},
