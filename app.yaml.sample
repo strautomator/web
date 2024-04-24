@@ -3,10 +3,10 @@
 # Google App Engine (standard environment). Please note that you must update
 # the environment variables to your own secrets and credentials.
 
-runtime: nodejs12
+runtime: nodejs20
 instance_class: F2
 automatic_scaling:
-    max_instances: 1
+    max_instances: 2
 
 handlers:
     - url: /_nuxt
