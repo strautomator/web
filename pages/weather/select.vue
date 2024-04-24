@@ -21,7 +21,7 @@
                 <div :class="{'text-center mt-6': !$breakpoint.mdAndUp}">
                     <v-btn class="mr-2" color="primary" title="Get weather for my current location" v-if="!loading" @click="getPosition" rounded>
                         <v-icon left>mdi-weather-sunset-down</v-icon>
-                        Get weather
+                        Get current weather
                     </v-btn>
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                 </div>
@@ -49,9 +49,9 @@
                                 <td>{{ summary.summary }}</td>
                                 <td>{{ summary.temperature }} (feels {{ summary.feelsLike }})</td>
                                 <td>{{ summary.humidity }}</td>
-                                <td>{{ summary.windSpeed }}</td>
+                                <td>{{ summary.windSpeed }} ({{ summary.windGust }})</td>
                                 <td>{{ summary.precipitation || "-" }}</td>
-                                <td><v-radio :title="`Click to select ${summary.name}`" :value="summary.id"></v-radio></td>
+                                <td><v-radio class="float-right" :title="`Click to select ${summary.name}`" :value="summary.id"></v-radio></td>
                             </tr>
                         </tbody>
                     </v-simple-table>
@@ -64,7 +64,7 @@
                                         <v-radio :value="summary.id"></v-radio>
                                     </div>
                                 </div>
-                                <div class="d-flex pa-0 mt-2">{{ summary.icon }} {{ summary.summary }}</div>
+                                <div class="d-flex pa-0 mt-2">{{ summary.icon }} {{ summary.summary }} {{ summary.precipitation && !summary.summary.toLowerCase().includes(summary.precipitation) ? `(${summary.precipitation})` : "" }}</div>
                                 <div class="d-flex pa-0 mt-1">
                                     <div class="mr-3 ml-n1">
                                         <v-icon small>mdi-thermometer</v-icon>
@@ -76,10 +76,7 @@
                                     </div>
                                     <div class="mr-3">
                                         <v-icon small>mdi-weather-windy</v-icon>
-                                        {{ summary.windSpeed }}
-                                    </div>
-                                    <div>
-                                        {{ summary.precipitation || "" }}
+                                        {{ summary.windSpeed }} ({{ summary.windGust }})
                                     </div>
                                 </div>
                             </v-card-text>
@@ -87,7 +84,7 @@
                     </div>
                 </v-radio-group>
                 <div class="mt-1 text-center text-md-left">
-                    <v-btn color="primary" title="Save weather provider" @click="saveAndExit" rounded nuxt>
+                    <v-btn color="primary" title="Save weather provider" @click="saveAndExit" :disabled="!weatherProvider" rounded nuxt>
                         <v-icon left>mdi-check</v-icon>
                         Confirm {{ weatherProvider }}
                     </v-btn>
