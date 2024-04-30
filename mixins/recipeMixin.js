@@ -47,8 +47,10 @@ export default {
             {value: "garmin.trainingLoad", label: "Garmin: Training load"},
             {value: "garmin.aerobicTrainingEffect", label: "Garmin: Aerobic t. effect"},
             {value: "garmin.anaerobicTrainingEffect", label: "Garmin: Anaerobic t. effect"},
+            {value: "garmin.pedalTorqueEffect", label: "Garmin: Torque effectiveness"},
             {value: "garmin.pedalSmoothness", label: "Garmin: Pedal smoothness"},
-            {value: "garmin.pedalTorqueEffect", label: "Garmin: Torque effectiveness"}
+            {value: "garmin.pedalBalance", label: "Garmin: Pedal balance"},
+            {value: "garmin.sportProfile", label: "Garmin: Sport profile"}
         ]
 
         // Activity lap tags.
