@@ -37,7 +37,7 @@ export default {
         }
     },
     mounted() {
-        this.refreshLinks()
+        setTimeout(this.refreshLinks, 10)
     },
     methods: {
         refreshLinks() {
