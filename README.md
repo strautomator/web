@@ -94,18 +94,3 @@ Basic deployment samples are provided:
 ### Scheduled functions
 
 Please note that some features depend on scheduled functions to work. These can be found [here](https://github.com/strautomator/functions), and need to be deployed separately to your environment of choice.
-
-### Beta deployments
-
-Strautomator can be deployed to beta-specific environments by setting the `settings.beta.enabled` flag. Beta deployments have the following peculiarities:
-
--   Only available to PRO users (in production). Free accounts can't login or use Beta environments.
--   All users get a PRO status in Beta (reason above).
--   PayPal subscriptions are not available in Beta.
--   The Spotify integration is limited and emails must be added to an allow-list beforehand.
--   A (Beta) suffix is added to the app title, as well to frontend logos.
--   Database collections and cookie session name will have a forced "beta" suffix.
--   User accounts are deleted after 7 days of inactivity.
--   Expect things to break!
-
-It's not guaranteed that we'll have a Beta deployment running at all times. Some features that depend on scheduled jobs might not work as expected, for instance the FTP auto update and processing of GearWear usage.

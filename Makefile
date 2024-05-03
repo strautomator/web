@@ -35,12 +35,6 @@ run: build
 	-cp -r ../core/lib/. ./node_modules/strautomator-core/lib/
 	npm run start:dev
 
-# Run the app locally as Beta
-run-beta: build
-	-cp -r ../core/settings*.json ./node_modules/strautomator-core/
-	-cp -r ../core/lib/. ./node_modules/strautomator-core/lib/
-	SMU_beta_enabled=1 npm run start:dev
-
 # Update dependencies and set new version
 update:
 	-rm -rf ./node_modules/strautomator-core
