@@ -543,7 +543,7 @@ export default {
     },
     async fetch() {
         try {
-            if (this.$route.query?.email && this.$route.query?.token) {
+            if (this.$route.query?.token && this.$route.query?.email != this.$store.state.user.email) {
                 await this.$axios.$post(`/api/users/${this.$store.state.user.id}/email/confirm`, {email: this.$route.query.email, token: this.$route.query.token})
                 this.$store.commit("setUserConfirmEmail", null)
                 this.$store.commit("setUserEmail", this.$route.query.email)
