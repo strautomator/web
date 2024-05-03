@@ -2,7 +2,6 @@
     <v-layout column>
         <v-container fluid>
             <h1>My Gear</h1>
-            <v-alert v-if="$store.state.beta" class="text-center text-md-left" color="accent" border="top">GearWear features are not guaranteed to work reliably in the Beta environment!</v-alert>
             <template v-if="!isLoading && gearWithConfig.length == 0">
                 <p>With GearWear you can set up automated alerts for your expendable parts when they reach the target usage (distance or hours). To start, please create specific GearWear to your desired bikes and/or shoes below.</p>
             </template>

@@ -87,11 +87,6 @@
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
-                        <tr>
-                            <td>Beta access *</td>
-                            <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
-                            <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
-                        </tr>
                         <tr v-if="!noPrice">
                             <td>Price / year</td>
                             <td class="text-center">Free</td>
@@ -106,7 +101,6 @@
         </v-card>
         <ul v-if="!noFooter" class="caption mt-2 mb-5 pl-4">
             <li>A link to strautomator.com is added to around {{ $store.state.linksOnPercent }}% of processed activities by default. PRO users can disable these links completely.</li>
-            <li>PRO users can test their feature requests on a dedicated beta environment.</li>
             <li v-if="$store.state.proPlanDetails.price.upcoming">The yearly subscription price will increase to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ currency }} soon.</li>
         </ul>
     </div>

@@ -31,8 +31,6 @@
             </v-btn>
         </v-app-bar>
         <v-main>
-            <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
-
             <v-container class="width-wrapper" fluid>
                 <nuxt v-if="$store.state?.user" />
                 <ads-panel />
@@ -52,7 +50,6 @@
                 <div class="copyright">
                     <span>Strautomator.com</span>
                     <v-chip v-if="$store.state.user?.isPro" color="primary" class="caption mb-1 ml-1" outlined>PRO</v-chip>
-                    <v-chip v-if="$store.state.beta" color="primary" class="caption mb-1 ml-1" outlined>Beta</v-chip>
                 </div>
             </div>
         </v-main>

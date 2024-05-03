@@ -3,7 +3,6 @@
         <div class="text-center mt-10">
             <div class="width-wrapper text-center">
                 <img src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
-                <div v-if="$store.state.beta" class="beta-header mt-4">Beta environment, for testing purposes only!</div>
 
                 <div class="mt-8" v-if="errorDetails">
                     <h1 class="display-1">{{ errorDetails.title }}</h1>
@@ -57,7 +56,6 @@ export default {
         errorDetails() {
             let status = this.error.status || this.error.statusCode
             let message = this.error.description ? this.error.description : this.error.message
-            let betaMessage = "Only PRO subscribers have access to the beta environment of Strautomator."
 
             if (message && message.indexOf("{") == 0 && message.indexOf("}") > 0) {
                 message = null
@@ -66,7 +64,7 @@ export default {
             if (status == 401 || status == 403) {
                 return {
                     title: this.error.title || "Access denied",
-                    message: this.beta ? betaMessage : "Please try connecting to Strava again, allowing all the requested permissions."
+                    message: "Please try connecting to Strava again, allowing all the requested permissions."
                 }
             } else if (status == 402) {
                 return {
@@ -87,10 +85,7 @@ export default {
         },
         showLogin() {
             const status = this.error.status || this.error.statusCode
-            return !this.beta && (status == 401 || status == 403)
-        },
-        beta() {
-            return this.$route.query.beta == "1"
+            return status == 401 || status == 403
         }
     },
     mounted() {

@@ -67,8 +67,7 @@ export const state = () => ({
     country: null,
     expectedCurrency: null,
     archiveDownloadDays: null,
-    aiHumours: null,
-    beta: false
+    aiHumours: null
 })
 
 export const getters = {
@@ -185,9 +184,6 @@ export const mutations = {
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
-    },
-    setBeta(state, value) {
-        state.beta = value
     }
 }
 
@@ -258,11 +254,6 @@ export const actions = {
 
             // Set AI generative humours.
             commit("setAiHumours", settings.ai.humours)
-
-            // Beta environment?
-            if (settings.beta.enabled) {
-                commit("setBeta", true)
-            }
         }
 
         let user = state.user

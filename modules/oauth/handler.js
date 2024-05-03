@@ -67,11 +67,7 @@ Handler.prototype.authenticateCallbackToken = async function authenticateCallbac
         }
 
         // Check for existing user and create a new one if necessary.
-        // Beta environments are restricted to PRO and beta-allowed users.
-        const user = await core.users.upsert(athlete, stravaTokens, true)
-        if (!user.isPro && !user.isBeta && settings.beta.enabled) {
-            return this.redirect("/error?status=402")
-        }
+        await core.users.upsert(athlete, stravaTokens, true)
 
         // Only proceed if session data has been validated and saved successfully.
         const saved = await this.saveData({accessToken, refreshToken, expiresAt}, athlete)
@@ -136,7 +132,7 @@ Handler.prototype.updateToken = async function updateToken() {
         // Current token expired? Refresh it.
         if (stravaTokens.expiresAt && stravaTokens.expiresAt <= epoch) {
             logger.debug("OAuth.updateToken", `User ${userId}`, `Current token expires at ${stravaTokens.expiresAt}`)
-            stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken, settings.beta.enabled)
+            stravaTokens = await core.strava.refreshToken(stravaTokens.refreshToken, stravaTokens.accessToken, false)
 
             if (stravaTokens) {
                 const {accessToken, refreshToken, expiresAt} = stravaTokens
@@ -235,8 +231,7 @@ Handler.prototype.redirect = function redirect(path) {
 }
 
 Handler.prototype.redirectAccessDenied = async function redirectToOAuth() {
-    const qBeta = settings.beta.enabled ? "&beta=1" : ""
-    return this.redirect(`/error?status=401${qBeta}`)
+    return this.redirect("/error?status=401")
 }
 
 Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) {

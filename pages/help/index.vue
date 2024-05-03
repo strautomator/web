@@ -96,11 +96,10 @@ export default {
             {tag: "garmin", title: "Garmin integration"},
             {tag: "issues", title: "Common issues"}
         ]
-        const betaCategories = [{tag: "beta", title: "Beta"}]
 
         return {
             loading: true,
-            categories: this.$store.state.beta ? betaCategories : categories,
+            categories: categories,
             faq: [],
             expandedPanels: [],
             searchValue: "",

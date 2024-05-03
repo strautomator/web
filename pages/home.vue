@@ -9,9 +9,6 @@
                 <div>with</div>
                 <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
 
-                <div v-if="$store.state.beta" class="beta-header">Beta environment, for testing purposes only!</div>
-                <beta-notice v-if="$store.state.beta" />
-
                 <div class="mt-6 mb-2">
                     <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
                 </div>
@@ -126,13 +123,12 @@
 
 <script>
 import _ from "lodash"
-import BetaNotice from "~/components/BetaNotice.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 
 export default {
     layout: "landing",
-    components: {BetaNotice, FeatureLinks, FreeProTable},
+    components: {FeatureLinks, FreeProTable},
     head() {
         return {
             title: "Automate your Strava"
