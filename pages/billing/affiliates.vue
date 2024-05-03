@@ -83,35 +83,19 @@
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="scalable" class="mt-5" outlined>
-                <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.devv.com/l/scalable" title="Go to Scalable Capital" target="scalable"><img src="https://links.devv.com/images/scalable.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
-                </v-card-title>
-                <v-card-text>
-                    <div class="mt-3 mb-1">
-                        <p>Scalable Capital is an innovative online broker with more than 600k clients. Commission-free trading, automated investing and smart wealth management services.</p>
-                        <ul class="ml-n2">
-                            <li>Open your account with my link</li>
-                            <li>Trade at least 250+ EUR</li>
-                        </ul>
-                        <div class="mt-5 text-center text-md-left">
-                            <a href="https://links.devv.com/l/scalable" title="Go to Scalable Capital" target="scalable"><v-btn color="primary" rounded nuxt>Go to Scalable Capital</v-btn></a>
-                        </div>
-                    </div>
-                </v-card-text>
-            </v-card>
-
             <v-card v-if="amex" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
                     <a href="https://links.devv.com/l/amex" title="Go to American Express" target="amex"><img src="https://links.devv.com/images/amex.png" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
-                        <p>American Express has partnered with PAYBACK to offer cashback and additional discounts in selected stores.</p>
+                        <p>
+                            American Express has partnered with PAYBACK to offer cashback and additional discounts in selected stores. The card as no annual fees, and gives you a minimum of 1 point for every 3 EUR spent, plus a signup bonus of up to
+                            4000 points.
+                        </p>
                         <ul class="ml-n2">
-                            <li>No monthly or annual fees</li>
-                            <li>At least 1 point per 3 EUR spent</li>
-                            <li>Up to 4000 points signup bonus</li>
+                            <li>Apply for an Amex card with my link</li>
+                            <li>Make at least 1 transaction with your new card</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
@@ -146,7 +130,6 @@ export default {
         return {
             revolut: true,
             n26: ["AT", "BE", "DE", "ES", "FI", "FR", "GR", "IE", "IT", "IS", "LI", "LV", "LT", "NL", "NO", "PL", "PT", "SE", "SI", "SK"].includes(country),
-            scalable: ["AT", "DE", "ES", "FR", "IT", "NL"].includes(country),
             tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country),
             amex: ["DE"].includes(country)
         }

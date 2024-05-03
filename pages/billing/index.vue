@@ -169,7 +169,7 @@ export default {
     },
     computed: {
         isAffiliate() {
-            return ["Friend", "N26", "Revolut", "Scalable Capital", "Trade Republic"].includes(this.subscriptionSource)
+            return ["Amex", "Friend", "N26", "Revolut", "Trade Republic"].includes(this.subscriptionSource)
         },
         paymentAmount() {
             if (!this.subscription || this.isAffiliate) return "free"
@@ -215,7 +215,7 @@ export default {
                 else if (subscription.source == "paypal") this.subscriptionSource = "PayPal"
                 else if (subscription.source == "n26") this.subscriptionSource = "N26"
                 else if (subscription.source == "revolut") this.subscriptionSource = "Revolut"
-                else if (subscription.source == "scalable") this.subscriptionSource = "Scalable Capital"
+                else if (subscription.source == "amex") this.subscriptionSource = "American Express"
                 else if (subscription.source == "traderepublic") this.subscriptionSource = "Trade Republic"
                 else this.subscriptionSource = "?"
 
