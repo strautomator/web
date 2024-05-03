@@ -8,13 +8,6 @@ a {
     text-decoration: none;
 }
 
-.beta-header {
-    background: #ff3333;
-    font-size: 80%;
-    padding: 4px;
-    text-align: center;
-}
-
 .width-wrapper {
     margin: auto;
     max-width: 960px !important;
@@ -147,6 +140,10 @@ a {
 
 .card-affiliate-logo {
     max-height: 32px;
+}
+
+.color-invert {
+    filter: invert(1);
 }
 
 .poem {

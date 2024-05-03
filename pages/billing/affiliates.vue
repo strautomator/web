@@ -29,7 +29,7 @@
 
             <v-card v-if="revolut" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.devv.com/l/revolut" title="Go to Revolut" target="revolut"><img src="/images/affiliates/revolut.png" alt="Revolut" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                    <a href="https://links.devv.com/l/revolut" title="Go to Revolut" target="revolut"><img src="https://links.devv.com/images/revolut.png" alt="Revolut" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -49,7 +49,7 @@
 
             <v-card v-if="n26" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.devv.com/l/n26" title="Go to N26" target="n26"><img src="/images/affiliates/n26.png" alt="N26" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                    <a href="https://links.devv.com/l/n26" title="Go to N26" target="n26"><img src="https://links.devv.com/images/n26.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -67,7 +67,7 @@
 
             <v-card v-if="tradeRepublic" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.devv.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><img src="/images/affiliates/traderepublic.png" alt="Trade Republic" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                    <a href="https://links.devv.com/l/traderepublic" title="Go to Trade Republic" target="tr"><img src="https://links.devv.com/images/traderepublic.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -85,7 +85,7 @@
 
             <v-card v-if="scalable" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.devv.com/l/scalable" title="Go to Scalable Capital" target="scalable"><img src="/images/affiliates/scalable.png" alt="Scalable Capital" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                    <a href="https://links.devv.com/l/scalable" title="Go to Scalable Capital" target="scalable"><img src="https://links.devv.com/images/scalable.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -96,6 +96,25 @@
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/scalable" title="Go to Scalable Capital" target="scalable"><v-btn color="primary" rounded nuxt>Go to Scalable Capital</v-btn></a>
+                        </div>
+                    </div>
+                </v-card-text>
+            </v-card>
+
+            <v-card v-if="amex" class="mt-5" outlined>
+                <v-card-title class="accent text-center text-md-left">
+                    <a href="https://links.devv.com/l/amex" title="Go to American Express" target="amex"><img src="https://links.devv.com/images/amex.png" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                </v-card-title>
+                <v-card-text>
+                    <div class="mt-3 mb-1">
+                        <p>American Express has partnered with PAYBACK to offer cashback and additional discounts in selected stores.</p>
+                        <ul class="ml-n2">
+                            <li>No monthly or annual fees</li>
+                            <li>At least 1 point per 3 EUR spent</li>
+                            <li>Up to 4000 points signup bonus</li>
+                        </ul>
+                        <div class="mt-5 text-center text-md-left">
+                            <a href="https://links.devv.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
@@ -128,7 +147,8 @@ export default {
             revolut: true,
             n26: ["AT", "BE", "DE", "ES", "FI", "FR", "GR", "IE", "IT", "IS", "LI", "LV", "LT", "NL", "NO", "PL", "PT", "SE", "SI", "SK"].includes(country),
             scalable: ["AT", "DE", "ES", "FR", "IT", "NL"].includes(country),
-            tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country)
+            tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country),
+            amex: ["DE"].includes(country)
         }
     },
     methods: {
