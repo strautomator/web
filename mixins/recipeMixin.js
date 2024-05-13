@@ -24,7 +24,9 @@ export default {
             {value: "co2Saved", label: "CO2 saved"},
             {value: "weekday", label: "Weekday"},
             {value: "weekOfYear", label: "Week of year"},
-            {value: "device", label: "Device"}
+            {value: "device", label: "Device"},
+            {value: "aiName", label: "AI provider for activity name"},
+            {value: "aiDescription", label: "AI provider for activity description"}
         ]
 
         // Activity performance tags.
