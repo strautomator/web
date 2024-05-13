@@ -117,7 +117,6 @@
                             </tr>
                         </tbody>
                     </v-simple-table>
-                    <div class="pa-4">Please note that only the last alert date for each component is kept in the history log.</div>
                 </v-card-text>
             </v-card>
 
