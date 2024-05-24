@@ -52,7 +52,8 @@ export default {
             {value: "garmin.pedalTorqueEffect", label: "Garmin: Torque effectiveness"},
             {value: "garmin.pedalSmoothness", label: "Garmin: Pedal smoothness"},
             {value: "garmin.pedalBalance", label: "Garmin: Pedal balance"},
-            {value: "garmin.sportProfile", label: "Garmin: Sport profile"}
+            {value: "garmin.sportProfile", label: "Garmin: Sport profile"},
+            {value: "garmin.workoutName", label: "Garmin: Workout name"}
         ]
 
         // Activity lap tags.
