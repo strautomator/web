@@ -25,9 +25,9 @@
                 {{ $breakpoint.mdAndUp ? "with" : "" }} {{ gear.distance }} {{ distanceUnits }}
             </div>
 
-            <div class="mt-5 pl-4" v-if="isLoading">
-                <v-card class="ma-4" outlined>
-                    <v-card-text class="pl-0 pr-0">
+            <div v-if="isLoading">
+                <v-card class="mb-4 mt-4" outlined>
+                    <v-card-text class="pl-2 pr-2">
                         <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
                         Loading gear details...
                     </v-card-text>
@@ -79,7 +79,7 @@
                     </template>
                 </template>
 
-                <div class="pl-5 pr-5" v-else>
+                <div v-else>
                     <p>You haven't registered components for this gear yet. Want to kickstart with the defaults?</p>
                     <ul class="pl-4 mb-4">
                         <li v-for="comp in defaultComponents" :key="comp.name">{{ comp.name }}: alert every {{ comp.alertDistance }} {{ distanceUnits }}</li>
@@ -95,6 +95,8 @@
                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
                 Add new component
             </v-btn>
+
+            <v-alert class="caption" dense>Please note that changes made to the components above will only be applied once you save the Gear configuration.</v-alert>
 
             <v-card class="mt-4" v-if="gearwearHistory?.length > 0" outlined>
                 <v-card-title class="accent">
@@ -200,7 +202,7 @@
             <v-dialog v-model="deleteGearWearDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
-                        <v-toolbar-title>Delete GearWear configuration</v-toolbar-title>
+                        <v-toolbar-title>Delete Gear configuration</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideDeleteGearWearDialog">
@@ -210,14 +212,14 @@
                     </v-toolbar>
                     <v-card-text>
                         <h3 class="mt-4">{{ gear.name }}</h3>
-                        <p class="mt-2">Sure you want to delete this GearWear configuration?</p>
+                        <p class="mt-2">Sure you want to delete this Gear configuration?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-2" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete GearWear" @click="deleteGearWear" rounded>
+                            <v-btn color="removal" title="Confirm and delete this Gear" @click="deleteGearWear" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>
@@ -397,7 +399,7 @@ export default {
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges) {
-            const answer = window.confirm("You have unsaved changes on this GearWear config. Sure you want to leave?")
+            const answer = window.confirm("You have unsaved changes on this Gear config. Sure you want to leave?")
 
             if (answer) {
                 next()
@@ -500,6 +502,7 @@ export default {
         // --------------------------------------------------------------------------
         setComponentState(component) {
             component.disabled = component.disabled ? false : true
+            this.hasChanges = true
             this.$forceUpdate()
         },
         showComponentDialog(component) {
@@ -508,13 +511,13 @@ export default {
             this.componentDialog = true
         },
         closedComponentDialog(component, changes) {
+            this.hasChanges = true
+
             if (component == "delete") {
                 this.showDeleteComponentDialog(this.gearwearComponent)
                 return
             }
             if (component) {
-                this.hasChanges = true
-
                 if (!this.gearwearConfig.id) {
                     this.gearwearConfig.id = this.gear.id
                 }
@@ -588,12 +591,12 @@ export default {
             try {
                 _.remove(this.gearwearConfig.components, this.gearwearComponent)
                 this.gearwearConfig.components = this.gearwearConfig.components
-                this.hasChanges = true
             } catch (ex) {
                 this.$webError(this, "GearEdit.deleteComponent", ex)
             }
 
             this.deleteComponentDialog = false
+            this.hasChanges = true
         },
         // DELETE GEARWEAR CONFIG
         // --------------------------------------------------------------------------
