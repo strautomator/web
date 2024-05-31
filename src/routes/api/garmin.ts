@@ -1,6 +1,6 @@
 // Strautomator API: Garmin
 
-import {garmin, strava, UserData} from "strautomator-core"
+import {fitparser, garmin, strava, UserData} from "strautomator-core"
 import auth from "../auth"
 import express from "express"
 import webserver = require("../../webserver")
@@ -77,7 +77,7 @@ router.post("/:userId/match-activity/:stravaId", async (req: express.Request, re
         }
 
         // Fetch processed Garmin activity (if there's one).
-        const garminActivity = await garmin.activities.getMatchingActivity(user, activity)
+        const garminActivity = await fitparser.getMatchingActivity(user, "garmin", activity)
         if (!garminActivity) {
             webserver.renderJson(req, res, {notFound: true})
         } else {

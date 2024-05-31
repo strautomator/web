@@ -22,6 +22,18 @@ router.get("/auth/url", async (req: express.Request, res: express.Response) => {
 })
 
 /**
+ * Validate authentication and try getting an access token from Spotify.
+ */
+router.get("/auth/callback", async (req: express.Request, res: express.Response) => {
+    try {
+        await spotify.processAuthCode(req)
+        res.redirect("/account?spotify=linked")
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
  * Delete Spotify profile for the user account.
  */
 router.get("/auth/unlink", async (req: express.Request, res: express.Response) => {
@@ -34,18 +46,6 @@ router.get("/auth/unlink", async (req: express.Request, res: express.Response) =
         await users.update(user, true)
 
         webserver.renderJson(req, res, {unlinked: true})
-    } catch (ex) {
-        webserver.renderError(req, res, ex)
-    }
-})
-
-/**
- * Validate authentication and try getting an access token from Spotify.
- */
-router.get("/auth/callback", async (req: express.Request, res: express.Response) => {
-    try {
-        await spotify.processAuthCode(req)
-        res.redirect("/account?spotify=linked")
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

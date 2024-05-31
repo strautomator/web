@@ -70,10 +70,6 @@
                         <v-icon left>mdi-spotify</v-icon>
                         {{ user.spotify ? "Unlink Spotify account" : "Link Spotify account" }}
                     </v-btn>
-                    <v-btn class="ma-1" color="primary" title="My notifications" to="/account/notifications" nuxt small rounded>
-                        <v-icon left>mdi-bell</v-icon>
-                        My notifications
-                    </v-btn>
                 </div>
             </div>
             <v-card class="mt-5" outlined>
@@ -214,17 +210,20 @@
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
-                <v-btn color="primary" title="Download my data" to="/account/download" small outlined rounded nuxt>
+                <v-btn color="primary" class="mr-md-2" title="My notifications" to="/account/notifications" small outlined rounded nuxt>
+                    <v-icon left>mdi-bell</v-icon>
+                    My notifications
+                </v-btn>
+                <v-btn color="primary" class="mt-2 mt-md-0 mr-md-2" title="Download my data" to="/account/download" small outlined rounded nuxt>
                     <v-icon left>mdi-archive-arrow-down</v-icon>
                     Download my data
                 </v-btn>
-            </div>
-            <div class="mt-4 text-center text-md-left">
-                <v-btn color="removal" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                <v-btn color="removal" class="mt-2 mt-md-0" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>
             </div>
+
             <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
             <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
                 Please open your inbox and confirm your email address.

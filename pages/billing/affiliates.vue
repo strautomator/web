@@ -1,6 +1,6 @@
 <template>
     <v-layout column>
-        <h1>1 year of PRO</h1>
+        <h1>2 years of PRO</h1>
         <v-container v-if="user.isPro" fluid>
             <v-card>
                 <v-card-text class="text-center text-md-left">
@@ -16,7 +16,7 @@
         </v-container>
         <v-container v-else fluid>
             <p>
-                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first year for free, by using my referral code to register to one of the affiliated fintech
+                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first 2 years for free, by using a referral code to register to one of my affiliated fintech
                 services. These are services that I personally use on a daily basis. Here's how it works:
             </p>
             <ul class="ml-n2">
@@ -25,7 +25,7 @@
                 <li>Send me your Strava ID via <a href="mailto:info@strautomator.com" title="Email">email</a></li>
             </ul>
             <p class="mt-4">Once you have completed the registration and everything is confirmed, your account will be switched to PRO.</p>
-            <p>After 1 year, if you still wish to keep using PRO features, you'll need to subscribe via PayPal or GitHub.</p>
+            <p>After 2 years, if you still wish to keep using PRO features, you'll need to subscribe via PayPal or GitHub.</p>
 
             <v-card v-if="revolut" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
@@ -33,7 +33,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
-                        <p>Revolut is an online bank with more than 30 million customers worldwide. It has all the features and financial services that you could possibly imagine, even on their free account.</p>
+                        <p>Revolut is an online bank with more than 30 million customers worldwide. It has all the features and financial services that you could possibly imagine, from transfers to stocks to crypto to travel eSIM.</p>
                         <ul class="ml-n2">
                             <li>Open your Revolut account with my link</li>
                             <li>Add money to your new account</li>
@@ -53,7 +53,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
-                        <p>N26 is an online bank with more than 8 million customers worldwide. The free account offers all the basics, but if you want more features and added insurance, you can opt for one of their paid plans.</p>
+                        <p>N26 is an online bank with more than 9 million customers worldwide. Very similar to Revolut, it also offers many features and added services on top of a regular checking account.</p>
                         <ul class="ml-n2">
                             <li>Open your N26 account with my link</li>
                             <li>Make at least 1 purchase of 10+ EUR</li>
@@ -71,7 +71,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
-                        <p>Trade Republic is an online broker with more than 4 million customers in the EU. Commission-free trading for 1 EUR only, and up to 1% savings cashback using their new VISA card.</p>
+                        <p>Trade Republic is an online broker with more than 5 million customers in the EU. Commission-free trading for 1 EUR only, and up to 4% interest and 1% cashback using their VISA card.</p>
                         <ul class="ml-n2">
                             <li>Open your account with my link</li>
                             <li>Trade at least 100+ EUR</li>

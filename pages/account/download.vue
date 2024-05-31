@@ -14,13 +14,13 @@
                     <v-simple-table>
                         <thead class="accent">
                             <tr>
-                                <th>File</th>
+                                <th v-if="$breakpoint.mdAndUp">File</th>
                                 <th>Data</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="nowrap" width="1">activities.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">activities.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Processed activities</li>
@@ -29,7 +29,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">athlete-records.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">athlete-records.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Personal activity records</li>
@@ -37,15 +37,23 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">gearwear.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">garmin.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
-                                        <li>GearWear configurations</li>
+                                        <li>Processed FIT summaries from Garmin</li>
                                     </ul>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">notifications.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">gearwear.json</td>
+                                <td class="pt-2 pb-2">
+                                    <ul class="pl-4">
+                                        <li>Gear configurations</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">notifications.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Notifications</li>
@@ -54,7 +62,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">recipe-stats.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">recipe-stats.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Automation statistics</li>
@@ -62,7 +70,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">subscriptions.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">subscriptions.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>PRO subscription details</li>
@@ -70,7 +78,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">users.json</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">users.json</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Strava profile</li>
@@ -80,7 +88,15 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="nowrap" width="1">*.ics</td>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">wahoo.json</td>
+                                <td class="pt-2 pb-2">
+                                    <ul class="pl-4">
+                                        <li>Processed FIT summaries from Wahoo</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">*.ics</td>
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Cached exported calendars</li>
@@ -92,8 +108,8 @@
                     <v-divider></v-divider>
 
                     <div class="pa-4">
-                        Some of the files above might be missing, depending on which features you're using on the website. The download does <span class="font-weight-bold">not</span> include your account tokens, credentials, or access and request
-                        logs.
+                        Some of the files above might be missing, depending on which features you're using on the website. The download does <span class="font-weight-bold">not</span> include your account tokens, credentials, short-lived cache and
+                        access logs.
                     </div>
 
                     <div class="pa-3 text-center text-md-left">
