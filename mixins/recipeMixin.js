@@ -25,8 +25,8 @@ export default {
             {value: "weekday", label: "Weekday"},
             {value: "weekOfYear", label: "Week of year"},
             {value: "device", label: "Device"},
-            {value: "aiName", label: "AI provider for activity name"},
-            {value: "aiDescription", label: "AI provider for activity description"}
+            {value: "aiNameProvider", label: "AI provider for activity name"},
+            {value: "aiDescriptionProvider", label: "AI provider for activity description"}
         ]
 
         // Activity performance tags.
