@@ -133,6 +133,9 @@ export default {
         isGarmin() {
             return this.selectedProperty?.value == "garmin.sensor"
         },
+        isWahoo() {
+            return this.selectedProperty?.value == "wahoo.sensor"
+        },
         isSpotify() {
             return this.selectedProperty?.value == "spotify.track"
         },
@@ -224,6 +227,16 @@ export default {
             } else if (!user.garmin) {
                 garminProp.text += " (needs linked Garmin)"
                 garminProp.disabled = true
+            }
+
+            // Disable Wahoo if user has no account linked.
+            const wahooProp = _.find(recipeProperties, {value: "wahoo.sensor"})
+            if (!user.isPro) {
+                wahooProp.text += " (PRO only)"
+                wahooProp.disabled = true
+            } else if (!user.wahoo) {
+                wahooProp.text += " (needs linked Wahoo)"
+                wahooProp.disabled = true
             }
 
             // Disable Spotify if user has no account linked.

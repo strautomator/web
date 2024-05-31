@@ -8,6 +8,18 @@
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
+            <v-snackbar v-if="$route.query.wahoo == 'linked' && user?.wahoo" v-model="wahooLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Wahoo account "{{ this.user.wahoo.id }}" linked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
+            <v-snackbar v-else-if="user && !user.wahoo" v-model="wahooUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Wahoo account unlinked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
             <v-snackbar v-if="$route.query.spotify == 'linked' && user?.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
                 Spotify account "{{ this.user.spotify.email }}" linked successfully!
                 <template v-slot:action="{attrs}">
@@ -49,6 +61,10 @@
                     <v-btn class="ma-1" color="primary" title="Garmin account" @click="garminDialog = true" :disabled="!user.isPro" nuxt small rounded>
                         <v-icon left>mdi-triangle</v-icon>
                         {{ !user.isPro ? "Link Garmin account (PRO only)" : user.garmin ? "Unlink Garmin account" : "Link Garmin account" }}
+                    </v-btn>
+                    <v-btn class="ma-1" color="primary" title="Wahoo account" @click="wahooDialog = true" :disabled="!user.isPro" nuxt small rounded>
+                        <v-icon left>mdi-alpha-w-circle</v-icon>
+                        {{ !user.isPro ? "Link Wahoo account (PRO only)" : user.wahoo ? "Unlink Wahoo account" : "Link Wahoo account" }}
                     </v-btn>
                     <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
@@ -257,6 +273,39 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog v-model="wahooDialog" width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Wahoo account</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideWahooDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4" v-if="!user.wahoo">You can link your Wahoo account to your Strautomator profile to use ANT+ sensor IDs paired to your device on your automations.</p>
+                    <p class="mt-4" v-else>You have linked the Wahoo account {{ user.wahoo.id }} to your profile. If you unlink it, existing automations having Wahoo related properties will stop working.</p>
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideWahooDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" title="Proceed to authentication with Wahoo" @click="linkWahoo" v-if="!user.wahoo" rounded>
+                            <v-icon left>mdi-link</v-icon>
+                            Go to Wahoo
+                        </v-btn>
+                        <v-btn color="primary" title="Unlink my Wahoo account" @click="unlinkWahoo" v-else rounded>
+                            <v-icon left>mdi-link-off</v-icon>
+                            Unlink
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="spotifyDialog" width="540" overlay-opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
@@ -441,6 +490,9 @@ export default {
             garminDialog: this.$route.query.garmin == "link",
             garminLinked: this.$route.query.garmin == "linked",
             garminUnlinked: this.$route.query.garmin == "unlinked",
+            wahooDialog: this.$route.query.wahoo == "link",
+            wahooLinked: this.$route.query.wahoo == "linked",
+            wahooUnlinked: this.$route.query.wahoo == "unlinked",
             spotifyDialog: this.$route.query.spotify == "link",
             spotifyLinked: this.$route.query.spotify == "linked",
             spotifyUnlinked: this.$route.query.spotify == "unlinked",
@@ -587,10 +639,34 @@ export default {
                 await this.$axios.$get("/api/garmin/auth/unlink")
                 await this.refreshUser()
 
+                this.garminLinked = false
                 this.garminUnlinked = true
                 this.hideGarminDialog()
             } catch (ex) {
                 this.$webError(this, "Account.unlinkGarmin", ex)
+            }
+        },
+        hideWahooDialog() {
+            this.wahooDialog = false
+        },
+        async linkWahoo() {
+            try {
+                const result = await this.$axios.$get("/api/wahoo/auth/url")
+                document.location.href = result.url
+            } catch (ex) {
+                this.$webError(this, "Account.linkWahoo", ex)
+            }
+        },
+        async unlinkWahoo(unlink) {
+            try {
+                await this.$axios.$get("/api/wahoo/auth/unlink")
+                await this.refreshUser()
+
+                this.wahooLinked = false
+                this.wahooUnlinked = true
+                this.hideWahooDialog()
+            } catch (ex) {
+                this.$webError(this, "Account.unlinkWahoo", ex)
             }
         },
         hideSpotifyDialog() {
@@ -609,6 +685,7 @@ export default {
                 await this.$axios.$get("/api/spotify/auth/unlink")
                 await this.refreshUser()
 
+                this.spotifyLinked = false
                 this.spotifyUnlinked = true
                 this.hideSpotifyDialog()
             } catch (ex) {
