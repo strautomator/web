@@ -70,6 +70,9 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         if (result.garmin) {
             delete result.garmin.tokens
         }
+        if (result.wahoo) {
+            delete result.wahoo.tokens
+        }
         if (result.spotify) {
             delete result.spotify.tokens
         }
