@@ -92,8 +92,9 @@ export default {
             {tag: "records", title: "Personal records"},
             {tag: "performance", title: "Performance estimation"},
             {tag: "chatgpt", title: "ChatGPT integration"},
-            {tag: "spotify", title: "Spotify integration"},
             {tag: "garmin", title: "Garmin integration"},
+            {tag: "wahoo", title: "Wahoo integration"},
+            {tag: "spotify", title: "Spotify integration"},
             {tag: "issues", title: "Common issues"}
         ]
 
