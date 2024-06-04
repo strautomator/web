@@ -44,6 +44,15 @@
                                 </li>
                             </ul>
                         </div>
+                        <div v-if="wahooActivity" class="mt-4">
+                            <h3 class="mb-1">Wahoo metadata:</h3>
+                            <ul class="ml-0 pl-4">
+                                <li v-for="(value, key) in wahooActivity">
+                                    <span class="font-weight-bold">wahoo.{{ key }}</span> -
+                                    {{ friendlyValue(value) }}
+                                </li>
+                            </ul>
+                        </div>
                         <div v-if="processedActivity" class="mt-4">
                             <h3 class="mb-1">Executed automations:</h3>
                             <ul class="ml-0 pl-4">
@@ -82,6 +91,8 @@ export default {
             activity: false,
             garminActivity: false,
             garminError: null,
+            wahooActivity: false,
+            wahooError: null,
             processedActivity: null,
             syncError: null
         }
@@ -105,6 +116,8 @@ export default {
             this.activity = null
             this.garminActivity = null
             this.garminError = null
+            this.wahooActivity = null
+            this.wahooError = null
 
             if (isNaN(this.activityId)) {
                 const arrUrl = this.activityId.replace("https://", "").split("/")
@@ -136,14 +149,26 @@ export default {
                 delete activity.polyline
                 this.activity = activity
 
-                if (this.user.isPro && activity.device?.includes("Garmin")) {
-                    try {
-                        const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
-                        if (!garminActivity.notFound) {
-                            this.garminActivity = garminActivity
+                if (this.user.isPro) {
+                    if (activity.device?.includes("Garmin")) {
+                        try {
+                            const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
+                            if (!garminActivity.notFound) {
+                                this.garminActivity = garminActivity
+                            }
+                        } catch (garminEx) {
+                            this.garminError = garminEx.response?.data?.message || garminEx.toString()
                         }
-                    } catch (garminEx) {
-                        this.garminError = garminEx.response?.data?.message || garminEx.toString()
+                    }
+                    if (activity.device?.includes("Wahoo")) {
+                        try {
+                            const wahooActivity = await this.$axios.$post(`/api/wahoo/${this.user.id}/match-activity/${this.activityId}`)
+                            if (!wahooActivity.notFound) {
+                                this.wahooActivity = wahooActivity
+                            }
+                        } catch (wahooEx) {
+                            this.wahooError = wahooEx.response?.data?.message || wahooEx.toString()
+                        }
                     }
                 }
 
