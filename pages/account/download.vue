@@ -57,7 +57,7 @@
                                 <td class="pt-2 pb-2">
                                     <ul class="pl-4">
                                         <li>Notifications</li>
-                                        <li>Read announcements</li>
+                                        <li>Announcements</li>
                                     </ul>
                                 </td>
                             </tr>
