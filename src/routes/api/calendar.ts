@@ -18,22 +18,19 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
 
         const user = await users.getById(req.params.userId)
         const calType = req.params.calType
-        const now = dayjs().utc()
 
         // Validate user and URL token.
         if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
         if (!user) throw new Error(`User ${req.params.userId} not found`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
-        // Get calendar options from query parameters.
+        // Get base calendar options from query parameters.
         const options: CalendarOptions = {
             activities: calType == "all" || calType == "activities",
             clubs: calType == "all" || calType == "clubs"
         }
 
-        const getQueryDate = (value) => now.subtract(parseInt(value), "days")
-
-        // Additional options.
+        // Set extra calendar options.
         if (req.query.commutes === "0") options.excludeCommutes = true
         if (req.query.joined === "1") options.excludeNotJoined = true
         if (req.query.countries === "1") options.includeAllCountries = true
@@ -41,16 +38,16 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.compact === "1") options.compact = true
         if (req.query.sports?.toString().length > 1) options.sportTypes = req.query.sports.toString().split(",")
         if (req.query.clubs?.toString().length > 1) options.clubIds = req.query.clubs.toString().split(",")
-        if (req.query.daysfrom) options.dateFrom = getQueryDate(req.query.daysfrom).startOf("day")
-        if (req.query.daysto) options.dateTo = getQueryDate(req.query.daysto).endOf("day")
+        if (req.query.daysfrom) options.daysFrom = parseInt(req.query.daysfrom as string)
+        if (req.query.daysto) options.daysTo = parseInt(req.query.daysto as string)
         if (req.query.fresher) options.fresher = true
 
         // Set the correct cache TTL based on user plan and preferences.
         let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
-        if (user.isPro && (options.fresher || user.preferences?.calendarOptions?.fresher)) {
+        if (user.isPro && options.fresher) {
             cacheAge = cacheAge / 2
         }
-        const expires = now.add(cacheAge, "seconds")
+        const expires = dayjs.utc().add(cacheAge, "seconds")
 
         // Update cache headers and send response.
         res.setHeader("Content-Type", "text/calendar")
@@ -58,7 +55,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         res.setHeader("Expires", `${expires.format("ddd, DD MMM YYYY HH:mm:ss")} GMT`)
 
         // Generate the calendar.
-        const redirectUrl = await calendar.generate(user, options)
+        const redirectUrl = await calendar.get(user, options)
         res.redirect(302, redirectUrl)
     } catch (ex) {
         const message = ex.message || ex.toString()
@@ -119,7 +116,7 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
 /**
  * Delete the cached calendars for the specified user.
  */
-router.delete("/:userId/cache", async (req: express.Request, res: express.Response) => {
+router.delete("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
@@ -131,7 +128,7 @@ router.delete("/:userId/cache", async (req: express.Request, res: express.Respon
             throw new Error("Only PRO users are allowed to delete the calendar cache")
         }
 
-        const count = await calendar.deleteCache(user)
+        const count = await calendar.deleteForUser(user)
         webserver.renderJson(req, res, {count: count})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)

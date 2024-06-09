@@ -313,7 +313,7 @@ export default {
         },
         async deleteFromCache() {
             try {
-                const response = await this.$axios.$delete(`/api/calendar/${this.user.id}/cache`)
+                const response = await this.$axios.$delete(`/api/calendar/${this.user.id}`)
                 this.cacheClearCount = response.count
                 this.cacheCleared = true
             } catch (ex) {
