@@ -98,6 +98,7 @@ export default {
             {value: "temperature", label: "Temp. (real)"},
             {value: "feelsLike", label: "Temp. (feels like)"},
             {value: "humidity", label: "Humidity"},
+            {value: "dewPoint", label: "Dew Point"},
             {value: "pressure", label: "Pressure"},
             {value: "windSpeed", label: "Wind speed"},
             {value: "windGust", label: "Wind gust"},
