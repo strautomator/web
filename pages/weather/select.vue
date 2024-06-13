@@ -34,11 +34,10 @@
                             <tr>
                                 <th>Provider</th>
                                 <th></th>
-                                <th>Conditions</th>
                                 <th>Temperature</th>
                                 <th>Humidity</th>
-                                <th>Wind</th>
                                 <th>Precipitation</th>
+                                <th>Wind</th>
                                 <th>Selected</th>
                             </tr>
                         </thead>
@@ -46,11 +45,10 @@
                             <tr :class="{'white--text': weatherProvider != summary.id, 'primary--text': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
                                 <td @click="setProvider(summary.id)">{{ summary.name }}</td>
                                 <td class="text-h5">{{ summary.icon }}</td>
-                                <td>{{ summary.summary }}</td>
                                 <td>{{ summary.temperature }} (feels {{ summary.feelsLike }})</td>
                                 <td>{{ summary.humidity }}</td>
-                                <td>{{ summary.windSpeed }} ({{ summary.windGust }})</td>
                                 <td>{{ summary.precipitation || "-" }}</td>
+                                <td>{{ summary.windSpeed }} / {{ summary.windGust }}</td>
                                 <td><v-radio class="float-right" :title="`Click to select ${summary.name}`" :value="summary.id"></v-radio></td>
                             </tr>
                         </tbody>

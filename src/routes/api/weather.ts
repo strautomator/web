@@ -94,7 +94,7 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
         // Get forecasts in parallel.
         const batchSize = user.isPro ? settings.plans.pro.apiConcurrency : settings.plans.free.apiConcurrency
         while (arrQuery.length) {
-            await Promise.all(arrQuery.splice(0, batchSize).map(getForecast))
+            await Promise.allSettled(arrQuery.splice(0, batchSize).map(getForecast))
         }
 
         res.set("Cache-Control", `public, max-age=${hadError ? "60" : "600"}`)

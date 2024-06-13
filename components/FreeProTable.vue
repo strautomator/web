@@ -48,7 +48,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Calendar template</td>
+                            <td>Calendar customization</td>
                             <td class="text-center">Limited</td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
