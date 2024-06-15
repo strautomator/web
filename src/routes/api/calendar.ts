@@ -113,26 +113,4 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
     }
 })
 
-/**
- * Delete the cached calendars for the specified user.
- */
-router.delete("/:userId", async (req: express.Request, res: express.Response) => {
-    try {
-        if (!req.params) throw new Error("Missing request params")
-
-        const user: UserData = (await auth.requestValidator(req, res)) as UserData
-        if (!user) return
-
-        // Cache clean is only available for PRO users.
-        if (!user.isPro) {
-            throw new Error("Only PRO users are allowed to delete the calendar cache")
-        }
-
-        const count = await calendar.deleteForUser(user)
-        webserver.renderJson(req, res, {count: count})
-    } catch (ex) {
-        webserver.renderError(req, res, ex, 400)
-    }
-})
-
 export = router

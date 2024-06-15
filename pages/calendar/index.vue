@@ -2,12 +2,6 @@
     <v-layout column>
         <v-container fluid>
             <h1>Calendar Export</h1>
-            <v-snackbar v-model="cacheCleared" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Deleted {{ cacheClearCount || "all" }} cached calendars from the database!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="cacheCleared = false">mdi-close-circle</v-icon>
-                </template>
-            </v-snackbar>
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <p>
@@ -64,11 +58,6 @@
                         <v-btn color="primary" class="ml-md-2 mt-3 mt-md-0" title="Want to generate a new calendar URL?" @click.stop="showResetDialog" :disabled="newUrlToken" outlined rounded nuxt>
                             <v-icon left>mdi-reload-alert</v-icon>
                             Reset URL token
-                        </v-btn>
-                        <br v-if="!$breakpoint.mdAndUp" />
-                        <v-btn color="primary" class="ml-md-2 mt-3 mt-md-0" title="Want to clear the calendar cache?" @click.stop="deleteFromCache" :disabled="!user.isPro" outlined rounded nuxt>
-                            <v-icon left>mdi-trash-can-outline</v-icon>
-                            {{ user.isPro ? "Clear cache" : "Clear cache (PRO only)" }}
                         </v-btn>
                         <v-alert v-if="newUrlToken" class="mt-2" color="success" icon="mdi-arrow-up-bold" rounded dense>
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
@@ -226,9 +215,7 @@ export default {
                 eventDetails: "${distance} - ${elevationGain}\n${speedAvg}\n${hrAvg} - ${wattsAvg}\nGear: ${gear}\n${description}"
             },
             resetDialog: false,
-            newUrlToken: false,
-            cacheCleared: false,
-            cacheClearCount: 0
+            newUrlToken: false
         }
     },
 
@@ -309,15 +296,6 @@ export default {
                 this.newUrlToken = response.urlToken
             } catch (ex) {
                 this.$webError(this, "Calendar.resetUrl", ex)
-            }
-        },
-        async deleteFromCache() {
-            try {
-                const response = await this.$axios.$delete(`/api/calendar/${this.user.id}`)
-                this.cacheClearCount = response.count
-                this.cacheCleared = true
-            } catch (ex) {
-                this.$webError(this, "Calendar.clearCache", ex)
             }
         }
     }
