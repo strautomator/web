@@ -81,32 +81,13 @@ router.post("/:userId/template", async (req: express.Request, res: express.Respo
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Template is only available for PRO users.
-        if (!user.isPro) {
-            throw new Error("Custom calendar templates are not available on free accounts")
-        }
-
         // Get template from body.
-        const calendarTemplate: UserCalendarTemplate = {
+        const template: UserCalendarTemplate = {
             eventSummary: req.body.eventSummary,
             eventDetails: req.body.eventDetails
         }
 
-        // If template is empty, force set to null.
-        if (!calendarTemplate.eventSummary || calendarTemplate.eventSummary == "") {
-            calendarTemplate.eventSummary = null
-        }
-        if (!calendarTemplate.eventDetails || calendarTemplate.eventDetails == "") {
-            calendarTemplate.eventDetails = null
-        }
-
-        // Set user calendar template and save to the database.
-        const data: Partial<UserData> = {
-            id: user.id,
-            displayName: user.displayName,
-            preferences: {calendarTemplate: calendarTemplate}
-        }
-        await users.update(data)
+        await users.setCalendarTemplate(user, template)
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
