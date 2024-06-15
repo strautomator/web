@@ -82,18 +82,16 @@
                                     <v-icon v-if="ed.event.joined" small>mdi-check-circle</v-icon>
                                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                     <div class="ml-1 float-right text-right" v-else>
-                                        <span>{{ ed.weatherIcons.join(" ") }}</span>
+                                        <div>{{ ed.weatherIcons.join(" ") }}</div>
                                         <div class="text-caption">
                                             <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
                                             <template v-else>{{ ed.minTemperature }} - {{ ed.maxTemperature }}</template>
-                                        </div>
-                                        <div>
-                                            <v-checkbox class="float-right mr-n3 mt-n1" title="Visible on the map" v-model="ed.event.visible" :disabled="ed.event.noMap" @click="tableRouteToggle(ed.event)" dense />
                                         </div>
                                     </div>
                                     <br />
                                     <a @click="tableRouteClick(ed.event)">{{ ed.event.title }}</a>
                                     <br />
+                                    <v-chip class="mr-1" v-if="!ed.event.route" x-small>-</v-chip>
                                     <v-chip class="mr-1" v-if="ed.event.route" x-small>{{ getDistance(ed.event) }}</v-chip>
                                     <v-chip class="mr-1" v-if="ed.event.route" x-small>{{ getEstimatedHours(ed.event) }}</v-chip>
                                     <v-divider class="mt-3 mb-1"></v-divider>

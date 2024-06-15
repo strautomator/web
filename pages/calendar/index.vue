@@ -78,7 +78,7 @@
             <v-card v-if="user && user.isPro" class="mt-5" outlined>
                 <v-card-title class="accent">Activity template</v-card-title>
                 <v-card-text>
-                    <p class="mt-4">As a PRO user, you can customize the details of your activities (not club events) on exported calendars. Simply edit the fields below or leave them blank to use the defaults.</p>
+                    <p class="mt-4">As a PRO user, you can customize the details of your activities on exported calendars. Simply edit the fields below or leave them blank to use the defaults.</p>
                     <div>
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
