@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {ai, fitparser, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {ai, events, fitparser, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -12,48 +12,6 @@ const axios = require("axios").default
 const settings = require("setmeup").settings
 const router: express.Router = express.Router()
 const packageVersion = require("../../../package.json").version
-
-/**
- * Helper to validate incoming webhook events sent by Strava.
- */
-const webhookValidator = (req: express.Request, res: express.Response): boolean => {
-    try {
-        const obj = req.body
-        const method = req.method.toUpperCase()
-
-        // Then we check if any data is missing.
-        if (method == "POST") {
-            if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
-                webserver.renderError(req, res, "Missing event data", 400)
-                return false
-            }
-
-            // User has deauthorized Strautomator?
-            if (obj.object_type == "athlete" && obj.updates && obj.updates.authorized == "false") {
-                strava.athletes.deauthCheck(obj.owner_id.toString())
-                logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, "Deauthorized")
-                webserver.renderJson(req, res, {authorized: false})
-                return false
-            }
-
-            // Only want to process new activities, so skip the rest.
-            if (obj.object_type != "activity" || obj.aspect_type != "create") {
-                if (obj.object_type == "activity" && obj.aspect_type == "delete") {
-                    logger.info("Routes.strava", `User ${obj.owner_id} deleted activity ${obj.object_id}`)
-                } else {
-                    logger.debug("Routes", req.method, req.originalUrl, `User ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id)
-                }
-                webserver.renderJson(req, res, {ok: false})
-                return false
-            }
-        }
-    } catch (ex) {
-        webserver.renderError(req, res, ex, 400)
-        return false
-    }
-
-    return true
-}
 
 // ACTIVITIES AND RECORDS
 // --------------------------------------------------------------------------
@@ -518,7 +476,7 @@ router.get("/:userId/:urlToken/routes.zip", async (req: express.Request, res: ex
         }
 
         const zip = await strava.routes.zipGPX(user, routes.split(","))
-        zip.pipe(res).on("error", (err) => logger.error("Routes", req.method, req.originalUrl, err))
+        zip.pipe(res).on("error", (err) => logger.error("Routes.strava", req.method, req.originalUrl, err))
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }
@@ -558,37 +516,71 @@ router.get(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Reque
 })
 
 /**
- * Activity subscription events sent by Strava. Please note that this route will
+ * Subscription events sent by Strava. Please note that this route will
  * mostly return OK 200, unless the URL token or POST data is invalid.
  */
 router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params || !req.body) throw new Error("Missing request params")
-        if (!webhookValidator(req, res)) return
 
         const obj = req.body
 
-        // Stop here if user is ignored.
-        if (users.ignoredUserIds.includes(obj.owner_id.toString())) {
-            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${obj.owner_id} is ignored, won't proceed`, obj.aspect_type, obj.object_type, obj.object_id)
-            return webserver.renderJson(req, res, {ok: false})
+        // Check if any data is missing.
+        if (!obj.aspect_type || !obj.event_time || !obj.object_id || !obj.object_type) {
+            throw new Error("Request body is missing required data")
         }
 
         const clientIP = jaul.network.getClientIP(req)
-        logger.info("Routes.strava", `Webhook user ${obj.owner_id}`, obj.aspect_type, obj.object_type, obj.object_id, `IP ${clientIP}`)
+        const objType = obj.object_type
+        const objAspect = obj.aspect_type
+        const objId = obj.object_id.toString()
+        const userId = obj.owner_id.toString()
+        const logDetails = `User ${userId}: ${objType} - ${objAspect} - ${objId}, IP ${clientIP}`
 
-        // Make a call back to the API to do the actual activity processing, so we can return
-        // the response right now to Strava (within the 2 seconds max).
-        const options = {
-            method: "GET",
-            baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/webhook/${settings.strava.api.urlToken}/${obj.owner_id}/${obj.object_id}`,
-            headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
+        // Stop here if user is ignored.
+        if (users.ignoredUserIds.includes(userId)) {
+            logger.debug("Routes.strava", req.method, req.originalUrl, "User is ignored, won't process", logDetails)
+            return webserver.renderJson(req, res, {ok: false})
         }
-        axios(options).catch((err) => logger.debug("Routes", req.method, req.originalUrl, "Callback failed", err.toString()))
+
+        // User has deauthorized Strautomator?
+        if (objType == "athlete" && obj.updates?.authorized == "false") {
+            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} possibly deauthorized`)
+            strava.athletes.deauthCheck(obj.owner_id.toString())
+            return webserver.renderJson(req, res, {authorized: false})
+        }
+
+        // From here on we only care about activities, so skip the rest.
+        if (objType != "activity") {
+            webserver.renderJson(req, res, {ok: false})
+            return false
+        }
+
+        logger.info("Routes.strava", logDetails)
+
+        // For new activities, make a call back to the API to do the actual activity processing,
+        // so we can return the response right now to Strava (within the 2 seconds max).
+        // Otherwise trigger the event for deleted activities.
+        if (objAspect == "create") {
+            const options = {
+                method: "GET",
+                baseURL: settings.api.url || `${settings.app.url}api/`,
+                url: `/strava/webhook/${settings.strava.api.urlToken}/${userId}/${objId}`,
+                headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
+            }
+            axios(options).catch((err) => logger.debug("Routes.strava", req.method, req.originalUrl, "Callback failed", err.toString()))
+        } else if (objAspect == "delete") {
+            const user = await users.getById(userId)
+            if (user) {
+                events.emit("Strava.activityDeleted", user, objId)
+            } else {
+                logger.warn("Routes.strava", req.method, req.originalUrl, "User not found", logDetails)
+            }
+        }
 
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
+        logger.error("Routes.strava", req.method, req.originalUrl, ex)
         webserver.renderError(req, res, ex)
     }
 })
@@ -599,7 +591,7 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
 router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
-        if (!webhookValidator(req, res)) return
+        if (!req.headers["user-agent"].includes(settings.app.title)) throw new Error("Unauthorized client")
 
         const now = dayjs.utc().toDate()
         const userId = req.params.userId
