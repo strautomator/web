@@ -21,7 +21,7 @@ export class Auth {
      * otherwise the user object (if identified), or just true (if not user identified).
      * @param req The Express Request object.
      * @param res The Express Response object.
-     * @param options Additional validaton options.
+     * @param options Additional validation options.
      */
     requestValidator = async (req: any, res: any, options?: RequestOptions): Promise<UserData | boolean> => {
         try {
@@ -62,7 +62,6 @@ export class Auth {
 
             // Auth bearer header is mandatory.
             if (!bearer) {
-                logger.error("Auth.requestValidator", req.originalUrl, "Missing token", `From ${req.ip}`)
                 webserver.renderError(req, res, "Missing token", 401)
                 return false
             }
@@ -96,14 +95,12 @@ export class Auth {
 
             // User really not found?
             if (!user) {
-                logger.error("Auth.requestValidator", req.originalUrl, "User not found", `From ${req.ip}`)
-                webserver.renderError(req, res, "Access denied", 404)
+                webserver.renderError(req, res, "User not found", 404)
                 return false
             }
 
             // User ID does not match the one passed with the options?
             if (req.params.userId && req.params.userId != user.id) {
-                logger.error("Auth.requestValidator", req.originalUrl, "User not authorized", `From ${req.ip}`)
                 webserver.renderError(req, res, "User not authorized", 401)
                 return false
             }
@@ -111,7 +108,6 @@ export class Auth {
             // All good!
             return user
         } catch (ex) {
-            logger.warn("Auth.requestValidator", req.originalUrl, ex, `From ${req.ip}`)
             webserver.renderError(req, res, ex, 401)
             return false
         }

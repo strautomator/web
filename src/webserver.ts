@@ -264,11 +264,11 @@ class WebServer {
 
         if (_.isNil(error)) {
             error = "Unknown error"
-            logger.warn("Routes", req.method, req.originalUrl, "Called with empty error")
+            logger.warn("Routes", req.method, req.originalUrl, "Called with empty error", `From ${req.ip}`)
         } else if (["POST", "PUT", "PATCH"].includes(req.method) && req.body) {
-            logger.error("Routes", req.method, req.originalUrl, error, `Body: ${JSON.stringify(req.body, null, 0)}`)
+            logger.error("Routes", req.method, req.originalUrl, error, `Body: ${JSON.stringify(req.body, null, 0)}`, `From ${req.ip}`)
         } else {
-            logger.error("Routes", req.method, req.originalUrl, error)
+            logger.error("Routes", req.method, req.originalUrl, error, `From ${req.ip}`)
         }
 
         // Error defaults to 500 if not a valid number.

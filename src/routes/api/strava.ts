@@ -572,7 +572,7 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
         } else if (objAspect == "delete") {
             const user = await users.getById(userId)
             if (user) {
-                events.emit("Strava.activityDeleted", user, objId)
+                events.emit("Strava.deleteActivity", user, objId)
             } else {
                 logger.warn("Routes.strava", req.method, req.originalUrl, "User not found", logDetails)
             }
