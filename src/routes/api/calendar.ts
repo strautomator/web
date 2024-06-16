@@ -63,7 +63,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
             logger.warn("Routes.calendar", req.method, req.originalUrl, "Not found")
             res.status(404)
         } else {
-            logger.error("Routes", req.method, req.originalUrl, ex)
+            logger.error("Routes.calendar", req.method, req.originalUrl, ex)
             res.status(500)
         }
 

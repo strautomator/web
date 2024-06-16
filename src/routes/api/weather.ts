@@ -42,7 +42,7 @@ router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.
                 const summary = await weather.getLocationWeather({user: user, coordinates: arrCoordinates, dDate: now, provider: provider.name})
                 result[provider.name] = summary
             } catch (innerEx) {
-                logger.error("Routes", req.method, req.originalUrl, `Provider: ${provider.name}`, innerEx)
+                logger.error("Routes.weather", req.method, req.originalUrl, `Provider: ${provider.name}`, innerEx)
             }
         }
 

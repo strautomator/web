@@ -58,7 +58,7 @@ router.post("/:userId/read", async (req: express.Request, res: express.Response)
             if (read) result.push(id)
         }
     } catch (ex) {
-        logger.error("Routes", req.method, req.originalUrl, ex)
+        logger.error("Routes.notifications", req.method, req.originalUrl, ex)
     }
 
     webserver.renderJson(req, res, {read: result})
