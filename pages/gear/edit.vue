@@ -55,8 +55,8 @@
                                         </div>
                                         <div class="mt-1">
                                             <v-progress-linear class="mb-2" color="secondary" v-if="comp.alertTime" :background-color="getProgressBg(comp, 'time')" :value="getProgressValue(comp, 'time')" rounded></v-progress-linear>
-                                            {{ getHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
-                                            <span class="float-right" v-if="comp.alertTime">{{ getHours(comp.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</span>
+                                            {{ getGearHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
+                                            <span class="float-right" v-if="comp.alertTime">{{ getGearHours(comp.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</span>
                                             <span class="float-right" v-else>-</span>
                                         </div>
                                         <div class="mt-3">
@@ -153,7 +153,7 @@
                     </v-toolbar>
                     <v-card-text>
                         <p class="mt-4">Confirm tracking reset for "{{ gearwearComponent.name }}"?</p>
-                        <p>Current usage: {{ gearwearComponent.currentDistance }} {{ distanceUnits }}, {{ getHours(gearwearComponent.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</p>
+                        <p>Current usage: {{ gearwearComponent.currentDistance }} {{ distanceUnits }}, {{ getGearHours(gearwearComponent.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</p>
                         <p>You should do this right after you have replaced the component with a new one.</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>

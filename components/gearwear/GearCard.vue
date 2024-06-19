@@ -40,7 +40,7 @@
                         Last update:
                         {{ $dayjs(gear.lastUpdate.date).format("MMM Do") }}
                         -
-                        {{ gear.lastUpdate.distance }} {{ units }}, {{ getHours(gear.lastUpdate.time) }}h
+                        {{ gear.lastUpdate.distance }} {{ units }}, {{ getGearHours(gear.lastUpdate.time) }}h
                     </div>
                 </div>
             </div>
