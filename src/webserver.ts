@@ -126,9 +126,9 @@ class WebServer {
                         logger.error("WebServer.requireCloudflare", req.method, req.originalUrl, "Missing CF-Ray header", req.ip)
 
                         if (!res.headersSent) {
-                            return this.renderError(req, res, "Access denied", 401)
+                            this.renderError(req, res, "Access denied", 401)
                         } else {
-                            return res.end()
+                            res.end()
                         }
                     }
                     next()

@@ -540,20 +540,22 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
         // Stop here if user is ignored.
         if (users.ignoredUserIds.includes(userId)) {
             logger.debug("Routes.strava", req.method, req.originalUrl, "User is ignored, won't process", logDetails)
-            return webserver.renderJson(req, res, {ok: false})
+            webserver.renderJson(req, res, {ok: false})
+            return
         }
 
         // User has deauthorized Strautomator?
         if (objType == "athlete" && obj.updates?.authorized == "false") {
             logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} possibly deauthorized`)
             strava.athletes.deauthCheck(obj.owner_id.toString())
-            return webserver.renderJson(req, res, {authorized: false})
+            webserver.renderJson(req, res, {authorized: false})
+            return
         }
 
         // From here on we only care about activities, so skip the rest.
         if (objType != "activity") {
             webserver.renderJson(req, res, {ok: false})
-            return false
+            return
         }
 
         logger.info("Routes.strava", logDetails)
