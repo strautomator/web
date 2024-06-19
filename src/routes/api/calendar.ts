@@ -27,7 +27,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Get base calendar options from query parameters.
         const options: CalendarOptions = {
             activities: calType == "all" || calType == "activities",
-            clubs: calType == "all" || calType == "clubs"
+            clubs: calType == "all" || calType == "clubs",
+            gear: calType == "all" || calType == "gear"
         }
 
         // Set extra calendar options.
@@ -67,7 +68,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
             res.status(500)
         }
 
-        return res.send(ex.toString())
+        res.send(ex.toString())
     }
 })
 
