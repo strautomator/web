@@ -5,16 +5,17 @@
             <v-card class="mt-5" v-if="user" outlined>
                 <v-card-text>
                     <p>
-                        Strautomator can export your Strava activities and club events using the iCal format.<br />
+                        Strautomator can export your Strava activities, club events and gear component history using the iCal format.<br />
                         Please set your desired options, and then use the generated URL to subscribe.
                     </p>
 
                     <div>
                         <h3>What to export</h3>
                         <v-radio-group class="mt-1" v-model="calendarType" :row="$breakpoint.mdAndUp">
-                            <v-radio label="Activities and club events" value="all"></v-radio>
+                            <v-radio label="Everything" value="all"></v-radio>
                             <v-radio label="Only activities" value="activities"></v-radio>
                             <v-radio label="Only club events" value="clubs"></v-radio>
+                            <v-radio label="Only gear history" value="gear"></v-radio>
                         </v-radio-group>
                     </div>
                     <div>
@@ -27,29 +28,29 @@
                     </div>
                     <div>
                         <h3 class="mb-4">Other options</h3>
-                        <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="calendarType != 'clubs'" dense />
-                        <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="calendarType != 'activities'" dense />
-                        <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include events outside my country" v-if="calendarType != 'activities'" dense />
-                        <v-checkbox class="mt-n4" v-model="linkInDescription" label="Add activity and event links on descriptions" dense />
+                        <v-checkbox class="mt-n4" v-model="excludeCommutes" label="Exclude commutes" v-if="!['clubs', 'gear'].includes(calendarType)" dense />
+                        <v-checkbox class="mt-n4" v-model="excludeNotJoined" label="Only events I have joined" v-if="!['activities', 'gear'].includes(calendarType)" dense />
+                        <v-checkbox class="mt-n4" v-model="includeAllCountries" label="Include events outside my country" v-if="!['activities', 'gear'].includes(calendarType)" dense />
+                        <v-checkbox class="mt-n4" v-model="linkInDescription" label="Add event links on descriptions" dense />
                         <v-checkbox class="mt-n4" v-model="compact" label="Compact descriptions" dense />
                     </div>
-                    <div v-if="calendarType != 'clubs'">
-                        <h3>Days of activities</h3>
-                        <v-row class="mb-0 pb-0 mb-5" no-gutters>
-                            <v-col cols="5" md="2" class="mt-1">
-                                <v-text-field v-model="daysFrom" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" hide-details outlined rounded dense></v-text-field>
+                    <div v-if="['all', 'activities'].includes(calendarType)">
+                        <h3>Date range</h3>
+                        <v-row class="mt-2" no-gutters>
+                            <v-col cols="5" md="2">
+                                <v-text-field v-model="daysFrom" label="Past" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" hide-details outlined rounded dense></v-text-field>
                             </v-col>
-                            <v-col cols="5" v-if="daysFrom > maxDaysFrom">
-                                <div class="mt-3 ml-1 error--text">max {{ maxDaysFrom }}</div>
+                            <v-col cols="5" class="ml-1 mt-3 text-caption error--text" v-if="daysFrom > maxDaysFrom">max {{ maxDaysFrom }}</v-col>
+                        </v-row>
+                        <v-row class="mt-3" no-gutters>
+                            <v-col cols="5" md="2">
+                                <v-text-field v-model="daysTo" label="Future" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysTo" hide-details outlined rounded dense></v-text-field>
                             </v-col>
+                            <v-col cols="5" class="ml-1 mt-3 text-caption error--text" v-if="daysTo > maxDaysTo">max {{ maxDaysTo }}</v-col>
                         </v-row>
                     </div>
 
-                    <div class="mt-5 mb-5">
-                        <v-text-field label="Generated URL" @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
-                    </div>
-
-                    <div class="text-center text-md-left">
+                    <div class="text-center text-md-left mt-5">
                         <v-btn color="primary" title="Subscribe to your Strava activities calendar" :href="'webcal://' + urlCalendar" rounded nuxt>
                             <v-icon left>mdi-calendar-check</v-icon>
                             Subscribe to calendar
@@ -59,6 +60,9 @@
                             <v-icon left>mdi-reload-alert</v-icon>
                             Reset URL token
                         </v-btn>
+                        <div class="mt-3">
+                            <v-text-field @focus="$event.target.select()" :value="'https://' + urlCalendar" hide-details readonly dense outlined rounded></v-text-field>
+                        </div>
                         <v-alert v-if="newUrlToken" class="mt-2" color="success" icon="mdi-arrow-up-bold" rounded dense>
                             <div class="text-center text-md-left">New token generated, calendar URL updated!</div>
                         </v-alert>
@@ -78,7 +82,7 @@
             <v-card v-if="user && user.isPro" class="mt-5" outlined>
                 <v-card-title class="accent">Activity template</v-card-title>
                 <v-card-text>
-                    <p class="mt-4">As a PRO user, you can customize the details of your activities on exported calendars. Simply edit the fields below or leave them blank to use the defaults.</p>
+                    <p class="mt-4">As a PRO user, you can customize the details of your activities on exported calendars.</p>
                     <div>
                         <v-text-field ref="eventSummaryInput" label="Event summary" v-model="calendarTemplate.eventSummary" @focus="setActiveField('eventSummary')" hide-details dense outlined rounded></v-text-field>
                     </div>
@@ -190,6 +194,8 @@ export default {
         const calendarTemplate = this.$store.state.user.preferences?.calendarTemplate || {}
         const freePlan = this.$store.state.freePlanDetails
         const proPlan = this.$store.state.proPlanDetails
+        const defaultDaysFrom = this.$store.state.user.isPro ? Math.round(proPlan.pastCalendarDays / 365 / 2) * 365 : freePlan.pastCalendarDays
+        const defaultDaysTo = this.$store.state.user.isPro ? Math.round(proPlan.futureCalendarDays / 180 / 2) * 180 : freePlan.futureCalendarDays
 
         return {
             calendarType: "all",
@@ -202,8 +208,10 @@ export default {
             compact: false,
             templateWarning: false,
             activeField: "eventDetails",
-            daysFrom: freePlan.pastCalendarDays,
+            daysFrom: defaultDaysFrom,
+            daysTo: defaultDaysTo,
             maxDaysFrom: this.$store.state.user.isPro ? proPlan.pastCalendarDays : freePlan.pastCalendarDays,
+            maxDaysTo: this.$store.state.user.isPro ? proPlan.futureCalendarDays : freePlan.futureCalendarDays,
             currentEventSummary: calendarTemplate.eventSummary || "",
             currentEventDetails: calendarTemplate.eventDetails || "",
             calendarTemplate: {
@@ -229,16 +237,18 @@ export default {
             const location = this.location
             const port = location.port == "80" || location.port == "" ? "" : `:${location.port}`
             const urlToken = this.$store.state.user.urlToken
-
             const params = []
 
             if (this.calendarSports != "all") params.push(`sports=${this.calendarSports}`)
-            if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
-            if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
-            if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            if (this.calendarType != "gear") {
+                if (this.excludeCommutes && this.calendarType != "clubs") params.push("commutes=0")
+                if (this.excludeNotJoined && this.calendarType != "activities") params.push("joined=1")
+                if (this.includeAllCountries && this.calendarType != "activities") params.push("countries=1")
+            }
             if (this.linkInDescription) params.push("link=1")
             if (this.compact) params.push("compact=1")
-            if (this.daysFrom != this.$store.state.freePlanDetails.pastCalendarDays) params.push(`daysfrom=${this.daysFrom}`)
+            if (this.daysFrom != this.maxDaysFrom) params.push(`daysfrom=${this.daysFrom}`)
+            if (this.daysTo != this.maxDaysTo) params.push(`daysto=${this.daysTo}`)
 
             const querystring = params.length > 0 ? `?${params.join("&")}` : ""
 
