@@ -286,9 +286,9 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
 
         if (preferenceChanged("aiProvider")) {
             if (!user.isPro) {
-                req.body.aiProvider = "openai"
+                req.body.aiProvider = ""
             }
-            setOrDelete("aiProvider", "openai")
+            setOrDelete("aiProvider", "")
         }
 
         // AI prompt requires special moderation.
