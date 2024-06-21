@@ -177,6 +177,7 @@
                         <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
+                            <v-radio label="Default" :value="''"></v-radio>
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
@@ -450,7 +451,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
-        const aiProvider = preferences.aiProvider || "gemini"
+        const aiProvider = preferences.aiProvider || ""
         const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
