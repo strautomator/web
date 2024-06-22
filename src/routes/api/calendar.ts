@@ -20,7 +20,7 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         const calType = req.params.calType
 
         // Validate user and URL token.
-        if (!["all", "activities", "clubs"].includes(calType)) throw new Error("Calendar not found")
+        if (!["all", "activities", "clubs", "gear"].includes(calType)) throw new Error("Calendar not found")
         if (!user) throw new Error(`User ${req.params.userId} not found`)
         if (user.urlToken != req.params.urlToken) throw new Error(`Calendar not found`)
 
