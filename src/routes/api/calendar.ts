@@ -46,7 +46,9 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Set the correct cache TTL based on user plan and preferences.
         let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
         if (user.isPro && options.fresher) {
-            cacheAge = cacheAge / 2
+            cacheAge = Math.round(cacheAge * 0.45)
+        } else {
+            cacheAge = Math.round(cacheAge * 0.95)
         }
         const expires = dayjs.utc().add(cacheAge, "seconds")
 

@@ -191,11 +191,12 @@ export default {
         }
     },
     data() {
-        const calendarTemplate = this.$store.state.user.preferences?.calendarTemplate || {}
+        const user = this.$store.state.user
+        const calendarTemplate = user.preferences?.calendarTemplate || {}
         const freePlan = this.$store.state.freePlanDetails
         const proPlan = this.$store.state.proPlanDetails
-        const defaultDaysFrom = this.$store.state.user.isPro ? Math.round(proPlan.pastCalendarDays / 365 / 2) * 365 : freePlan.pastCalendarDays
-        const defaultDaysTo = this.$store.state.user.isPro ? Math.round(proPlan.futureCalendarDays / 180 / 2) * 180 : freePlan.futureCalendarDays
+        const defaultDaysFrom = user.isPro ? Math.round(proPlan.pastCalendarDays / 365 / 2) * 365 : freePlan.pastCalendarDays
+        const defaultDaysTo = user.isPro ? Math.round(proPlan.futureCalendarDays / 180 / 2) * 180 : freePlan.futureCalendarDays
 
         return {
             calendarType: "all",
@@ -210,8 +211,8 @@ export default {
             activeField: "eventDetails",
             daysFrom: defaultDaysFrom,
             daysTo: defaultDaysTo,
-            maxDaysFrom: this.$store.state.user.isPro ? proPlan.pastCalendarDays : freePlan.pastCalendarDays,
-            maxDaysTo: this.$store.state.user.isPro ? proPlan.futureCalendarDays : freePlan.futureCalendarDays,
+            maxDaysFrom: user.isPro ? proPlan.pastCalendarDays : freePlan.pastCalendarDays,
+            maxDaysTo: user.isPro ? proPlan.futureCalendarDays : freePlan.futureCalendarDays,
             currentEventSummary: calendarTemplate.eventSummary || "",
             currentEventDetails: calendarTemplate.eventDetails || "",
             calendarTemplate: {
