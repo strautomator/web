@@ -143,7 +143,7 @@
                                 </div>
                             </template>
                         </template>
-                        <v-alert class="mt-3 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might only work if the "Delayed processing" is enabled on your Account.</v-alert>
+                        <v-alert class="mt-3 mb-2 text-body-2" color="accent" dense v-if="needsDelay(recipe)">Some of these conditions might work best if the "Delayed processing" is enabled on your Account.</v-alert>
                         <div>
                             <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded text small>
                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>

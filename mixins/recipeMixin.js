@@ -188,7 +188,12 @@ export default {
     methods: {
         // Returns an action summary.
         actionSummary(action) {
-            const actionType = _.find(this.$store.state.recipeActions, {value: action.type}).text
+            const actionObj = _.find(this.$store.state.recipeActions, {value: action.type})
+            if (!actionObj) {
+                return `Undocumented action: ${action.type} - ${action.value || action.friendlyValue}`
+            }
+
+            const actionType = actionObj.text
             const valueText = action.friendlyValue || action.value
             const isBoolean = this.booleanActions.includes(action.type)
 
