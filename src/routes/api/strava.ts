@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {ai, events, fitparser, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {ai, database, events, fitparser, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -15,6 +15,15 @@ const packageVersion = require("../../../package.json").version
 
 // ACTIVITIES AND RECORDS
 // --------------------------------------------------------------------------
+
+router.get("/status", async (req: express.Request, res: express.Response) => {
+    try {
+        const stravaState = await database.appState.get("strava")
+        webserver.renderJson(req, res, {incident: stravaState?.incident || null})
+    } catch (ex) {
+        webserver.renderJson(req, res, {error: ex.message})
+    }
+})
 
 /**
  * Get logged user's recent activities from Strava.

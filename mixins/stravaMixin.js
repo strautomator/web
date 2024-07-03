@@ -9,15 +9,9 @@ export default {
     methods: {
         async getStravaStatus() {
             try {
-                const res = await fetch("https://status.strava.com/api/v2/summary.json")
+                const res = await fetch("/api/strava/status")
                 const data = await res.json()
-
-                if (data.incidents && data.incidents.length > 0) {
-                    const incident = _.find(data.incidents, (i) => i.impact.toLowerCase() == "critical" || i.impact.toLowerCase() == "major")
-                    if (!incident || incident.resolved_at) return
-
-                    this.stravaStatus = incident.name
-                }
+                this.stravaStatus = data.incident || null
             } catch (ex) {
                 console.error("Could not get API status from Strava", ex)
             }
