@@ -76,7 +76,7 @@
                     days, using the default template.
                     <br v-if="!$breakpoint.mdAndUp" />
                     <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
-                    to export activities from the past {{ $store.state.proPlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.proPlanDetails.futureCalendarDays }} days, using a custom template.
+                    to export activities from the past {{ $store.state.proPlanDetails.pastCalendarDays }} and club events for the next {{ $store.state.proPlanDetails.futureCalendarDays }} days.
                 </div>
             </v-alert>
             <v-card v-if="user && user.isPro" class="mt-5" outlined>

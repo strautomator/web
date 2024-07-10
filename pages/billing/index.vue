@@ -210,16 +210,8 @@ export default {
                 const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
                 this.loading = false
 
-                if (subscription.source == "friend") this.subscriptionSource = "Friend"
-                else if (subscription.source == "github") this.subscriptionSource = "GitHub"
-                else if (subscription.source == "paypal") this.subscriptionSource = "PayPal"
-                else if (subscription.source == "n26") this.subscriptionSource = "N26"
-                else if (subscription.source == "revolut") this.subscriptionSource = "Revolut"
-                else if (subscription.source == "amex") this.subscriptionSource = "American Express"
-                else if (subscription.source == "traderepublic") this.subscriptionSource = "Trade Republic"
-                else this.subscriptionSource = "?"
-
                 this.subscription = subscription
+                this.subscriptionSource = this.getSubscriptionSource(subscription)
             }
         } catch (ex) {
             this.$webError(this, "Billing.fetch", ex)

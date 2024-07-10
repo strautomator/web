@@ -1,31 +1,23 @@
 <template>
     <v-layout column>
-        <h1>2 years of PRO</h1>
-        <v-container v-if="user.isPro" fluid>
-            <v-card>
-                <v-card-text class="text-center text-md-left">
-                    <div>You've got a PRO account already!</div>
-                    <div class="mt-6 text-center text-md-left">
-                        <v-btn color="primary" to="/account" outlined small rounded nuxt>
-                            <v-icon left>mdi-arrow-left</v-icon>
-                            Back to my account
-                        </v-btn>
-                    </div>
-                </v-card-text>
-            </v-card>
-        </v-container>
-        <v-container v-else fluid>
+        <v-container fluid>
+            <h1>3 years of PRO</h1>
+            <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)" colored-border>
+                <p>You have a PRO account via {{ subscriptionSource }} already! If you wish to take advantage of the affiliate links below, you might want to cancel your existing subscription first.</p>
+                <p>But of course I won't mind if you keep it active and still use the links, thou.</p>
+            </v-alert>
+
             <p>
-                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first 2 years for free, by using a referral code to register to one of my affiliated fintech
+                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first 3 years for free, by using a referral code to register to one of my affiliated fintech
                 services. These are services that I personally use on a daily basis. Here's how it works:
             </p>
             <ul class="ml-n2">
                 <li>Register using my referral link</li>
-                <li>Complete the steps within 10 days</li>
+                <li>Complete the described steps</li>
                 <li>Send me your Strava ID via <a href="mailto:info@strautomator.com" title="Email">email</a></li>
             </ul>
             <p class="mt-4">Once you have completed the registration and everything is confirmed, your account will be switched to PRO.</p>
-            <p>After 2 years, if you still wish to keep using PRO features, you'll need to subscribe via PayPal or GitHub.</p>
+            <p>After 3 years, if you still wish to keep using PRO features, you'll need to subscribe via PayPal or GitHub.</p>
 
             <v-card v-if="revolut" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
@@ -39,6 +31,7 @@
                             <li>Add money to your new account</li>
                             <li>Request a physical Revolut card</li>
                             <li>Make at least 3 purchases of 5+ EUR</li>
+                            <li>Steps must be completed within 10 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/revolut" title="Go to Revolut" target="revolut"><v-btn color="primary" rounded nuxt>Go to Revolut</v-btn></a>
@@ -57,6 +50,7 @@
                         <ul class="ml-n2">
                             <li>Open your N26 account with my link</li>
                             <li>Make at least 1 purchase of 10+ EUR</li>
+                            <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/n26" title="Go to N26" target="n26"><v-btn color="primary" rounded nuxt>Go to N26</v-btn></a>
@@ -75,6 +69,7 @@
                         <ul class="ml-n2">
                             <li>Open your account with my link</li>
                             <li>Trade at least 100+ EUR</li>
+                            <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><v-btn color="primary" rounded nuxt>Go to Trade Republic</v-btn></a>
@@ -95,7 +90,8 @@
                         </p>
                         <ul class="ml-n2">
                             <li>Apply for an Amex card with my link</li>
-                            <li>Make at least 1 transaction with your new card</li>
+                            <li>Make at least 1 transaction with the card</li>
+                            <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
                             <a href="https://links.devv.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
@@ -121,6 +117,7 @@ export default {
     mixins: [userMixin],
     head() {
         return {
+            subscriptionSource: "...",
             title: "Subscription via affiliates"
         }
     },
@@ -138,6 +135,18 @@ export default {
         startCase(value) {
             return _.startCase(value)
         }
+    },
+    async fetch() {
+        try {
+            if (this.user.isPro) {
+                const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
+                this.subscriptionSource = this.getSubscriptionSource(subscription)
+            }
+        } catch (ex) {
+            this.$webError(this, "Billing.fetch", ex)
+        }
+
+        this.loading = false
     }
 }
 </script>

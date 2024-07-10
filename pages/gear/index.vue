@@ -66,7 +66,7 @@
                     <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
                         Please note that the gear tracking happens with a {{ delayDays == 1 ? `1 day` : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities. You can change the delay on
                         your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
-                        <div class="mt-1">Today's activities will be counted on {{ trackingDay }}.</div>
+                        <div class="mt-1">Today's activities will be processed on {{ trackingDay }}.</div>
                     </v-alert>
                 </template>
                 <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="gearwearRemaining == 0" colored-border>
