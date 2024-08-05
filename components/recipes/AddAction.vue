@@ -132,7 +132,7 @@ export default {
             return this.selectedAction && ["description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
         },
         actionIsText() {
-            return this.selectedAction && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote"].includes(this.selectedAction.value)
+            return this.selectedAction && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote", "prependPrivateNote", "appendPrivateNote"].includes(this.selectedAction.value)
         },
         actionIsAI() {
             return this.selectedAction && ["generateName", "generateDescription"].includes(this.selectedAction.value)
@@ -224,6 +224,16 @@ export default {
             }
             if (arr.includes("appendDescription")) {
                 arr.push("description")
+            }
+            if (arr.includes("privateNote")) {
+                arr.push("prependPrivateNote")
+                arr.push("appendPrivateNote")
+            }
+            if (arr.includes("prependPrivateNote")) {
+                arr.push("privateNote")
+            }
+            if (arr.includes("appendPrivateNote")) {
+                arr.push("privateNote")
             }
 
             arr = _.uniq(arr)
