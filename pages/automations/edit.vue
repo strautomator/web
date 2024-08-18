@@ -599,7 +599,7 @@ export default {
             this.jsonSpecsDialog = false
         },
         showActionDialog() {
-            this.disabledActions = _.map(this.recipe.actions, "type")
+            this.disabledActions = _.map(this.recipe.actions, "type").filter((t) => !t.includes("GearComponent"))
             this.conditionDialog = false
             this.actionDialog = true
         },

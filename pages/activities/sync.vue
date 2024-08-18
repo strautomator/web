@@ -119,6 +119,7 @@
                                         <span class="text-capitalize">{{ field }}:</span>
                                         {{ processedActivity.updatedFields[field] }}
                                     </li>
+                                    <li v-if="updatedFieldsKeys.length == 0">None</li>
                                 </ul>
                                 <div class="mt-4">Triggered automations:</div>
                                 <ul class="mt-1 pl-4 action-list">
