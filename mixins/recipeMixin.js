@@ -76,6 +76,10 @@ export default {
                 label: `${t.label} (start)`
             })
             locationTags.push({
+                value: `${t.value}Mid`,
+                label: `${t.label} (mid point)`
+            })
+            locationTags.push({
                 value: `${t.value}End`,
                 label: `${t.label} (end)`
             })
@@ -112,6 +116,10 @@ export default {
             locationTags.push({
                 value: `weather.start.${t.value}`,
                 label: `${t.label} (start)`
+            })
+            locationTags.push({
+                value: `weather.${t.value}`,
+                label: `${t.label} (mid point)`
             })
             locationTags.push({
                 value: `weather.end.${t.value}`,
