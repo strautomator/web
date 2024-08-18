@@ -23,6 +23,9 @@
                                 <div v-else-if="selectedAction.value == 'gear'">
                                     <v-select label="Select a gear" v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
                                 </div>
+                                <div v-else-if="selectedAction.value?.includes('GearComponent')">
+                                    <v-select label="Select a component" v-model="selectedGearComponent" item-value="id" item-text="name" :items="gearComponents" dense outlined rounded return-object></v-select>
+                                </div>
                                 <div v-else-if="selectedAction.value == 'sportType'">
                                     <v-select label="Select a sport" v-model="selectedSportType" item-value="value" item-text="text" :items="sportTypes" dense outlined rounded return-object></v-select>
                                 </div>
@@ -163,6 +166,15 @@ export default {
             }
             const gears = _.concat([{id: "none", name: "None"}], bikes, shoes)
 
+            // GearWear components.
+            const gearComponents = []
+            for (let g of this.$store.state.gearwear) {
+                g.components.forEach((c) => gearComponents.push({id: `${g.id}: ${c.name}`, name: `${g.name} - ${c.name}`}))
+            }
+            if (gearComponents.length == 0) {
+                _.find(recipeActions, {value: "enableGearComponent"}).disabled = true
+                _.find(recipeActions, {value: "disableGearComponent"}).disabled = true
+            }
             // Activity / sport, workout types, map styles and AI humours.
             const sportTypes = this.$store.state.sportTypes.map((st) => {
                 return {value: st, text: this.getSportName(st)}
@@ -182,6 +194,7 @@ export default {
                 selectedAction: {},
                 selectedCommute: commuteFlags[0],
                 selectedGear: {},
+                selectedGearComponent: {},
                 selectedSportType: {},
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
@@ -190,6 +203,7 @@ export default {
                 webhookUrl: "",
                 commuteFlags: commuteFlags,
                 gears: gears,
+                gearComponents: gearComponents,
                 sportTypes: sportTypes,
                 workoutTypes: workoutTypes,
                 mapStyles: mapStyles,
@@ -291,6 +305,9 @@ export default {
                 } else if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
+                } else if (result.type.includes("GearComponent")) {
+                    result.value = this.selectedGearComponent.id
+                    result.friendlyValue = this.selectedGearComponent.name
                 } else if (result.type == "sportType") {
                     result.value = this.selectedSportType.value
                     result.friendlyValue = this.selectedSportType.text

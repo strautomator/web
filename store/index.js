@@ -50,13 +50,13 @@ export const state = () => ({
     errorMethod: null,
     user: null,
     athleteRecords: null,
-    gearwearCount: null,
     recipeProperties: null,
     recipeActions: null,
     recipeMaxLength: null,
     weatherProviders: null,
     linksOnPercent: null,
     ftpWeeks: null,
+    gearwear: [],
     sportTypes: [],
     workoutTypes: [],
     recordFields: [],
@@ -127,6 +127,9 @@ export const mutations = {
     setFtpWeeks(state, data) {
         state.ftpWeeks = data
     },
+    setGearWear(state, data) {
+        state.gearwear = data
+    },
     setUser(state, data) {
         if (data?.recipes) {
             const recipes = Object.values(data.recipes)
@@ -164,9 +167,6 @@ export const mutations = {
     setLastUserFetch(state, data) {
         state.lastUserFetch = data
     },
-    setGearWearCount(state, count) {
-        state.gearwearCount = count
-    },
     setCountry(state, country) {
         state.country = country
     },
@@ -181,6 +181,9 @@ export const mutations = {
     },
     setUserRecipe(state, recipe) {
         state.user.recipes[recipe.id] = recipe
+    },
+    deleteUserRecipe(state, recipe) {
+        delete state.user.recipes[recipe.id]
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
@@ -290,8 +293,9 @@ export const actions = {
 
             const urlUser = `/api/users/${userId}`
             const urlRecords = `/api/strava/${userId}/athlete-records`
+            const urlGearWear = `/api/gearwear/${userId}`
 
-            await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords)])
+            await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords), this.$axios.$get(urlGearWear)])
                 .then((res) => {
                     loggedUser = res[0]
 
@@ -313,7 +317,15 @@ export const actions = {
                         const aRecords = res[1] || {}
                         commit("setAthleteRecords", Object.keys(aRecords).length > 0 ? aRecords : null)
                     } catch (recordsEx) {
-                        logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to assign records", ex)
+                        logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to assign records", recordsEx)
+                    }
+
+                    // Set GearWear configs.
+                    try {
+                        const gearwearConfigs = res[2] || []
+                        commit("setGearWear", gearwearConfigs)
+                    } catch (gearEx) {
+                        logger.error("nuxtServerInit.assignUser", `User ${userId}`, "Failed to set GearWear configs", gearEx)
                     }
                 })
                 .catch((err) => {

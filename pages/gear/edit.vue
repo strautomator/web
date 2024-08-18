@@ -331,7 +331,7 @@ export default {
     computed: {
         overMaxGearWear() {
             if (!this.user) return false
-            return !this.user.isPro && !this.gearwearConfig && this.$store.state.gearwearCount >= this.$store.state.freePlanDetails.maxGearWearCount
+            return !this.user.isPro && !this.gearwearConfig && this.$store.state.gearwear.length >= this.$store.state.freePlanDetails.maxGearWearCount
         },
         hasBrandModel() {
             return this.gear.brand || this.gear.model

@@ -172,9 +172,7 @@ export default {
             }
 
             this.gearwearConfigs = gearwearConfigs
-
-            // Update count on user store.
-            this.$store.commit("setGearWearCount", list.length)
+            this.$store.commit("setGearWear", list)
 
             // Get list of bikes and shoes with and without GearWear configuration.
             const bikes = this.$store.state.user.profile.bikes || []
