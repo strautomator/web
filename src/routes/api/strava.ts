@@ -549,46 +549,34 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
         // Stop here if user is ignored.
         if (users.ignoredUserIds.includes(userId)) {
             logger.debug("Routes.strava", req.method, req.originalUrl, "User is ignored, won't process", logDetails)
-            webserver.renderJson(req, res, {ok: false})
-            return
+            return webserver.renderJson(req, res, {ok: false})
         }
 
         // User has deauthorized Strautomator?
         if (objType == "athlete" && obj.updates?.authorized == "false") {
             logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} possibly deauthorized`)
             strava.athletes.deauthCheck(obj.owner_id.toString())
-            webserver.renderJson(req, res, {authorized: false})
-            return
+            return webserver.renderJson(req, res, {authorized: false})
         }
 
         // From here on we only care about activities, so skip the rest.
         if (objType != "activity") {
-            webserver.renderJson(req, res, {ok: false})
-            return
+            return webserver.renderJson(req, res, {ok: false})
         }
 
         logger.info("Routes.strava", logDetails)
 
-        // For new activities, make a call back to the API to do the actual activity processing,
+        // Make a callback to the API to do the actual activity processing,
         // so we can return the response right now to Strava (within the 2 seconds max).
-        // Otherwise trigger the event for deleted activities.
-        if (objAspect == "create") {
-            const options = {
-                method: "GET",
-                baseURL: settings.api.url || `${settings.app.url}api/`,
-                url: `/strava/webhook/${settings.strava.api.urlToken}/${userId}/${objId}`,
-                headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
-            }
-            axios(options).catch((err) => logger.debug("Routes.strava", req.method, req.originalUrl, "Callback failed", err.toString()))
-        } else if (objAspect == "delete") {
-            const user = await users.getById(userId)
-            if (user) {
-                events.emit("Strava.deleteActivity", user, objId)
-            } else {
-                logger.warn("Routes.strava", req.method, req.originalUrl, "User not found", logDetails)
-            }
+        // This is to avoid Cloud Run freezing the execution after response has been sent.
+        const options = {
+            method: "GET",
+            baseURL: settings.api.url || `${settings.app.url}api/`,
+            url: `/strava/webhook/${settings.strava.api.urlToken}/${userId}/${objId}?action=${objAspect}`,
+            headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
 
+        axios(options).catch((err) => logger.warn("Routes.strava", req.method, req.originalUrl, "Callback to activity endpoint failed", err.toString()))
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes.strava", req.method, req.originalUrl, ex)
@@ -604,31 +592,44 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         if (!req.params) throw new Error("Missing request params")
         if (!req.headers["user-agent"].includes(settings.app.title)) throw new Error("Unauthorized client")
 
-        const now = dayjs.utc().toDate()
         const userId = req.params.userId
         const user = await users.getById(userId)
 
         // User not found, suspended or missing tokens? Stop here.
         if (!user) {
-            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} not found`)
             await users.ignore(userId)
             return webserver.renderError(req, res, "User not found", 404)
         } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
-            logger.warn("Routes.strava", req.method, req.originalUrl, `User ${userId} has no access tokens`)
             return webserver.renderError(req, res, "User has no access tokens", 400)
         } else if (user.suspended) {
-            return webserver.renderJson(req, res, {ok: false, message: `User ${userId} is suspended`})
+            return webserver.renderError(req, res, "User is suspended", 400)
         }
 
-        // Process the passed activity now, or queue later, depending on user preferences.
-        if (user.preferences.delayedProcessing) {
-            await strava.activityProcessing.queueActivity(user, parseInt(req.params.activityId))
-            user.dateLastProcessedActivity = now
-        } else {
-            const processed = await strava.activityProcessing.processActivity(user, {id: parseInt(req.params.activityId)})
-            if (processed && !processed.error) {
+        const now = dayjs.utc().toDate()
+        const action = req.query.action as string
+        const activityId = parseInt(req.params.activityId)
+
+        // New activity uploaded?
+        if (action == "create") {
+            if (user.preferences.delayedProcessing) {
+                await strava.activityProcessing.queueActivity(user, activityId)
                 user.dateLastProcessedActivity = now
+            } else {
+                const processed = await strava.activityProcessing.processActivity(user, {id: activityId})
+                if (processed && !processed.error) {
+                    user.dateLastProcessedActivity = now
+                }
             }
+            events.emit("Strava.createActivity", user, activityId)
+        }
+        // Activity updated?
+        else if (action == "update") {
+            events.emit("Strava.updateActivity", user, activityId)
+        }
+        // Activity deleted?
+        // Activity updated?
+        else if (action == "delete") {
+            events.emit("Strava.deleteActivity", user, activityId)
         }
 
         // Update user.
