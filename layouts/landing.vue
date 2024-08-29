@@ -8,7 +8,7 @@
             <img src="/images/strava-powered.svg" width="130" />
         </div>
         <div class="mb-6 text-center">
-            <n-link to="/help" title="Need help?"><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
+            <n-link to="/help" title="Need help?" nuxt><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
             <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-2 mr-2">mdi-github</v-icon></a>
             <a href="https://twitter.com/strautomator" title="Strautomator @ Twitter"><v-icon class="ml-2 mr-2">mdi-twitter</v-icon></a>
         </div>
@@ -18,6 +18,9 @@
                     <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
                 </a>
                 Strautomator.com
+                <div>
+                    <n-link to="/tc" title="Terms and Conditions" class="caption mt-2" nuxt>Terms and Conditions</n-link>
+                </div>
             </div>
         </v-footer>
     </v-app>
