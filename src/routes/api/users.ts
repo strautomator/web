@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, mailer, openai, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, mailer, openai, paddle, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
 import auth from "../auth"
 import dayjs from "../../dayjs"
@@ -124,8 +124,11 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
 
         let message = "Your subscription has been cancelled."
 
-        // Cancel PayPal subscription.
-        if (subscription.source == "paypal") {
+        // Cancel subscriptions based on the source.
+        if (subscription.source == "paddle") {
+            await paddle.subscriptions.cancelSubscription(user)
+            message = "Your subscription is scheduled to be cancelled on Paddle, and you will not be charged again."
+        } else if (subscription.source == "paypal") {
             const paypalSubscription = await paypal.subscriptions.getSubscription(user.subscriptionId)
             if (!paypalSubscription) {
                 return webserver.renderError(req, res, `Subscription ${user.subscriptionId} is invalid`, 404)
@@ -141,14 +144,14 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
                 id: user.id,
                 displayName: user.displayName,
                 isPro: false,
-                subscriptionId: null
+                subscriptionId: FieldValue.delete() as any
             }
             await users.update(data)
 
             if (subscription.source == "github") {
-                message = "Your subscription is managed via GitHub. Please go to https://github.com/sponsors/accounts to cancel your sponsorship."
-            } else if (subscription.source == "revolut") {
-                message = `Your subscription is tied to a Revolut referral. If you wish to re-enable it in the future, please contact me at ${settings.mailer.contact}`
+                message = "Your subscription is managed via GitHub. Please go to https://github.com/sponsors/accounts to manually cancel your sponsorship."
+            } else {
+                message = `Your subscription is tied to an affiliate campaign. If you wish to re-enable it in the future, please contact us at ${settings.mailer.contact}`
             }
         }
 

@@ -80,9 +80,15 @@ class WebServer {
                 })
             }
 
-            // Add body parser.
+            // Add body parser, but avoid parsing JSON for the Paddle webhooks route.
             const bodyParser = require("body-parser")
-            this.app.use(bodyParser.json())
+            this.app.use((req, res, next) => {
+                if (req.originalUrl.substring(0, 19) == "/api/paddle/webhook") {
+                    bodyParser.raw({type: "application/json"})(req, res, next)
+                } else {
+                    bodyParser.json()(req, res, next)
+                }
+            })
             this.app.use((err: Error, req: express.Request, res: express.Response, next) => {
                 if (err) {
                     return this.renderError(req, res, err.toString(), 400)

@@ -1,3 +1,4 @@
+const countryListChf = ["CH", "LI"]
 const countryListGbp = ["GB", "IM", "UK"]
 const countryListEur = [
     "AD",
@@ -7,7 +8,6 @@ const countryListEur = [
     "BE",
     "BG",
     "BY",
-    "CH",
     "CY",
     "CZ",
     "DE",
@@ -67,7 +67,8 @@ export const state = () => ({
     country: null,
     expectedCurrency: null,
     archiveDownloadDays: null,
-    aiHumours: null
+    aiHumours: null,
+    paddle: null
 })
 
 export const getters = {
@@ -130,6 +131,13 @@ export const mutations = {
     setGearWear(state, data) {
         state.gearwear = data
     },
+    setAthleteRecords(state, data) {
+        if (data) {
+            delete data.id
+            delete data.dateRefreshed
+        }
+        state.athleteRecords = data
+    },
     setUser(state, data) {
         if (data?.recipes) {
             const recipes = Object.values(data.recipes)
@@ -140,12 +148,13 @@ export const mutations = {
         }
         state.user = data
     },
-    setAthleteRecords(state, data) {
-        if (data) {
-            delete data.id
-            delete data.dateRefreshed
+    setUserData(state, data) {
+        for (let key in data) {
+            state.user[key] = data[key]
         }
-        state.athleteRecords = data
+    },
+    setLastUserFetch(state, data) {
+        state.lastUserFetch = data
     },
     setUserPreferences(state, data) {
         if (!state.user.preferences) state.user.preferences = {}
@@ -154,18 +163,6 @@ export const mutations = {
     setUserCalendarTemplate(state, data) {
         if (!state.user.preferences.calendarTemplate) state.user.preferences.calendarTemplate = {}
         state.user.preferences.calendarTemplate = Object.assign(state.user.preferences.calendarTemplate, data)
-    },
-    setUserEmail(state, email) {
-        state.user.email = email
-    },
-    setUserConfirmEmail(state, email) {
-        state.user.confirmEmail = email
-    },
-    setUserUrlToken(state, token) {
-        state.user.urlToken = token
-    },
-    setLastUserFetch(state, data) {
-        state.lastUserFetch = data
     },
     setCountry(state, country) {
         state.country = country
@@ -187,6 +184,13 @@ export const mutations = {
     },
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
+    },
+    setPaddle(state, data) {
+        state.paddle = {
+            environment: data.api.environment,
+            token: data.api.clientToken,
+            priceId: data.priceId
+        }
     }
 }
 
@@ -244,6 +248,7 @@ export const actions = {
             commit("setMapStyles", mapStyles)
 
             // Set free / PRO plan details.
+            settings.plans.pro.price = parseFloat(core.paddle.prices.yearlyPrice.unitPrice.amount) / 100
             commit("setPlanDetails", settings.plans)
 
             // Set fitness level enum.
@@ -257,6 +262,9 @@ export const actions = {
 
             // Set AI generative humours.
             commit("setAiHumours", settings.ai.humours)
+
+            // Set Paddle details.
+            commit("setPaddle", settings.paddle)
         }
 
         let user = state.user
@@ -272,6 +280,8 @@ export const actions = {
                 currency = "GBP"
             } else if (countryListEur.includes(country)) {
                 currency = "EUR"
+            } else if (countryListChf.includes(country)) {
+                currency = "CHF"
             }
 
             commit("setCountry", country)
@@ -305,6 +315,8 @@ export const actions = {
                         currency = "GBP"
                     } else if (countryListEur.includes(country)) {
                         currency = "EUR"
+                    } else if (countryListChf.includes(country)) {
+                        currency = "CHF"
                     }
 
                     // Set user, country and expected currency.

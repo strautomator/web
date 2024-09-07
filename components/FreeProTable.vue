@@ -101,29 +101,27 @@
                             <td>Price / year</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">
-                                <n-link to="/billing" v-if="!$store.state.user?.isPro" nuxt>{{ $store.state.proPlanDetails.price.year }} {{ currency }}</n-link>
-                                <span v-else>{{ $store.state.proPlanDetails.price.year }} {{ currency }} *</span>
+                                <n-link to="/billing" v-if="!user?.isPro" nuxt>{{ $store.state.proPlanDetails.price }} {{ currency }}</n-link>
+                                <span v-else>{{ $store.state.proPlanDetails.price }} {{ currency }} *</span>
                             </td>
                         </tr>
                     </tbody>
                 </v-simple-table>
             </v-card-text>
         </v-card>
-        <ul v-if="!noFooter" class="caption mt-2 mb-5 pl-4">
-            <li v-if="$store.state.proPlanDetails.price.upcoming">The yearly subscription price will increase to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ currency }} soon.</li>
-        </ul>
     </div>
 </template>
 
 <script>
+import subscriptionMixin from "~/mixins/subscriptionMixin.js"
+import userMixin from "~/mixins/userMixin.js"
+
 export default {
+    mixins: [subscriptionMixin, userMixin],
     props: ["no-price", "no-footer"],
     computed: {
         dayText() {
             return this.$breakpoint.mdAndUp ? " days" : "d"
-        },
-        currency() {
-            return this.$store.state.expectedCurrency
         }
     }
 }

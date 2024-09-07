@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>3 years of PRO</h1>
+            <h1>1 year of PRO</h1>
             <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)" colored-border>
                 <p>You have a PRO account via {{ subscriptionSource }} already! If you wish to take advantage of the affiliate links below, you might want to cancel your existing subscription first.</p>
                 <p>But of course I won't mind if you keep it active and still use the links, thou.</p>
@@ -17,7 +17,7 @@
                 <li>Send me your Strava ID via <a href="mailto:info@strautomator.com" title="Email">email</a></li>
             </ul>
             <p class="mt-4">Once you have completed the registration and everything is confirmed, your account will be switched to PRO.</p>
-            <p>After 3 years, if you still wish to keep using PRO features, you'll need to subscribe via PayPal or GitHub.</p>
+            <p>After 1 year, if you still wish to keep using PRO features, you'll need to subscribe via Paddle, or via a GitHub Sponsorship.</p>
 
             <v-card v-if="revolut" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
@@ -110,11 +110,12 @@
 
 <script>
 import _ from "lodash"
+import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
-    mixins: [userMixin],
+    mixins: [subscriptionMixin, userMixin],
     head() {
         return {
             subscriptionSource: "...",

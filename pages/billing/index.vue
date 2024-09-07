@@ -9,7 +9,7 @@
             <div v-if="unsubscribed">
                 <v-card outlined>
                     <v-card-text>
-                        <h3 class="error--text mb-2">Your account will switch from PRO back to Free soon!</h3>
+                        <h3 class="mb-2">Your account will switch from PRO back to Free soon!</h3>
                         <div>
                             {{ unsubMessage }}
                         </div>
@@ -30,7 +30,7 @@
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
                 <p v-else-if="subscription?.status != 'CANCELLED'">Thank you for subscribing and becoming a <strong>PRO</strong>! Your support is truly appreciated <v-icon small>mdi-emoticon-outline</v-icon></p>
-                <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> in the upcoming days.</p>
+                <p v-else>Your account will be switched from <strong>PRO</strong> to <strong>Free</strong> in a few moments.</p>
 
                 <v-card outlined>
                     <v-card-text>
@@ -44,10 +44,14 @@
                         <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
                             <div class="mb-2">Price: {{ paymentAmount }}</div>
-                            <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDate }}</div>
-                            <div>Next payment: {{ subscription.status == "CANCELLED" ? "cancelled" : nextPaymentDate }}</div>
-                            <div class="mt-6 text-center text-md-left" v-if="subscription.status != 'CANCELLED'">
-                                <v-btn color="removal" title="Confirm and unsubscribe" @click.stop="showUnsubDialog" rounded>
+                            <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDetails }}</div>
+                            <div>{{ nextPaymentDetails }}</div>
+                            <div class="mt-6 text-center text-md-left" v-if="['paddle', 'paypal'].includes(subscription.source)">
+                                <v-btn class="mr-md-2" color="primary" title="View subscription at Paddle" v-if="subscription.source == 'paddle'" @click.stop="paddleManage" rounded>
+                                    <v-icon left>{{ subscription.status == "CANCELLED" ? "mdi-refresh" : "mdi-credit-card-outline" }}</v-icon>
+                                    {{ subscription.status == "CANCELLED" ? "Reactivate subscription" : "Manage subscription" }}
+                                </v-btn>
+                                <v-btn class="mt-4 mt-md-0" color="removal" title="Confirm and unsubscribe" v-if="subscription.status != 'CANCELLED'" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
                                     Cancel subscription
                                 </v-btn>
@@ -101,36 +105,28 @@
                 </v-dialog>
             </div>
 
-            <div v-else-if="activeBillingPlan">
-                <p>
-                    Strautomator is free to use <v-icon small>mdi-emoticon-outline</v-icon> but keeping it alive isn't. I don't expect to make any money out of the service, but the PRO subscription of a few users should be enough to offset the costs
-                    and give me the motivation to keep adding new features.
-                </p>
-                <p class="mt-4 mb-6">You can subscribe via PayPal (yearly), or sponsor me via GitHub (monthly).</p>
+            <div v-else>
+                <p class="mt-4 mb-6">Our payment processor (Paddle) supports all major credit cards, as well as PayPal, Google Pay and Apple Pay.</p>
 
                 <v-card class="mb-6" outlined>
                     <v-card-title class="accent">Subscribe to PRO</v-card-title>
                     <v-card-text class="pb-2 pb-md-0">
                         <v-row class="mt-6" no-gutters>
                             <v-col class="text-center mb-6">
-                                <v-btn color="primary" title="Subscribe via PayPal" @click="prepareSubscription(activeBillingPlan.id)" :x-large="$breakpoint.mdAndUp" rounded nuxt>
+                                <v-btn color="primary" title="Subscribe via Paddle" @click="paddleCheckout()" :x-large="$breakpoint.mdAndUp" rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
-                                    {{ currencySymbol }}{{ activeBillingPlan.price.toFixed(2) }} / {{ activeBillingPlan.frequency }} via PayPal
+                                    {{ currencySymbol }}{{ $store.state.proPlanDetails.price.toFixed(2) }} / year via Paddle
                                 </v-btn>
                             </v-col>
                             <v-col class="text-center mb-2">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
                                     <v-btn color="primary" title="Sponsorship via GitHub" :x-large="$breakpoint.mdAndUp" rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        ${{ $store.state.proPlanDetails.price.github.toFixed(2) }} / month via GitHub
+                                        Sponsorship via GitHub
                                     </v-btn>
                                 </a>
                             </v-col>
                         </v-row>
-                        <p class="text-center" v-if="$store.state.proPlanDetails.price.upcoming">
-                            Hurry up! The yearly subscription price for new users will increase from
-                            {{ activeBillingPlan.price.toFixed(2) }} {{ $store.state.expectedCurrency }} to {{ $store.state.proPlanDetails.price.upcoming.toFixed(2) }} {{ $store.state.expectedCurrency }} soon.
-                        </p>
                     </v-card-text>
                 </v-card>
                 <p>Not so sure yet? You can also test 1 year of PRO by subscribing to one of my fintech <n-link to="/billing/affiliates" title="Affiliate services" nuxt>affiliate services</n-link>.</p>
@@ -143,12 +139,13 @@
 <script>
 import _ from "lodash"
 import FreeProTable from "~/components/FreeProTable.vue"
+import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 import userMixin from "~/mixins/userMixin.js"
 
 export default {
     authenticated: true,
     components: {FreeProTable},
-    mixins: [userMixin],
+    mixins: [subscriptionMixin, userMixin],
     head() {
         return {
             title: "Billing"
@@ -157,8 +154,6 @@ export default {
     data() {
         return {
             loading: true,
-            billingPlans: [],
-            activeBillingPlan: null,
             subscription: null,
             subscriptionSource: null,
             unsubscribed: false,
@@ -175,35 +170,21 @@ export default {
             if (!this.subscription || this.isAffiliate) return "free"
             return this.subscription.price + " " + this.subscription.currency
         },
-        lastPaymentDate() {
+        lastPaymentDetails() {
             if (!this.subscription) return ""
             if (this.isAffiliate) return "never"
-            if (["GitHub"].includes(this.subscriptionSource)) return "managed by GitHub"
-            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).format("ll") : "managed by PayPal"
+            if (["GitHub"].includes(this.subscriptionSource)) return "managed via GitHub"
+            return this.subscription.dateLastPayment ? this.$dayjs(this.subscription.dateLastPayment).format("ll") : `managed via ${this.subscriptionSource}`
         },
-        nextPaymentDate() {
+        nextPaymentDetails() {
             if (!this.subscription) return ""
-            if (this.subscription.dateExpiry) return this.$dayjs(this.subscription.dateExpiry).format("ll")
-            if (this.subscription.dateNextPayment) return this.$dayjs(this.subscription.dateNextPayment)
-            if (this.subscriptionSource == "Friend") return "maybe a beer?"
-            return this.subscription.lastPayment ? this.$dayjs(this.subscription.lastPayment.date).add(1, "year").format("ll") : "managed by PayPal"
-        },
-        currencySymbol() {
-            if (this.activeBillingPlan?.currency == "EUR") return "€"
-            if (this.activeBillingPlan?.currency == "GBP") return "£"
-            return "$"
+            if (this.subscription.status == "CANCELLED") return `Cancelled at: ${this.$dayjs(this.subscription.dateUpdated)}`
+            if (this.subscription.dateExpiry) return `Expires at: ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
+            if (this.subscription.dateNextPayment) return `Next payment: ${this.$dayjs(this.subscription.dateNextPayment).format("ll")}`
+            return "No future payments are scheduled... maybe a beer?"
         }
     },
     async fetch() {
-        try {
-            const res = await this.$axios.$get(`/api/paypal/${this.user.id}/billingplans`)
-            const billingPlans = Object.values(res)
-            this.billingPlans = billingPlans
-            this.activeBillingPlan = billingPlans.find((b) => b.currency == (this.$store.state.expectedCurrency || "USD"))
-        } catch (ex) {
-            this.$webError(this, "Billing.fetch", ex)
-        }
-
         try {
             if (this.user.isPro) {
                 this.loading = true
@@ -219,21 +200,67 @@ export default {
 
         this.loading = false
     },
+    mounted() {
+        if (!window.paddleHasLoaded) {
+            Paddle.Initialize({token: this.$store.state.paddle.token, eventCallback: this.paddleCallback})
+            if (this.$store.state.paddle.environment == "sandbox") {
+                Paddle.Environment.set("sandbox")
+            }
+            window.paddleHasLoaded = true
+        }
+    },
     methods: {
-        async prepareSubscription(planId) {
+        async paddleManage() {
             try {
-                const subscription = await this.$axios.$post(`/api/paypal/${this.user.id}/subscribe/${planId}`)
+                const transaction = await this.$axios.$get(`/api/paddle/${this.user.id}/new-transaction`)
+                this.$store.commit("setUserData", {paddleTransactionId: transaction.id})
+                await this.paddleCheckout(transaction.id)
+            } catch (ex) {
+                ex.title = "Could not create a transaction with Paddle"
+                this.$webError(this, "Billing.paddleManage", ex)
+            }
+        },
+        async paddleCheckout(transactionId) {
+            try {
+                if (!transactionId && this.user.paddleTransactionId) {
+                    transactionId = this.user.paddleTransactionId
+                }
 
-                if (subscription && subscription.approvalUrl) {
-                    document.location.href = subscription.approvalUrl
-                } else if (subscription && subscription.status == "ACTIVE") {
-                    this.$router.push({path: `/billing/success?fixed=${subscription.id}`})
+                const checkout = {
+                    settings: {
+                        successUrl: "https://dev-strautomator.devv.com/billing/success",
+                        displayMode: "overlay",
+                        theme: "dark"
+                    }
+                }
+                if (transactionId) {
+                    checkout.transactionId = transactionId
                 } else {
-                    this.$webError(this, "Billing.prepareSubscription", "Could not setup your subscription with PayPal")
+                    checkout.customData = {userId: this.user.id}
+                    checkout.items = [{quantity: 1, priceId: this.$store.state.paddle.priceId}]
+                    if (this.user.paddleId) {
+                        checkout.customer = {id: this.user.paddleId}
+                    } else if (this.user.email) {
+                        checkout.customer = {email: this.user.email}
+                    }
+                }
+
+                Paddle.Checkout.open(checkout)
+            } catch (ex) {
+                ex.title = "Could not start the checkout process"
+                this.$webError(this, "Billing.paddleCheckout", ex)
+            }
+        },
+        async paddleCallback(ev) {
+            try {
+                if (ev.name == "checkout.customer.created" && ev.data?.customer?.id) {
+                    await this.$axios.$post(`/api/paddle/${this.user.id}/customer`, {id: ev.data.customer.id, email: ev.data.customer.email, transactionId: ev.data.transaction_id})
+                    this.$store.commit("setUserData", {paddleId: ev.data.customer.id, paddleTransactionId: ev.data.transaction_id})
+                } else if (ev.name == "checkout.completed") {
+                    this.$store.commit("setUserData", {paddleTransactionId: null})
                 }
             } catch (ex) {
-                ex.title = "Could not setup your subscription with PayPal"
-                this.$webError(this, "Billing.prepareSubscription", ex)
+                console.error("Billing.paddleCheckout", ex)
             }
         },
         async unsubscribe() {
@@ -246,6 +273,7 @@ export default {
                 this.unsubMessage = res.message
                 this.loading = false
                 this.unsubscribed = true
+                this.$store.commit("setUserData", {isPro: false, subscriptionId: null})
             } catch (ex) {
                 ex.title = "Error trying to unsubscribe your account"
                 this.$webError(ex)

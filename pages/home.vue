@@ -58,8 +58,8 @@
                             <div>
                                 <p>
                                     Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users. Unlimited
-                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for {{ $store.state.proPlanDetails.price.year }} {{ $store.state.expectedCurrency }}
-                                    / year, paid via PayPal or via a GitHub sponsorship.
+                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for {{ $store.state.proPlanDetails.price }} {{ $store.state.expectedCurrency }}
+                                    / year.
                                 </p>
                             </div>
                             <free-pro-table />

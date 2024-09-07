@@ -303,7 +303,7 @@ export default {
                 }
 
                 this.resetDialog = false
-                this.$store.commit("setUserUrlToken", response.urlToken)
+                this.$store.commit("setUserData", {urlToken: response.urlToken})
                 this.newUrlToken = response.urlToken
             } catch (ex) {
                 this.$webError(this, "Calendar.resetUrl", ex)

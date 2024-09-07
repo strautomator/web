@@ -17,7 +17,8 @@ module.exports = {
                 content: "Turbocharge your Strava activities with automated rules! Strautomator is like IFTTT, but for Strava."
             }
         ],
-        link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}]
+        link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}],
+        script: [{src: "https://cdn.paddle.com/paddle/v2/paddle.js"}]
     },
 
     // Additional axios config.

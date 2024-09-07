@@ -38,8 +38,8 @@
                     <span v-if="user.preferences.privacyMode">(anonymized)</span>
                 </div>
                 <div class="mb-3">
-                    <span class="mr-1" v-if="user.email">{{ user.email }}</span>
-                    <span class="mr-1" v-else-if="user.confirmEmail">{{ user.confirmEmail }} <v-icon color="secondary" small>mdi-alert-circle</v-icon></span>
+                    <span class="mr-1" v-if="user.confirmEmail">{{ user.confirmEmail }} <v-icon color="secondary" small>mdi-alert-circle</v-icon></span>
+                    <span class="mr-1" v-else-if="user.email">{{ user.email }}</span>
                     <br v-if="(user.email || user.confirmEmail) && $breakpoint.mdAndDown" />
                     <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{
                         user.confirmEmail ? "pending confirmation" : user.email ? "change email" : "set email address"
@@ -597,8 +597,7 @@ export default {
         try {
             if (this.$route.query?.token && this.$route.query?.email != this.$store.state.user.email) {
                 await this.$axios.$post(`/api/users/${this.$store.state.user.id}/email/confirm`, {email: this.$route.query.email, token: this.$route.query.token})
-                this.$store.commit("setUserConfirmEmail", null)
-                this.$store.commit("setUserEmail", this.$route.query.email)
+                this.$store.commit("setUserData", {email: this.$route.query.email, confirmEmail: null})
                 this.emailConfirmed = true
             }
         } catch (ex) {

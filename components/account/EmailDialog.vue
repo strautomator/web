@@ -81,7 +81,7 @@ export default {
                         await this.$axios.$post(`/api/users/${this.user.id}/email`, {email: this.userEmail})
                         this.saving = false
 
-                        this.$store.commit("setUserConfirmEmail", this.userEmail)
+                        this.$store.commit("setUserData", {email: this.userEmail})
                         this.emailSaved = true
                     }
 
