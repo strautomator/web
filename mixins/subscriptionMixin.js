@@ -1,10 +1,11 @@
 export default {
     data() {
         const currency = this.$store.state.expectedCurrency
-        let currencySymbol = "$"
+        let currencySymbol
         if (currency == "CHF") currencySymbol = "₣"
         else if (currency == "EUR") currencySymbol = "€"
         else if (currency == "GBP") currencySymbol = "£"
+        else if (currency == "USD") currencySymbol = "$"
         return {
             currency: currency,
             currencySymbol: currencySymbol

@@ -8,7 +8,7 @@
             </v-alert>
 
             <p>
-                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first 3 years for free, by using a referral code to register to one of my affiliated fintech
+                Yes! Want to try Strautomator's PRO features, but not really convinced you should spend money on a yearly subscription yet? You can get the first year for free, by using a referral code to register to one of my affiliated fintech
                 services. These are services that I personally use on a daily basis. Here's how it works:
             </p>
             <ul class="ml-n2">

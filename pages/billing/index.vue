@@ -85,13 +85,14 @@
                             </v-toolbar-items>
                         </v-toolbar>
                         <v-card-text>
-                            <p class="mt-3">Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).</p>
+                            <p class="mt-3">Thanks for your support! Before you proceed, please be aware that the cancellation takes effect immediately.</p>
+                            <p class="mt-3">If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).</p>
                             <div>
-                                <v-textarea label="I'm cancelling my subscription because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
+                                <v-textarea label="I'm cancelling it because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
                             </div>
-                            <div class="text-right">
+                            <div class="text-center text-md-right">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mr-2" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
+                                <v-btn class="mb-4 mb-md-0 mr-md-2" color="grey" title="I want to keep PRO" @click.stop="hideUnsubDialog" text rounded>
                                     <v-icon left>mdi-check</v-icon>
                                     Keep it
                                 </v-btn>
@@ -129,7 +130,6 @@
                         </v-row>
                     </v-card-text>
                 </v-card>
-                <p>Not so sure yet? You can also test 1 year of PRO by subscribing to one of my fintech <n-link to="/billing/affiliates" title="Affiliate services" nuxt>affiliate services</n-link>.</p>
                 <free-pro-table />
             </div>
         </v-container>
@@ -181,7 +181,7 @@ export default {
             if (this.subscription.status == "CANCELLED") return `Cancelled at: ${this.$dayjs(this.subscription.dateUpdated)}`
             if (this.subscription.dateExpiry) return `Expires at: ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
             if (this.subscription.dateNextPayment) return `Next payment: ${this.$dayjs(this.subscription.dateNextPayment).format("ll")}`
-            return "No future payments are scheduled... maybe a beer?"
+            return "No future payments are scheduled."
         }
     },
     async fetch() {
@@ -213,6 +213,10 @@ export default {
         async paddleManage() {
             try {
                 const transaction = await this.$axios.$get(`/api/paddle/${this.user.id}/new-transaction`)
+                if (transaction?.newCheckout) {
+                    await this.paddleCheckout()
+                    return
+                }
                 this.$store.commit("setUserData", {paddleTransactionId: transaction.id})
                 await this.paddleCheckout(transaction.id)
             } catch (ex) {
@@ -228,7 +232,8 @@ export default {
 
                 const checkout = {
                     settings: {
-                        successUrl: "https://dev-strautomator.devv.com/billing/success",
+                        allowLogout: false,
+                        successUrl: `${window.location.protocol}//${window.location.host}/billing/success`,
                         displayMode: "overlay",
                         theme: "dark"
                     }
@@ -261,6 +266,7 @@ export default {
                 }
             } catch (ex) {
                 console.error("Billing.paddleCheckout", ex)
+                Paddle.Checkout.close()
             }
         },
         async unsubscribe() {
