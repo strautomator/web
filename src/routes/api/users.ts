@@ -127,7 +127,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
         // Cancel subscriptions based on the source.
         if (subscription.source == "paddle") {
             await paddle.subscriptions.cancelSubscription(user)
-            message = "Your subscription is scheduled to be cancelled on Paddle, and you will not be charged again."
+            message = "Your subscription is scheduled to be cancelled on Paddle, and you will not be charged in the future."
         } else if (subscription.source == "paypal") {
             const paypalSubscription = await paypal.subscriptions.getSubscription(user.subscriptionId)
             if (!paypalSubscription) {
@@ -138,7 +138,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             paypalSubscription.userId = user.id
             await paypal.subscriptions.cancelSubscription(paypalSubscription)
 
-            message = "Your subscription was cancelled on PayPal, and you will not be charged again."
+            message = "Your subscription was cancelled on PayPal, and you will not be charged in the future."
         } else {
             const data: Partial<UserData> = {
                 id: user.id,

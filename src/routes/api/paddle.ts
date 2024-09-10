@@ -55,6 +55,11 @@ router.get("/:userId/new-transaction", async (req: express.Request, res: express
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
+        // If user has no active subscription ID, return a new checkout flag.
+        if (!user.subscriptionId) {
+            return webserver.renderJson(req, res, {newCheckout: true})
+        }
+
         const transaction = await paddle.subscriptions.getUpdateTransaction(user)
         user.paddleTransactionId = transaction.id
         webserver.renderJson(req, res, transaction)

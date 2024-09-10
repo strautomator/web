@@ -110,4 +110,36 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
     }
 })
 
+/**
+ * Triggered when a user has migrated from PayPal to Paddle.
+ */
+router.post("/:userId/paddlemigration", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // User must be subscribed via Paddle to proceed with the refund.
+        if (!user.paddleId) {
+            throw new Error("User has not subscribed to Paddle yet")
+        }
+        if (!req.body.paddleTransactionId) {
+            throw new Error("Missing Paddle transaction ID")
+        }
+
+        const userSubs = await subscriptions.getByUser(user)
+        const paypalSub = userSubs.find((s) => s.source == "paypal" && s.status == "ACTIVE")
+        if (!paypalSub) {
+            throw new Error("User has no active PayPal subscription")
+        }
+
+        // Issue a partial refund, if possible, and cancel the PayPal subscription.
+        const refundAmount = await paypal.subscriptions.refundAndCancel(user, paypalSub.id, `Migrated to Paddle (${req.body.paddleTransactionId})`)
+        webserver.renderJson(req, res, {subscriptionId: paypalSub.id, refundAmount: refundAmount})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
 export = router
