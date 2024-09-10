@@ -1,47 +1,4 @@
-const countryListChf = ["CH", "LI"]
-const countryListGbp = ["GB", "IM", "UK"]
-const countryListEur = [
-    "AD",
-    "AL",
-    "AM",
-    "AT",
-    "BE",
-    "BG",
-    "BY",
-    "CY",
-    "CZ",
-    "DE",
-    "DK",
-    "EE",
-    "ES",
-    "FI",
-    "FR",
-    "GI",
-    "GR",
-    "HR",
-    "HU",
-    "IE",
-    "IS",
-    "IM",
-    "IT",
-    "LT",
-    "LU",
-    "LV",
-    "MT",
-    "MC",
-    "NL",
-    "NO",
-    "PL",
-    "PT",
-    "RO",
-    "RU",
-    "SE",
-    "SI",
-    "SK",
-    "SM",
-    "TR",
-    "UA"
-]
+let countryCurrency = {}
 
 export const state = () => ({
     lastUserFetch: new Date().valueOf(),
@@ -164,11 +121,9 @@ export const mutations = {
         if (!state.user.preferences.calendarTemplate) state.user.preferences.calendarTemplate = {}
         state.user.preferences.calendarTemplate = Object.assign(state.user.preferences.calendarTemplate, data)
     },
-    setCountry(state, country) {
+    setCountryCurrency(state, country) {
         state.country = country
-    },
-    setExpectedCurrency(state, currency) {
-        state.expectedCurrency = currency
+        state.expectedCurrency = countryCurrency[country] || "EUR"
     },
     setArchiveDownloadDays(state, days) {
         state.archiveDownloadDays = days
@@ -274,18 +229,14 @@ export const actions = {
             await dispatch("assignUser", {req})
         } else {
             let country = user?.countryCode || req.headers["cf-ipcountry"] || "US"
-            let currency = "USD"
-
-            if (countryListGbp.includes(country)) {
-                currency = "GBP"
-            } else if (countryListEur.includes(country)) {
-                currency = "EUR"
-            } else if (countryListChf.includes(country)) {
-                currency = "CHF"
+            let currency = "EUR"
+            for (let po of core.paddle.prices.yearlyPrice.unitPriceOverrides) {
+                for (let c of po.countryCodes) {
+                    countryCurrency[co] = po.unitPrice.currencyCode
+                }
             }
 
-            commit("setCountry", country)
-            commit("setExpectedCurrency", currency)
+            commit("setCountryCurrency", country)
         }
     },
     async assignUser({commit, state}, {req, res}) {
@@ -310,19 +261,10 @@ export const actions = {
                     loggedUser = res[0]
 
                     let country = loggedUser.countryCode || req.headers["cf-ipcountry"] || "US"
-                    let currency = "USD"
-                    if (countryListGbp.includes(country)) {
-                        currency = "GBP"
-                    } else if (countryListEur.includes(country)) {
-                        currency = "EUR"
-                    } else if (countryListChf.includes(country)) {
-                        currency = "CHF"
-                    }
 
                     // Set user, country and expected currency.
                     commit("setUser", loggedUser)
-                    commit("setCountry", country)
-                    commit("setExpectedCurrency", currency)
+                    commit("setCountryCurrency", country)
 
                     // Set athlete records.
                     try {
