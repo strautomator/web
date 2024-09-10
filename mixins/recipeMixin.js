@@ -163,6 +163,12 @@ export default {
                     if (/^-?\d*\.?\d*$/.test(value)) return true
                     return "Invalid number"
                 },
+                date: (value) => {
+                    if (!value || value.length < 5) return "Invalid date"
+                    if (value.match(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)) return true
+                    if (value.match(/^(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)) return true
+                    return "Invalid date format"
+                },
                 time: (value) => {
                     if (!value || value.length < 4) return "Invalid time"
                     const arrValue = value.split(":")

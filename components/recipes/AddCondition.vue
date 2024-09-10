@@ -60,6 +60,16 @@
                                         no-filter
                                     ></v-autocomplete>
                                 </div>
+                                <div v-else-if="selectedProperty?.type == 'date'">
+                                    <v-row>
+                                        <v-col cols="12" :sm="12" :md="6">
+                                            <v-text-field v-model="valueDateFrom" type="text" prefix="From: " :rules="valueInputRules" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" :sm="12" :md="6">
+                                            <v-text-field v-model="valueDateTo" type="text" prefix="To: " :rules="valueInputRules" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </div>
                                 <div v-else-if="hasOperators">
                                     <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
                                 </div>
@@ -113,7 +123,9 @@ export default {
             return this.selectedProperty.suffix
         },
         inputPlaceholder() {
-            return this.selectedProperty?.type == "time" ? "00:00" : ""
+            if (this.selectedProperty?.type == "time") return "00:00"
+            if (this.selectedProperty?.type == "date") return "YYYY-MM-DD or MM-DD"
+            return ""
         },
         hasOperators() {
             return this.selectedProperty?.operators?.length > 0
@@ -193,6 +205,7 @@ export default {
         valueInputRules() {
             if (!this.selectedProperty) return [this.recipeRules.required]
             if (this.isDefaultFor) return false
+            if (this.selectedProperty.type == "date") return [this.recipeRules.required, this.recipeRules.date]
             if (["dateStart", "dateEnd"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.time]
             if (["movingTime", "totalTime", "lapTime"].includes(this.selectedProperty.value)) return [this.recipeRules.required, this.recipeRules.timer]
             if (this.recipeRules[this.selectedProperty.type]) return [this.recipeRules.required, this.recipeRules[this.selectedProperty.type]]
@@ -294,6 +307,8 @@ export default {
                 selectedOperator: {},
                 selectedDefaultFor: {},
                 valueInput: "",
+                valueDateFrom: "",
+                valueDateTo: "",
                 locationInput: null,
                 searchLocations: null,
                 locations: []
@@ -341,6 +356,12 @@ export default {
                         const arrTime = result.value.split(":")
                         result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
                         result.friendlyValue = this.valueInput
+                    } else if (this.selectedProperty.type == "date") {
+                        result.value = `${this.valueDateFrom},${this.valueDateTo}`
+                        const year = new Date().getFullYear()
+                        const fromDate = this.valueDateFrom.length == 5 ? this.$dayjs(`${year}-${this.valueDateFrom}`).format("MMM D") : this.$dayjs(this.valueDateFrom).format("MMM D, YYYY")
+                        const toDate = this.valueDateTo.length == 5 ? this.$dayjs(`${year}-${this.valueDateTo}`).format("MMM D") : this.$dayjs(this.valueDateTo).format("MMM D, YYYY")
+                        result.friendlyValue = `From ${fromDate} to ${toDate}`
                     }
                 }
 
