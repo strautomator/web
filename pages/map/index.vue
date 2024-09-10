@@ -117,6 +117,14 @@
                     </div>
                 </v-card-text>
             </v-card>
+            <v-alert v-if="user && !user.isPro" border="top" color="primary" class="mt-4" colored-border>
+                <div class="mt-1 text-center text-md-left">
+                    Free accounts do not support Komoot, detailed weather reports or downloads.
+                    <br />
+                    <n-link to="/billing" title="Upgrade to PRO!" nuxt>Upgrade to PRO</n-link>
+                    to unlock all the available map features.
+                </div>
+            </v-alert>
 
             <v-dialog v-model="downloadDialog" width="440" overlay-opacity="0.95">
                 <v-card>
@@ -232,7 +240,7 @@ export default {
                     const mapScript = document.createElement("script")
                     mapScript.async = true
                     mapScript.defer = true
-                    mapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0cBXUmFBGn_HNlH06F2LM_WG2YWZGKe0&libraries=geometry&callback=initUpcomingEventsMap"
+                    mapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0cBXUmFBGn_HNlH06F2LM_WG2YWZGKe0&libraries=geometry,marker&loading=async&callback=initUpcomingEventsMap"
                     mapScript.onerror = (ex) => this.$webError(this, "UpcomingEventsMap.mounted", ex)
                     document.querySelector("head").appendChild(mapScript)
                 } else {
@@ -301,6 +309,7 @@ export default {
                 const bikeLightStyle = new google.maps.StyledMapType(mapStyles.bikeLight, {name: "Bike Light"})
 
                 this.map = new google.maps.Map(this.$refs.googlemaps, {
+                    mapId: "strautomator",
                     gestureHandling: "greedy",
                     fullscreenControl: true,
                     zoom: 9,
@@ -362,7 +371,7 @@ export default {
                 // Info window.
                 this.mapInfoWindow = new google.maps.InfoWindow({
                     content: `<div class="black--text">Loading...</div>`,
-                    pixelOffset: new google.maps.Size(0, 222)
+                    pixelOffset: new google.maps.Size(0, 251)
                 })
                 this.mapInfoWindow.addListener("closeclick", () => {
                     const evObj = this.eventObjects[this.selectedEvent.id]
@@ -386,6 +395,11 @@ export default {
         async loadAddressLocation(e) {
             return new Promise((resolve, reject) => {
                 if (!e.address || e.address.trim() == "") resolve(null)
+
+                const coordinates = e.address?.toString().replace("(", "").replace(")", "").replace(/ /, "").split(",")
+                if (coordinates?.length == 2 && !isNaN(coordinates[0]) && !isNaN(coordinates[1])) {
+                    return resolve({lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1])})
+                }
 
                 const geocoder = new google.maps.Geocoder()
                 geocoder.geocode({address: e.address}, (results, status) => {
@@ -474,55 +488,24 @@ export default {
         },
         mapCreateMarker(e, color) {
             try {
-                const svgPath = "M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"
-                const svgShadow = {
-                    path: svgPath,
-                    strokeColor: "white",
-                    strokeWeight: 3,
-                    rotation: 0,
-                    scale: 0.65
-                }
-                const svgMain = {
-                    path: svgPath,
-                    fillColor: color,
-                    fillOpacity: 1,
-                    strokeWeight: 0,
-                    rotation: 0,
-                    scale: 0.65
-                }
+                const pin = new google.maps.marker.PinElement({
+                    background: color,
+                    glyphColor: color,
+                    borderColor: "#333333"
+                })
 
-                const dropShadowMarker = new google.maps.Marker({
-                    icon: {
-                        url: "/images/map/shadow.png",
-                        size: new google.maps.Size(37, 34),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(10, 34)
-                    },
+                const mainMarker = new google.maps.marker.AdvancedMarkerElement({
                     position: e.position,
-                    zIndex: 0,
-                    map: this.map
-                })
-                const shadowMarker = new google.maps.Marker({
-                    position: e.position,
-                    icon: svgShadow,
-                    title: e.title,
-                    zIndex: this.eventObjects[e.id].zIndex - 1,
-                    map: this.map
-                })
-                const mainMarker = new google.maps.Marker({
-                    position: e.position,
-                    icon: svgMain,
+                    content: pin.element,
                     title: e.title,
                     zIndex: this.eventObjects[e.id].zIndex,
                     map: this.map
                 })
 
                 mainMarker.addListener("click", () => this.mapMarkerClick(e))
-                mainMarker.addListener("mouseover", () => this.mapHighlightRoute(e, true))
-                mainMarker.addListener("mouseout", () => this.mapHighlightRoute(e, false))
-
-                const markerObj = {main: mainMarker, shadow: shadowMarker}
-                this.eventObjects[e.id].marker = markerObj
+                this.eventObjects[e.id].color = color
+                this.eventObjects[e.id].marker = mainMarker
+                this.eventObjects[e.id].pin = pin
             } catch (ex) {
                 console.error("UpcomingEventsMap.mapCreateMarker", e.id, ex)
             }
@@ -628,7 +611,7 @@ export default {
             const previousEvent = this.selectedEvent || null
             const isSameClick = previousEvent?.id == e.id || false
             const evObj = this.eventObjects[e.id]
-            const marker = evObj.marker.main
+            const marker = evObj.marker
 
             if (isSameClick) {
                 return
@@ -638,8 +621,7 @@ export default {
 
             zIndexMax += 3
             evObj.zIndex = zIndexMax
-            evObj.marker.main.setOptions({zIndex: zIndexMax})
-            evObj.marker.shadow.setOptions({zIndex: zIndexMax - 1})
+            evObj.marker.zIndex = zIndexMax
 
             if (previousEvent) {
                 this.mapHighlightRoute(previousEvent, false)
@@ -647,7 +629,7 @@ export default {
 
             this.mapHighlightRoute(e, true, true)
             this.mapSetBounds(e)
-            this.map.setCenter(marker.getPosition())
+            this.map.setCenter(marker.position)
 
             const evDate = this.eventDates.find((ed) => ed.event.id == e.id)
             const weather = evDate?.weather.map((w) => `${w.temperature} ${w.summary}`) || null
@@ -693,17 +675,25 @@ export default {
 
             const baseOptions = e.visible ? {opacity: 1, zIndex: zIndexMax - 1, strokeOpacity: mapStrokeOpacity.default} : {opacity: 0, zIndex: 0, strokeOpacity: 0}
 
-            for (let obj of [evObj.marker.shadow, evObj.polyline?.shadow]) {
-                obj?.setOptions(baseOptions)
-            }
+            evObj.polyline?.shadow.setOptions(baseOptions)
 
             if (baseOptions.zIndex > 0) {
                 baseOptions.zIndex++
             }
 
-            for (let obj of [evObj.marker.main, evObj.polyline?.main]) {
-                obj?.setOptions(baseOptions)
+            evObj.polyline?.main?.setOptions(baseOptions)
+            evObj.marker.zIndex = baseOptions.zIndex
+
+            if (e.visible) {
+                evObj.pin.background = evObj.color
+                evObj.pin.glyphColor = evObj.color
+                evObj.pin.borderColor = "#333333"
+            } else {
+                evObj.pin.background = "Transparent"
+                evObj.pin.glyphColor = "Transparent"
+                evObj.pin.borderColor = "Transparent"
             }
+
             if (evObj.polyline) {
                 for (let obj of evObj.polyline.main.icons) {
                     obj.strokeOpacity = e.visible ? 1 : 0
