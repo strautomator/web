@@ -21,7 +21,7 @@
                 <div class="caption">{{ $dayjs(currentNotification.dateCreated).format("lll") }}</div>
                 <div class="mt-2">
                     {{ currentNotification.body }}
-                    <n-link v-if="currentNotification.href" :to="currentNotification.href" title="Open notification" nuxt><v-icon color="secondary" @click="hidePanel()" small>mdi-open-in-new</v-icon></n-link>
+                    <a v-if="currentNotification.href" :href="currentNotification.href" title="Open notification" nuxt><v-icon color="secondary" @click="hidePanel()" small>mdi-open-in-new</v-icon></a>
                 </div>
             </template>
         </v-snackbar>
