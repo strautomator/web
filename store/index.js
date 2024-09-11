@@ -144,7 +144,8 @@ export const mutations = {
         state.paddle = {
             environment: data.api.environment,
             token: data.api.clientToken,
-            priceId: data.priceId
+            priceId: data.priceId,
+            discountId: data.discountId
         }
     }
 }

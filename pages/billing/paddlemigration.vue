@@ -48,12 +48,6 @@
                         tasks, including tax and compliance.
                     </p>
 
-                    <h4 class="mb-1 text-md-h6">Can I migrate my subscription from PayPal?</h4>
-                    <p>
-                        Yes, and you should! If you reached this link, it means you already got an email from us with a discount code that you can use during the Paddle checkout process. We have a limited amount of discount codes, so it's first come
-                        first serve.
-                    </p>
-
                     <h4 class="mb-1 text-md-h6">What happens if I don't migrate?</h4>
                     <p>Existing PayPal subscriptions will still be billed and valid up until Sunday, August 31st, 2025. After that date, all existing PayPal subscriptions will be cancelled, and affected accounts will be switched back to Free.</p>
 
@@ -61,6 +55,10 @@
                     <p>
                         First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. If your last PayPal payment
                         was made in the last 180 days, you will get a partial refund for the remaining days. So for example if you paid 7.99 {{ currency }} 3 months ago, you will get a refund of around 5.69 {{ currency }}.
+                    </p>
+                    <p v-if="applyDiscount">
+                        As a courtesy, some users might be eligible for a 25% discount, paying {{ ($store.state.proPlanDetails.price * 0.75).toFixed(2) }} on their first 2 years. The discount code is automatically applied to the checkout. A limited
+                        amount of discount codes are available, on a first come first serve basis.
                     </p>
 
                     <h4 class="mb-1 text-md-h6">Ready?</h4>
@@ -98,6 +96,7 @@ export default {
             subscription: null,
             paddleTransactionId: null,
             termsAgree: false,
+            applyDiscount: false,
             migrated: false,
             errorMessage: null,
             refundAmount: 0
@@ -125,6 +124,16 @@ export default {
             }
             window.paddleHasLoaded = true
         }
+        if (this.$route.query.discount) {
+            const encoded = new TextEncoder().encode(this.user.email)
+            window.crypto.subtle.digest("SHA-1", encoded).then((hashBuffer) => {
+                const hashArray = Array.from(new Uint8Array(hashBuffer))
+                const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+                if (hash == this.$route.query.discount) {
+                    this.applyDiscount = true
+                }
+            })
+        }
     },
     methods: {
         async paddleCheckout() {
@@ -149,6 +158,11 @@ export default {
                     }
                 }
 
+                if (this.applyDiscount) {
+                    console.dir(this.$store.state.paddle)
+                    checkout.discountId = this.$store.state.paddle.discountId
+                }
+
                 Paddle.Checkout.open(checkout)
             } catch (ex) {
                 Paddle.Checkout.close()
@@ -165,12 +179,11 @@ export default {
                 } else if (ev.name == "checkout.completed") {
                     this.$store.commit("setUserData", {paddleTransactionId: null})
                     await this.cancelPayPal()
+                    this.migrated = true
+                    Paddle.Checkout.close()
                 }
             } catch (ex) {
                 this.errorMessage = "If you need any support, please contact us via email at info@strautomator.com."
-            } finally {
-                Paddle.Checkout.close()
-                this.migrated = true
             }
         },
         async cancelPayPal() {
