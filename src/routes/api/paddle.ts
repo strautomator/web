@@ -34,6 +34,10 @@ router.post("/:userId/customer", async (req: express.Request, res: express.Respo
             throw new Error("Missing Paddle ID")
         }
 
+        if (req.params.migration == "1") {
+            logger.info("Routes.paddle", `User ${user.id} started migration of PayPal ${user.subscriptionId} to Paddle`)
+        }
+
         // Update user Paddle customer and transaction IDs.
         user.paddleId = data.id
         user.paddleTransactionId = data.transactionId
