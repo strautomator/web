@@ -60,7 +60,7 @@
                                         no-filter
                                     ></v-autocomplete>
                                 </div>
-                                <div v-else-if="selectedProperty?.type == 'date'">
+                                <div v-else-if="isDateRange">
                                     <v-row>
                                         <v-col cols="12" :sm="12" :md="6">
                                             <v-text-field v-model="valueDateFrom" type="text" prefix="From: " :rules="valueInputRules" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
@@ -141,6 +141,9 @@ export default {
         },
         isWeekday() {
             return this.selectedProperty?.value == "weekday"
+        },
+        isDateRange() {
+            return this.selectedProperty?.value == "dateRange"
         },
         isGarmin() {
             return this.selectedProperty?.value == "garmin.sensor"
@@ -352,16 +355,16 @@ export default {
                     } else if (this.isLocation) {
                         result.value = this.locationInput.value
                         result.friendlyValue = this.locationInput.address
-                    } else if (this.selectedProperty.type == "time") {
-                        const arrTime = result.value.split(":")
-                        result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
-                        result.friendlyValue = this.valueInput
-                    } else if (this.selectedProperty.type == "date") {
+                    } else if (this.isDateRange) {
                         result.value = `${this.valueDateFrom},${this.valueDateTo}`
                         const year = new Date().getFullYear()
                         const fromDate = this.valueDateFrom.length == 5 ? this.$dayjs(`${year}-${this.valueDateFrom}`).format("MMM D") : this.$dayjs(this.valueDateFrom).format("MMM D, YYYY")
                         const toDate = this.valueDateTo.length == 5 ? this.$dayjs(`${year}-${this.valueDateTo}`).format("MMM D") : this.$dayjs(this.valueDateTo).format("MMM D, YYYY")
                         result.friendlyValue = `From ${fromDate} to ${toDate}`
+                    } else if (this.selectedProperty.type == "time") {
+                        const arrTime = result.value.split(":")
+                        result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
+                        result.friendlyValue = this.valueInput
                     }
                 }
 
