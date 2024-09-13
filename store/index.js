@@ -221,6 +221,15 @@ export const actions = {
 
             // Set Paddle details.
             commit("setPaddle", settings.paddle)
+
+            // Set country and currency.
+            let country = req.headers["cf-ipcountry"] || "US"
+            for (let po of core.paddle.prices.yearlyPrice.unitPriceOverrides) {
+                for (let c of po.countryCodes) {
+                    countryCurrency[c] = po.unitPrice.currencyCode
+                }
+            }
+            commit("setCountryCurrency", country)
         }
 
         let user = state.user
@@ -229,15 +238,6 @@ export const actions = {
         if (!user && oauth && oauth.accessToken) {
             await dispatch("assignUser", {req})
         } else {
-            let country = user?.countryCode || req.headers["cf-ipcountry"] || "US"
-            let currency = "EUR"
-            for (let po of core.paddle.prices.yearlyPrice.unitPriceOverrides) {
-                for (let c of po.countryCodes) {
-                    countryCurrency[co] = po.unitPrice.currencyCode
-                }
-            }
-
-            commit("setCountryCurrency", country)
         }
     },
     async assignUser({commit, state}, {req, res}) {
@@ -260,10 +260,9 @@ export const actions = {
             await Promise.all([this.$axios.$get(urlUser), this.$axios.$get(urlRecords), this.$axios.$get(urlGearWear)])
                 .then((res) => {
                     loggedUser = res[0]
+                    let country = loggedUser?.countryCode || req.headers["cf-ipcountry"] || "US"
 
-                    let country = loggedUser.countryCode || req.headers["cf-ipcountry"] || "US"
-
-                    // Set user, country and expected currency.
+                    // Set user and country currency.
                     commit("setUser", loggedUser)
                     commit("setCountryCurrency", country)
 
