@@ -115,15 +115,15 @@ export default {
         for (let t of weatherBaseTags) {
             locationTags.push({
                 value: `weather.start.${t.value}`,
-                label: `${t.label} (start)`
+                label: `Weather: ${t.label} (start)`
             })
             locationTags.push({
                 value: `weather.${t.value}`,
-                label: `${t.label} (mid point)`
+                label: `Weather: ${t.label} (mid point)`
             })
             locationTags.push({
                 value: `weather.end.${t.value}`,
-                label: `${t.label} (end)`
+                label: `Weather: ${t.label} (end)`
             })
         }
 
