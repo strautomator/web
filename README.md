@@ -12,7 +12,7 @@ Strautomator is using the [SetMeUp](https://github.com/igoramadas/setmeup) modul
 -   **settings.secret.json** - private credentials and secrets, excluded from the GIT repo
 -   **settings.local.json** - private local-only settings, excluded from the GIT repo
 
-Please note that the [Core](https://github.com/strautomator/core) also has its own collection of settings files as well.
+Please note that the [Core](https://github.com/strautomator/core) also has its own collection of settings files as well. If the same setting is define on the Core and on the Web, the Web settings has the higher priority.
 
 ## Local setup
 
@@ -26,24 +26,17 @@ First, create a folder on your machine that will server as the root all the Stra
     $ cd ~/strautomator
     $ git clone git@github.com:strautomator/web.git
     $ git clone git@github.com:strautomator/core.git
+    $ cd core
+    $ make update
+    $ cd ../
     $ cd web
     $ make update
 
 ### Local settings
 
-Make a copy of the [settings.secret.json.sample](https://github.com/strautomator/web/blob/master/settings.secret.json.sample) and name it `settings.secret.json`. This is where you'll store all the credentials and sensitive keys. This file is encrypted automatically whenever the application starts up.
+Make a copy of the [settings.secret.json.sample](https://github.com/strautomator/web/blob/master/settings.secret.json.sample) and name it `settings.secret.json`. This is where you'll store all the credentials and sensitive keys. This file is encrypted automatically whenever the application starts up. You can also encrypt and decrypt on demand by using the `$ make encrypt` and `$ make decrypt` commands.
 
-For other non-sensitive data, you can create a `settings.local.json`. This file is kept in clear text.
-
-You can also just use one or the other file for development, depending on how concerned you are with security vs. convenience.
-
-The following settings are mandatory:
-
--   **gcp.projectId**: the ID of your project on GCP (Google Cloud Platform)
--   **maps.api.key**: a client-restricted GCP API key to be used with Google Maps
--   **strava.api**: clientId and clientSecret from Strava
-
-All other credentials are optional. You can set them as needed, depending on which features you'll want to use.
+For other non-sensitive data, you can create a `settings.local.json`. This file is kept in clear text on your local machine.
 
 ### Setting the URL
 
