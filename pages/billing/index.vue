@@ -181,6 +181,7 @@ export default {
             if (this.subscription.status == "CANCELLED") return `Cancelled at: ${this.$dayjs(this.subscription.dateUpdated)}`
             if (this.subscription.dateExpiry) return `Expires at: ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
             if (this.subscription.dateNextPayment) return `Next payment: ${this.$dayjs(this.subscription.dateNextPayment).format("ll")}`
+            if (this.subscription.status == "ACTIVE" && this.subscription.dateLastPayment) return `Next payment: around ${this.$dayjs(this.subscription.dateLastPayment).add(1, "year").format("ll")}`
             return "No future payments are scheduled."
         }
     },
