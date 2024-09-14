@@ -59,7 +59,7 @@
                                                     </template>
                                                     <div class="text-caption">
                                                         <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
-                                                        <template v-else>{{ ed.minTemperature }} - {{ ed.maxTemperature }}</template>
+                                                        <template v-else>{{ ed.minTemperature }} / {{ ed.maxTemperature }}</template>
                                                     </div>
                                                 </div>
                                             </template>
@@ -85,7 +85,7 @@
                                         <div>{{ ed.weatherIcons.join(" ") }}</div>
                                         <div class="text-caption">
                                             <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
-                                            <template v-else>{{ ed.minTemperature }} - {{ ed.maxTemperature }}</template>
+                                            <template v-else>{{ ed.minTemperature }} / {{ ed.maxTemperature }}</template>
                                         </div>
                                     </div>
                                     <br />
@@ -455,7 +455,7 @@ export default {
 
                 // Here we translate the result back to start / mid / end forecasts.
                 for (let data of weatherForecasts) {
-                    if (!data.forecast) continue
+                    if (!data.forecast?.temperature) continue
                     try {
                         const coordinateString = data.coordinates.join(",")
                         const eventDate = this.eventDates.find((ed) => data.id == `${ed.event.id}-${this.$dayjs(ed.date).utc().format(idDateFormat)}`)
@@ -466,10 +466,10 @@ export default {
                             if (!eventDate.weatherIcons.includes(data.forecast.icon)) {
                                 eventDate.weatherIcons.push(data.forecast.icon)
                             }
-                            if (!eventDate.minTemperature || data.forecast.temperature < eventDate.minTemperature) {
+                            if (_.isNil(eventDate.minTemperature) || data.forecast.temperature < eventDate.minTemperature) {
                                 eventDate.minTemperature = data.forecast.temperature
                             }
-                            if (!eventDate.maxTemperature || data.forecast.temperature > eventDate.maxTemperature) {
+                            if (_.isNil(eventDate.maxTemperature) || data.forecast.temperature > eventDate.maxTemperature) {
                                 eventDate.maxTemperature = data.forecast.temperature
                             }
                         }
