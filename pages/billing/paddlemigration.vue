@@ -44,21 +44,21 @@
                     <p class="mt-4 mb-6">We welcome all users who have subscribed using PayPal to migrate their PRO subscriptions to <a href="https://paddle.com" title="Paddle.com" target="paddle">Paddle.com</a>.</p>
                     <h4 class="mb-1 text-md-h6">Why is Strautomator switching to Paddle?</h4>
                     <p>
-                        Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Order for Strautomator, so they'll take care of all billing and payment related
+                        Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, so they'll take care of all billing and payment related
                         tasks, including tax and compliance.
                     </p>
 
                     <h4 class="mb-1 text-md-h6">What happens if I don't migrate?</h4>
-                    <p>Existing PayPal subscriptions will still be billed and valid up until Sunday, August 31st, 2025. After that date, all existing PayPal subscriptions will be cancelled, and affected accounts will be switched back to Free.</p>
+                    <p>Existing PayPal subscriptions will still be billed and valid up until Tuesday, December 31st, 2025. After that date, all existing PayPal subscriptions will be cancelled, and affected accounts will be switched back to Free.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>
                         First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. If your last PayPal payment
                         was made in the last 180 days, you will get a partial refund for the remaining days. So for example if you paid 7.99 {{ currency }} 3 months ago, you will get a refund of around 5.69 {{ currency }}.
                     </p>
-                    <p v-if="applyDiscount">
-                        As a courtesy, some users might be eligible for a 25% discount, paying {{ ($store.state.proPlanDetails.price * 0.75).toFixed(2) }} on their first 2 years. The discount code is automatically applied to the checkout. A limited
-                        amount of discount codes are available, on a first come first serve basis.
+                    <p v-if="discountId">
+                        As a courtesy, the first 1000 users to migrate are eligible for a discount, so the subscription price will be cheaper compared to their existing subscription price with PayPal. The discount codes will be automatically applied
+                        to the checkout, and are valid until December 31st, 2024.
                     </p>
 
                     <h4 class="mb-1 text-md-h6">Ready?</h4>
@@ -96,8 +96,8 @@ export default {
             subscription: null,
             paddleTransactionId: null,
             termsAgree: false,
-            applyDiscount: false,
             migrated: false,
+            discountId: null,
             errorMessage: null,
             refundAmount: 0
         }
@@ -124,15 +124,8 @@ export default {
             }
             window.paddleHasLoaded = true
         }
-        if (this.$route.query.discount) {
-            const encoded = new TextEncoder().encode(this.user.email)
-            window.crypto.subtle.digest("SHA-1", encoded).then((hashBuffer) => {
-                const hashArray = Array.from(new Uint8Array(hashBuffer))
-                const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-                if (hash == this.$route.query.discount) {
-                    this.applyDiscount = true
-                }
-            })
+        if (this.$route.query.d && this.$route.query.d != "x") {
+            this.discountId = this.$route.query.d
         }
     },
     methods: {
@@ -158,9 +151,8 @@ export default {
                     }
                 }
 
-                if (this.applyDiscount) {
-                    console.dir(this.$store.state.paddle)
-                    checkout.discountId = this.$store.state.paddle.discountId
+                if (this.discountId) {
+                    checkout.discountId = this.discountId
                 }
 
                 Paddle.Checkout.open(checkout)
@@ -173,7 +165,7 @@ export default {
         async paddleCallback(ev) {
             try {
                 if (ev.name == "checkout.customer.created" && ev.data?.customer?.id) {
-                    await this.$axios.$post(`/api/paddle/${this.user.id}/customer`, {id: ev.data.customer.id, email: ev.data.customer.email, transactionId: ev.data.transaction_id})
+                    await this.$axios.$post(`/api/paddle/${this.user.id}/customer?migration=1`, {id: ev.data.customer.id, email: ev.data.customer.email, transactionId: ev.data.transaction_id})
                     this.$store.commit("setUserData", {paddleId: ev.data.customer.id, paddleTransactionId: ev.data.transaction_id})
                     this.paddleTransactionId = ev.data.transaction_id
                 } else if (ev.name == "checkout.completed") {
