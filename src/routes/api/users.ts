@@ -137,7 +137,6 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             // Trigger the cancellation on PayPal.
             paypalSubscription.userId = user.id
             await paypal.subscriptions.cancelSubscription(paypalSubscription)
-
             message = "Your subscription was cancelled on PayPal, and you will not be charged in the future."
         } else {
             const data: Partial<UserData> = {
@@ -155,12 +154,14 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             }
         }
 
-        // Notify the developer.
-        await mailer.send({
-            to: settings.mailer.contact,
-            subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
-            body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${(req.body.reason || "none given").toString()}`
-        })
+        // Notify the developer if a reason was set.
+        if (req.body.reason) {
+            await mailer.send({
+                to: settings.mailer.contact,
+                subject: `Strautomator PayPal subscription cancelled: ${user.id}`,
+                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${req.body.reason}`
+            })
+        }
 
         webserver.renderJson(req, res, {message: message})
     } catch (ex) {
