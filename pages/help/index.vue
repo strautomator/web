@@ -23,6 +23,10 @@
                         </v-expansion-panel>
                     </v-expansion-panels>
                 </div>
+                <div class="text-center text-md-left">
+                    Still can't find what you're looking for? Drop an email to <a href="mailto:info@strautomator.com" title="Email support">info@strautomator.com</a> or a message to
+                    <a href="https://x.com/strautomator" title="Strautomator @ X">@strautomator</a>.
+                </div>
 
                 <div class="mt-10 text-center" v-if="!loggedIn">
                     <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
