@@ -97,14 +97,6 @@
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
-                        <tr v-if="!noPrice">
-                            <td>Price / year</td>
-                            <td class="text-center">Free</td>
-                            <td class="text-center">
-                                <n-link to="/billing" v-if="!user?.isPro" nuxt>{{ $store.state.proPlanDetails.price }} {{ currency }}</n-link>
-                                <span v-else>{{ $store.state.proPlanDetails.price }} {{ currency }} *</span>
-                            </td>
-                        </tr>
                     </tbody>
                 </v-simple-table>
             </v-card-text>
@@ -118,7 +110,6 @@ import userMixin from "~/mixins/userMixin.js"
 
 export default {
     mixins: [subscriptionMixin, userMixin],
-    props: ["no-price", "no-footer"],
     computed: {
         dayText() {
             return this.$breakpoint.mdAndUp ? " days" : "d"
