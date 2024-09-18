@@ -92,6 +92,13 @@ a {
     z-index: 99;
 }
 
+.home-wrapper .fade-out-in {
+    transition: visibility 0s, opacity 1s linear;
+}
+.home-wrapper .fade-out-in.hidden {
+     opacity: 0
+}
+
 .home-panel {
     box-shadow: 0 0 5px -1px #ffa000;
 }

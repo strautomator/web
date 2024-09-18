@@ -19,17 +19,17 @@
                             <h2>What can it do?</h2>
                             <div>
                                 <ul class="ml-4 pl-0">
-                                    <li>Tag your commutes</li>
-                                    <li>Set the correct gear based on the activity details</li>
-                                    <li>Set the default shoes for runs, walks and hikes</li>
-                                    <li>Set the default bike for road, MTB and gravel rides</li>
-                                    <li>Add weather data to activity names or descriptions</li>
-                                    <li>Add the Spotify tracks (or lyrics) that you were listening to during your workouts</li>
-                                    <li>Give your activities cool and unique names, powered by ChatGPT and Gemini</li>
-                                    <li>Track the usage and get notified when you need to replace your bike components</li>
-                                    <li>Export your past activities and upcoming club events to .ics calendars</li>
-                                    <li>Show your upcoming club events directly on a map, with weather forecasts</li>
-                                    <li>Estimate and automatically update your cycling FTP based on your recent performance</li>
+                                    <li>Tag your commutes.</li>
+                                    <li>Set the correct gear based on the activity metadata, date, sensors and more.</li>
+                                    <li>Set the default shoes for runs, walks and hikes, or bike for rides, MTB and gravel.</li>
+                                    <li>Add detailed weather information to activity names and descriptions.</li>
+                                    <li>Give your activities super cool and unique names, generated using AI.</li>
+                                    <li>Get personalized insights and suggestions about your activities, powered by AI.</li>
+                                    <li>Add the Spotify tracks (or lyrics) that you were listening to during your workouts.</li>
+                                    <li>Track the usage and get notified when you need to replace your bike components.</li>
+                                    <li>Export your past activities and upcoming club events to .ics calendars.</li>
+                                    <li>Show your upcoming club events directly on a map, with weather forecasts.</li>
+                                    <li>Estimate and automatically update your FTP based on your recent performance.</li>
                                     <li>And a lot more!</li>
                                 </ul>
                             </div>
@@ -43,12 +43,14 @@
                         </div>
 
                         <v-responsive>
-                            <div class="fade-out-in" v-for="(sample, index) in samples" :key="`sample-${index}`">
-                                <div class="home-chip" :class="sampleAlignClass(index)">
-                                    <span class="c-if primary--text">If</span>
-                                    <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp" /></span>
-                                    <span class="c-then primary--text">then</span>
-                                    <span class="action">{{ sample.action }}</span>
+                            <div class="fade-out-in">
+                                <div v-for="(sample, index) in samples" :key="`sample-${index}`">
+                                    <div class="home-chip" :class="sampleAlignClass(index)">
+                                        <span class="c-if primary--text">If</span>
+                                        <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp" /></span>
+                                        <span class="c-then primary--text">then</span>
+                                        <span class="action">{{ sample.action }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </v-responsive>
@@ -57,9 +59,8 @@
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
-                                    Yes, for up to {{ $store.state.freePlanDetails.maxRecipes }} automation and {{ $store.state.freePlanDetails.maxGearWear }} GearWear configurations, which should be enough for the vast majority of users. Unlimited
-                                    automations, GearWear and extra other features can be unlocked with a PRO subscription for {{ $store.state.proPlanDetails.price.yearly }} {{ $store.state.expectedCurrency }}
-                                    / year.
+                                    The basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations and {{ $store.state.freePlanDetails.maxGearWear }} Gear configurations, are free. Unlimited automations, Gear and more
+                                    advanced features can be unlocked with a paid PRO subscription.
                                 </p>
                             </div>
                             <free-pro-table />
@@ -235,6 +236,14 @@ export default {
             {
                 condition: "virtual rides using Zwift",
                 action: "add my Spotify playlist to the activity description"
+            },
+            {
+                condition: "sport type is ride or gravel ride",
+                action: "generate the activity name using AI"
+            },
+            {
+                condition: "sport type is run or hike",
+                action: "generate the activity description using AI"
             }
         ]
 
@@ -245,9 +254,27 @@ export default {
 
         return {
             showCookieConsent: displayCookieConsent,
-            samples: _.sampleSize(allSamples, 5),
+            allSamples: allSamples,
+            samples: _.sampleSize(allSamples, 6),
+            timerSamples: null,
             screenshot: 0
         }
+    },
+    mounted() {
+        const domRef = document.getElementsByClassName("fade-out-in")[0]
+        const refreshSamples = () => {
+            const hide = () => domRef.classList.add("hidden")
+            const show = () => {
+                this.samples = _.sampleSize(this.allSamples, 6)
+                domRef.classList.remove("hidden")
+            }
+            hide()
+            setTimeout(show, 1000)
+        }
+        this.timerSamples = setInterval(refreshSamples, 8000)
+    },
+    unmounted() {
+        clearInterval(this.timerSamples)
     },
     methods: {
         login() {
