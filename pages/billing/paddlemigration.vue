@@ -142,7 +142,7 @@ export default {
                 if (this.user.paddleTransactionId) {
                     checkout.transactionId = this.user.paddleTransactionId
                 } else {
-                    checkout.customData = {userId: this.user.id, paypalId: this.user.subscriptionId}
+                    checkout.customData = {userId: this.user.id, paypalMigration: this.user.subscriptionId}
                     checkout.items = [{quantity: 1, priceId: this.$store.state.paddle.priceId}]
                     if (this.user.paddleId) {
                         checkout.customer = {id: this.user.paddleId}

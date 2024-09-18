@@ -2,8 +2,7 @@
     <v-layout column>
         <v-container fluid>
             <div v-if="unsubscribed" class="mt-4 mb-8 text-center display-3 font-weight-black"><v-icon x-large>mdi-emoticon-sad</v-icon></div>
-            <div v-else-if="user.isPro" class="mt-4 mb-8 text-center display-3 font-weight-black">Thank you!</div>
-            <h1 v-else>Billing</h1>
+            <h1 v-else>{{ user.isPro ? "My PRO subscription" : "Get PRO" }}</h1>
             <p>Hi {{ user.profile.firstName }}!</p>
 
             <div v-if="unsubscribed">
@@ -46,7 +45,7 @@
                             <div class="mb-2">Price: {{ paymentAmount }}</div>
                             <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDetails }}</div>
                             <div>{{ nextPaymentDetails }}</div>
-                            <div class="mt-6 text-center text-md-left" v-if="['paddle', 'paypal'].includes(subscription.source)">
+                            <div class="mt-6 text-center text-md-left" v-if="['paddle', 'paypal'].includes(subscription.source) && subscription.frequency != 'lifetime'">
                                 <v-btn class="mr-md-2" color="primary" title="View subscription at Paddle" v-if="subscription.source == 'paddle'" @click.stop="paddleManage" rounded>
                                     <v-icon left>{{ subscription.status == "CANCELLED" ? "mdi-refresh" : "mdi-credit-card-outline" }}</v-icon>
                                     {{ subscription.status == "CANCELLED" ? "Reactivate subscription" : "Manage subscription" }}
@@ -107,29 +106,41 @@
             </div>
 
             <div v-else>
-                <p class="mt-4 mb-6">Our payment processor (Paddle) supports all major credit cards, as well as PayPal, Google Pay and Apple Pay.</p>
+                <p class="mt-4 mb-6">Our payment processor (Paddle.com) supports all major credit cards, as well as PayPal, Google Pay and Apple Pay.</p>
 
                 <v-card class="mb-6" outlined>
-                    <v-card-title class="accent">Subscribe to PRO</v-card-title>
-                    <v-card-text class="pb-2 pb-md-0">
-                        <v-row class="mt-6" no-gutters>
-                            <v-col class="text-center mb-6">
-                                <v-btn color="primary" title="Subscribe via Paddle" @click="paddleCheckout()" :x-large="$breakpoint.mdAndUp" rounded nuxt>
+                    <v-card-title class="accent">Subscription options</v-card-title>
+                    <v-card-text class="pt-4">
+                        <ul class="ml-n2 mb-6">
+                            <li>A single "set and forget" payment of {{ currencySymbol }}{{ $store.state.proPlanDetails.price.lifetime.toFixed(2) }}.</li>
+                            <li>A recurring yearly payment of {{ currencySymbol }}{{ $store.state.proPlanDetails.price.yearly.toFixed(2) }}.</li>
+                            <li>A monthly GitHub sponsorship of $1.00.</li>
+                        </ul>
+                        <v-row>
+                            <v-col md="4" sm="12">
+                                <v-btn color="primary" title="Lifetime subscription via Paddle" @click="paddleCheckout('lifetime')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
-                                    {{ currencySymbol }}{{ $store.state.proPlanDetails.price.toFixed(2) }} / year via Paddle
+                                    {{ $store.state.proPlanDetails.price.lifetime.toFixed(2) }} {{ currency }} / lifetime
                                 </v-btn>
                             </v-col>
-                            <v-col class="text-center mb-2">
+                            <v-col md="4" sm="12">
+                                <v-btn color="primary" title="Yearly subscription via Paddle" @click="paddleCheckout('yearly')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
+                                    <v-icon left>mdi-credit-card-outline</v-icon>
+                                    {{ $store.state.proPlanDetails.price.yearly.toFixed(2) }} {{ currency }} / year
+                                </v-btn>
+                            </v-col>
+                            <v-col md="4" sm="12">
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
-                                    <v-btn color="primary" title="Sponsorship via GitHub" :x-large="$breakpoint.mdAndUp" rounded nuxt>
+                                    <v-btn color="primary" title="Sponsorship via GitHub" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        Sponsorship via GitHub
+                                        Monthly sponsorship
                                     </v-btn>
                                 </a>
                             </v-col>
                         </v-row>
                     </v-card-text>
                 </v-card>
+
                 <free-pro-table />
             </div>
         </v-container>
@@ -141,6 +152,7 @@ import _ from "lodash"
 import FreeProTable from "~/components/FreeProTable.vue"
 import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 import userMixin from "~/mixins/userMixin.js"
+import {subscription} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
@@ -179,6 +191,7 @@ export default {
         nextPaymentDetails() {
             if (!this.subscription) return ""
             if (this.subscription.status == "CANCELLED") return `Cancelled at: ${this.$dayjs(this.subscription.dateUpdated)}`
+            if (this.subscription.frequency == "lifetime") return `LIFETIME SUBSCRIPTION`
             if (this.subscription.dateExpiry) return `Expires at: ${this.$dayjs(this.subscription.dateExpiry).format("ll")}`
             if (this.subscription.dateNextPayment) return `Next payment: ${this.$dayjs(this.subscription.dateNextPayment).format("ll")}`
             if (this.subscription.status == "ACTIVE" && this.subscription.dateLastPayment) return `Next payment: around ${this.$dayjs(this.subscription.dateLastPayment).add(1, "year").format("ll")}`
@@ -219,31 +232,29 @@ export default {
                     return
                 }
                 this.$store.commit("setUserData", {paddleTransactionId: transaction.id})
-                await this.paddleCheckout(transaction.id)
+                await this.paddleCheckout("update", transaction.id)
             } catch (ex) {
                 ex.title = "Could not create a transaction with Paddle"
                 this.$webError(this, "Billing.paddleManage", ex)
             }
         },
-        async paddleCheckout(transactionId) {
+        async paddleCheckout(action, transactionId) {
             try {
-                if (!transactionId && this.user.paddleTransactionId) {
-                    transactionId = this.user.paddleTransactionId
-                }
-
+                const priceId = action == "lifetime" ? this.$store.state.paddle.priceId.lifetime : this.$store.state.paddle.priceId.yearly
                 const checkout = {
                     settings: {
                         allowLogout: false,
+                        showAddDiscounts: false,
                         successUrl: `${window.location.protocol}//${window.location.host}/billing/success`,
                         displayMode: "overlay",
                         theme: "dark"
                     }
                 }
-                if (transactionId) {
+                if (transactionId && action != "lifetime") {
                     checkout.transactionId = transactionId
                 } else {
                     checkout.customData = {userId: this.user.id}
-                    checkout.items = [{quantity: 1, priceId: this.$store.state.paddle.priceId}]
+                    checkout.items = [{quantity: 1, priceId: priceId}]
                     if (this.user.paddleId) {
                         checkout.customer = {id: this.user.paddleId}
                     } else if (this.user.email) {
@@ -261,7 +272,7 @@ export default {
             try {
                 if (ev.name == "checkout.customer.created" && ev.data?.customer?.id) {
                     await this.$axios.$post(`/api/paddle/${this.user.id}/customer`, {id: ev.data.customer.id, email: ev.data.customer.email, transactionId: ev.data.transaction_id})
-                    this.$store.commit("setUserData", {paddleId: ev.data.customer.id, paddleTransactionId: ev.data.transaction_id})
+                    this.$store.commit("setUserData", {paddleId: ev.data.customer.id})
                 } else if (ev.name == "checkout.completed") {
                     this.$store.commit("setUserData", {paddleTransactionId: null})
                 }
