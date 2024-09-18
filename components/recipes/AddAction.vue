@@ -255,7 +255,7 @@ export default {
             // Iterate actions already set for the current automation recipe.
             for (let existingAction of arr) {
                 const item = _.find(recipeActions, {value: existingAction})
-                item.disabled = true
+                if (item) item.disabled = true
             }
 
             // Some actions are enabled only on PRO accounts.
