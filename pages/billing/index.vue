@@ -152,7 +152,6 @@ import _ from "lodash"
 import FreeProTable from "~/components/FreeProTable.vue"
 import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 import userMixin from "~/mixins/userMixin.js"
-import {subscription} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
