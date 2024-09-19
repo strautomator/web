@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">Policy effective as of September 14th, 2024</h4>
+                        <h4 class="mt-2 mb-6">Policy effective as of September 20th, 2024</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>
                             Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the Strautomator website (the "Service"), available at https://strautomator.com, and operated by Igor Ramadas ("us", "we", or "our").
@@ -38,7 +38,7 @@
                             <li>Activity metadata from Strava</li>
                             <li>Activity metadata from Garmin</li>
                             <li>Activity metadata from Wahoo</li>
-                            <li>Latest soundtracks played at Spotify</li>
+                            <li>Soundtracks played at Spotify</li>
                         </ul>
 
                         <h3 class="mt-1 mb-2">Security of your personal information</h3>
@@ -96,21 +96,29 @@
                         </p>
 
                         <h2 class="mt-6 mb-4">Subscriptions</h2>
-                        <p>Some of our services are available only via a subscription plan named Strautomator PRO (the "Subscription"), billed on a monthly or yearly basis, or unlocked via affiliate campaigns.</p>
+                        <p>
+                            Some of our services are available only via a subscription plan named Strautomator PRO (the "Subscription"), billed on a monthly or yearly basis, or bought with a single lifetime payment. The Subscription might also be
+                            unlocked via affiliate campaigns.
+                        </p>
                         <p>The monthly or yearly price of the Subscription varies per country and date. The accepted payment currencies are CHF, EUR, GBP and USD. The Subscription will automatically renew at the end of the billing cycle.</p>
                         <p>Users are free to cancel their existing Subscription at any time, through the "Account" page of the Service. Cancellations are effective immediately, unless stated otherwise during the cancellation process.</p>
 
                         <h3 class="mt-4 mb-2">Fee changes</h3>
                         <p>At our discretion, we might change the price of the Subscription. Existing subscribers might be affected by the new price, but not before the end of their current billing cycle.</p>
+                        <p>Users that have purchased a lifetime subscription are not affected by price changes, and will be able to continue using all the features that were available at the time of the payment.</p>
 
                         <h3 class="mt-4 mb-2">Updates to the Subscription</h3>
                         <p>
                             New features and integration with new services are not guaranteed in the future. Features that are currently available to Free accounts, might be removed and restricted to users paying for the Subscription. We do not
-                            guarantee that existing features of will be available in the future. We do, however, promise that features will be deprecated only when strictly necessary.
+                            guarantee that existing features of the Subscription will be available in the future. We do, however, remove features only when strictly necessary, for example due to requests made by Strava, or due to legal reasons.
                         </p>
+                        <p>We might release special features that require an additional one-time payment in the future.</p>
 
                         <h3 class="mt-4 mb-2">Suspension of the Subscription</h3>
-                        <p>We reserve the right to suspend and cancel any existing Subscription, if we find that it is not being used in accordance with the Terms and Conditions of the Service, or due to legal reasons and sanctions.</p>
+                        <p>
+                            We reserve the right to suspend and cancel any existing Subscription, if we find that it is not being used in accordance with the Terms and Conditions of the Service, or due to legal reasons and sanctions. This applies to
+                            all subscriptions, regardless of their payment date or payment method.
+                        </p>
 
                         <h3 class="mt-4 mb-2">Payment processing</h3>
                         <p>
@@ -120,17 +128,22 @@
                         <p>We do not collect, process or store credit cards, debit cards, bank details, or other sensitive payment details. All the information related to payment are strictly stored and processed by our payment providers.</p>
                         <p>Questions about payment details should be sent directly to the payment provider, using their contact details that you received via email when the Subscription was made.</p>
 
+                        <h3 class="mt-4 mb-2">Merchant of Record</h3>
+                        <p>The online reseller Paddle.com, registered as "Paddle.com Market Ltd.", is our Merchant of Record.</p>
+                        <p></p>
+
                         <h3 class="mt-4 mb-2">Refunds</h3>
-                        <p>It's your responsibility to cancel your Subscription before the next billing cycle, if you do not wish to be charged. We do not offer refunds for any Subscription payments that have already been made.</p>
+                        <p>
+                            We do not guarantee refunds for any Subscription payments that have already been made. We do not guarantee refunds for subscriptions made by mistake. We might, however, give partial refunds, at our discretion, on a
+                            per-case basis.
+                        </p>
+                        <p>It's your responsibility to cancel your Subscription before the next billing cycle, if you do not wish to be charged.</p>
                         <p>
                             The Service is fully dependent on the Strava API, which is a 3rd party provider. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable their API,
                             or in the event that our connection to their API is terminated, all of the core features of the Service will cease to work. In such case, subscribers that had their last payment made in the last 30 days are entitled to a
                             refund for that last payment alone.
                         </p>
-
-                        <h3 class="mt-4 mb-2">Merchant of Record</h3>
-                        <p>The online reseller Paddle.com, registered as "Paddle.com Market Ltd.", is our Merchant of Record.</p>
-                        <p></p>
+                        <p>All refunds are processed by our Merchant of Record, Paddle.com.</p>
 
                         <h3 class="mt-4 mb-2">Migration from PayPal to Paddle.com</h3>
                         <p>
