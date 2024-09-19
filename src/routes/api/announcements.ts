@@ -7,32 +7,20 @@ import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
 /**
- * Return active announcements. Please note that the read count will always come zeroed.
+ * Return active announcements. The read count will always come zeroed to clients.
  */
 router.get("/:userId/active", async (req: express.Request, res: express.Response) => {
     try {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const all = await announcements.getActive()
-        all.forEach((a) => delete a.readCount)
+        // Use the request country code if user has no country set.
+        if (!user.countryCode) {
+            user.countryCode = req.headers["cf-ipcountry"] as string
+        }
 
-        // User filtering properties.
-        const country = user.countryCode || (req.headers["cf-ipcountry"] as string) || "US"
-        const bikes = user.profile.bikes || []
-        const shoes = user.profile.shoes || []
-
-        // Filter specific announcements depending on the target audience.
-        const result = all.filter((a) => {
-            if (a.isFree && user.isPro) return false
-            if (a.isPro && !user.isPro) return false
-            if (a.hasBikes && bikes.length == 0) return false
-            if (a.hasBikes === false && bikes.length > 0) return false
-            if (a.hasShoes && shoes.length == 0) return false
-            if (a.hasShoes === false && shoes.length > 0) return false
-            if (a.countries && !a.countries.includes(country)) return false
-            return true
-        })
+        const result = await announcements.getActive(user)
+        result.forEach((a) => delete a.readCount)
 
         webserver.renderJson(req, res, result)
     } catch (ex) {
