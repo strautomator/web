@@ -96,7 +96,7 @@ a {
     transition: visibility 0s, opacity 1s linear;
 }
 .home-wrapper .fade-out-in.hidden {
-     opacity: 0
+    opacity: 0;
 }
 
 .home-panel {
@@ -133,6 +133,22 @@ a {
     border-radius: 8px;
     box-shadow: 0 0 0 1px #000000;
     max-width: 300px;
+}
+
+.pulse-button {
+    animation: pulse 1s 5;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .table-align-top {
