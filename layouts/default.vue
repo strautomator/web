@@ -50,8 +50,8 @@
                 <div class="copyright">
                     <span>Strautomator.com</span>
                     <v-chip v-if="$store.state.user?.isPro" color="primary" class="caption mb-1 ml-1" outlined>PRO</v-chip>
-                    <div>
-                        <n-link to="/tc" title="Terms and Conditions" class="caption mt-3" nuxt>Terms and Conditions</n-link>
+                    <div class="mt-3">
+                        <n-link to="/tc" title="Terms and Conditions" class="caption" nuxt>Terms and Conditions</n-link>
                     </div>
                 </div>
             </div>

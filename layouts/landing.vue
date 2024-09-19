@@ -18,8 +18,8 @@
                     <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
                 </a>
                 Strautomator.com
-                <div>
-                    <n-link to="/tc" title="Terms and Conditions" class="caption mt-2" nuxt>Terms and Conditions</n-link>
+                <div class="mt-3">
+                    <n-link to="/tc" title="Terms and Conditions" class="caption" nuxt>Terms and Conditions</n-link>
                 </div>
             </div>
         </v-footer>

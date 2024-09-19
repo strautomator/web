@@ -61,7 +61,7 @@
                             <h3 class="secondary--text ma-0 mb-2">Oops!</h3>
                             Seems like your subscription is missing some details on our end.
                             <br v-if="$breakpoint.mdAndUp" />
-                            Don't worry, your PRO account is safe and this issue will magically disappear in a few days.
+                            Don't worry, your PRO account is safe and the issue should magically disappear in a few days.
                         </template>
                         <div class="mt-8 text-center text-md-left">
                             <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
@@ -118,13 +118,13 @@
                         </ul>
                         <v-row>
                             <v-col md="4" sm="12">
-                                <v-btn color="primary" title="Lifetime subscription via Paddle" @click="paddleCheckout('lifetime')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
+                                <v-btn :class="$route.query.frequency == 'lifetime' ? 'pulse-button' : ''" color="primary" title="Lifetime subscription via Paddle" @click="paddleCheckout('lifetime')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
                                     {{ $store.state.proPlanDetails.price.lifetime.toFixed(2) }} {{ currency }} / lifetime
                                 </v-btn>
                             </v-col>
                             <v-col md="4" sm="12">
-                                <v-btn color="primary" title="Yearly subscription via Paddle" @click="paddleCheckout('yearly')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
+                                <v-btn :class="$route.query.frequency == 'yearly' ? 'pulse-button' : ''" color="primary" title="Yearly subscription via Paddle" @click="paddleCheckout('yearly')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
                                     <v-icon left>mdi-credit-card-outline</v-icon>
                                     {{ $store.state.proPlanDetails.price.yearly.toFixed(2) }} {{ currency }} / year
                                 </v-btn>
