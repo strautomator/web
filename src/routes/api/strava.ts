@@ -347,17 +347,17 @@ router.post("/:userId/activity-ai-generate", async (req: express.Request, res: e
         user.preferences.language = "en"
 
         // Get weather.
-        let weatherSummaries
+        let activityWeather
         try {
-            weatherSummaries = await weather.getActivityWeather(user, activity, true)
+            activityWeather = await weather.getActivityWeather(user, activity, true)
         } catch (weatherEx) {
             logger.warn("Routes.strava", req.method, req.originalUrl, "Failed to get weather summary, will proceed without")
         }
 
         const provider = req.body.provider
         const humour = req.body.humour
-        const name = await ai.generateActivityName(user, {activity, humour, provider, weatherSummaries})
-        const description = await ai.generateActivityDescription(user, {activity, humour, provider, weatherSummaries})
+        const name = await ai.generateActivityName(user, {activity, humour, provider, activityWeather})
+        const description = await ai.generateActivityDescription(user, {activity, humour, provider, activityWeather})
         user.preferences.language = language
 
         webserver.renderJson(req, res, {name, description})
@@ -576,7 +576,12 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
 
-        axios(options).catch((err) => logger.warn("Routes.strava", req.method, req.originalUrl, "Callback to activity endpoint failed", err.toString()))
+        axios(options).catch(() => {
+            logger.warn("Routes.strava", req.method, req.originalUrl, "Activity callback endpoint failed, will try again")
+            axios(options).catch((err) => {
+                logger.error("Routes.strava", req.method, req.originalUrl, "Activity callback endpoint failed again", err.toString())
+            })
+        })
         webserver.renderJson(req, res, {ok: true})
     } catch (ex) {
         logger.error("Routes.strava", req.method, req.originalUrl, ex)
