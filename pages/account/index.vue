@@ -175,6 +175,8 @@
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
+                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights.</div>
+                        <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
                             <v-radio label="Default" :value="''"></v-radio>
@@ -451,6 +453,7 @@ export default {
         const noSuffixes = preferences.noSuffixes || false
         const ftpAutoUpdate = preferences.ftpAutoUpdate || false
         const language = preferences.language || "en"
+        const aiEnabled = preferences.aiEnabled || false
         const aiProvider = preferences.aiProvider || ""
         const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
@@ -512,6 +515,7 @@ export default {
             minDateReset: this.$dayjs().format(dateFormat),
             maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
             language: language,
+            aiEnabled: aiEnabled,
             aiProvider: aiProvider,
             aiPrompt: aiPrompt,
             weatherProvider: weatherProvider,
@@ -587,6 +591,9 @@ export default {
             this.preferenceChanged(newValue, oldValue)
         },
         dateResetCounter(newValue, oldValue) {
+            this.preferenceChanged(newValue, oldValue)
+        },
+        aiEnabled(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         },
         aiProvider(newValue, oldValue) {
@@ -756,6 +763,7 @@ export default {
                     weatherUnit: this.weatherUnit,
                     windSpeedUnit: this.windSpeedUnit,
                     language: this.language,
+                    aiEnabled: this.aiEnabled,
                     aiProvider: this.aiProvider,
                     aiPrompt: this.aiPrompt.trim().length > 2 ? this.aiPrompt : "",
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false

@@ -288,6 +288,13 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("activityHashtag", false, true)
         }
 
+        if (preferenceChanged("aiEnabled")) {
+            if (!user.isPro) {
+                req.body.aiEnabled = false
+            }
+            setOrDelete("aiEnabled", "")
+        }
+
         if (preferenceChanged("aiProvider")) {
             if (!user.isPro) {
                 req.body.aiProvider = ""
