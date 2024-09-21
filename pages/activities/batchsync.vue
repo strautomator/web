@@ -96,7 +96,7 @@
                                 Try again
                             </v-btn>
                         </div>
-                        <div v-else-if="batchProcessed">Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are being processed right now, and should be updated in less than a minute.</div>
+                        <div v-else-if="batchProcessed">Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are being processed right now, and should be updated in a few minutes.</div>
                         <div v-else>
                             Activities between {{ $dayjs(dateFrom).format("ll") }} and {{ $dayjs(dateTo).format("ll") }} are now queued for processing.<br v-if="$breakpoint.mdAndUp" />This asynchronous job can take up to {{ maxHours }} hour(s) to
                             complete.
@@ -183,7 +183,7 @@ export default {
             return this.user.isPro ? this.$store.state.proPlanDetails.batchDays : this.$store.state.freePlanDetails.batchDays
         },
         maxHours() {
-            return Math.ceil(this.activityCount / 80)
+            return Math.ceil(this.activityCount / 70)
         },
         dateFromMin() {
             return this.$dayjs().subtract(this.maxDays, "days").format("YYYY-MM-DD")
@@ -201,7 +201,7 @@ export default {
         },
         batchTitle() {
             if (this.activityCount < 1) return "No activities found"
-            if (this.batchProcessed) return `Processed ${this.activityCount} activities`
+            if (this.batchProcessed) return `Processing ${this.activityCount} activities`
             return `Will process ${this.activityCount} activities`
         }
     },

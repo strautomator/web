@@ -192,7 +192,7 @@ export default {
     },
     data() {
         const user = this.$store.state.user
-        const calendarTemplate = user.preferences?.calendarTemplate || {}
+        const calendarTemplate = user.preferences.calendarTemplate || {}
         const freePlan = this.$store.state.freePlanDetails
         const proPlan = this.$store.state.proPlanDetails
         const defaultDaysFrom = user.isPro ? Math.round(proPlan.pastCalendarDays / 365 / 2) * 365 : freePlan.pastCalendarDays
