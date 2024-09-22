@@ -144,7 +144,7 @@ export default {
     },
     computed: {
         booleanActions() {
-            return ["generateName", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower", "hideStatStartTime"]
+            return ["generateName", "generateDescription", "generateInsights", "hideHome", "hideStatPace", "hideStatSpeed", "hideStatCalories", "hideStatHeartRate", "hideStatPower", "hideStatStartTime"]
         },
         recipeRules() {
             return {
