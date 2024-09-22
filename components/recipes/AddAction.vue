@@ -267,6 +267,9 @@ export default {
                 const generateDescription = _.find(recipeActions, {value: "generateDescription"})
                 generateDescription.disabled = true
                 generateDescription.text += proText
+                const generateInsights = _.find(recipeActions, {value: "generateInsights"})
+                generateDescription.disabled = true
+                generateDescription.text += proText
             }
 
             this.recipeActions = recipeActions
