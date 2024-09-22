@@ -175,7 +175,7 @@
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
-                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights.</div>
+                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights (beta).</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
