@@ -23,7 +23,13 @@
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
-                <p v-else-if="subscription?.source != 'paypal'">Your existing PRO subscription was not paid via PayPal, so you don't need to migrate to Paddle.</p>
+                <template v-else-if="subscription?.source != 'paypal'">
+                    <p>Your current PRO subscription was not paid via PayPal, so you don't need to migrate.</p>
+                    <v-btn color="primary" to="/account" title="Back to my account" small rounded outlined nuxt>
+                        <v-icon left>mdi-arrow-left</v-icon>
+                        Back to my account
+                    </v-btn>
+                </template>
 
                 <div v-else-if="migrated">
                     <p class="mt-4 mb-6">The migration process from PayPal to Paddle has finished! Please check your email for the confirmation invoice.</p>
@@ -41,32 +47,25 @@
                 </div>
 
                 <div v-else>
-                    <p class="mt-4 mb-6">We welcome all users who have subscribed using PayPal to migrate their PRO subscriptions to <a href="https://paddle.com" title="Paddle.com" target="paddle">Paddle.com</a>.</p>
+                    <p class="mt-4 mb-6">We welcome all users who have subscribed using PayPal to migrate their PRO subscriptions to <a href="https://paddle.com/about" title="Paddle.com" target="paddle">Paddle.com</a>.</p>
                     <h4 class="mb-1 text-md-h6">Why is Strautomator switching to Paddle?</h4>
-                    <p>
-                        Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, so they'll take care of all billing and payment related
-                        tasks, including tax and compliance.
-                    </p>
+                    <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, taking care of all billing and payment related tasks.</p>
 
                     <h4 class="mb-1 text-md-h6">What happens if I don't migrate?</h4>
                     <p>Existing PayPal subscriptions will still be billed and valid up until Tuesday, December 31st, 2025. After that date, all existing PayPal subscriptions will be cancelled, and affected accounts will be switched back to Free.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>
-                        First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. If your last PayPal payment
-                        was made in the last 180 days, you will get a partial refund for the remaining days. So for example if you paid 7.99 {{ currency }} 3 months ago, you will get a refund of around 5.69 {{ currency }}.
+                        First, you'll need to proceed and subscribe again using the new checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. If your last PayPal payment was made
+                        in the last 179 days, you will get a partial refund for the unused days.
                     </p>
                     <p v-if="discountId">
                         As a courtesy, the first 1000 users to migrate are eligible for a discount, so the subscription price will be cheaper compared to their existing subscription price with PayPal. The discount codes will be automatically applied
                         to the checkout, and are valid until December 31st, 2024.
                     </p>
 
-                    <h4 class="mb-1 text-md-h6">Ready?</h4>
-                    <div>
-                        <v-checkbox class="ml-n1" v-model="termsAgree" label="I agree with the migration steps" dense />
-                    </div>
                     <div class="pt-2 text-center text-md-left">
-                        <v-btn color="primary" title="Subscribe via Paddle" @click="paddleCheckout()" :disabled="!termsAgree" :x-large="$breakpoint.mdAndUp" rounded nuxt>
+                        <v-btn color="primary" title="Subscribe via Paddle" @click="paddleCheckout()" :x-large="$breakpoint.mdAndUp" rounded nuxt>
                             <v-icon left>mdi-database-import-outline</v-icon>
                             Start migration
                         </v-btn>
@@ -95,7 +94,6 @@ export default {
             loading: true,
             subscription: null,
             paddleTransactionId: null,
-            termsAgree: false,
             migrated: false,
             discountId: null,
             errorMessage: null,
