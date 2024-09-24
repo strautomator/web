@@ -243,7 +243,7 @@ export default {
                 const checkout = {
                     settings: {
                         allowLogout: false,
-                        showAddDiscounts: false,
+                        showAddDiscounts: true,
                         successUrl: `${window.location.protocol}//${window.location.host}/billing/success`,
                         displayMode: "overlay",
                         theme: "dark"
