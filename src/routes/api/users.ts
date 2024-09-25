@@ -257,6 +257,13 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("gearwearDelayDays", settings.gearwear.delayDays)
         }
 
+        if (preferenceChanged("gearwearBatteryAlert")) {
+            if (!user.isPro) {
+                req.body.gearwearBatteryAlert = false
+            }
+            setOrDelete("gearwearBatteryAlert", false, true)
+        }
+
         if (preferenceChanged("dateResetCounter")) {
             if (req.body.dateResetCounter) {
                 const dateResetCounter = dayjs(`2000-${req.body.dateResetCounter}`)
