@@ -89,12 +89,14 @@
                             <v-select label="Language" v-model="language" :items="listLanguages" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                     </div>
-                    <div v-if="user.isPro" class="mb-8 mt-n2 text-center text-md-left">
+                    <div v-if="user.isPro" class="mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
                             <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
                             Need help choosing a weather provider?
                         </n-link>
                     </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-n1">
                         <h3 class="mb-2">FTP auto update{{ user.isPro ? "" : " (PRO only)" }}</h3>
                         <div class="body-2">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
@@ -106,6 +108,8 @@
                             What's my estimated FTP?
                         </v-btn>
                     </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Delayed processing</h3>
                         <div class="body-2">
@@ -113,17 +117,10 @@
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
-                        <v-alert color="accent" class="body-2" v-if="user.isPro && user.garmin" dense>Delayed processing is recommended if you're having issues Garmin automation conditions.</v-alert>
+                        <v-alert color="accent" class="body-2" v-if="user.isPro && (user.garmin || user.wahoo)" dense>Delayed processing is recommended if you're having issues with Garmin or Wahoo automation conditions.</v-alert>
                     </div>
-                    <div class="mt-4">
-                        <h3 class="mb-2">GearWear delay</h3>
-                        <div class="body-2">GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can change that delay, if you want.</div>
-                        <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
-                            <v-radio label="1 day (yesterday)" :value="1"></v-radio>
-                            <v-radio label="2 days" :value="2"></v-radio>
-                            <v-radio label="3 days" :value="3"></v-radio>
-                        </v-radio-group>
-                    </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Yearly counter reset</h3>
                         <div class="body-2">Do you want to have your automation counters automatically reset every year?</div>
@@ -140,16 +137,14 @@
                         </v-row>
                     </div>
 
-                    <div class="mt-4" v-if="linksOn > 0">
-                        <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
-                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
-                    </div>
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Omit tag suffixes</h3>
                         <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
                         <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit'"></v-switch>
                     </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Privacy mode</h3>
                         <div class="body-2">
@@ -165,6 +160,21 @@
                             @mouseup.stop="confirmPrivacyDialog"
                         ></v-switch>
                     </div>
+
+                    <v-divider class="mt-6 mb-4" />
+                    <div class="mt-4">
+                        <h3 class="mb-2">GearWear preferences</h3>
+                        <div class="body-2">GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can change that delay, if you want.</div>
+                        <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
+                            <v-radio label="1 day (yesterday)" :value="1"></v-radio>
+                            <v-radio label="2 days" :value="2"></v-radio>
+                            <v-radio label="3 days" :value="3"></v-radio>
+                        </v-radio-group>
+                        <div class="body-2">Do you want to receive an email or notification when GearWear detects a sensor with a low battery?</div>
+                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I do not want these notifications'"></v-switch>
+                    </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
                         <div class="body-2">
@@ -180,6 +190,14 @@
                             </v-radio-group>
                         </div>
                     </div>
+
+                    <div class="mt-4" v-if="linksOn > 0">
+                        <h3 class="mb-2">Hashtag preference</h3>
+                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
+                        <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
+                    </div>
+
+                    <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
                         <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights (beta).</div>
@@ -191,7 +209,7 @@
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
                         </v-radio-group>
-                        <div class="body-2 mb-4">You can also enhance the generated content by setting a custom prompt, that will be appended to the default prompt.</div>
+                        <div class="body-2 mb-4">You can enhance the generated content by setting a custom prompt, that will be appended to the default prompt.</div>
                         <v-text-field
                             v-model="aiPrompt"
                             maxlength="100"
@@ -456,6 +474,7 @@ export default {
         const linksOn = preferences.linksOn || defaultLinksOn
         const delayedProcessing = preferences.delayedProcessing || false
         const gearwearDelayDays = preferences.gearwearDelayDays || 2
+        const gearwearBatteryAlert = preferences.gearwearBatteryAlert || false
         const hashtag = preferences.activityHashtag || false
         const privacyMode = preferences.privacyMode || false
         const noSuffixes = preferences.noSuffixes || false
@@ -510,6 +529,7 @@ export default {
             linksOn: linksOn || defaultLinksOn,
             delayedProcessing: delayedProcessing,
             gearwearDelayDays: gearwearDelayDays,
+            gearwearBatteryAlert: gearwearBatteryAlert,
             activityHashtag: hashtag,
             noSuffixes: noSuffixes,
             privacyMode: privacyMode,
@@ -767,6 +787,7 @@ export default {
                     linksOn: this.linksOn,
                     delayedProcessing: this.delayedProcessing,
                     gearwearDelayDays: this.gearwearDelayDays,
+                    gearwearBatteryAlert: this.gearwearBatteryAlert,
                     activityHashtag: this.activityHashtag,
                     noSuffixes: this.noSuffixes,
                     privacyMode: this.privacyMode,
