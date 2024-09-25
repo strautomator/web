@@ -156,7 +156,14 @@
                             Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
                             <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
-                        <v-switch class="mt-2" title="Privacy mode" v-model="privacyMode" :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'" @change="confirmPrivacyDialog"></v-switch>
+                        <v-switch
+                            class="mt-2"
+                            title="Privacy mode"
+                            v-model="privacyMode"
+                            :label="privacyMode ? 'Yes, enable the privacy mode' : 'No, I want all the features'"
+                            @mousedown.stop="confirmPrivacyDialog"
+                            @mouseup.stop="confirmPrivacyDialog"
+                        ></v-switch>
                     </div>
                     <div class="mt-4">
                         <h3 class="mb-2">Linkback preference</h3>
@@ -398,9 +405,10 @@
                 </v-toolbar>
                 <v-card-text>
                     <p class="mt-4">
-                        If you enable the privacy mode, some of your profile data will be anonymized, your personal records won't be tracked, and most of your processed activities metadata will be discarded. AI integrations will also be disabled.
+                        If you enable the privacy mode, some of your profile data will be anonymized, your personal records won't be tracked, most of your processed activities metadata will be discarded, AI features will be disabled, and your devices
+                        and sensor batteries won't be tracked.
                     </p>
-                    <p>This action is irreversible! If you enable the Privacy Mode and then disable it again, the data previously discarded cannot be recovered.</p>
+                    <p>This action is irreversible! If you enable the Privacy Mode and then disable it after some days, the data previously discarded cannot be recovered.</p>
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
@@ -490,13 +498,13 @@ export default {
             emailDialog: false,
             emailSaved: false,
             emailConfirmed: false,
-            garminDialog: this.$route.query.garmin == "link",
+            garminDialog: this.$route.query.garmin == "link" && !user.garmin,
             garminLinked: this.$route.query.garmin == "linked",
             garminUnlinked: this.$route.query.garmin == "unlinked",
-            wahooDialog: this.$route.query.wahoo == "link",
+            wahooDialog: this.$route.query.wahoo == "link" && !user.wahoo,
             wahooLinked: this.$route.query.wahoo == "linked",
             wahooUnlinked: this.$route.query.wahoo == "unlinked",
-            spotifyDialog: this.$route.query.spotify == "link",
+            spotifyDialog: this.$route.query.spotify == "link" && !user.spotify,
             spotifyLinked: this.$route.query.spotify == "linked",
             spotifyUnlinked: this.$route.query.spotify == "unlinked",
             linksOn: linksOn || defaultLinksOn,
@@ -699,7 +707,10 @@ export default {
             }
         },
         confirmPrivacyDialog() {
-            this.privacyDialog = this.privacyMode
+            if (!this.privacyMode) {
+                this.privacyDialog = true
+                return false
+            }
         },
         cancelPrivacyDialog() {
             this.privacyDialog = false
