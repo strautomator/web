@@ -13,6 +13,7 @@
                     <li><n-link to="/feature/ftp" nuxt>Auto-update your FTP</n-link></li>
                     <li><n-link to="/feature/mapstyles" nuxt>Set a default map style for activities</n-link></li>
                     <li><n-link to="/feature/gearwear" nuxt>Track your equipment mileage</n-link></li>
+                    <li><n-link to="/feature/battery-tracker" nuxt>Track your sensor batteries</n-link></li>
                     <li><n-link to="/feature/calendar" nuxt>Export your Strava calendar</n-link></li>
                     <li><n-link to="/feature/upcoming-events-map" nuxt>View your upcoming events map</n-link></li>
                     <li><n-link to="/feature/records" nuxt>Track your personal records</n-link></li>
