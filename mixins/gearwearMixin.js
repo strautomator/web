@@ -24,6 +24,12 @@ export default {
             if (name.includes("oil") || name.includes("wax")) return "mdi-oil"
             if (name.includes("shoe")) return "mdi-shoe-sneaker"
             return "mdi-wrench-cog"
+        },
+        getDeviceName(id) {
+            return id
+                .split(".")
+                .map((v) => v.charAt(0).toUpperCase() + v.slice(1))
+                .join(" ")
         }
     }
 }
