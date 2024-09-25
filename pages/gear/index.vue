@@ -33,6 +33,34 @@
                         <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
                     </div>
 
+                    <div v-if="batteryTracker">
+                        <v-card class="mb-5" outlined>
+                            <v-hover v-slot:default="{hover}">
+                                <v-card-title class="accent">
+                                    <v-icon class="ml-n1 mr-2">mdi-battery-charging-medium</v-icon>
+                                    <span>Device batteries</span>
+                                </v-card-title>
+                            </v-hover>
+                            <v-card-text class="pa-0 white--text">
+                                <v-simple-table class="mt-2">
+                                    <tbody>
+                                        <tr v-for="device in batteryTracker.devices" :key="device.id">
+                                            <td class="pr-0">
+                                                {{ getDeviceName(device.id) }}
+                                            </td>
+                                            <td class="text-right">
+                                                <v-chip class="text-uppercase" :color="device.status == 'low' ? 'error' : device.status == 'critical' ? 'removal' : 'success'" small>{{
+                                                    $breakpoint.mdAndUp ? `Battery ${device.status}` : device.status
+                                                }}</v-chip>
+                                            </td>
+                                            <td width="1" class="nowrap pl-0 text-right">{{ $dayjs(device.dateUpdated).format($breakpoint.mdAndUp ? "lll" : "ll") }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-card-text>
+                        </v-card>
+                    </div>
+
                     <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" outlined>
                         <v-card-title>
                             <span>{{ gearWithConfig.length > 0 ? "Gear with no configuration" : "Your Strava gear" }}</span>
@@ -63,6 +91,19 @@
                             </div>
                         </v-card-text>
                     </v-card>
+                    <v-alert class="mt-5 text-center text-md-left" v-if="!batteryTracker && !user.preferences.privacyMode">
+                        <div class="mt-2 mt-md-0" v-if="user.isPro">
+                            Want to keep track of your connected sensor batteries as well?
+                            <br />
+                            Simply link your <n-link to="/account?garmin=link" title="Link your Garmin account" nuxt>Garmin</n-link> or <n-link to="/account?wahoo=link" title="Link your Wahoo account" nuxt>Wahoo</n-link>
+                            accounts, and you'll see a list of all your device sensors here.
+                        </div>
+                        <div class="mt-2 mt-md-0" v-else>
+                            Want to keep track of your sensor batteries as well?
+                            <br />
+                            <n-link to="/activities/sync" title="Manual automation trigger" nuxt>Get a PRO subscription</n-link> and link your Garmin or Wahoo accounts.
+                        </div>
+                    </v-alert>
                     <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
                         Please note that the gear tracking happens with a {{ delayDays == 1 ? `1 day` : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities. You can change the delay on
                         your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
@@ -149,6 +190,7 @@ export default {
             gearWithConfig: [],
             gearWithoutConfig: [],
             gearwearConfigs: {},
+            batteryTracker: null,
             trackingDay: now.add(delayDays, "days").format("ddd Do")
         }
     },
@@ -166,13 +208,13 @@ export default {
             const queryRefresh = this.$route.query && this.$route.query.refresh ? "?refresh=1" : ""
 
             // Get GearWear configurations, and populate the gearwearConfigs list.
-            const list = await this.$axios.$get(`/api/gearwear/${this.user.id}${queryRefresh}`)
-            for (let config of list) {
+            const result = await this.$axios.$get(`/api/gearwear/${this.user.id}${queryRefresh}`)
+            for (let config of result.configs) {
                 gearwearConfigs[config.id] = config
             }
 
             this.gearwearConfigs = gearwearConfigs
-            this.$store.commit("setGearWear", list)
+            this.$store.commit("setGearWear", result.configs)
 
             // Get list of bikes and shoes with and without GearWear configuration.
             const bikes = this.$store.state.user.profile.bikes || []
@@ -183,6 +225,11 @@ export default {
             this.gearWithConfig = gearWithConfig
             this.gearWithoutConfig = gearWithoutConfig
             this.hasManyBikes = bikes.length > 1
+
+            // Battery tracker.
+            if (result.batteryTracker) {
+                this.batteryTracker = result.batteryTracker
+            }
         } catch (ex) {
             this.$webError(this, "Gear.fetch", ex)
         }

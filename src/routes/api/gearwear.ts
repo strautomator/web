@@ -21,7 +21,17 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
+        const result: any = {}
         const gearwearConfigs = await gearwear.getByUser(user)
+        result.configs = gearwearConfigs
+
+        // Also get battery tracker for PRO users.
+        if (user.isPro) {
+            const batteryTracker = await gearwear.getBatteryTracker(user)
+            if (batteryTracker) {
+                result.batteryTracker = batteryTracker
+            }
+        }
 
         // If a refresh query was passed, trigger an async call to
         // refresh gear details from Strava.
@@ -29,7 +39,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
             gearwear.refreshGearDetails(user)
         }
 
-        webserver.renderJson(req, res, gearwearConfigs)
+        webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }
