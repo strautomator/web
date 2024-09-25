@@ -77,7 +77,7 @@ router.post("/:userId/match-activity/:stravaId", async (req: express.Request, re
         }
 
         // Fetch processed Garmin activity (if there's one).
-        const garminActivity = await fitparser.getMatchingActivity(user, "garmin", activity)
+        const garminActivity = await fitparser.getMatchingActivity(user, activity, "garmin")
         if (!garminActivity) {
             webserver.renderJson(req, res, {notFound: true})
         } else {

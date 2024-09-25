@@ -131,7 +131,7 @@ router.get("/:userId/processed-activities", async (req: express.Request, res: ex
         // If user has a Garmin or Wahoo account linked, append the related FIT file activities as well.
         if (user.garmin) {
             for (let a of activities) {
-                const garminActivity = await fitparser.getMatchingActivity(user, "garmin", a)
+                const garminActivity = await fitparser.getMatchingActivity(user, a, "garmin")
                 if (garminActivity) {
                     a.garminActivity = garminActivity
                 }
@@ -139,7 +139,7 @@ router.get("/:userId/processed-activities", async (req: express.Request, res: ex
         }
         if (user.wahoo) {
             for (let a of activities) {
-                const wahooActivity = await fitparser.getMatchingActivity(user, "wahoo", a)
+                const wahooActivity = await fitparser.getMatchingActivity(user, a, "wahoo")
                 if (wahooActivity) {
                     a.wahooActivity = wahooActivity
                 }
