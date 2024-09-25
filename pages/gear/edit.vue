@@ -67,7 +67,7 @@
                                                 <v-icon left>mdi-minus-circle-outline</v-icon>
                                                 Delete
                                             </v-btn>
-                                            <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" small rounded>
+                                            <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" outlined small rounded>
                                                 <v-icon left>mdi-refresh</v-icon>
                                                 Reset
                                             </v-btn>
@@ -91,12 +91,24 @@
                 </div>
             </div>
 
-            <v-btn class="mt-1 mb-4" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" rounded>
+            <v-btn class="mt-1 mb-4" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" small rounded>
                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                Add new component
+                Add component
             </v-btn>
 
-            <v-alert class="caption" dense>Please note that changes made to the components above will only be applied once you save the Gear configuration.</v-alert>
+            <div class="text-center text-md-left mt-3 mb-8">
+                <v-btn color="primary" title="Save this configuration" :disabled="!isConfigValid() || overMaxGearWear" @click="saveConfig" rounded>
+                    <v-icon left>mdi-content-save</v-icon>
+                    Save configuration
+                </v-btn>
+                <br v-if="!$breakpoint.mdAndUp" />
+                <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!isConfigValid()" @click.stop="showDeleteGearWearDialog" rounded outlined>
+                    <v-icon left>mdi-delete</v-icon>
+                    Delete configuration
+                </v-btn>
+            </div>
+
+            <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
 
             <v-card class="mt-4" v-if="gearwearHistory?.length > 0" outlined>
                 <v-card-title class="accent">
@@ -121,20 +133,6 @@
                     </v-simple-table>
                 </v-card-text>
             </v-card>
-
-            <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
-
-            <div class="text-center text-md-left mt-5">
-                <v-btn color="primary" title="Save this configuration" :disabled="!isConfigValid() || overMaxGearWear" @click="saveConfig" rounded>
-                    <v-icon left>mdi-content-save</v-icon>
-                    Save configuration
-                </v-btn>
-                <br v-if="!$breakpoint.mdAndUp" />
-                <v-btn color="removal" title="Delete this configuration" class="mt-4 mt-md-0 ml-md-2" v-if="!isNew" :disabled="!isConfigValid()" @click.stop="showDeleteGearWearDialog" rounded outlined>
-                    <v-icon left>mdi-delete</v-icon>
-                    Delete configuration
-                </v-btn>
-            </div>
 
             <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
