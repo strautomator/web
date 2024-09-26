@@ -6,110 +6,44 @@
                 <v-card-text class="pa-0">
                     <div class="pa-4">
                         Here you can download a ZIP file with all the data that Strautomator holds about you.
-                        <div v-if="user && user.dateLastArchiveGenerated">
-                            You can generate a new archive every {{ this.$store.state.archiveDownloadDays }} days. The existing archive was generated on {{ $dayjs(user.dateLastArchiveGenerated).format("ll") }}.
-                        </div>
+                        <div v-if="user && user.dateLastArchiveGenerated">You can generate a new archive every {{ this.$store.state.archiveDownloadDays }} days. One was last generated on {{ $dayjs(user.dateLastArchiveGenerated).format("ll") }}.</div>
                     </div>
                     <h3 class="pl-4 pb-2">What's included?</h3>
-                    <v-simple-table>
-                        <thead class="accent">
-                            <tr>
-                                <th v-if="$breakpoint.mdAndUp">File</th>
-                                <th>Data</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">activities.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Processed activities</li>
-                                        <li>Activities queued for processing</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">athlete-records.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Personal activity records</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">garmin.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Processed FIT summaries from Garmin</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">gearwear.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Gear configurations</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">notifications.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Notifications</li>
-                                        <li>Announcements</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">recipe-stats.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Automation statistics</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">subscriptions.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>PRO subscription details</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">users.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Strava profile</li>
-                                        <li>Account details</li>
-                                        <li>Automation configurations</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">wahoo.json</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Processed FIT summaries from Wahoo</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="nowrap" width="1" v-if="$breakpoint.mdAndUp">*.ics</td>
-                                <td class="pt-2 pb-2">
-                                    <ul class="pl-4">
-                                        <li>Cached exported calendars</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
-                    <v-divider></v-divider>
+                    <ul class="pl-8">
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">Activities</li>
+                        <li>Processed activities</li>
+                        <li>Activities queued for processing</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">FitActivities</li>
+                        <li>Processed FIT summaries from Garmin</li>
+                        <li>Processed FIT summaries from Wahoo</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">Automations</li>
+                        <li>Automation statistics</li>
+                        <li>Shared automations</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">AthleteRecords</li>
+                        <li>Personal activity records</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">Calendars</li>
+                        <li>Calendar configurations</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">GearWear</li>
+                        <li>GearWear configurations</li>
+                        <li>Battery tracker</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">Notifications</li>
+                        <li>Read and unread notifications</li>
+                        <li>Read announcements</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">Subscription</li>
+                        <li>PRO subscription details</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">User</li>
+                        <li>Account details and preferences</li>
+                        <li>Strava profile</li>
+                        <li>Automation configurations</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="!$breakpoint.mdAndUp">*.ics</li>
+                        <li>Cached exported calendars</li>
+                    </ul>
+
+                    <v-divider class="mt-6"></v-divider>
 
                     <div class="pa-4">
-                        Some of the files above might be missing, depending on which features you're using on the website. The download does <span class="font-weight-bold">not</span> include your account tokens, credentials, short-lived cache and
-                        access logs.
+                        Some of the data indicated above might be missing, depending on which features you're using. The download does <span class="font-weight-bold">not</span> include your account tokens, credentials, short-lived cache and access
+                        logs.
                     </div>
 
                     <div class="pa-3 text-center text-md-left">
