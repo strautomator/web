@@ -170,13 +170,13 @@
                             <v-radio label="2 days" :value="2"></v-radio>
                             <v-radio label="3 days" :value="3"></v-radio>
                         </v-radio-group>
-                        <div class="body-2">Do you want to receive an email or notification when GearWear detects a sensor with a low battery?</div>
-                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I do not want these notifications'"></v-switch>
+                        <div class="body-2">Do you want to receive an email or notification when GearWear detects a sensor with a low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
+                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I do not want these notifications'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
-                        <h3 class="mb-2">Linkback preference</h3>
+                        <h3 class="mb-2">Linkback preferences</h3>
                         <div class="body-2">
                             <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
                             <span v-else-if="linksOn > 0">A linkback {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
@@ -199,7 +199,7 @@
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
-                        <h3 class="mb-2">AI preferences {{ user.isPro ? "" : "(PRO only)" }}</h3>
+                        <h3 class="mb-2">AI preferences{{ user.isPro ? "" : " (PRO only)" }}</h3>
                         <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights (beta).</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
@@ -242,11 +242,11 @@
                     <v-icon left>mdi-bell</v-icon>
                     My notifications
                 </v-btn>
-                <v-btn color="primary" class="mt-2 mt-md-0 mr-md-2" title="Download my data" to="/account/download" small outlined rounded nuxt>
+                <v-btn color="primary" class="mt-3 mt-md-0 mr-md-2" title="Download my data" to="/account/download" small outlined rounded nuxt>
                     <v-icon left>mdi-archive-arrow-down</v-icon>
                     Download my data
                 </v-btn>
-                <v-btn color="removal" class="mt-2 mt-md-0" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
+                <v-btn color="removal" class="mt-3 mt-md-0" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
                     <v-icon left>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>

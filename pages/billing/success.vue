@@ -9,7 +9,10 @@
                 </v-card-text>
             </v-card>
             <div class="mt-8 text-center">
-                <v-btn color="primary" to="/account" title="Back to my account" rounded nuxt>Back to my account</v-btn>
+                <v-btn color="primary" to="/account" title="Back to my account" exact rounded nuxt>
+                    <v-icon left>mdi-arrow-left</v-icon>
+                    Back to My Account
+                </v-btn>
             </div>
         </v-container>
     </v-layout>

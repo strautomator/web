@@ -59,7 +59,7 @@
                     </v-alert>
                 </template>
                 <div class="text-center text-md-left">
-                    <v-btn class="mr-2" color="primary" title="Back to my automations" to="/automations" nuxt small rounded>
+                    <v-btn class="mr-2" color="primary" title="Back to my automations" to="/automations" exact nuxt outlined small rounded>
                         <v-icon left>mdi-arrow-left</v-icon>
                         Back to My Automations
                     </v-btn>
@@ -86,10 +86,12 @@
                     </v-card-text>
                 </v-card>
                 <v-alert class="mt-6 text-center text-md-left">To share more automations, use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation card.</v-alert>
-                <v-btn class="mr-2" color="primary" title="Back to my automations" to="/automations" nuxt small rounded>
-                    <v-icon left>mdi-arrow-left</v-icon>
-                    Back to My Automations
-                </v-btn>
+                <div class="mt-4 text-center text-md-left">
+                    <v-btn color="primary" title="Back to my automations" to="/automations" exact nuxt outlined small rounded>
+                        <v-icon left>mdi-arrow-left</v-icon>
+                        Back to My Automations
+                    </v-btn>
+                </div>
             </div>
 
             <v-dialog v-if="deletingRecipe" v-model="deleteDialog" width="440" overlay-opacity="0.95">

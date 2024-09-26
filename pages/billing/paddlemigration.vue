@@ -9,9 +9,9 @@
                         <h3 class="mb-2">You don't have an active PRO subscription.</h3>
                         <div>The migration from PayPal to Paddle.com is available for current subscribers only.</div>
                         <div class="mt-4 text-center text-md-left">
-                            <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
+                            <v-btn color="primary" to="/account" title="Back to my account" exact outlined rounded small nuxt>
                                 <v-icon left>mdi-arrow-left</v-icon>
-                                Back to my account
+                                Back to My Account
                             </v-btn>
                         </div>
                     </v-card-text>
@@ -25,9 +25,9 @@
                 </template>
                 <template v-else-if="subscription?.source != 'paypal'">
                     <p>Your current PRO subscription was not paid via PayPal, so you don't need to migrate.</p>
-                    <v-btn color="primary" to="/account" title="Back to my account" small rounded outlined nuxt>
+                    <v-btn color="primary" to="/account" title="Back to my account" exact small rounded outlined nuxt>
                         <v-icon left>mdi-arrow-left</v-icon>
-                        Back to my account
+                        Back to My Account
                     </v-btn>
                 </template>
 
@@ -39,9 +39,9 @@
 
                     <p v-if="errorMessage">{{ errorMessage }}</p>
                     <div class="mt-4 text-center text-md-left">
-                        <v-btn color="primary" to="/account" title="Back to my account" small rounded outlined nuxt>
+                        <v-btn color="primary" to="/account" title="Back to my account" exact small rounded outlined nuxt>
                             <v-icon left>mdi-arrow-left</v-icon>
-                            Back to my account
+                            Back to My Account
                         </v-btn>
                     </div>
                 </div>

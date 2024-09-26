@@ -8,7 +8,7 @@
                 <v-card-text class="pt-2">The gear ID "{{ gearId }}" could not be found on your profile. It was probably deleted from your Strava account, and if that's the case, it will also be deleted from Strautomator soon.</v-card-text>
             </v-card>
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="primary" to="/gear" nuxt rounded>
+                <v-btn color="primary" to="/gear" exact nuxt rounded>
                     <v-icon left>mdi-arrow-left</v-icon>
                     Back to My Gear
                 </v-btn>

@@ -5,7 +5,7 @@
             <h1 v-else>{{ user.isPro ? "My PRO subscription" : "Get PRO" }}</h1>
             <p>Hi {{ user.profile.firstName }}!</p>
 
-            <div v-if="unsubscribed">
+            <template v-if="unsubscribed">
                 <v-card outlined>
                     <v-card-text>
                         <h3 class="mb-2">Your account will switch from PRO back to Free soon!</h3>
@@ -13,17 +13,17 @@
                             {{ unsubMessage }}
                         </div>
                         <div>Thanks for your support, and remember that you can always resubscribe if you wish to have all the bells and whistles again.</div>
-                        <div class="mt-4">
-                            <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
-                                <v-icon left>mdi-arrow-left</v-icon>
-                                Back to my account
-                            </v-btn>
-                        </div>
                     </v-card-text>
                 </v-card>
-            </div>
+                <div class="mt-4 text-center text-md-left">
+                    <v-btn color="primary" to="/account" title="Back to my account" exact outlined rounded small nuxt>
+                        <v-icon left>mdi-arrow-left</v-icon>
+                        Back to My Account
+                    </v-btn>
+                </div>
+            </template>
 
-            <div v-else-if="user.isPro">
+            <template v-else-if="user.isPro">
                 <template v-if="loading">
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                     <span class="ml-4">Fetching subscription details...</span>
@@ -63,14 +63,14 @@
                             <br v-if="$breakpoint.mdAndUp" />
                             Don't worry, your PRO account is safe and the issue should magically disappear in a few days.
                         </template>
-                        <div class="mt-8 text-center text-md-left">
-                            <v-btn color="primary" to="/account" title="Back to my account" outlined rounded small nuxt>
-                                <v-icon left>mdi-arrow-left</v-icon>
-                                Back to my account
-                            </v-btn>
-                        </div>
                     </v-card-text>
                 </v-card>
+                <div class="mt-4 text-center text-md-left">
+                    <v-btn color="primary" to="/account" title="Back to my account" exact outlined rounded small nuxt>
+                        <v-icon left>mdi-arrow-left</v-icon>
+                        Back to My Account
+                    </v-btn>
+                </div>
 
                 <v-dialog v-model="unsubDialog" width="440" overlay-opacity="0.95">
                     <v-card>
@@ -103,9 +103,9 @@
                         </v-card-text>
                     </v-card>
                 </v-dialog>
-            </div>
+            </template>
 
-            <div v-else>
+            <template v-else>
                 <p class="mt-4 mb-6">Our payment processor (Paddle.com) supports all major credit cards, as well as PayPal, Google Pay and Apple Pay.</p>
 
                 <v-card class="mb-6" outlined>
@@ -142,7 +142,7 @@
                 </v-card>
 
                 <free-pro-table />
-            </div>
+            </template>
         </v-container>
     </v-layout>
 </template>
