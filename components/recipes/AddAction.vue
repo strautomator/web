@@ -168,13 +168,14 @@ export default {
 
             // GearWear components.
             const gearComponents = []
-            for (let g of this.$store.state.gearwear) {
-                g.components.forEach((c) => gearComponents.push({id: `${g.id}: ${c.name}`, name: `${g.name} - ${c.name}`}))
+            for (let g of Object.values(this.$store.state.gearwear)) {
+                g.components?.forEach((c) => gearComponents.push({id: `${g.id}: ${c.name}`, name: `${g.name} - ${c.name}`}))
             }
             if (gearComponents.length == 0) {
                 _.find(recipeActions, {value: "enableGearComponent"}).disabled = true
                 _.find(recipeActions, {value: "disableGearComponent"}).disabled = true
             }
+
             // Activity / sport, workout types, map styles and AI humours.
             const sportTypes = this.$store.state.sportTypes.map((st) => {
                 return {value: st, text: this.getSportName(st)}
@@ -268,8 +269,8 @@ export default {
                 generateDescription.disabled = true
                 generateDescription.text += proText
                 const generateInsights = _.find(recipeActions, {value: "generateInsights"})
-                generateDescription.disabled = true
-                generateDescription.text += proText
+                generateInsights.disabled = true
+                generateInsights.text += proText
             }
 
             this.recipeActions = recipeActions
