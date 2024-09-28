@@ -162,7 +162,7 @@ export default {
 
                 const body = {activity: this.activity, humour: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
                 const timestamp = Math.round(new Date().valueOf() / 1000)
-                const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-ai-generate`, body)
+                const result = await this.$axios.$post(`/api/strava/${this.user.id}/activity-generate`, body)
 
                 this.activityName = result.name.response
                 this.activityDescription = result.description.response
