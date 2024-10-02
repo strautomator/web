@@ -49,21 +49,4 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
     }
 })
 
-/**
- * Trigger the export of a new dataset of activities for the specified user and sport.
- */
-router.post("/:userId/dataset/:sport", async (req: express.Request, res: express.Response) => {
-    try {
-        const user: UserData = (await auth.requestValidator(req, res)) as UserData
-        if (!user) return
-        if (!["ride", "run"].includes(req.params?.sport)) throw new Error("Invalid sport type")
-
-        ai.generateDatasetCsv(user, req.body.sport)
-
-        webserver.renderJson(req, res, {ok: true})
-    } catch (ex) {
-        webserver.renderError(req, res, ex, 400)
-    }
-})
-
 export = router
