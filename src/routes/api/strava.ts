@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {ai, database, events, fitparser, maps, strava, users, weather, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {database, events, fitparser, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
