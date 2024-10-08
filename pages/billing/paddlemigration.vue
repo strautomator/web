@@ -51,8 +51,8 @@
                     <h4 class="mb-1 text-md-h6">Why is Strautomator switching to Paddle?</h4>
                     <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, taking care of all billing and payment related tasks.</p>
 
-                    <h4 class="mb-1 text-md-h6">What happens if I don't migrate?</h4>
-                    <p>Existing PayPal subscriptions will still be billed and valid up until Tuesday, December 31st, 2025. After that date, all existing PayPal subscriptions will be cancelled, and affected accounts will be switched back to Free.</p>
+                    <h4 class="mb-1 text-md-h6">Do I need to migrate?</h4>
+                    <p>No. The migration from PayPal to Paddle is recommended, but not enforced.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>
