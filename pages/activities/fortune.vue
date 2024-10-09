@@ -2,14 +2,14 @@
     <v-layout column>
         <v-container fluid>
             <h1>Activity fortune</h1>
-            <template v-if="!user || (user.preferences && user.preferences.privacyMode)">
+            <template v-if="!user || user.preferences?.privacyMode">
                 <div>
-                    The AI features are disabled when Privacy Mode is enabled. If you wish to test our integration with ChatGPT or Gemini, please disable the Privacy Mode on your
+                    The AI features are disabled when Privacy Mode is enabled. If you wish to test it, please disable the Privacy Mode on your
                     <n-link to="/account" title="My Account" nuxt>account preferences</n-link>.
                 </div>
             </template>
             <template v-else>
-                <div>Try out Strautomator's generated activity names, powered by ChatGPT and Gemini!</div>
+                <div>Try out Strautomator's generated activity names, powered by AI!</div>
                 <v-card class="mt-6" outlined>
                     <v-card-text class="pb-2 pb-md-0">
                         <v-container class="ma-0 pa-0" fluid>
@@ -18,20 +18,20 @@
                                     <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                    <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" :disabled="loading" dense outlined rounded return-object></v-select>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Provider" v-model="selectedAiProvider" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiProviders" dense outlined rounded return-object></v-select>
+                                    <v-select label="Provider" v-model="selectedAiProvider" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiProviders" :disabled="loading" dense outlined rounded return-object></v-select>
                                 </v-col>
                                 <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
-                                    <v-btn color="primary" class="mt-n4 mt-md-0" @click="getActivity()" :loading="loading" rounded>
+                                    <v-btn color="primary" class="mt-n4 mt-md-0" @click="getActivity()" :disabled="loading" rounded>
                                         <v-icon left>mdi-lightbulb</v-icon>
                                         Try it!
                                     </v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <div v-if="activity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above, or leave blank to pick a recently processed activity.</div>
+                        <div v-if="activity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above, or leave blank to pick a random recent activity.</div>
 
                         <v-alert class="mt-4 mt-md-0" border="top" color="error" v-else-if="syncError">
                             {{ syncError }}
