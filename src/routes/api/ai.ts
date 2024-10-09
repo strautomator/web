@@ -1,12 +1,14 @@
 // Strautomator API: AI
 
-import {ai, weather, UserData} from "strautomator-core"
+import {ai, strava, users, weather, UserData} from "strautomator-core"
+import {AxiosRequestConfig} from "axios"
 import auth from "../auth"
 import _ from "lodash"
 import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
+const axios = require("axios").default
 
 // AI
 // --------------------------------------------------------------------------
@@ -46,6 +48,44 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         webserver.renderJson(req, res, {name, description})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Get an AI generated image for the specified activity.
+ */
+router.get("/:userId/:urlToken/activity/:activityId.png", async (req: express.Request, res: express.Response) => {
+    try {
+        const user = await users.getById(req.params.userId)
+        if (user.urlToken != req.params.urlToken) throw new Error(`Image not found`)
+
+        // Generate the image.
+        const provider = (req.query.provider as any) || null
+        const style = (req.query.style as any) || null
+        const activity = await strava.activities.getActivity(user, req.params.activityId)
+        const activityWeather = await weather.getActivityWeather(user, activity, true)
+        const aiResponse = await ai.generateActivityImage(user, {activity, activityWeather, provider: provider, style: style})
+
+        if (aiResponse?.response) {
+            if (_.isString(aiResponse.response)) {
+                const options: AxiosRequestConfig = {
+                    method: "GET",
+                    responseType: "stream",
+                    url: aiResponse.response
+                }
+
+                axios(options).then((response) => response.data.pipe(res))
+            } else {
+                res.contentType("image/png")
+                res.send(aiResponse.response)
+            }
+        } else if (aiResponse?.rateLimited) {
+            res.status(429).send("Daily limit reached")
+        } else {
+            res.status(404).send("Failed to generate image")
+        }
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 404)
     }
 })
 
