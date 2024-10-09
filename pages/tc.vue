@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">Policy effective as of September 20th, 2024</h4>
+                        <h4 class="mt-2 mb-6">Policy effective as of October 10th, 2024</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>
                             Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the Strautomator website (the "Service"), available at https://strautomator.com, and operated by Igor Ramadas ("us", "we", or "our").
@@ -144,13 +144,6 @@
                             refund for that last payment alone.
                         </p>
                         <p>All refunds are processed by our Merchant of Record, Paddle.com.</p>
-
-                        <h3 class="mt-4 mb-2">Migration from PayPal to Paddle.com</h3>
-                        <p>
-                            Subscriptions made directly via PayPal, prior to September 14th, 2024, will continue to be billed up until December 31st, 2025. Affected users will be notified via email, and have the opportunity to resubscribe via
-                            Paddle.com at the current subscription price. Some users might be eligible for a discount code. From January 1st, 2026, existing PRO subscriptions billed directly via PayPal will be cancelled, and users who have not
-                            resubscribed via Paddle.com will have their PRO account reverted to a Free account.
-                        </p>
 
                         <h2 class="mt-6 mb-4">Limitation of liability</h2>
                         <p>
