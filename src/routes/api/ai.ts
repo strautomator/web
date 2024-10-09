@@ -8,6 +8,7 @@ import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
+const settings = require("setmeup").settings
 const axios = require("axios").default
 
 // AI
@@ -48,6 +49,22 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         webserver.renderJson(req, res, {name, description})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Check if the user has reached the quota for generating images.
+ */
+router.get("/:userId/image-quota", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const max = user.isPro ? settings.plans.pro.generatedImages.perWeek : settings.plans.free.generatedImages.perWeek
+        const count = (await ai.getCachedResponses(user, "image", true)) as number
+        webserver.renderJson(req, res, {quota: max - count})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 404)
     }
 })
 
