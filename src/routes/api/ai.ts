@@ -88,7 +88,7 @@ router.get("/:userId/:urlToken/activity/:activityId.png", async (req: express.Re
                 const options: AxiosRequestConfig = {
                     method: "GET",
                     responseType: "stream",
-                    url: aiResponse.response
+                    url: aiResponse.response as string
                 }
 
                 axios(options).then((response) => response.data.pipe(res))
