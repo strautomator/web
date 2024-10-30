@@ -566,7 +566,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         } else if (!user.stravaTokens || (!user.stravaTokens.accessToken && !user.stravaTokens.refreshToken)) {
             return webserver.renderError(req, res, "User has no access tokens", 400)
         } else if (user.suspended) {
-            return webserver.renderError(req, res, "User is suspended", 400)
+            return webserver.renderJson(req, res, {message: "User is suspended"})
         }
 
         const now = dayjs.utc().toDate()
