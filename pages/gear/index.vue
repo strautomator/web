@@ -45,18 +45,22 @@
                                 <v-simple-table class="mt-2">
                                     <tbody>
                                         <tr v-for="device in batteryTracker.devices" :key="device.id">
-                                            <td class="pr-0">
-                                                {{ getDeviceName(device.id) }}
+                                            <td class="pr-0 pl-4">
+                                                <v-hover v-slot:default="{hover}">
+                                                    <a title="Rename this device" @click="showFitDeviceNameDialog(device.id)" small rounded text>
+                                                        {{ getFitDeviceName(device.id) || getDeviceIdName(device.id) }}
+                                                        <v-icon class="ml-1" v-show="hover" small>mdi-pencil-outline</v-icon>
+                                                    </a>
+                                                </v-hover>
                                             </td>
                                             <td class="text-right">
-                                                <v-chip class="text-uppercase" :color="device.status == 'low' ? 'error' : device.status == 'critical' ? 'removal' : 'success'" small>{{
-                                                    $breakpoint.mdAndUp ? `Battery ${device.status}` : device.status
-                                                }}</v-chip>
+                                                <v-chip class="text-uppercase" :color="device.status == 'low' ? 'error' : device.status == 'critical' ? 'removal' : 'success'" small>{{ device.status }}</v-chip>
                                             </td>
                                             <td width="1" class="nowrap pl-0 text-right">{{ $dayjs(device.dateUpdated).format($breakpoint.mdAndUp ? "lll" : "ll") }}</td>
                                         </tr>
                                     </tbody>
                                 </v-simple-table>
+                                <fit-device-name-dialog :device-id="fitDeviceId" :device-name="fitDeviceName" :show-dialog="fitDeviceNameDialog" @closed="hideFitDeviceNameDialog" />
                             </v-card-text>
                         </v-card>
                     </div>
@@ -162,11 +166,12 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import gearwearMixin from "~/mixins/gearwearMixin.js"
 import EmailDialog from "~/components/account/EmailDialog.vue"
+import FitDeviceNameDialog from "~/components/gearwear/FitDeviceNameDialog.vue"
 import GearCard from "~/components/gearwear/GearCard.vue"
 
 export default {
     authenticated: true,
-    components: {EmailDialog, GearCard},
+    components: {EmailDialog, FitDeviceNameDialog, GearCard},
     mixins: [userMixin, gearwearMixin],
     head() {
         return {
@@ -191,6 +196,9 @@ export default {
             gearWithoutConfig: [],
             gearwearConfigs: {},
             batteryTracker: null,
+            fitDeviceId: null,
+            fitDeviceName: null,
+            fitDeviceNameDialog: false,
             trackingDay: now.add(delayDays, "days").format("ddd Do")
         }
     },
@@ -246,9 +254,17 @@ export default {
         }
     },
     methods: {
-        hideEmailDialog(emailSaved) {
+        hideEmailDialog(saved) {
             this.emailDialog = false
-            this.emailSaved = emailSaved
+            this.emailSaved = saved
+        },
+        showFitDeviceNameDialog(id) {
+            this.fitDeviceId = id
+            this.fitDeviceName = this.getFitDeviceName(id)
+            this.fitDeviceNameDialog = true
+        },
+        hideFitDeviceNameDialog(saved) {
+            this.fitDeviceNameDialog = false
         },
         getGearName(id) {
             let gear = _.find(this.$store.state.user.profile.bikes, {id: id})

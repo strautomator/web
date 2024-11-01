@@ -14,8 +14,8 @@ export default {
         getComponentIcon(comp) {
             const name = comp?.name.toLowerCase().replace(/ /g, "") || ""
             if (name.includes("battery")) return "mdi-battery-70"
-            if (name.includes("bearing")) return "mdi-dots-circle"
-            if (name.includes("cassette")) return "mdi-cog-outline"
+            if (name.includes("bearing") || name.includes("headset") || name.includes("bottom bracket")) return "mdi-dots-circle"
+            if (name.includes("cassette") || name.includes("drivetrain")) return "mdi-cog-outline"
             if (name.includes("chain")) return "mdi-link"
             if (name.includes("cleat")) return "mdi-shoe-cleat"
             if (name.includes("pedal")) return "mdi-bike-pedal"
@@ -25,11 +25,15 @@ export default {
             if (name.includes("shoe")) return "mdi-shoe-sneaker"
             return "mdi-wrench-cog"
         },
-        getDeviceName(id) {
+        getDeviceIdName(id) {
             return id
                 .split(".")
                 .map((v) => v.charAt(0).toUpperCase() + v.slice(1))
                 .join(" ")
+        },
+        getFitDeviceName(id) {
+            const user = this.$store.state.user
+            return user.fitDeviceNames ? user.fitDeviceNames[id] || "" : ""
         }
     }
 }

@@ -187,7 +187,7 @@ router.delete("/:userId", async (req: express.Request, res: express.Response) =>
     }
 })
 
-// USER PREFERENCES
+// UPDATING USER DATA
 // --------------------------------------------------------------------------
 
 /**
@@ -423,6 +423,30 @@ router.post("/:userId/url-token", async (req: express.Request, res: express.Resp
         // Generate a new URL token.
         const newToken = await users.setUrlToken(user)
         webserver.renderJson(req, res, {urlToken: newToken})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Update the FIT device names given by the user. Passing null will clear all device names.
+ */
+router.post("/:userId/fit-device-names", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        if (req.body && Object.keys(req.body).length > 0) {
+            const deviceNames = _.assign(user.fitDeviceNames || {}, req.body)
+            await users.setFitDeviceNames(user, deviceNames)
+            user.fitDeviceNames = deviceNames
+        } else {
+            await users.setFitDeviceNames(user, null)
+        }
+
+        webserver.renderJson(req, res, user.fitDeviceNames||null)
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
     }
