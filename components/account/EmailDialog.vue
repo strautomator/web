@@ -22,7 +22,7 @@
                 </v-form>
                 <div class="text-right">
                     <v-spacer></v-spacer>
-                    <v-btn class="mr-2" color="grey" title="Stay here" @click.stop="hideDialog" text rounded>
+                    <v-btn class="mr-2" color="grey" title="Close dialog" @click.stop="hideDialog" text rounded>
                         <v-icon left>mdi-cancel</v-icon>
                         Cancel
                     </v-btn>
@@ -90,7 +90,7 @@ export default {
             } catch (ex) {
                 this.saving = false
 
-                if (ex.response && ex.response.data.message) {
+                if (ex.response && ex.response.data?.message) {
                     this.serverError = [ex.response.data.message]
                 } else {
                     this.$webError(this, "EmailDialog.saveEmail", ex)
