@@ -208,6 +208,7 @@
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
+                            <v-radio label="xAI" :value="'xai'"></v-radio>
                         </v-radio-group>
                         <div class="body-2 mb-4">You can enhance the generated content by setting a custom prompt, that will be appended to the default prompt.</div>
                         <v-text-field

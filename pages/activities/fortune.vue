@@ -98,7 +98,8 @@ export default {
             aiProviders: [
                 {value: "anthropic", text: "Anthropic"},
                 {value: "gemini", text: "Gemini"},
-                {value: "openai", text: "OpenAI"}
+                {value: "openai", text: "OpenAI"},
+                {value: "xai", text: "xAI"}
             ],
             selectedAiProvider: "gemini",
             syncError: null
