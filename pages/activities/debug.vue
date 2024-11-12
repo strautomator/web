@@ -190,7 +190,7 @@ export default {
         },
         friendlyValue(value) {
             if (_.isArray(value)) {
-                return value.join(", ")
+                return value.map((a) => (_.isObject(a) ? Object.values(a).join(": ") : a)).join(", ")
             }
             if (_.isObject(value)) {
                 const keys = Object.keys(value)
