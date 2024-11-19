@@ -70,7 +70,7 @@
                                         </v-col>
                                     </v-row>
                                 </div>
-                                <div v-else-if="hasOperators">
+                                <div v-else-if="hasOperators && !isAny">
                                     <v-text-field v-model="valueInput" type="text" :rules="valueInputRules" :suffix="selectedSuffix" :placeholder="inputPlaceholder" @keyup="valueKeyUp" dense outlined rounded></v-text-field>
                                 </div>
                             </div>
@@ -156,6 +156,9 @@ export default {
         },
         isBoolean() {
             return this.selectedProperty?.type == "boolean"
+        },
+        isAny() {
+            return this.selectedOperator?.value == "any"
         },
         isLocation() {
             return this.selectedProperty?.value == "polyline" || this.selectedProperty?.value.includes("location")
@@ -343,6 +346,9 @@ export default {
                         result.operator = "="
                         result.value = this.selectedBoolean.value
                         result.friendlyValue = this.selectedBoolean.text
+                    } else if (this.isAny) {
+                        result.value = true
+                        result.friendlyValue = "set"
                     } else if (this.isSportType) {
                         result.value = _.map(this.selectedSportTypes, "value").join(",")
                         result.friendlyValue = _.map(this.selectedSportTypes, "text").join(" or ")
