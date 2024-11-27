@@ -4,7 +4,7 @@
             <v-card-text class="grey lighten-2">
                 <v-row>
                     <v-col :cols="12 / links.length" v-for="link in links" :key="`affiliate-${link.id}`">
-                        <a :href="link.url" :target="link.id" :title="link.title"><v-img :src="'https://links.devv.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" /></a>
+                        <a :href="link.url" :target="link.id" :title="link.title"><v-img :src="'https://affiliates.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" /></a>
                     </v-col>
                 </v-row>
                 <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win. You get the best deals, and Strautomator gets a commission to keep the servers running.</div>
@@ -42,12 +42,12 @@ export default {
     methods: {
         refreshLinks() {
             const affiliates = [
-                {id: "aliexpress", title: "AliExpress", url: "https://links.devv.com/l/aliexpress-cycling-components"},
-                {id: "decathlon", title: "Decathlon", url: "https://links.devv.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
-                {id: "halfords", title: "Halfords", url: "https://links.devv.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
-                {id: "ican", title: "ICAN", url: "https://links.devv.com/l/ican"},
-                {id: "nextdns", title: "NextDNS", url: "https://links.devv.com/l/nextdns"},
-                {id: "ribble", title: "Ribble", url: "https://links.devv.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
+                {id: "aliexpress", title: "AliExpress", url: "https://affiliates.strautomator.com/l/aliexpress-cycling-components"},
+                {id: "decathlon", title: "Decathlon", url: "https://affiliates.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
+                {id: "halfords", title: "Halfords", url: "https://affiliates.strautomator.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
+                {id: "ican", title: "ICAN", url: "https://affiliates.strautomator.com/l/ican"},
+                {id: "nextdns", title: "NextDNS", url: "https://affiliates.strautomator.com/l/nextdns"},
+                {id: "ribble", title: "Ribble", url: "https://affiliates.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
             ]
 
             const country = this.$store.state.country
