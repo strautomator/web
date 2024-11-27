@@ -1,6 +1,7 @@
 // Strautomator: WebServer
 
 import {strava, paypal} from "strautomator-core"
+import countryLinkify from "country-linkify"
 import express = require("express")
 import _ from "lodash"
 import fs = require("fs")
@@ -82,7 +83,7 @@ class WebServer {
 
             // Add body parser, but avoid parsing JSON for the Paddle webhooks route.
             const bodyParser = require("body-parser")
-            this.app.use((req, res, next) => {
+            this.app.use((req: express.Request, res: express.Response, next) => {
                 if (req.originalUrl.substring(0, 19) == "/api/paddle/webhook") {
                     bodyParser.raw({type: "application/json"})(req, res, next)
                 } else {
@@ -150,6 +151,19 @@ class WebServer {
                     const basename = path.basename(r).split(".")[0]
                     this.app.use(`/api/${basename}`, require(`./routes/api/${r}`))
                 }
+            }
+
+            // Setup affiliate links.
+            if (settings.countryLinkify.server.url) {
+                this.app.use((req, _res, next) => {
+                    if (req.subdomains.length > 0 && settings.countryLinkify.server.url.includes(req.hostname)) {
+                        req.url = settings.countryLinkify.server.basePath + req.url.substring(1)
+                    }
+                    next()
+                })
+
+                await countryLinkify(this.app)
+                logger.info("WebServer.init", `Affiliate links available at ${settings.countryLinkify.server.url}`)
             }
 
             // Use Nuxt render.
