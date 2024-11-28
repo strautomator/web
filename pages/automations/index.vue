@@ -9,19 +9,19 @@
                 </v-btn>
             </h1>
             <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
-                New automation "{{ this.user.recipes[$route.query.new].title }}" created!
+                New automation "{{ this.user.recipes[$route.query.new]?.title || "" }}" created!
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
             <v-snackbar v-if="$route.query.updated" v-model="alertUpdated" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Automation "{{ this.user.recipes[$route.query.updated].title }}" updated!
+                Automation "{{ this.user.recipes[$route.query.updated]?.title || "" }}" updated!
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
             <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded bottom>
-                Automation "{{ $route.query.title }}" deleted!
+                Automation "{{ $route.query?.title || "" }}" deleted!
                 <template v-slot:action="{attrs}">
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
