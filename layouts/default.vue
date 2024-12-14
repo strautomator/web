@@ -55,7 +55,15 @@
                     </div>
                 </div>
             </div>
+
+            <v-snackbar v-if="$route.query.message" v-model="snackMessage" class="text-left" color="accent" :timeout="300000" rounded bottom>
+                {{ $route.query.message }}
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="snackMessage = false">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
         </v-main>
+
         <v-bottom-navigation class="hidden-md-and-up" color="primary" :value="activeNavBtn" app grow>
             <v-btn value="/dashboard" to="/dashboard" router nuxt>
                 <span>Home</span>
@@ -160,12 +168,18 @@ export default {
     data() {
         return {
             activeNavBtn: this.$route.path || null,
-            logoutDialog: false
+            logoutDialog: false,
+            snackMessage: this.$route.query.message ? true : false
         }
     },
     computed: {
         errorDialog() {
             return this.$store.state.errorTitle || this.$store.state.errorMessage ? true : false
+        }
+    },
+    watch: {
+        $route(to, from) {
+            this.snackMessage = to.query.message ? true : false
         }
     },
     mounted() {
