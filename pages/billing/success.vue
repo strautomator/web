@@ -5,7 +5,8 @@
             <v-card>
                 <v-card-text>
                     <p>Hi {{ user.profile.firstName }}!</p>
-                    <p>Your support is truly appreciated! Your account will be switched to PRO automatically in a few minutes.</p>
+                    <p v-if="this.$route.query.donation">Your support is truly appreciated! Your account will be switched to PRO automatically in a few minutes.</p>
+                    <p v-else>Your donation is truly appreciated! Hope you are enjoying all the features that Strautomator has to offer.</p>
                 </v-card-text>
             </v-card>
             <div class="mt-8 text-center">
@@ -35,7 +36,7 @@ export default {
         }
 
         const reload = () => (window.location.href = "/billing")
-        setTimeout(reload, 4000)
+        setTimeout(reload, 5000)
     }
 }
 </script>
