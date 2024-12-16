@@ -92,10 +92,9 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
             return webserver.renderError(req, res, `${logHelper.user(user)} reached limit of ${max} GearWear on free accounts`, 400)
         }
 
+        // Make sure gear exists on the user profile.
         const bike = _.find(user.profile.bikes, {id: gearId})
         const shoe = _.find(user.profile.shoes, {id: gearId})
-
-        // Make sure gear exists on the user profile.
         if (!bike && !shoe) {
             return webserver.renderError(req, res, `Gear ${gearId} for user ${userId} not found`, 404)
         }
@@ -117,7 +116,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
             // Reset distance for the specified component.
             await gearwear.resetTracking(user, existingConfig, compName)
         } else {
-            return webserver.renderError(req, res, `Configuration for gear ${gearId} not found`, 404)
+            return webserver.renderError(req, res, `No configuration found for gear ${gearId}`, 404)
         }
 
         webserver.renderJson(req, res, {ok: true})
