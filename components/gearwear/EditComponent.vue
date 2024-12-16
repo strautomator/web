@@ -174,7 +174,8 @@ export default {
                     alertDistance: compAlertDistance,
                     currentTime: compCurrentHours > 0 ? compCurrentHours * 3600 : 0,
                     alertTime: compAlertHours > 0 ? compAlertHours * 3600 : 0,
-                    preAlertPercent: compPreAlertPercent
+                    preAlertPercent: compPreAlertPercent,
+                    dateLastUpdate: new Date()
                 }
 
                 let changes = []
