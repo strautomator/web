@@ -200,7 +200,7 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate AI insights (beta).</div>
+                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
@@ -225,7 +225,7 @@
                     <div class="mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/activities/fortune" nuxt router>
                             <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
-                            Want to test the AI generated features?
+                            Want to test the AI features?
                         </n-link>
                     </div>
                 </v-card-text>
@@ -596,6 +596,9 @@ export default {
             this.preferenceChanged(newValue, oldValue)
         },
         gearwearDelayDays(newValue, oldValue) {
+            this.preferenceChanged(newValue, oldValue)
+        },
+        gearwearBatteryAlert(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         },
         activityHashtag(newValue, oldValue) {
