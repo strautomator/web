@@ -2,6 +2,7 @@
 
 import {database, github} from "strautomator-core"
 import crypto from "crypto"
+import _ from "lodash"
 import express = require("express")
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings
@@ -54,12 +55,14 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
 })
 
 /**
- * Application changelog.
+ * Application changelog (most recent entries only).
  */
 router.get("/changelog", async (req: express.Request, res: express.Response) => {
     try {
         const changelog = await database.appState.get("changelog")
-        webserver.renderJson(req, res, changelog)
+        const releases = _.orderBy(Object.values(changelog), "datePublished", "desc")
+        const limit = parseInt((req.query.limit as string) || "0")
+        webserver.renderJson(req, res, limit > 0 ? releases.slice(0, limit) : releases)
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

@@ -20,6 +20,13 @@
                                 </template>
                             </ul>
                         </div>
+                        <div v-if="loading" class="text-center mt-2 mb-5">
+                            <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                            Loading...
+                        </div>
+                        <div class="text-center mt-2 mb-2" v-if="limit > 0">
+                            <v-btn color="primary" @click="loadMore" outlined rounded>Load more</v-btn>
+                        </div>
                         <div class="text-center mt-2">
                             <v-btn color="primary" @click="goBack" rounded>Back {{ backTarget }}</v-btn>
                         </div>
@@ -44,19 +51,29 @@ export default {
     data() {
         return {
             backTarget: this.$store.state.user ? "to the Dashboard" : "home",
-            releases: null
+            releases: null,
+            limit: 20,
+            loading: true
         }
     },
     async fetch() {
-        try {
-            const changelog = await this.$axios.$get("/api/github/changelog")
-            const releases = _.sortBy(Object.values(changelog), "datePublished").reverse()
-            this.releases = _.groupBy(releases, (r) => r.datePublished.split("T")[0])
-        } catch (ex) {
-            this.$webError(this, "Changelog.fetch", ex)
-        }
+        await this.getReleases()
     },
     methods: {
+        async getReleases() {
+            this.loading = true
+            try {
+                const releases = await this.$axios.$get(`/api/github/changelog?limit=${this.limit}`)
+                this.releases = _.groupBy(releases, (r) => r.datePublished.split("T")[0])
+            } catch (ex) {
+                this.$webError(this, "Changelog.fetch", ex)
+            }
+            this.loading = false
+        },
+        async loadMore() {
+            this.limit = 0
+            await this.getReleases()
+        },
         goBack() {
             if (this.$store.state.user) {
                 document.location.href = "/dashboard"
