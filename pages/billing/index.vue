@@ -84,8 +84,7 @@
                             </v-toolbar-items>
                         </v-toolbar>
                         <v-card-text>
-                            <p class="mt-3">Thanks for your support! Before you proceed, please be aware that the cancellation takes effect immediately.</p>
-                            <p class="mt-3">If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).</p>
+                            <p class="mt-3">Thanks for your support! If you don't mind, please let me know why're you're cancelling your PRO subscription (optional).</p>
                             <div>
                                 <v-textarea label="I'm cancelling it because..." v-model="unsubReason" maxlength="200" rounded outlined no-resize></v-textarea>
                             </div>
