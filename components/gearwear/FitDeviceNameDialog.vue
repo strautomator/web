@@ -1,8 +1,8 @@
 <template>
-    <v-dialog v-model="visible" width="540" overlay-opacity="0.95">
+    <v-dialog v-model="visible" width="540" overlay-opacity="0.95" persistent>
         <v-card>
             <v-toolbar color="primary">
-                <v-toolbar-title>Rename: {{ deviceId }}</v-toolbar-title>
+                <v-toolbar-title>{{ deviceId }}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
                     <v-btn icon @click.stop="hideDialog">
@@ -14,7 +14,7 @@
                 <v-form v-model="deviceValid" ref="deviceForm">
                     <p class="mt-3">Please enter a friendly name for this device:</p>
                     <div>
-                        <v-text-field v-model="deviceName" label="Device name" maxlength="50" :loading="saving" :rules="inputRules" :error-messages="serverError" validate-on-blur outlined rounded></v-text-field>
+                        <v-text-field v-model="deviceName" label="Device name" maxlength="50" :loading="saving" :error-messages="serverError" validate-on-blur outlined rounded></v-text-field>
                     </div>
                 </v-form>
                 <div class="text-right">
@@ -23,9 +23,9 @@
                         <v-icon left>mdi-cancel</v-icon>
                         Cancel
                     </v-btn>
-                    <v-btn color="primary" title="Save device name" :disabled="!deviceName || deviceName.length < 3" @click="saveDeviceName" rounded>
+                    <v-btn color="primary" title="Save device name" @click="saveDeviceName" rounded>
                         <v-icon left>mdi-check</v-icon>
-                        Save name
+                        {{ !deviceName || deviceName.trim().length < 1 ? "Clear name" : "Save name" }}
                     </v-btn>
                 </div>
             </v-card-text>
@@ -51,13 +51,6 @@ export default {
     computed: {
         visible() {
             return this.showDialog
-        },
-        inputRules() {
-            const rules = {
-                required: (value) => !!value || "Device name is required"
-            }
-
-            return [rules.required]
         }
     },
     methods: {
@@ -67,16 +60,14 @@ export default {
         },
         async saveDeviceName() {
             try {
-                if (this.$refs.deviceForm.validate()) {
-                    this.saving = true
-                    const deviceNames = await this.$axios.$post(`/api/users/${this.user.id}/fit-device-names`, {[this.deviceId]: this.deviceName})
-                    this.saving = false
+                this.saving = true
+                const deviceNames = await this.$axios.$post(`/api/users/${this.user.id}/fit-device-names`, {[this.deviceId]: this.deviceName})
+                this.saving = false
 
-                    this.$store.commit("setUserData", {fitDeviceNames: deviceNames})
-                    this.deviceSaved = true
+                this.$store.commit("setUserData", {fitDeviceNames: deviceNames})
+                this.deviceSaved = true
 
-                    this.hideDialog()
-                }
+                this.hideDialog()
             } catch (ex) {
                 this.saving = false
 
