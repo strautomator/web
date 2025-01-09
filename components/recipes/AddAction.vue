@@ -93,9 +93,17 @@
                                 <v-card-text class="pa-0 ma-0">
                                     <h4 class="mb-1">Available tags</h4>
                                     <div style="max-height: 140px" class="overflow-y-auto">
-                                        <v-chip v-for="tag in activityTags" :key="tag.value" @click="addTag(tag.value)" :title="getChipText(tag)" :small="$breakpoint.mdAndUp" :x-small="!$breakpoint.mdAndUp" class="ml-1 mr-1 mb-1">{{
-                                            tag.value.substring(1, tag.value.length - 1)
-                                        }}</v-chip>
+                                        <v-chip
+                                            v-for="tag in activityTags"
+                                            :key="tag.value"
+                                            @click="addTag(tag.value)"
+                                            :title="getChipText(tag)"
+                                            :tooltip="getChipText(tag)"
+                                            :small="$breakpoint.mdAndUp"
+                                            :x-small="!$breakpoint.mdAndUp"
+                                            class="ml-1 mr-1 mb-1"
+                                            >{{ tag.value.substring(1, tag.value.length - 1) }}</v-chip
+                                        >
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -277,7 +285,7 @@ export default {
             return recipeActions
         },
         getChipText(tag) {
-            return tag.pro && !this.user.isPro ? `${tag.text} - PRO only` : tag.text
+            return tag.pro && !this.user.isPro ? `${tag.text || tag.label} - PRO only` : tag.text || tag.label
         },
         actionOnChange() {
             if (!this.actionIsDescription && this.actionIsText && this.valueInput) {
