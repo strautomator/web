@@ -210,17 +210,6 @@
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
                             <v-radio label="xAI" :value="'xai'"></v-radio>
                         </v-radio-group>
-                        <div class="body-2 mb-4">You can enhance the generated content by setting a custom prompt, that will be appended to the default prompt.</div>
-                        <v-text-field
-                            v-model="aiPrompt"
-                            maxlength="100"
-                            placeholder="Enter a custom prompt or leave it blank"
-                            @blur="delaySavePreferences()"
-                            :label="user.isPro ? 'Append AI prompt' : 'Append AI prompt (PRO Only)'"
-                            :disabled="!user.isPro"
-                            outlined
-                            rounded
-                        ></v-text-field>
                     </div>
                     <div class="mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/activities/fortune" nuxt router>
@@ -483,7 +472,6 @@ export default {
         const language = preferences.language || "en"
         const aiEnabled = preferences.aiEnabled || false
         const aiProvider = preferences.aiProvider || ""
-        const aiPrompt = preferences.aiPrompt || ""
         const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
         const weatherUnit = preferences.weatherUnit || "c"
         const windSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : weatherUnit == "f" ? "mph" : "kph"
@@ -546,7 +534,6 @@ export default {
             language: language,
             aiEnabled: aiEnabled,
             aiProvider: aiProvider,
-            aiPrompt: aiPrompt,
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             windSpeedUnit: windSpeedUnit,
@@ -801,7 +788,6 @@ export default {
                     language: this.language,
                     aiEnabled: this.aiEnabled,
                     aiProvider: this.aiProvider,
-                    aiPrompt: this.aiPrompt.trim().length > 2 ? this.aiPrompt : "",
                     dateResetCounter: this.resetCounter ? arrDate.join("-") : false
                 }
 
@@ -810,9 +796,6 @@ export default {
                 await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)
             } catch (ex) {
                 this.$webError(this, "Account.savePreferences", ex)
-                if (ex.response?.data?.message?.includes("ChatGPT")) {
-                    this.aiPrompt = ""
-                }
             }
         },
         closeAlert() {

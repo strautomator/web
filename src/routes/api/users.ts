@@ -1,6 +1,6 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, mailer, openai, paddle, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
 import auth from "../auth"
 import dayjs from "../../dayjs"
@@ -309,29 +309,6 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("aiProvider", "")
         }
 
-        // AI prompt requires special moderation.
-        if (preferenceChanged("aiPrompt")) {
-            if (!user.isPro) {
-                req.body.aiPrompt = ""
-            }
-
-            const hasValue = req.body.aiPrompt.trim().length > 2
-            req.body.aiPrompt = hasValue ? req.body.aiPrompt.substring(0, 100).trim() : ""
-
-            if (hasValue) {
-                const lastChar = req.body.aiPrompt.substring(req.body.aiPrompt.length - 1)
-                if (![".", "!", "?"].includes(lastChar)) {
-                    req.body.aiPrompt += "."
-                }
-                const failedCategories = await openai.validatePrompt(user, req.body.aiPrompt)
-                if (failedCategories?.length > 0) {
-                    throw new Error(`AI prompt failed moderation: ${failedCategories.join(", ")}`)
-                }
-            }
-
-            setOrDelete("aiPrompt", "")
-        }
-
         // User details to be updated.
         const data: Partial<UserData> = {
             id: user.id,
@@ -446,7 +423,7 @@ router.post("/:userId/fit-device-names", async (req: express.Request, res: expre
             await users.setFitDeviceNames(user, null)
         }
 
-        webserver.renderJson(req, res, user.fitDeviceNames||null)
+        webserver.renderJson(req, res, user.fitDeviceNames || null)
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
     }
