@@ -1,13 +1,13 @@
 <template>
     <div class="mt-6 mb-2 text-center" v-if="!hidden">
-        <v-card class="mr-3 ml-3" outlined>
+        <v-card class="mr-3 ml-3">
+            <v-card-title class="accent pt-1 text-body-1">Partner stores and services</v-card-title>
             <v-card-text class="grey lighten-2">
                 <v-row>
                     <v-col :cols="12 / links.length" v-for="link in links" :key="`affiliate-${link.id}`">
                         <a :href="link.url" :target="link.id" :title="link.title"><v-img :src="'https://affiliates.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" /></a>
                     </v-col>
                 </v-row>
-                <div class="mt-4 caption black--text text-center">Using our affiliate links is a win-win. You get the best deals, and Strautomator gets a commission to keep the servers running.</div>
             </v-card-text>
         </v-card>
     </div>
@@ -26,7 +26,7 @@ export default {
         hidden() {
             const urls = ["/billing/"]
             const hidden = urls.find((u) => this.$route?.path.includes(u))
-            return hidden || this.$store.state.user?.isPro
+            return hidden || (this.$store.state.user?.isPro && !this.$store.state.user?.debug)
         }
     },
     watch: {
