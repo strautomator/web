@@ -1,6 +1,6 @@
 // Strautomator API: AI
 
-import {ai, weather, UserData} from "strautomator-core"
+import {ai, openai, weather, UserData} from "strautomator-core"
 import auth from "../auth"
 import _ from "lodash"
 import express = require("express")
@@ -38,12 +38,38 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         }
 
         const provider = req.body.provider
-        const humour = req.body.humour
-        const name = await ai.generateActivityName(user, {activity, humour, provider, activityWeather})
-        const description = await ai.generateActivityDescription(user, {activity, humour, provider, activityWeather})
+        const humourPrompt = req.body.humourPrompt
+        const name = await ai.generateActivityName(user, {activity, humourPrompt, provider, activityWeather})
+        const description = await ai.generateActivityDescription(user, {activity, humourPrompt, provider, activityWeather})
         user.preferences.language = language
 
         webserver.renderJson(req, res, {name, description})
+    } catch (ex) {
+        webserver.renderError(req, res, ex, 400)
+    }
+})
+
+/**
+ * Validate the passed prompt to make sure it passes moderation.
+ */
+router.post("/:userId/validate-prompt", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+        if (!req.body.prompt) throw new Error("Missing prompt")
+
+        let prompt = req.body.prompt
+        const lastChar = prompt.substring(prompt.length - 1)
+        if (![".", "!", "?"].includes(lastChar)) {
+            prompt += "."
+        }
+
+        const failedCategories = await openai.validatePrompt(user, prompt)
+        if (failedCategories?.length > 0) {
+            webserver.renderJson(req, res, {failed: failedCategories.join(", ")})
+        } else {
+            webserver.renderJson(req, res, {prompt: prompt.trim()})
+        }
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
     }
