@@ -37,6 +37,18 @@
                                 </div>
                                 <div v-else-if="actionIsAI">
                                     <v-select label="Select a humour" v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                    <v-textarea
+                                        v-if="selectedAiHumour.value == 'custom'"
+                                        v-model="valueInput"
+                                        height="100"
+                                        label="Custom AI prompt"
+                                        :maxlength="$store.state.recipeMaxLength.actionValue"
+                                        @keydown="inputKeyDown($event)"
+                                        dense
+                                        outlined
+                                        rounded
+                                        no-resize
+                                    ></v-textarea>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'webhook'">
                                     <div>
@@ -69,7 +81,7 @@
                                     Example: ${distance} ${speedAvg} ${totalTime}
                                 </div>
                                 <div class="text-center mb-2 mt-n2" v-if="actionIsAI">
-                                    You can try some auto-generated features
+                                    You can test and try some AI features
                                     <a href="/activities/fortune" title="Fortune cookies (aka. AI name and poem generator)" target="activityFortune">here</a>.
                                 </div>
                             </template>
@@ -77,7 +89,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction?.value" rounded>
+                            <v-btn color="primary" @click="save" title="Save this action" :loading="loading" :disabled="!selectedAction?.value" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save action
                             </v-btn>
@@ -146,7 +158,7 @@ export default {
             return this.selectedAction && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote", "prependPrivateNote", "appendPrivateNote"].includes(this.selectedAction.value)
         },
         actionIsAI() {
-            return this.selectedAction && ["generateName", "generateDescription"].includes(this.selectedAction.value)
+            return this.selectedAction && ["generateName", "generateDescription", "generateInsights"].includes(this.selectedAction.value)
         }
     },
     watch: {
@@ -194,6 +206,7 @@ export default {
                 return {value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}
             })
             aiHumours.unshift({value: "", text: "Random"})
+            aiHumours.push({value: "custom", text: `Use a custom prompt${!this.$store.state.user.isPro ? " (PRO only)" : ""}`, disabled: !this.$store.state.user.isPro})
 
             return {
                 action: {},
@@ -305,7 +318,7 @@ export default {
             const reset = () => Object.assign(this.$data, this.initialData())
             setTimeout(reset, 500)
         },
-        save() {
+        async save() {
             if (this.$refs.form.validate()) {
                 const result = {
                     type: this.selectedAction.value
@@ -334,8 +347,27 @@ export default {
                     result.value = webhookValue
                     result.friendlyValue = webhookValue
                 } else if (this.actionIsAI && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
-                    result.value = this.selectedAiHumour.value
-                    result.friendlyValue = this.selectedAiHumour.text
+                    if (this.selectedAiHumour.value == "custom") {
+                        this.loading = true
+                        try {
+                            const promptResult = await this.$axios.$post(`/api/ai/${this.user.id}/validate-prompt`, {prompt: this.valueInput.trim()})
+                            if (promptResult.failed) {
+                                this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
+                                return
+                            }
+                        } catch (aiEx) {
+                            this.valueInput = `Prompt failed moderation: ${aiEx.toString()}`
+                            return
+                        } finally {
+                            this.loading = false
+                        }
+
+                        result.value = "custom" + promptResult.prompt
+                        result.friendlyValue = "custom prompt: " + promptResult.prompt
+                    } else {
+                        result.value = this.selectedAiHumour.value
+                        result.friendlyValue = this.selectedAiHumour.text
+                    }
                 } else {
                     result.value = this.valueInput || true
                 }
