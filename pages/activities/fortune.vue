@@ -9,7 +9,7 @@
                 </div>
             </template>
             <template v-else>
-                <div>Try out Strautomator's generated activity names, powered by AI!</div>
+                <div>Try out Strautomator's generated activity names and descriptions, powered by AI!</div>
                 <v-card class="mt-6" outlined>
                     <v-card-text class="pb-2 pb-md-0">
                         <v-container class="ma-0 pa-0" fluid>
@@ -18,10 +18,10 @@
                                     <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" :disabled="loading" dense outlined rounded return-object></v-select>
+                                    <v-select label="Provider" v-model="selectedAiProvider" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiProviders" :disabled="loading" dense outlined rounded return-object></v-select>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Provider" v-model="selectedAiProvider" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiProviders" :disabled="loading" dense outlined rounded return-object></v-select>
+                                    <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" :disabled="loading" dense outlined rounded return-object></v-select>
                                 </v-col>
                                 <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
                                     <v-btn color="primary" class="mt-n4 mt-md-0" @click="getActivity()" :disabled="loading" rounded>
@@ -30,10 +30,13 @@
                                     </v-btn>
                                 </v-col>
                             </v-row>
+                            <v-row v-if="selectedAiHumour.value == 'custom'" no-gutters>
+                                <v-col cols="12" class="pt-0 pb-0">
+                                    <v-text-field v-model="customPrompt" label="Custom prompt" outlined rounded dense></v-text-field>
+                                </v-col>
+                            </v-row>
                         </v-container>
-                        <div v-if="activity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above, or leave blank to pick a random recent activity.</div>
-
-                        <v-alert class="mt-4 mt-md-0" border="top" color="error" v-else-if="syncError">
+                        <v-alert class="mt-4 mt-md-0" border="top" color="error" v-if="syncError">
                             {{ syncError }}
                         </v-alert>
                     </v-card-text>
@@ -62,7 +65,9 @@
                         </v-btn>
                     </v-alert>
                 </template>
-                <div class="text-caption mt-2" v-if="activity">AI features are available via the "Generate the activity name" and "Generate a poem" automation actions.</div>
+                <div class="text-caption mt-2" v-if="activity">
+                    AI features are available via the "Generate the activity name" and "Generate a poem" automation actions. PRO users also have the option to get activity analysis on their private notes with AI.
+                </div>
             </template>
         </v-container>
     </v-layout>
@@ -86,6 +91,7 @@ export default {
             return {value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}
         })
         aiHumours.unshift({value: "", text: "Random"})
+        aiHumours.push({value: "custom", text: "Custom prompt"})
 
         return {
             loading: false,
@@ -93,6 +99,7 @@ export default {
             activityName: null,
             activityDescription: null,
             activityId: "",
+            customPrompt: "",
             aiHumours: aiHumours,
             selectedAiHumour: aiHumours[0],
             aiProviders: [
@@ -161,7 +168,10 @@ export default {
                 this.loading = true
                 this.syncError = null
 
-                const body = {activity: this.activity, humour: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
+                const body = {activity: this.activity, humourPrompt: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
+                if (this.selectedAiHumour.value == "custom") {
+                    body.humourPrompt += `:${this.customPrompt}`
+                }
                 const timestamp = Math.round(new Date().valueOf() / 1000)
                 const result = await this.$axios.$post(`/api/ai/${this.user.id}/activity-generate`, body)
 
