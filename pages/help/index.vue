@@ -58,18 +58,23 @@
                                 return (...args) => target(prop, ...args)
                             }
                         })
-                    }
-                    const onLoad = function () {
-                        const script = document.createElement("script")
-                        script.src = "https://www.chatbase.co/embed.min.js"
-                        script.id = "neTz5lyyofpBTh8BNF1kf"
-                        script.domain = "www.chatbase.co"
-                        document.body.appendChild(script)
-                    }
-                    if (document.readyState === "complete") {
-                        onLoad()
+
+                        const onLoad = function () {
+                            const script = document.createElement("script")
+                            script.src = "https://www.chatbase.co/embed.min.js"
+                            script.id = "neTz5lyyofpBTh8BNF1kf"
+                            script.domain = "www.chatbase.co"
+                            document.body.appendChild(script)
+                        }
+                        if (document.readyState === "complete") {
+                            onLoad()
+                        } else {
+                            window.addEventListener("load", onLoad)
+                        }
                     } else {
-                        window.addEventListener("load", onLoad)
+                        document.getElementById("chatbase-bubble-window").style.visibility = "visible"
+                        document.getElementById("chatbase-bubble-button").style.visibility = "visible"
+                        document.getElementById("chatbase-message-bubbles").style.visibility = "visible"
                     }
                 })()
             </script>
@@ -204,6 +209,11 @@ export default {
         if (parent && parent.$data.activeNavBtn) {
             parent.$data.activeNavBtn = "/help"
         }
+    },
+    beforeDestroy() {
+        document.getElementById("chatbase-bubble-window").style.visibility = "hidden"
+        document.getElementById("chatbase-bubble-button").style.visibility = "hidden"
+        document.getElementById("chatbase-message-bubbles").style.visibility = "hidden"
     },
     methods: {
         backHome() {
