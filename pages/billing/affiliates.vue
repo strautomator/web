@@ -3,8 +3,7 @@
         <v-container fluid>
             <h1>1 year of PRO</h1>
             <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)" colored-border>
-                <p>You have a PRO account via {{ subscriptionSource }} already! If you wish to take advantage of the affiliate links below, you might want to cancel your existing subscription first.</p>
-                <p>But of course I won't mind if you keep it active and still use the links, thou.</p>
+                <p>You have a PRO account already! But of course I won't mind if you keep it active and still use the links below.</p>
             </v-alert>
 
             <p>
@@ -27,7 +26,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
-                        <p>Revolut is an online bank with more than 30 million customers worldwide. It has all the features and financial services that you could possibly imagine, from transfers to stocks to crypto to travel eSIM.</p>
+                        <p>Revolut is an online bank with more than 50 million customers worldwide. It has all the features and financial services that you could possibly imagine, from transfers to stocks to crypto to travel eSIM.</p>
                         <ul class="ml-n2">
                             <li>Open your Revolut account with my link</li>
                             <li>Add money to your new account</li>
