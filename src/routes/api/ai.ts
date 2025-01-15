@@ -1,6 +1,6 @@
 // Strautomator API: AI
 
-import {ai, openai, weather, UserData} from "strautomator-core"
+import {ai, openai, weather, UserData, StravaActivity} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -38,7 +38,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         }
 
         // Activity dates must be transformed.
-        const activity = req.body.activity
+        const activity: StravaActivity = req.body.activity
         if (activity.dateStart) activity.dateStart = new Date(activity.dateStart)
         if (activity.dateEnd) activity.dateEnd = new Date(activity.dateEnd)
 
@@ -46,12 +46,14 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         const language = user.preferences.language
         user.preferences.language = "en"
 
-        // Get weather.
-        let activityWeather
-        try {
-            activityWeather = await weather.getActivityWeather(user, activity, true)
-        } catch (weatherEx) {
-            logger.warn("Routes.strava", req.method, req.originalUrl, "Failed to get weather summary, will proceed without")
+        // Get weather, if available.
+        let activityWeather = null
+        if (activity.trainer && activity.locationStart) {
+            try {
+                activityWeather = await weather.getActivityWeather(user, activity, true)
+            } catch (weatherEx) {
+                logger.warn("Routes.strava", req.method, req.originalUrl, "Failed to get weather summary, will proceed without")
+            }
         }
 
         const name = await ai.generateActivityName(user, {activity, humourPrompt, provider, activityWeather})
