@@ -18,7 +18,10 @@
                             <v-autocomplete v-model="selectedAction" label="Select an action" :items="recipeActions" @change="actionOnChange" dense outlined rounded return-object></v-autocomplete>
                             <template v-if="selectedAction">
                                 <div v-if="selectedAction.value == 'commute'">
-                                    <v-select label="Commute tag" v-model="selectedCommute" item-value="id" item-text="name" :items="commuteFlags" dense outlined rounded return-object></v-select>
+                                    <v-select label="Commute tag" v-model="selectedCommute" item-value="id" item-text="name" :items="booleanFlags" dense outlined rounded return-object></v-select>
+                                </div>
+                                <div v-else-if="selectedAction.value == 'trainer'">
+                                    <v-select label="Trainer tag" v-model="selectedTrainer" item-value="id" item-text="name" :items="booleanFlags" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="selectedAction.value == 'gear'">
                                     <v-select label="Select a gear" v-model="selectedGear" item-value="id" item-text="name" :items="gears" dense outlined rounded return-object></v-select>
@@ -36,12 +39,13 @@
                                     <v-select label="Select a map style" v-model="selectedMapStyle" item-value="value" item-text="text" :items="mapStyles" dense outlined rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="actionIsAI">
-                                    <v-select label="Select a humour" v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
+                                    <v-checkbox v-if="!insightsCustomPrompt && selectedAction.value == 'generateInsights'" title="Use a custom prompt" class="mt-0 pt-0" label="Use a custom prompt" v-model="insightsCustomPrompt"></v-checkbox>
+                                    <v-select v-if="selectedAction.value != 'generateInsights'" label="Select a humour" v-model="selectedAiHumour" item-value="value" item-text="text" :items="aiHumours" dense outlined rounded return-object></v-select>
                                     <v-textarea
-                                        v-if="selectedAiHumour.value == 'custom'"
+                                        v-if="(insightsCustomPrompt && selectedAction.value == 'generateInsights') || selectedAiHumour.value == 'custom'"
                                         v-model="valueInput"
                                         height="100"
-                                        label="Custom AI prompt"
+                                        label="Custom AI prompt to be appended"
                                         :maxlength="$store.state.recipeMaxLength.actionValue"
                                         @keydown="inputKeyDown($event)"
                                         dense
@@ -170,7 +174,7 @@ export default {
         initialData(filter) {
             let recipeActions = this.filterActions(this.disabledActions)
 
-            const commuteFlags = [
+            const booleanFlags = [
                 {id: true, name: "Yes"},
                 {id: false, name: "No"}
             ]
@@ -214,16 +218,18 @@ export default {
                 valid: true,
                 recipeActions: recipeActions,
                 selectedAction: {},
-                selectedCommute: commuteFlags[0],
+                selectedCommute: booleanFlags[0],
+                selectedTrainer: booleanFlags[0],
                 selectedGear: {},
                 selectedGearComponent: {},
                 selectedSportType: {},
                 selectedWorkoutType: {},
                 selectedMapStyle: {},
                 selectedAiHumour: aiHumours[0],
+                insightsCustomPrompt: false,
                 webhookMethod: "POST",
                 webhookUrl: "",
-                commuteFlags: commuteFlags,
+                booleanFlags: booleanFlags,
                 gears: gears,
                 gearComponents: gearComponents,
                 sportTypes: sportTypes,
@@ -327,6 +333,9 @@ export default {
                 if (result.type == "commute") {
                     result.value = this.selectedCommute.id
                     result.friendlyValue = this.selectedCommute.id ? "yes" : "no"
+                } else if (result.type == "trainer") {
+                    result.value = this.selectedTrainer.id
+                    result.friendlyValue = this.selectedTrainer.id ? "yes" : "no"
                 } else if (result.type == "gear") {
                     result.value = this.selectedGear.id
                     result.friendlyValue = this.selectedGear.name
@@ -347,7 +356,7 @@ export default {
                     result.value = webhookValue
                     result.friendlyValue = webhookValue
                 } else if (this.actionIsAI && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
-                    if (this.selectedAiHumour.value == "custom") {
+                    if (this.valueInput && (result.type == "generateInsights" || this.selectedAiHumour.value == "custom")) {
                         this.loading = true
                         try {
                             const promptResult = await this.$axios.$post(`/api/ai/${this.user.id}/validate-prompt`, {prompt: this.valueInput.trim()})
@@ -355,18 +364,17 @@ export default {
                                 this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
                                 return
                             }
+                            result.value = "custom" + promptResult.prompt
+                            result.friendlyValue = "custom prompt: " + promptResult.prompt
                         } catch (aiEx) {
                             this.valueInput = `Prompt failed moderation: ${aiEx.toString()}`
                             return
                         } finally {
                             this.loading = false
                         }
-
-                        result.value = "custom" + promptResult.prompt
-                        result.friendlyValue = "custom prompt: " + promptResult.prompt
                     } else {
                         result.value = this.selectedAiHumour.value
-                        result.friendlyValue = this.selectedAiHumour.text
+                        result.friendlyValue = result.type == "generateInsights" ? "Default" : this.selectedAiHumour.text
                     }
                 } else {
                     result.value = this.valueInput || true
