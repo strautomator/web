@@ -1,6 +1,6 @@
 // Strautomator API: Strava
 
-import {database, events, fitparser, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {database, events, fitparser, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter, StravaProcessedActivity} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -130,20 +130,22 @@ router.get("/:userId/processed-activities", async (req: express.Request, res: ex
 
         // If user has a Garmin or Wahoo account linked, append the related FIT file activities as well.
         if (user.garmin) {
-            for (let a of activities) {
-                const garminActivity = await fitparser.getMatchingActivity(user, a, "garmin")
+            const getGarminActivity = async (activity: StravaProcessedActivity) => {
+                const garminActivity = await fitparser.getMatchingActivity(user, activity, "garmin")
                 if (garminActivity) {
-                    a.garminActivity = garminActivity
+                    activity.garminActivity = garminActivity
                 }
             }
+            await Promise.allSettled(activities.map(getGarminActivity))
         }
         if (user.wahoo) {
-            for (let a of activities) {
-                const wahooActivity = await fitparser.getMatchingActivity(user, a, "wahoo")
-                if (wahooActivity) {
-                    a.wahooActivity = wahooActivity
+            const getWahooActivity = async (activity: StravaProcessedActivity) => {
+                const garminActivity = await fitparser.getMatchingActivity(user, activity, "wahoo")
+                if (garminActivity) {
+                    activity.wahooActivity = garminActivity
                 }
             }
+            await Promise.allSettled(activities.map(getWahooActivity))
         }
 
         webserver.renderJson(req, res, activities)
