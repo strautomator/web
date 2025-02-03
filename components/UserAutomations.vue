@@ -25,7 +25,7 @@
                         </v-btn>
                         <div class="mt-2 mb-2 mb-md-0" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
                             <v-chip class="mb-0 ml-1" disabled outlined small>Executed {{ recipeStats[recipe.id].activityCount }}+ times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
-                            <v-chip class="mb-0 ml-1" v-if="hasCounter(recipe)" disabled outlined small>Counter: {{ recipeStats[recipe.id].counter }}</v-chip>
+                            <v-chip class="mb-0 ml-1 mt-1 mt-md-0" v-if="hasCounter(recipe)" disabled outlined small>Counter: {{ recipe.counterProp ? recipe.counterProp : "" }} {{ recipeStats[recipe.id].counter }}</v-chip>
                         </div>
                         <div v-else>
                             <v-chip class="mb-0 ml-1" disabled outlined small>Never executed before</v-chip>

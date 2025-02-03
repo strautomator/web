@@ -295,6 +295,10 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
             setOrDelete("activityHashtag", false, true)
         }
 
+        if (preferenceChanged("firstDayOfWeek")) {
+            setOrDelete("firstDayOfWeek", "sunday")
+        }
+
         if (preferenceChanged("aiEnabled")) {
             if (!user.isPro) {
                 req.body.aiEnabled = false
@@ -600,14 +604,14 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
 })
 
 /**
- * Update the counter for the specified recipe stats.
+ * Update the counter or data counter for the specified recipe stats.
  */
 router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
         if (!req.body) throw new Error("Missing counter")
 
-        const counter = req.body.counter || 0
+        const counter = req.body.counter
         const recipeId = req.params.recipeId
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
@@ -616,11 +620,11 @@ router.post("/:userId/recipes/stats/:recipeId", async (req: express.Request, res
             throw new Error(`Invalid recipe: ${recipeId}`)
         }
 
-        if (isNaN(counter)) {
+        if (!_.isNil(counter) && isNaN(counter)) {
             throw new Error(`Counter is not a valid number: ${counter}`)
         }
 
-        await recipes.stats.setCounter(user, user.recipes[recipeId], parseInt(counter))
+        await recipes.stats.setCounter(user, user.recipes[recipeId], counter)
         webserver.renderJson(req, res, {counter: counter})
     } catch (ex) {
         webserver.renderError(req, res, ex)

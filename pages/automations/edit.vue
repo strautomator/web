@@ -219,16 +219,18 @@
                 </v-card-text>
             </v-card>
 
-            <v-card class="mt-4" v-if="hasCounter && recipe.id" outlined>
+            <v-card v-if="recipe.id && hasCounter" class="mt-4" outlined>
+                <v-card-title>Counter</v-card-title>
                 <v-card-text class="mb-0 pb-0">
-                    <div>This automation is using a counter on the name or description. If you wish to override the current counter value, simply update it below.</div>
-                    <div class="mt-4 d-flex">
-                        <v-text-field v-model="recipeStats.counter" class="recipe-stats-counter" type="number" label="Counter" min="0" max="9999" dense outlined rounded></v-text-field>
-                        <v-btn color="primary" class="ml-2 mt-1" title="Set new counter" :disabled="!changedCounter" @click="setCounter" outlined rounded>
-                            <v-icon left>mdi-check-bold</v-icon>
-                            Set
-                        </v-btn>
-                    </div>
+                    <div>You can customize which data should be used to increment the ${counter} tag.</div>
+                    <v-row class="mt-6" no-gutters>
+                        <v-col :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
+                            <v-select v-model="recipe.counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
+                        </v-col>
+                        <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
+                            <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
             </v-card>
             <div class="mt-6">
@@ -237,10 +239,9 @@
             <div class="mt-n1">
                 <v-switch class="ma-0 pa-0" title="Automation status" v-model="recipe.disabled" label="Disable this automation"></v-switch>
             </div>
-            <v-alert v-if="sharedRecipe"
-                >This automation is based on a template shared by <a target="strava" :href="'https://www.strava.com/athletes/' + sharedRecipe.userId">{{ sharedRecipe.userDisplayName }}</a
-                >.</v-alert
-            >
+            <v-alert v-if="sharedRecipe">
+                This automation is based on a template shared by <a target="strava" :href="'https://www.strava.com/athletes/' + sharedRecipe.userId">{{ sharedRecipe.userDisplayName }}</a>
+            </v-alert>
             <div class="text-center text-md-left mt-2">
                 <v-btn color="primary" title="Save this automation" :disabled="!valid" @click="save" rounded>
                     <v-icon left>mdi-content-save</v-icon>
@@ -307,10 +308,18 @@ export default {
         }
     },
     data() {
+        const counterProps = [
+            {text: "Execution count", value: null},
+            {text: "Distance", value: "distance"},
+            {text: "Elevation gain", value: "elevationGain"},
+            {text: "Lap count", value: "lapCount"},
+            {text: "Segment PR count", value: "prSegments"}
+        ]
         return {
             recipe: null,
             recipeStats: {counter: 0},
             recipePropertiesActions: [],
+            counterProps: counterProps,
             currentCounter: 0,
             valid: false,
             disabledActions: [],
@@ -336,7 +345,7 @@ export default {
         },
         hasCounter() {
             if (!this.recipe) return false
-            return _.find(this.recipe.actions, (a) => _.isString(a.value) && a.value.indexOf("${counter}") >= 0)
+            return _.find(this.recipe.actions, (a) => _.isString(a.value) && a.value.includes("${counter}"))
         },
         changedCounter() {
             return this.recipeStats.counter != this.currentCounter
@@ -379,7 +388,9 @@ export default {
 
             if (recipeStats) {
                 this.recipeStats = recipeStats
-                this.currentCounter = recipeStats.counter
+                this.currentCounter = recipeStats.counter || 0
+            } else {
+                this.currentCounter = 0
             }
         } catch (ex) {
             this.$webError(this, "AutomationEdit.fetch", ex)
@@ -412,9 +423,10 @@ export default {
             return this.$webError(this, "AutomationEdit.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
-        // Make sure default logical operators are set.
+        // Make sure default logical operators and counter prop are set.
         if (!recipe.op) recipe.op = "AND"
         if (!recipe.samePropertyOp) recipe.samePropertyOp = recipe.op
+        if (!recipe.counterProp) recipe.counterProp = null
 
         // List of conditions and actions for the help dialog.
         const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
@@ -578,7 +590,7 @@ export default {
                 this.currentCounter = this.recipeStats.counter
 
                 const url = `/api/users/${this.user.id}/recipes/stats/${this.recipe.id}`
-                const body = {id: this.recipe.id, counter: this.recipeStats.counter}
+                const body = {id: this.recipe.id, counter: parseFloat(this.currentCounter)}
                 await this.$axios.$post(url, body)
             } catch (ex) {
                 this.$webError(this, "AutomationEdit.setCounter", ex)
