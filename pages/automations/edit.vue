@@ -231,6 +231,13 @@
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
                         </v-col>
                     </v-row>
+                    <template v-if="user.preferences.dateResetCounter">
+                        <div class="mt-1">By default counters will auto reset every year on {{ $dayjs(user.preferences.dateResetCounter).format("MMM DD") }}, if you prefer you can disable it.</div>
+                        <div class="mt-1 text-caption">This setting affects only this counter!</div>
+                        <div class="mt-1 ml-n1">
+                            <v-checkbox v-model="recipe.counterNoReset" label="Please do not it reset yearly" title="Disable the counter auto reset" dense />
+                        </div>
+                    </template>
                 </v-card-text>
             </v-card>
             <div class="mt-6">
@@ -297,6 +304,7 @@ import AddAction from "~/components/recipes/AddAction.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
+import {recipe} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
@@ -555,12 +563,18 @@ export default {
                         this.setCounter()
                     }
 
+                    // Remove unecessary props.
                     if (this.recipe.defaultFor == null) {
                         delete this.recipe.defaultFor
                     }
-
                     if (!this.recipe.disabled) {
                         delete this.recipe.disabled
+                    }
+                    if (!this.recipe.counterProp) {
+                        delete this.recipe.counterProp
+                    }
+                    if (!this.recipe.counterNoReset) {
+                        delete this.recipe.counterNoReset
                     }
 
                     const url = `/api/users/${this.user.id}/recipes`
