@@ -171,7 +171,7 @@
                             <v-radio label="3 days" :value="3"></v-radio>
                         </v-radio-group>
                         <div class="body-2">Do you want to receive an email or notification when GearWear detects a sensor with a low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
-                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I do not want these notifications'"></v-switch>
+                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I don\'t want the notifications'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
