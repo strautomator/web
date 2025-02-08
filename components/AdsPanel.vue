@@ -5,7 +5,13 @@
             <v-card-text class="grey lighten-2">
                 <v-row>
                     <v-col :cols="12 / links.length" v-for="link in links" :key="`affiliate-${link.id}`">
-                        <a :href="link.url" :target="link.id" :title="link.title"><v-img :src="'https://affiliates.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" /></a>
+                        <a :href="link.url" :target="link.id" :title="link.title"
+                            ><v-img :src="'https://affiliates.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" :alt="link.title" @error="adFailed" v-if="failCount < links.length" /><span
+                                class="font-weight-bold text-md-h3"
+                                v-else
+                                >{{ link.title }}</span
+                            ></a
+                        >
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -19,6 +25,7 @@ import _ from "lodash"
 export default {
     data() {
         return {
+            failCount: 0,
             links: []
         }
     },
@@ -41,6 +48,8 @@ export default {
     },
     methods: {
         refreshLinks() {
+            this.failCount = 0
+
             const affiliates = [
                 {id: "aliexpress", title: "AliExpress", url: "https://affiliates.strautomator.com/l/aliexpress-cycling-components"},
                 {id: "decathlon", title: "Decathlon", url: "https://affiliates.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
@@ -54,6 +63,9 @@ export default {
             const links = affiliates.filter((a) => !a.country || a.country.includes(country))
 
             this.links = _.sortBy(_.sampleSize(links, this.$breakpoint.mdAndUp ? 3 : 2), "id")
+        },
+        adFailed() {
+            this.failCount++
         }
     }
 }
