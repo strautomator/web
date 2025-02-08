@@ -304,7 +304,6 @@ import AddAction from "~/components/recipes/AddAction.vue"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
-import {recipe} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
