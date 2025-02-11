@@ -207,6 +207,7 @@
                             <v-radio label="Default" :value="''"></v-radio>
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
+                            <v-radio label="Mistral" :value="'mistral'"></v-radio>
                             <v-radio label="OpenAI" :value="'openai'"></v-radio>
                             <v-radio label="xAI" :value="'xai'"></v-radio>
                         </v-radio-group>

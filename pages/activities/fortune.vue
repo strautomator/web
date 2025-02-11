@@ -105,6 +105,7 @@ export default {
             aiProviders: [
                 {value: "anthropic", text: "Anthropic"},
                 {value: "gemini", text: "Gemini"},
+                {value: "mistral", text: "Mistral"},
                 {value: "openai", text: "OpenAI"},
                 {value: "xai", text: "xAI"}
             ],
