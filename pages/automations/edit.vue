@@ -430,10 +430,11 @@ export default {
             return this.$webError(this, "AutomationEdit.data", {status: 404, title: "Automation not found", message: `We could not find an automation recipe with ID ${this.$route.query.id}`})
         }
 
-        // Make sure default logical operators and counter prop are set.
+        // Make sure default logical operators and counter prop are set, and the counter has a decimal if using custom data.
         if (!recipe.op) recipe.op = "AND"
         if (!recipe.samePropertyOp) recipe.samePropertyOp = recipe.op
         if (!recipe.counterProp) recipe.counterProp = null
+        else if (this.currentCounter) this.currentCounter = this.currentCounter.toFixed(1)
 
         // List of conditions and actions for the help dialog.
         const recipeProperties = _.cloneDeep(this.$store.state.recipeProperties)
