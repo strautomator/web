@@ -5,6 +5,7 @@
                 <h2 class="mb-4 text-center text-md-left">Strautomator features</h2>
                 <ul class="text-body-1 ml-n1">
                     <li><n-link to="/feature/ai" nuxt>Let AI name your activities</n-link></li>
+                    <li><n-link to="/feature/ai-insights" nuxt>Private AI insights on your activities</n-link></li>
                     <li><n-link to="/feature/weather" nuxt>Weather data on your activities</n-link></li>
                     <li><n-link to="/feature/spotify" nuxt>Spotify tracks on your activities</n-link></li>
                     <li><n-link to="/feature/commute" nuxt>Automatically tag your commutes</n-link></li>
