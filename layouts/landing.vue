@@ -4,30 +4,15 @@
             <nuxt />
         </v-main>
 
-        <div class="mb-6 text-center strava-powered">
-            <img src="/images/strava-powered.svg" width="130" />
-        </div>
-        <div class="mb-6 text-center">
-            <n-link to="/help" title="Need help?" nuxt><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
-            <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-2 mr-2">mdi-github</v-icon></a>
-            <a href="https://x.com/strautomator" title="Strautomator @ X"><v-icon class="ml-2 mr-2">mdi-twitter</v-icon></a>
-        </div>
-        <v-footer class="justify-center" color="#292929" height="100">
-            <div class="title font-weight-light grey--text text--lighten-1 text-center">
-                <a href="/home" title="Home">
-                    <img src="/images/logo.svg" width="24" height="24" class="strautologo" />
-                </a>
-                Strautomator.com
-                <div class="mt-3">
-                    <n-link to="/tc" title="Terms and Conditions" class="caption" nuxt>Terms and Conditions</n-link>
-                </div>
-            </div>
-        </v-footer>
+        <footer-section />
     </v-app>
 </template>
 
 <script>
+import FooterSection from "~/components/FooterSection.vue"
+
 export default {
+    components: {FooterSection},
     head: {
         meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
     }
