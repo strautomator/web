@@ -20,9 +20,7 @@
 
             <v-card v-if="revolut" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://affiliates.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"
-                        ><img src="https://affiliates.strautomator.com/images/revolut.png" alt="Revolut" class="mx-auto mx-md-0 card-affiliate-logo color-invert"
-                    /></a>
+                    <a href="https://links.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><img src="https://links.strautomator.com/images/revolut.png" alt="Revolut" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -35,7 +33,7 @@
                             <li>Steps must be completed within 10 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://affiliates.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><v-btn color="primary" rounded nuxt>Go to Revolut</v-btn></a>
+                            <a href="https://links.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><v-btn color="primary" rounded nuxt>Go to Revolut</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
@@ -43,7 +41,7 @@
 
             <v-card v-if="n26" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://affiliates.strautomator.com/l/n26" title="Go to N26" target="n26"><img src="https://affiliates.strautomator.com/images/n26.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
+                    <a href="https://links.strautomator.com/l/n26" title="Go to N26" target="n26"><img src="https://links.strautomator.com/images/n26.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -54,7 +52,7 @@
                             <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://affiliates.strautomator.com/l/n26" title="Go to N26" target="n26"><v-btn color="primary" rounded nuxt>Go to N26</v-btn></a>
+                            <a href="https://links.strautomator.com/l/n26" title="Go to N26" target="n26"><v-btn color="primary" rounded nuxt>Go to N26</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
@@ -62,9 +60,7 @@
 
             <v-card v-if="tradeRepublic" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://affiliates.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="tr"
-                        ><img src="https://affiliates.strautomator.com/images/traderepublic.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert"
-                    /></a>
+                    <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="tr"><img src="https://links.strautomator.com/images/traderepublic.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -75,7 +71,7 @@
                             <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://affiliates.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><v-btn color="primary" rounded nuxt>Go to Trade Republic</v-btn></a>
+                            <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><v-btn color="primary" rounded nuxt>Go to Trade Republic</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
@@ -83,7 +79,7 @@
 
             <v-card v-if="amex" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
-                    <a href="https://affiliates.strautomator.com/l/amex" title="Go to American Express" target="amex"><img src="https://affiliates.strautomator.com/images/amex.png" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
+                    <a href="https://links.strautomator.com/l/amex" title="Go to American Express" target="amex"><img src="https://links.strautomator.com/images/amex.png" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 mb-1">
@@ -97,7 +93,7 @@
                             <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://affiliates.strautomator.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
+                            <a href="https://links.strautomator.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>

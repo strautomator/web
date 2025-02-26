@@ -6,7 +6,7 @@
                 <v-row>
                     <v-col :cols="12 / links.length" v-for="link in links" :key="`affiliate-${link.id}`">
                         <a :href="link.url" :target="link.id" :title="link.title"
-                            ><v-img :src="'https://affiliates.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" :alt="link.title" @error="adFailed" v-if="failCount < links.length" /><span
+                            ><v-img :src="'https://links.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" :alt="link.title" @error="adFailed" v-if="failCount < links.length" /><span
                                 class="font-weight-bold text-md-h3"
                                 v-else
                                 >{{ link.title }}</span
@@ -51,12 +51,12 @@ export default {
             this.failCount = 0
 
             const affiliates = [
-                {id: "aliexpress", title: "AliExpress", url: "https://affiliates.strautomator.com/l/aliexpress-cycling-components"},
-                {id: "decathlon", title: "Decathlon", url: "https://affiliates.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
-                {id: "halfords", title: "Halfords", url: "https://affiliates.strautomator.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
-                {id: "ican", title: "ICAN", url: "https://affiliates.strautomator.com/l/ican"},
-                {id: "nextdns", title: "NextDNS", url: "https://affiliates.strautomator.com/l/nextdns"},
-                {id: "ribble", title: "Ribble", url: "https://affiliates.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
+                {id: "aliexpress", title: "AliExpress", url: "https://links.strautomator.com/l/aliexpress-cycling-components"},
+                {id: "decathlon", title: "Decathlon", url: "https://links.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
+                {id: "halfords", title: "Halfords", url: "https://links.strautomator.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
+                {id: "ican", title: "ICAN", url: "https://links.strautomator.com/l/ican"},
+                {id: "nextdns", title: "NextDNS", url: "https://links.strautomator.com/l/nextdns"},
+                {id: "ribble", title: "Ribble", url: "https://links.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
             ]
 
             const country = this.$store.state.country
