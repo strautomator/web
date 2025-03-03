@@ -33,7 +33,7 @@ export default {
         hidden() {
             const urls = ["/billing/"]
             const hidden = urls.find((u) => this.$route?.path.includes(u))
-            return hidden || (this.$store.state.user?.isPro && !this.$store.state.user?.debug)
+            return hidden || (this.$store.state.user?.isPro && !this.$store.state.user?.preferences?.showAds)
         }
     },
     watch: {
@@ -51,17 +51,19 @@ export default {
             this.failCount = 0
 
             const affiliates = [
+                {id: "365rider", title: "365 Rider", url: "https://links.strautomator.com/l/365rider"},
                 {id: "aliexpress", title: "AliExpress", url: "https://links.strautomator.com/l/aliexpress-cycling-components"},
                 {id: "decathlon", title: "Decathlon", url: "https://links.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
                 {id: "halfords", title: "Halfords", url: "https://links.strautomator.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
                 {id: "ican", title: "ICAN", url: "https://links.strautomator.com/l/ican"},
                 {id: "nextdns", title: "NextDNS", url: "https://links.strautomator.com/l/nextdns"},
-                {id: "ribble", title: "Ribble", url: "https://links.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]}
+                {id: "ribble", title: "Ribble", url: "https://links.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]},
+                {id: "tredz", title: "Tredz", url: "https://links.strautomator.com/l/tredz", country: ["GB", "IE", "UK"]},
+                {id: "authenticfeet", title: "Authentic Feet", url: "https://links.strautomator.com/l/authenticfeet", country: ["BR"]}
             ]
 
             const country = this.$store.state.country
             const links = affiliates.filter((a) => !a.country || a.country.includes(country))
-
             this.links = _.sortBy(_.sampleSize(links, this.$breakpoint.mdAndUp ? 3 : 2), "id")
         },
         adFailed() {
