@@ -185,7 +185,6 @@
                                 <v-radio label="100%" :value="1"></v-radio>
                                 <v-radio label="50%" :value="2"></v-radio>
                                 <v-radio label="20%" :value="5"></v-radio>
-                                <v-radio label="10%" :value="10"></v-radio>
                                 <v-radio :label="user.isPro ? 'No links' : 'No links (PRO only)'" :value="0" :disabled="!user.isPro"></v-radio>
                             </v-radio-group>
                         </div>

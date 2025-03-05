@@ -285,8 +285,8 @@ router.post("/:userId/preferences", async (req: express.Request, res: express.Re
         }
 
         if (preferenceChanged("linksOn")) {
-            if (!user.isPro && req.body.linksOn == 0) {
-                req.body.linksOn = settings.plans.free.linksOn
+            if (!user.isPro && (req.body.linksOn < 1 || req.body.linksOn > 5)) {
+                req.body.linksOn = 5
             }
             setOrDelete("linksOn", user.isPro ? settings.plans.pro.linksOn : settings.plans.free.linksOn)
         }
