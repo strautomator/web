@@ -556,7 +556,8 @@ export default {
                 {value: "lt", text: "Lietuvių"},
                 {value: "nl", text: "Nederlands"},
                 {value: "pl", text: "Polski"},
-                {value: "pt", text: "Português"}
+                {value: "pt", text: "Português"},
+                {value: "se", text: "Svenska"}
             ]
         }
     },
