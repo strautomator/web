@@ -92,6 +92,12 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
             return webserver.renderError(req, res, `${logHelper.user(user)} reached limit of ${max} GearWear on free accounts`, 400)
         }
 
+        // Reenabling the gear config?
+        if (req.body.disabled === false && existingConfig.disabled) {
+            await gearwear.reenable(user, existingConfig)
+            return webserver.renderJson(req, res, {ok: true})
+        }
+
         // Make sure gear exists on the user profile.
         const bike = _.find(user.profile.bikes, {id: gearId})
         const shoe = _.find(user.profile.shoes, {id: gearId})

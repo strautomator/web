@@ -7,6 +7,8 @@
                     <v-icon class="ml-n1 mr-2" color="primary" v-if="gear.primary">mdi-bookmark</v-icon>
                     <span>{{ gear.name }}</span>
                     <v-icon class="ml-2" v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
+                    <v-spacer></v-spacer>
+                    <v-chip color="removal" title="This GearWear configuration is disabled" v-if="gearwearConfig?.disabled" small>DISABLED</v-chip>
                 </v-card-title>
             </n-link>
         </v-hover>

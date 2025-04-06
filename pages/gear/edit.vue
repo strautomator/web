@@ -24,6 +24,12 @@
                 <br v-if="!$breakpoint.mdAndUp" />
                 {{ $breakpoint.mdAndUp ? "with" : "" }} {{ gear.distance }} {{ distanceUnits }}
             </div>
+            <div v-if="gearwearConfig?.lastUpdate">Last tracking update: {{ $dayjs(gearwearConfig.lastUpdate.date).format("ll") }}</div>
+
+            <template v-if="gearwearConfig?.disabled">
+                <v-alert class="mt-4" color="error"> This gear configuration was automatically disabled due to repeated tracking failures! This usually happens if you have retired or deleted the gear on your Strava profile. </v-alert>
+                <v-btn class="mt-2 mb-4" color="primary" title="Re-enable this GearWear configuration" @click="reenableGear()" rounded small>Re-enable it now</v-btn>
+            </template>
 
             <div v-if="isLoading">
                 <v-card class="mb-4 mt-4" outlined>
@@ -33,6 +39,7 @@
                     </v-card-text>
                 </v-card>
             </div>
+
             <div class="mt-5 mb-3" v-else>
                 <template v-if="gearwearConfig?.components.length > 0">
                     <template v-for="comp of gearwearConfig.components">
@@ -91,10 +98,12 @@
                 </div>
             </div>
 
-            <v-btn class="mt-1 mb-4" color="primary" title="Add a new component" @click.stop="showComponentDialog({})" small rounded>
-                <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                Add component
-            </v-btn>
+            <div class="mt-1 mb-4 text-center text-md-left">
+                <v-btn color="primary" title="Add a new component" @click.stop="showComponentDialog({})" small rounded>
+                    <v-icon class="mr-2">mdi-plus-circle</v-icon>
+                    Add component
+                </v-btn>
+            </div>
 
             <div class="text-center text-md-left mt-3 mb-8">
                 <v-btn color="primary" title="Save this configuration" :disabled="!isConfigValid() || overMaxGearWear" @click="saveConfig" rounded>
@@ -610,6 +619,14 @@ export default {
                 this.hasChanges = false
 
                 this.$router.push({path: `/gear?deleted=${this.gear.id}`})
+            } catch (ex) {
+                this.$webError(this, "GearEdit.deleteGearWear", ex)
+            }
+        },
+        async reenableGear() {
+            try {
+                await this.$axios.$post(`/api/gearwear/${this.user.id}/${this.gear.id}`, {disabled: false})
+                this.gearwearConfig.disabled = false
             } catch (ex) {
                 this.$webError(this, "GearEdit.deleteGearWear", ex)
             }
