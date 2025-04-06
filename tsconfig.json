@@ -11,17 +11,9 @@
         "noUnusedLocals": true,
         "declaration": true,
         "skipLibCheck": true,
-        "typeRoots": ["node_modules/@types"],
         "paths": {
             "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
         }
-    },
-    "typedocOptions": {
-        "entryPoints": ["./src/"],
-        "excludeExternals": true,
-        "excludePrivate": true,
-        "name": "Strautomator Web",
-        "out": "docs"
     },
     "vueCompilerOptions": {
         "target": 2.7
