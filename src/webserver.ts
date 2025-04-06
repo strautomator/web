@@ -115,8 +115,8 @@ class WebServer {
                 }
 
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
-                this.app.use("/api/*", rateLimit)
-                this.app.use("/api/*", (req, res, next) => {
+                this.app.use("/api/*catchall", rateLimit)
+                this.app.use("/api/*catchall", (req, res, next) => {
                     const reqRateLimit = (req as any).rateLimit
                     const statusCode = res.statusCode || "not sent"
                     if (reqRateLimit && [50, 10, 5, 1].includes(reqRateLimit.remaining)) {
@@ -128,7 +128,7 @@ class WebServer {
 
             // Only accept connections coming via Cloudflare?
             if (settings.api.requireCloudflare) {
-                this.app.use("/api/*", (req, res, next) => {
+                this.app.use("/api/*catchall", (req, res, next) => {
                     if (!req.headers["cf-ray"]) {
                         logger.error("WebServer.requireCloudflare", req.method, req.originalUrl, "Missing CF-Ray header", req.ip)
 
