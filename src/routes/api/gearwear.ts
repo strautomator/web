@@ -94,7 +94,7 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
 
         // Reenabling the gear config?
         if (req.body.disabled === false && existingConfig.disabled) {
-            await gearwear.reenable(user, existingConfig)
+            await gearwear.reEnable(user, existingConfig)
             return webserver.renderJson(req, res, {ok: true})
         }
 
