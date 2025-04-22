@@ -449,11 +449,19 @@ const routeUserRecipe = async (req: any, res: any) => {
         const validated = await auth.requestValidator(req, res)
         if (!validated) return
 
-        let recipe: RecipeData = req.body
-        const recipeId = req.params.recipeId || recipe.id
         const user: UserData = await users.getById(userId)
-        const asJson = recipe ? recipe["asJson"] || false : false
+        if (!user) {
+            return webserver.renderError(req, res, `User ${userId} not found`, 404)
+        }
 
+        // Get and validate the recipe data.
+        const recipeId: string = req.params.recipeId || req.body?.id
+        const recipe: RecipeData = req.body?.title ? req.body : user.recipes[recipeId]
+        if (!recipe) {
+            return webserver.renderError(req, res, `Recipe ${recipeId} not found`, 404)
+        }
+
+        const asJson = recipe ? recipe["asJson"] || false : false
         if (asJson) {
             delete recipe["asJson"]
         }
@@ -469,11 +477,6 @@ const routeUserRecipe = async (req: any, res: any) => {
 
                 return webserver.renderError(req, res, ex, 400)
             }
-        }
-
-        // User not found?
-        if (!user) {
-            return webserver.renderError(req, res, `User ${userId} not found`, 404)
         }
 
         // If 2 conditions or less, we don't need to set a value for samePropertyOp, as we only use the default op.
