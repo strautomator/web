@@ -1,6 +1,6 @@
 // Strautomator: Auth
 
-import {strava, users, UserData} from "strautomator-core"
+import {logHelper, strava, users, UserData} from "strautomator-core"
 import fs = require("fs")
 import logger from "anyhow"
 import webserver = require("../webserver")
@@ -69,6 +69,9 @@ export class Auth {
             // Find user by token.
             let token: string = bearer.substring(1, 6) == "earer" ? bearer.substring(6).trim() : bearer.trim()
             let user = await users.getByToken({accessToken: token})
+            if (!user && options.acceptPreviousToken) {
+                user = await users.getByToken({previousAccessToken: token})
+            }
 
             // User not found? Maybe has a new token?
             if (!user) {
@@ -88,7 +91,7 @@ export class Auth {
                         }
 
                         await users.update(newUserData)
-                        logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${user.id} ${user.displayName}`)
+                        logger.info("Auth.requestValidator", req.originalUrl, `Updated previous Strava token for ${logHelper.user(user)}`)
                     }
                 }
             }
@@ -120,6 +123,8 @@ export class Auth {
 export interface RequestOptions {
     /** Accept unauthenticated requests. */
     anonymous?: boolean
+    /** Accept previous access token (in case user was logged in for too long). */
+    acceptPreviousToken?: boolean
     /** Requesting an image? Accept requests only from the Strautomator referer. */
     image?: boolean
     /** Accept requests only from the Strautomator referer. */
