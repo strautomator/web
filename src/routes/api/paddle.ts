@@ -25,7 +25,7 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
  */
 router.post("/:userId/customer", async (req: express.Request, res: express.Response) => {
     try {
-        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        const user: UserData = (await auth.requestValidator(req, res, {acceptPreviousToken: true})) as UserData
         if (!user) return
 
         // Body with a paddle ID is mandatory.
