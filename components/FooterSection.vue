@@ -18,6 +18,7 @@
                 <v-chip v-if="!isPro" color="primary" class="caption mb-1 ml-1" small outlined>PRO</v-chip>
                 <div class="mt-3 caption">
                     <n-link to="/tc" title="Terms and Conditions" nuxt>Terms and Conditions</n-link>
+                    <n-link to="/impressum" title="Impressum" class="ml-5" v-if="impressum" nuxt>Impressum</n-link>
                 </div>
             </div>
         </v-footer>
@@ -32,6 +33,9 @@ export default {
         },
         isPro() {
             return this.$store.state?.user?.isPro ? true : false
+        },
+        impressum() {
+            return !["AT", "BE", "CH", "DE"].includes(this.$store.state.country)
         }
     }
 }
