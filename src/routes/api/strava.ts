@@ -501,11 +501,14 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
         }
 
         const clientIP = jaul.network.getClientIP(req)
-        const objType = obj.object_type
-        const objAspect = obj.aspect_type
         const objId = obj.object_id.toString()
         const userId = obj.owner_id.toString()
-        const logDetails = `User ${userId}: ${objType} - ${objAspect} - ${objId}, IP ${clientIP}`
+        const objType = obj.object_type
+        const objAspect = obj.aspect_type
+        const objUpdates = obj.updates
+        const arrUpdates = objAspect == "update" && objUpdates ? Object.entries(objUpdates) : []
+        const logUpdates = arrUpdates.length > 0 ? ` (${arrUpdates.map((u) => `${u[0]}: ${u[1]}`).join(", ")})` : ""
+        const logDetails = `User ${userId}: ${objType} ${objAspect} - ${objId}${logUpdates}, IP ${clientIP}`
 
         // Stop here if user is ignored.
         if (users.ignoredUserIds.includes(userId)) {
@@ -593,7 +596,6 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
             events.emit("Strava.updateActivity", user, activityId)
         }
         // Activity deleted?
-        // Activity updated?
         else if (action == "delete") {
             events.emit("Strava.deleteActivity", user, activityId)
         }
