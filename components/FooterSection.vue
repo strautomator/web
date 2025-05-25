@@ -35,7 +35,7 @@ export default {
             return this.$store.state?.user?.isPro ? true : false
         },
         impressum() {
-            return !["AT", "BE", "CH", "DE"].includes(this.$store.state.country)
+            return ["AT", "BE", "CH", "DE"].includes(this.$store.state.country)
         }
     }
 }
