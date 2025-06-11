@@ -164,8 +164,11 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">GearWear preferences</h3>
-                        <div class="body-2">GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can change that delay, if you want.</div>
+                        <div class="body-2">
+                            GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can decrease or increase that delay, according to your use case.
+                        </div>
                         <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
+                            <v-radio label="same day (8PM UTC)" :value="0"></v-radio>
                             <v-radio label="1 day (yesterday)" :value="1"></v-radio>
                             <v-radio label="2 days" :value="2"></v-radio>
                             <v-radio label="3 days" :value="3"></v-radio>
