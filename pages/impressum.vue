@@ -13,7 +13,9 @@
                         <h4 class="mt-2 mb-6">Responsible according to §5 TMG</h4>
                         <p>
                             <strong>Igor Ramadas Leite Nogueira</strong><br />
-                            Software Engineer
+                            Software Engineer<br />
+                            Einzelunternehmen<br />
+                            Business ID: DE454468590
                         </p>
                         <p>
                             Pappelallee 3<br />
