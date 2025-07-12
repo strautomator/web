@@ -96,20 +96,20 @@
                         </v-card-text>
                     </v-card>
                     <v-alert class="mt-5 text-center text-md-left" v-if="!batteryTracker && !user.preferences.privacyMode">
-                        <div class="mt-2 mt-md-0" v-if="user.isPro">
+                        <div class="mt-2 mt-md-0" v-if="user.isPro && !noGear">
                             Want to keep track of your connected sensor batteries as well?
                             <br />
                             Simply link your <n-link to="/account?garmin=link" title="Link your Garmin account" nuxt>Garmin</n-link> or <n-link to="/account?wahoo=link" title="Link your Wahoo account" nuxt>Wahoo</n-link>
                             accounts, and you'll see a list of all your device sensors here.
                         </div>
-                        <div class="mt-2 mt-md-0" v-else>
+                        <div class="mt-2 mt-md-0" v-else-if="!user.isPro">
                             Want to keep track of your sensor batteries as well?
                             <br />
                             <n-link to="/activities/sync" title="Manual automation trigger" nuxt>Get a PRO subscription</n-link> and link your Garmin or Wahoo accounts.
                         </div>
                     </v-alert>
-                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
-                        Please note that the gear tracking happens with a {{ delayDays == 1 ? `1 day` : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities. You can change the delay on
+                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear && delayDays > 0">
+                        Please note that the gear tracking happens with a {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities. You can change the delay on
                         your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
                         <div class="mt-1">Today's activities will be processed on {{ trackingDay }}.</div>
                     </v-alert>
