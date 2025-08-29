@@ -238,22 +238,26 @@ export default {
                 recipeProperties.unshift({value: "defaultFor", text: "Default automation for a specific sport type"})
             }
 
+            // Disable PRO-only properties if user is not PRO.
+            if (!user.isPro) {
+                recipeProperties.forEach((prop) => {
+                    if (prop.isPro) {
+                        prop.text += " (PRO only)"
+                        prop.disabled = true
+                    }
+                })
+            }
+
             // Disable Garmin if user has no account linked.
             const garminProp = _.find(recipeProperties, {value: "garmin.sensor"})
-            if (!user.isPro) {
-                garminProp.text += " (PRO only)"
-                garminProp.disabled = true
-            } else if (!user.garmin) {
+            if (!user.garmin && user.isPro) {
                 garminProp.text += " (needs linked Garmin)"
                 garminProp.disabled = true
             }
 
             // Disable Wahoo if user has no account linked.
             const wahooProp = _.find(recipeProperties, {value: "wahoo.sensor"})
-            if (!user.isPro) {
-                wahooProp.text += " (PRO only)"
-                wahooProp.disabled = true
-            } else if (!user.wahoo) {
+            if (!user.wahoo && user.isPro) {
                 wahooProp.text += " (needs linked Wahoo)"
                 wahooProp.disabled = true
             }

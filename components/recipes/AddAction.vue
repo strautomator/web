@@ -242,6 +242,17 @@ export default {
         },
         filterActions(arr) {
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
+
+            // Disable PRO-only actions if user is not PRO.
+            if (!user.isPro) {
+                recipeActions.forEach((ac) => {
+                    if (ac.isPro) {
+                        ac.text += " (PRO only)"
+                        ac.disabled = true
+                    }
+                })
+            }
+
             arr = _.cloneDeep(arr)
 
             // Make sure we disable related actions that were already set.
@@ -284,20 +295,6 @@ export default {
             for (let existingAction of arr) {
                 const item = _.find(recipeActions, {value: existingAction})
                 if (item) item.disabled = true
-            }
-
-            // Some actions are enabled only on PRO accounts.
-            if (!this.$store.state.user.isPro) {
-                const proText = " (PRO only)"
-                const webhook = _.find(recipeActions, {value: "webhook"})
-                webhook.disabled = true
-                webhook.text += proText
-                const generateDescription = _.find(recipeActions, {value: "generateDescription"})
-                generateDescription.disabled = true
-                generateDescription.text += proText
-                const generateInsights = _.find(recipeActions, {value: "generateInsights"})
-                generateInsights.disabled = true
-                generateInsights.text += proText
             }
 
             this.recipeActions = recipeActions
