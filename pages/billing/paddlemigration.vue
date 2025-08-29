@@ -52,17 +52,17 @@
                     <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, taking care of all billing and payment related tasks.</p>
 
                     <h4 class="mb-1 text-md-h6">Do I need to migrate?</h4>
-                    <p>No. The migration from PayPal to Paddle is recommended, but not enforced.</p>
+                    <p>No. The migration from PayPal to Paddle is optional.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>
-                        First, you'll need to proceed and subscribe again using the new checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. If your last PayPal payment was made
-                        in the last 179 days, you will get a partial refund for the unused days.
+                        First, you'll need to proceed and subscribe again using the new checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. You'll receive a partial refund on
+                        PayPal relative to the remaining time of your PayPal subscription.
                     </p>
-                    <p v-if="discountId">
-                        As a courtesy, the first 1000 users to migrate are eligible for a discount, so the subscription price will be cheaper compared to their existing subscription price with PayPal. The discount codes will be automatically applied
-                        to the checkout, and are valid until December 31st, 2024.
-                    </p>
+                    <v-alert color="accent" v-if="discountId">
+                        The first 1000 users to migrate are eligible for a discount, making the subscription price cheaper compared to their existing subscription with PayPal. The discount codes are automatically applied to the checkout and valid
+                        until December 2025.
+                    </v-alert>
 
                     <div class="pt-2 text-center text-md-left">
                         <v-btn color="primary" title="Subscribe via Paddle" @click="paddleCheckout()" :x-large="$breakpoint.mdAndUp" rounded nuxt>
