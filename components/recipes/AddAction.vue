@@ -241,6 +241,7 @@ export default {
             }
         },
         filterActions(arr) {
+            const user = this.$store.state.user
             const recipeActions = _.cloneDeep(this.$store.state.recipeActions)
 
             // Disable PRO-only actions if user is not PRO.
