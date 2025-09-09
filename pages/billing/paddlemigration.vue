@@ -49,19 +49,18 @@
                 <div v-else>
                     <p class="mt-4 mb-6">We welcome all users who have subscribed using PayPal to migrate their PRO subscriptions to <a href="https://paddle.com/about" title="Paddle.com" target="paddle">Paddle.com</a>.</p>
                     <h4 class="mb-1 text-md-h6">Why is Strautomator switching to Paddle?</h4>
-                    <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, taking care of all billing and payment related tasks.</p>
+                    <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, they act as a Merchant of Record for Strautomator, taking care of all our billing and payment related tasks.</p>
 
                     <h4 class="mb-1 text-md-h6">Do I need to migrate?</h4>
-                    <p>No. The migration from PayPal to Paddle is optional.</p>
+                    <p>No, the PRO subscription migration from PayPal to Paddle is optional.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>
-                        First, you'll need to proceed and subscribe again using the new checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. You'll receive a partial refund on
-                        PayPal relative to the remaining time of your PayPal subscription.
+                        First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. You'll receive a partial
+                        refund relative to the remaining time of your PayPal subscription.
                     </p>
                     <v-alert color="accent" v-if="discountId">
-                        The first 1000 users to migrate are eligible for a discount, making the subscription price cheaper compared to their existing subscription with PayPal. The discount codes are automatically applied to the checkout and valid
-                        until December 2025.
+                        As a "thank you" we are offering a discount to a limited number of users that complete the migration to Paddle.<br />The discount code will be automatically applied to the checkout form, and is valid until December 2025.
                     </v-alert>
 
                     <div class="pt-2 text-center text-md-left">
@@ -95,6 +94,7 @@ export default {
             subscription: null,
             paddleTransactionId: null,
             migrated: false,
+            lifetime: false,
             discountId: null,
             errorMessage: null,
             refundAmount: 0
@@ -125,13 +125,18 @@ export default {
         if (this.$route.query.d && this.$route.query.d != "x") {
             this.discountId = this.$route.query.d
         }
+        if (this.$route.query.f && this.$route.query.f == "lifetime") {
+            this.lifetime = true
+        }
     },
     methods: {
         async paddleCheckout() {
             try {
+                const priceId = this.lifetime ? this.$store.state.paddle.priceId.lifetime : this.$store.state.paddle.priceId.yearly
                 const checkout = {
                     settings: {
                         allowLogout: false,
+                        showAddDiscounts: true,
                         displayMode: "overlay",
                         theme: "dark"
                     }
@@ -141,7 +146,7 @@ export default {
                     checkout.transactionId = this.user.paddleTransactionId
                 } else {
                     checkout.customData = {userId: this.user.id, paypalMigration: this.user.subscriptionId}
-                    checkout.items = [{quantity: 1, priceId: this.$store.state.paddle.priceId}]
+                    checkout.items = [{quantity: 1, priceId: priceId}]
                     if (this.user.paddleId) {
                         checkout.customer = {id: this.user.paddleId}
                     } else if (this.user.email) {
@@ -182,7 +187,7 @@ export default {
                 const res = await this.$axios.$post(`/api/paypal/${this.user.id}/paddlemigration`, {paddleTransactionId: this.paddleTransactionId})
                 this.refundAmount = res.refundAmount
             } catch (ex) {
-                this.errorMessage = "We have requested the cancellation of your PayPal subscription, and it should be processed in the next 48 hours."
+                this.errorMessage = "We have requested the cancellation of your PayPal subscription, and it should be processed in the next 24 hours."
             }
 
             Paddle.Spinner.hide()
