@@ -23,7 +23,7 @@
                     <v-progress-circular size="32" width="2" v-if="loading" indeterminate></v-progress-circular>
                     <span class="ml-4">Fetching subscription details...</span>
                 </template>
-                <template v-else-if="subscription?.source == 'paypal'">
+                <template v-else-if="subscription?.source != 'paypal'">
                     <p>Your current PRO subscription was not paid via PayPal, so you don't need to migrate.</p>
                     <v-btn color="primary" to="/account" title="Back to my account" exact small rounded outlined nuxt>
                         <v-icon left>mdi-arrow-left</v-icon>
