@@ -560,7 +560,8 @@ export default {
                 {value: "nl", text: "Nederlands"},
                 {value: "pl", text: "Polski"},
                 {value: "pt", text: "Português"},
-                {value: "se", text: "Svenska"}
+                {value: "se", text: "Svenska"},
+                {value: "sk", text: "Slovenčina"}
             ]
         }
     },
