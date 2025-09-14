@@ -1,6 +1,6 @@
 // Strautomator API: PayPal
 
-import {paypal, subscriptions, UserData} from "strautomator-core"
+import {paypal, subscriptions, users, UserData} from "strautomator-core"
 import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
@@ -134,8 +134,14 @@ router.post("/:userId/paddlemigration", async (req: express.Request, res: expres
             throw new Error("User has no active PayPal subscription")
         }
 
+        // In case the Paddle subscription notification is delayed, we set the user subscription ID straight away.
+        if (user.subscriptionId == paypalSub.id) {
+            user.subscriptionId = req.body.paddleTransactionId
+            await users.update({id: user.id, displayName: user.displayName, subscriptionId: user.subscriptionId})
+        }
+
         // Issue a partial refund, if possible, and cancel the PayPal subscription.
-        const refundAmount = await paypal.subscriptions.refundAndCancel(user, paypalSub.id, `Migrated to Paddle (${req.body.paddleTransactionId})`)
+        const refundAmount = await paypal.subscriptions.refundAndCancel(user, paypalSub.id, `Migrated to Paddle: (${req.body.paddleTransactionId})`)
         webserver.renderJson(req, res, {subscriptionId: paypalSub.id, refundAmount: refundAmount})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
