@@ -26,7 +26,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         result.configs = gearwearConfigs
 
         // Also get battery tracker for PRO users.
-        if (user.isPro) {
+        if (user.isPro && (user.garmin?.id || user.wahoo?.id)) {
             const batteryTracker = await gearwear.getBatteryTracker(user)
             if (batteryTracker) {
                 result.batteryTracker = batteryTracker
