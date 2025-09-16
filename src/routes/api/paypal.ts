@@ -1,6 +1,6 @@
 // Strautomator API: PayPal
 
-import {paypal, subscriptions, users, UserData} from "strautomator-core"
+import {paypal, subscriptions, users, UserData, PayPalSubscription} from "strautomator-core"
 import express = require("express")
 import logger from "anyhow"
 import webserver = require("../../webserver")
@@ -140,8 +140,14 @@ router.post("/:userId/paddlemigration", async (req: express.Request, res: expres
             await users.update({id: user.id, displayName: user.displayName, subscriptionId: user.subscriptionId})
         }
 
-        // Issue a partial refund, if possible, and cancel the PayPal subscription.
-        const refundAmount = await paypal.subscriptions.refundAndCancel(user, paypalSub.id, `Migrated to Paddle: (${req.body.paddleTransactionId})`)
+        // If migrating to a lifetime subscription, a refund is not issued.
+        let refundAmount = null
+        if (req.body.lifetime) {
+            await paypal.subscriptions.cancelSubscription(paypalSub as PayPalSubscription, `Migrated to Paddle lifetime: (${req.body.paddleTransactionId})`)
+        } else {
+            refundAmount = await paypal.subscriptions.refundAndCancel(user, paypalSub.id, `Migrated to Paddle yearly: (${req.body.paddleTransactionId})`)
+        }
+
         webserver.renderJson(req, res, {subscriptionId: paypalSub.id, refundAmount: refundAmount})
     } catch (ex) {
         webserver.renderError(req, res, ex, 400)
