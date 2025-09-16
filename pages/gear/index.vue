@@ -54,7 +54,7 @@
                                                 </v-hover>
                                             </td>
                                             <td class="text-right">
-                                                <v-chip class="text-uppercase" :color="device.status == 'low' ? 'error' : device.status == 'critical' ? 'removal' : 'success'" small>{{ device.status }}</v-chip>
+                                                <v-chip class="text-uppercase" :color="getBatteryColor(device)" small>{{ device.status }}</v-chip>
                                             </td>
                                             <td width="1" class="nowrap pl-0 text-right">{{ $dayjs(device.dateUpdated).format($breakpoint.mdAndUp ? "lll" : "ll") }}</td>
                                         </tr>
@@ -100,12 +100,12 @@
                             Want to keep track of your connected sensor batteries as well?
                             <br />
                             Simply link your <n-link to="/account?garmin=link" title="Link your Garmin account" nuxt>Garmin</n-link> or <n-link to="/account?wahoo=link" title="Link your Wahoo account" nuxt>Wahoo</n-link>
-                            accounts, and you'll see a list of all your device sensors here.
+                            account, and you'll see a list of all your device sensors here.
                         </div>
                         <div class="mt-2 mt-md-0" v-else-if="!user.isPro">
-                            Want to keep track of your sensor batteries as well?
+                            Want to keep track of your connected sensor batteries as well?
                             <br />
-                            <n-link to="/activities/sync" title="Manual automation trigger" nuxt>Get a PRO subscription</n-link> and link your Garmin or Wahoo accounts.
+                            <n-link to="/billing" title="Manual automation trigger" nuxt>Get a PRO subscription</n-link> and link your Garmin or Wahoo accounts.
                         </div>
                     </v-alert>
                     <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear && delayDays > 0">
@@ -272,6 +272,12 @@ export default {
             gear = _.find(this.$store.state.user.profile.shoes, {id: id})
             if (gear) return gear.name
             return this.getGearType(id).toLowerCase()
+        },
+        getBatteryColor(device) {
+            if (device.status == "unknown") return "accent"
+            if (device.status == "low") return "error"
+            if (device.status == "critical") return "removal"
+            return "success"
         },
         closeAlert() {
             this.alertNew = false
