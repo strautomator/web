@@ -35,7 +35,7 @@
                     <p class="mt-4 mb-6">The migration process from PayPal to Paddle has finished! Please check your email for the confirmation invoice.</p>
                     <p>
                         Future payments will now be handled exclusively via Paddle.
-                        <span v-if="refundAmount">We have issued a refund of {{ refundAmount }} on your cancelled PayPal subscription.</span>
+                        <span v-if="refundAmount">We have issued a refund of {{ refundAmount }} on your previous PayPal subscription.</span>
                     </p>
 
                     <p v-if="errorMessage">{{ errorMessage }}</p>
@@ -56,11 +56,8 @@
                     <p>No, the PRO subscription migration from PayPal to Paddle is optional.</p>
 
                     <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
-                    <p>
-                        First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once your new subscription is activated, your previous PayPal subscription will be automatically cancelled. You'll then receive a partial
-                        refund relative to the remaining time of your existing subscription, directly via PayPal.
-                    </p>
-                    <p>For the migration you have the option to keep doing yearly payments, or switch to a single-payment lifetime subscription.</p>
+                    <p>First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once the new subscription is activated, your previous PayPal subscription will be automatically cancelled.</p>
+                    <p>For this migration you'll have the option to keep doing yearly payments, or switch to a lifetime subscription. A partial refund will be issued to your PayPal account in case you decide to stay on the yearly payments option.</p>
                     <v-alert class="accent" v-if="discountLifetime || discountYearly" outlined>
                         As a "thank you" we are offering a discount to a limited number of users that migrate from PayPal to Paddle.
                         <br />
@@ -115,6 +112,7 @@ export default {
             discountLifetime: null,
             discountYearly: null,
             errorMessage: null,
+            lifetime: null,
             refundAmount: 0
         }
     },
@@ -149,6 +147,8 @@ export default {
     },
     methods: {
         async paddleCheckout(lifetime) {
+            this.lifetime = lifetime
+
             try {
                 const priceId = lifetime ? this.$store.state.paddle.priceId.lifetime : this.$store.state.paddle.priceId.yearly
                 const checkout = {
@@ -201,8 +201,8 @@ export default {
         async cancelPayPal() {
             try {
                 Paddle.Spinner.show()
-                const res = await this.$axios.$post(`/api/paypal/${this.user.id}/paddlemigration`, {paddleTransactionId: this.paddleTransactionId})
-                this.refundAmount = res.refundAmount
+                const res = await this.$axios.$post(`/api/paypal/${this.user.id}/paddlemigration`, {paddleTransactionId: this.paddleTransactionId, lifetime: this.lifetime})
+                this.refundAmount = parseFloat(res.refundAmount || 0) ? res.refundAmount : null
             } catch (ex) {
                 this.errorMessage = "We have requested the cancellation of your PayPal subscription, and it should be processed in the next 24 hours."
             }
