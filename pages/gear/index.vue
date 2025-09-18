@@ -33,7 +33,7 @@
                         <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
                     </div>
 
-                    <div v-if="batteryTracker">
+                    <div v-if="batteryTracker?.devices?.length > 0">
                         <v-card class="mb-5" outlined>
                             <v-hover v-slot:default="{hover}">
                                 <v-card-title class="accent">
@@ -140,10 +140,16 @@
                 </v-alert>
             </template>
         </v-container>
-        <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
+        <v-snackbar v-model="alertEmailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
             Your email was set to {{ $store.state.user.email }}!
             <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
+                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            </template>
+        </v-snackbar>
+        <v-snackbar v-model="alertFitDevice" class="text-left" :color="fitDeviceDialogAction" :timeout="5000" rounded bottom>
+            {{ fitDeviceDialogAction == "success" ? `Device ${fitDeviceId} saved.` : `Device ${fitDeviceId} removed.` }}
+            <template v-slot:action="{attrs}">
+                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
         <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
@@ -188,9 +194,10 @@ export default {
             isLoading: true,
             hasManyBikes: false,
             emailDialog: false,
-            emailSaved: false,
+            alertEmailSaved: false,
             alertNew: false,
             alertDeleted: false,
+            alertFitDevice: false,
             alertGearTitle: "",
             gearWithConfig: [],
             gearWithoutConfig: [],
@@ -199,6 +206,7 @@ export default {
             fitDeviceId: null,
             fitDeviceName: null,
             fitDeviceNameDialog: false,
+            fitDeviceDialogAction: "",
             trackingDay: now.add(delayDays, "days").format("ddd Do")
         }
     },
@@ -256,15 +264,22 @@ export default {
     methods: {
         hideEmailDialog(saved) {
             this.emailDialog = false
-            this.emailSaved = saved
+            this.alertEmailSaved = saved
         },
         showFitDeviceNameDialog(id) {
             this.fitDeviceId = id
             this.fitDeviceName = this.getFitDeviceName(id)
             this.fitDeviceNameDialog = true
         },
-        hideFitDeviceNameDialog(saved) {
+        hideFitDeviceNameDialog(action) {
+            if (action == "removal") {
+                this.batteryTracker.devices = this.batteryTracker.devices.filter((d) => d.id != this.fitDeviceId)
+                this.batteryTracker = this.batteryTracker
+            }
+
             this.fitDeviceNameDialog = false
+            this.fitDeviceDialogAction = action || ""
+            this.alertFitDevice = action ? true : false
         },
         getGearName(id) {
             let gear = _.find(this.$store.state.user.profile.bikes, {id: id})
@@ -282,6 +297,8 @@ export default {
         closeAlert() {
             this.alertNew = false
             this.alertDeleted = false
+            this.alertFitDevice = false
+            this.alertEmailSaved = false
         }
     }
 }

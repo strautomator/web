@@ -17,13 +17,17 @@
                         <v-text-field v-model="deviceName" label="Device name" maxlength="50" :loading="saving" :error-messages="serverError" validate-on-blur outlined rounded></v-text-field>
                     </div>
                 </v-form>
-                <div class="text-right">
+                <div class="text-center text-md-right">
+                    <v-btn color="removal" class="mb-6 mb-md-0 float-md-left" title="Forget and remove this device" @click.stop="deleteDevice" text rounded>
+                        <v-icon left>mdi-delete</v-icon>
+                        Forget device
+                    </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn class="mr-2" color="grey" title="Cancel and close dialog" @click.stop="hideDialog" text rounded>
+                    <v-btn color="grey" class="mr-md-2" title="Cancel and close dialog" @click.stop="hideDialog" text rounded>
                         <v-icon left>mdi-cancel</v-icon>
                         Cancel
                     </v-btn>
-                    <v-btn color="primary" title="Save device name" @click="saveDeviceName" rounded>
+                    <v-btn color="primary" class="mt-md-0" title="Save device name" @click="saveDeviceName" rounded>
                         <v-icon left>mdi-check</v-icon>
                         {{ !deviceName || deviceName.trim().length < 1 ? "Clear name" : "Save name" }}
                     </v-btn>
@@ -43,6 +47,7 @@ export default {
     data() {
         return {
             deviceSaved: false,
+            deviceDeleted: false,
             deviceValid: false,
             saving: false,
             serverError: []
@@ -55,8 +60,9 @@ export default {
     },
     methods: {
         hideDialog() {
-            this.$emit("closed", this.deviceSaved)
+            this.$emit("closed", this.deviceSaved ? "success" : this.deviceDeleted ? "removal" : false)
             this.deviceSaved = false
+            this.deviceDeleted = false
         },
         async saveDeviceName() {
             try {
@@ -65,8 +71,8 @@ export default {
                 this.saving = false
 
                 this.$store.commit("setUserData", {fitDeviceNames: deviceNames})
-                this.deviceSaved = true
 
+                this.deviceSaved = true
                 this.hideDialog()
             } catch (ex) {
                 this.saving = false
@@ -75,6 +81,24 @@ export default {
                     this.serverError = [ex.response.data.message]
                 } else {
                     this.$webError(this, "FitDeviceNameDialog.saveDeviceName", ex)
+                }
+            }
+        },
+        async deleteDevice() {
+            try {
+                this.saving = true
+                const deviceNames = await this.$axios.$delete(`/api/gearwear/${this.user.id}/battery-tracker/${this.deviceId}`)
+                this.saving = false
+
+                this.deviceDeleted = true
+                this.hideDialog()
+            } catch (ex) {
+                this.saving = false
+
+                if (ex.response && ex.response.data?.message) {
+                    this.serverError = [ex.response.data.message]
+                } else {
+                    this.$webError(this, "FitDeviceNameDialog.deleteDevice", ex)
                 }
             }
         }

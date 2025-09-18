@@ -163,4 +163,22 @@ router.delete("/:userId/:gearId", async (req: express.Request, res: express.Resp
     }
 })
 
+/**
+ * Delete the specified device from the list of devices of the battery tracker.
+ */
+router.delete("/:userId/battery-tracker/:deviceId", async (req: express.Request, res: express.Response) => {
+    try {
+        if (!req.params) throw new Error("Missing request params")
+
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        // Delete the device from the battery tracker.
+        await gearwear.deleteBatteryTrackerDevice(user, req.params.deviceId)
+        webserver.renderJson(req, res, {deleted: true})
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
 export = router
