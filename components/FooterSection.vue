@@ -7,7 +7,6 @@
             <n-link to="/account" title="My Account" v-if="loggedIn" nuxt><v-icon class="ml-2 mr-2">mdi-account</v-icon></n-link>
             <n-link to="/help" title="Need help?" nuxt><v-icon class="ml-2 mr-2">mdi-help-circle</v-icon></n-link>
             <a href="https://github.com/strautomator" title="Strautomator @ GitHub"><v-icon class="ml-2 mr-2">mdi-github</v-icon></a>
-            <a href="https://x.com/strautomator" title="Strautomator @ X"><v-icon class="ml-2 mr-2">mdi-twitter</v-icon></a>
         </div>
         <v-footer class="justify-center" color="#101010" height="100">
             <div class="title font-weight-light grey--text text--lighten-1 text-center pt-2">
