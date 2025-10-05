@@ -113,8 +113,12 @@
                         <ul class="ml-n2 mb-6">
                             <li>A single "set and forget" payment of {{ currencySymbol }}{{ $store.state.proPlanDetails.price.lifetime.toFixed(2) }}.</li>
                             <li>A recurring yearly payment of {{ currencySymbol }}{{ $store.state.proPlanDetails.price.yearly.toFixed(2) }}.</li>
-                            <li>A monthly GitHub sponsorship of $1.00.</li>
+                            <li>A recurring monthly GitHub sponsorship of $1.00+.</li>
+                            <li v-if="discount">
+                                Limited offer: try the code <span class="font-weight-bold">{{ discount }}</span> for extra savings on the lifetime or yearly subscriptions!
+                            </li>
                         </ul>
+
                         <v-row>
                             <v-col md="4" sm="12">
                                 <v-btn :class="$route.query.frequency == 'lifetime' ? 'pulse-button' : ''" color="primary" title="Lifetime subscription via Paddle" @click="paddleCheckout('lifetime')" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
@@ -132,7 +136,7 @@
                                 <a href="https://github.com/sponsors/igoramadas" title="Sponsor me on GitHub!">
                                     <v-btn color="primary" title="Sponsorship via GitHub" :x-large="$breakpoint.mdAndUp" block rounded nuxt>
                                         <v-icon left>mdi-github</v-icon>
-                                        Monthly sponsorship
+                                        Sponsorship
                                     </v-btn>
                                 </a>
                             </v-col>
@@ -169,7 +173,8 @@ export default {
             unsubscribed: false,
             unsubDialog: false,
             unsubReason: "",
-            unsubMessage: null
+            unsubMessage: null,
+            discount: null
         }
     },
     computed: {
@@ -219,6 +224,8 @@ export default {
                 Paddle.Environment.set("sandbox")
             }
             window.paddleHasLoaded = true
+
+            this.discount = this.$route.query.discount || null
         }
     },
     methods: {
@@ -258,6 +265,9 @@ export default {
                     } else if (this.user.email) {
                         checkout.customer = {email: this.user.email}
                     }
+                }
+                if (this.discount) {
+                    checkout.discountCode = this.discount
                 }
 
                 Paddle.Checkout.open(checkout)
