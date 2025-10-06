@@ -17,8 +17,9 @@
                             "we", or "our").
                         </p>
                         <p>
-                            Your access to and use of the Service is conditioned upon your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who wish to access or use the Service. By accessing or using
-                            the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you do not have permission to access and use the Service.
+                            The Service is provided on an 'as is' and 'as available' basis. We do not guarantee that the service will be uninterrupted, timely, secure, or error-free. You acknowledge that you use the Service at your own risk and
+                            discretion. Your access to and use of the Service is conditioned upon your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who wish to access or use the Service. By
+                            accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you do not have permission to access and use the Service.
                         </p>
 
                         <h2 class="mt-6 mb-4">Privacy</h2>
@@ -145,22 +146,30 @@
                         <h3 class="mt-4 mb-2">Suspension of the Subscription</h3>
                         <p>
                             We reserve the right to suspend and cancel any existing Subscription, if we find that it is not being used in accordance with the Terms and Conditions of the Service, or due to legal reasons and sanctions. This applies to
-                            all subscriptions, regardless of their payment date or payment method. In case of cancellation, the subscriber will be refunded with a partial amount equivalent to the remaining days of the current billing cycle, minus the
-                            payment processing fees.
+                            all subscriptions, regardless of their payment date or payment method.
                         </p>
 
-                        <h3 class="mt-4 mb-2">Refunds</h3>
+                        <h2 class="mt-6 mb-4">Termination</h2>
+                        <p>Users are free to stop using the Service at any time, for any reason, and can request their account to be deleted directly on the "Account" page of the Service.</p>
                         <p>
-                            We do not guarantee refunds for any Subscription payments that have already been made. We do not guarantee refunds for a Subscription made by mistake. We might, however, give partial refunds, at our discretion, on a
-                            per-case basis.
+                            We may terminate or suspend your access to our Service immediately, with prior notice, if you breach the Terms and Conditions or if we are presented with a request from law enforcement. Upon termination, your right to use
+                            the Service will immediately cease. If you have an active subscription at the time of termination, it will be cancelled.
+                        </p>
+
+                        <h2 class="mt-6 mb-4">Refunds</h2>
+                        <p>
+                            We do not guarantee refunds for any Subscription payments that have already been made. We do not guarantee refunds for a Subscription made by mistake. We do not issue refunds for subscriptions that were terminated due to
+                            breach of the Terms, or due to law enforcement requests. We might, however, give partial refunds, at our discretion, on a per-case basis.
                         </p>
                         <p>It's your responsibility to cancel your Subscription before the next billing cycle, if you decide that you do not want to keep using the Subscription.</p>
+                        <p>All refunds are processed by our payment providers directly.</p>
+
+                        <h2 class="mt-6 mb-4">Dependency on Strava</h2>
                         <p>
                             The Service is fully dependent on the Strava API, which is a third party provider. We cannot guarantee that the Strava API will work or exist at any time in the future. If for any reason Strava decides to disable their
-                            API, or in the event that our connection to their API is terminated, all of the core features of the Service will cease to work. In such case, subscribers that had their last payment made in the last 30 days are entitled
-                            to a refund for that last payment alone.
+                            API, or in the event that our connection to their API is terminated, all of the core features of the Service will cease to work. In such case, yearly subscribers that had their last payment made in the last 30 days are
+                            entitled to a refund for that last payment alone. Users with a lifetime subscription are not entitled to a refund.
                         </p>
-                        <p>All refunds are processed by our payment providers directly.</p>
 
                         <h2 class="mt-6 mb-4">Limitation of liability</h2>
                         <p>
