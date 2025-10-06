@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "25.402.12033",
+    "version": "25.411.12058",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -49,7 +49,7 @@
         "@nuxt/types": "^2.18.1",
         "@types/express": "^5.0.3",
         "@types/lodash": "^4.17.20",
-        "@types/node": "^24.6.0",
+        "@types/node": "^24.7.0",
         "axios-debug-log": "^0.8.4",
         "chalk": "^4.1.2",
         "nodemon": "^3.1.10",
