@@ -24,7 +24,7 @@
                         <tr>
                             <td>Weather providers</td>
                             <td class="text-center">1</td>
-                            <td class="text-center">6</td>
+                            <td class="text-center">5</td>
                         </tr>
                         <tr>
                             <td>Personal records</td>

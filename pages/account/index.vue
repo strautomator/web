@@ -52,7 +52,7 @@
                 </div>
                 <div v-if="user.fitnessLevel">
                     Fitness level: {{ user.fitnessLevel }}/5 ({{ $store.state.fitnessLevel[user.fitnessLevel] }})
-                    <n-link to="/help?q=fitness level" title="Your estimated fitness from 1 (Untrained) to 5 (Elite)" nuxt><v-icon color="primary" class="ml-1 mt-n1" small>mdi-help-circle-outline</v-icon></n-link>
+                    <n-link to="/help/faq?q=fitness level" title="Your estimated fitness from 1 (Untrained) to 5 (Elite)" nuxt><v-icon color="primary" class="ml-1 mt-n1" small>mdi-help-circle-outline</v-icon></n-link>
                 </div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units on Strava: {{ user.profile.units }}</div>
@@ -149,7 +149,7 @@
                         <h3 class="mb-2">Privacy mode</h3>
                         <div class="body-2">
                             Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
-                            <n-link to="/help?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
+                            <n-link to="/help/faq?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
                         </div>
                         <v-switch
                             class="mt-2"
