@@ -12,13 +12,14 @@
 
                     <h2 class="mb-2">How can I subscribe?</h2>
                     <v-img class="mb-2" src="/images/feature/calendar-subscribe.png"></v-img>
-                    <div>
-                        <ul class="ml-n2">
-                            <li>Go to the Calendar tab</li>
-                            <li>Choose your desired calendar options</li>
-                            <li>Use the "Subscribe to calendar" button, or copy the URL directly from the text field</li>
-                        </ul>
-                    </div>
+
+                    <ul class="ml-n2 mb-6">
+                        <li>Go to the Calendar tab</li>
+                        <li>Choose your desired calendar options</li>
+                        <li>Use the "Subscribe to calendar" button, or copy the URL directly from the text field</li>
+                    </ul>
+
+                    <p>PRO users can export many years of past activities and club events, and the next year of upcoming club events. Free accounts are limited to just a few weeks of data.</p>
                 </div>
             </v-card-text>
         </v-card>
@@ -38,7 +39,7 @@ export default {
     components: {FeatureTitle, BtnCalendar},
     head() {
         return {
-            title: "Export your Strava calendar"
+            title: "Export your Strava activities and club events to your calendar"
         }
     },
     methods: {

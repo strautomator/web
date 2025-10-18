@@ -21,15 +21,14 @@ vue
                     <div class="mb-8">Review the automation conditions and actions, save, and you're good to go!</div>
 
                     <h2 class="mb-2">Sample commute conditions</h2>
-                    <div class="mb-2">
-                        <p>You can use any conditions mix to define what is a commute. Some ideas:</p>
-                        <ul class="ml-n2">
-                            <li>Distance is less than 10km</li>
-                            <li>Average speed is less than 20kph</li>
-                            <li>Device used is a Garmin Edge 130</li>
-                            <li>Time is around 8:00 AM</li>
-                        </ul>
-                    </div>
+                    <p>You can use any conditions mix to define what is a commute. Some ideas:</p>
+                    <ul class="ml-n2 mb-6">
+                        <li>Distance is less than 10km</li>
+                        <li>Average speed is less than 20kph</li>
+                        <li>Device used is a Garmin Edge 130</li>
+                        <li>Time is around 8:00 AM</li>
+                    </ul>
+                    <p>And if you don't want to SPAM other users feeds with your commutes, you can also <a href="/feature/mute">mute</a> these activities so they won't show up for others.</p>
                 </div>
             </v-card-text>
         </v-card>

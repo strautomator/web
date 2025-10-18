@@ -18,7 +18,7 @@ vue
 
                     <h2 class="mb-2">3. Review your automation</h2>
                     <v-img class="mb-2" src="/images/feature/mapstyle-automation.png"></v-img>
-                    <div class="mb-8">Review the automation conditions and actions, save, and you're good to go!</div>
+                    <div>Review the automation conditions and actions, save, and you're good to go!</div>
                 </div>
             </v-card-text>
         </v-card>

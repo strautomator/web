@@ -5,7 +5,7 @@
         <v-card color="black" class="mb-4 home-panel">
             <v-card-text>
                 <div class="text-left">
-                    <p>With Strautomator you can easily track the mileage and usage of your bike components, and get an alert when it's time to change.</p>
+                    <p>With Strautomator you can easily track the mileage and usage of your bike components, and get notified when they need to be replaced.</p>
 
                     <h2 class="mb-2">1. Create a new configuration</h2>
                     <v-img class="mb-2" src="/images/feature/gearwear-list.png"></v-img>
@@ -30,7 +30,7 @@
                     </p>
                     <p>
                         When a component hits the specified alert threshold, you'll get an email to remind you that it's time to swap it. Reminders will be sent out every few days until you swap the component and trigger the mileage reset using the
-                        link provided on the email (or directly on the Strautomator website).
+                        link provided on the email.
                     </p>
                 </div>
             </v-card-text>

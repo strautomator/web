@@ -6,7 +6,7 @@ vue
         <v-card color="black" class="mb-4 home-panel">
             <v-card-text>
                 <div class="text-left">
-                    <p>Strautomator can automatically mute your commutes, rides to the bakery, short runs... basically any activity that you wish to be hidden from friend's feeds.</p>
+                    <p>Strautomator can automatically mute your commutes, rides to the bakery, short runs... basically any activity that you wish to be hidden from other home feeds.</p>
 
                     <h2 class="mb-2">1. First, define the conditions</h2>
                     <v-img class="mb-2" src="/images/feature/condition-end-location.png"></v-img>

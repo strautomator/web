@@ -1,7 +1,7 @@
 vue
 <template>
     <v-main fluid>
-        <feature-title header="Upcoming Strava events map" />
+        <feature-title header="Upcoming club events map" />
 
         <v-card color="black" class="mb-4 home-panel">
             <v-card-text>
@@ -31,7 +31,7 @@ export default {
     components: {FeatureTitle, BtnMap},
     head() {
         return {
-            title: "View your upcoming club events map from Strava"
+            title: "View your upcoming Strava club events on a map"
         }
     },
     methods: {

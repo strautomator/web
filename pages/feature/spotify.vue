@@ -21,14 +21,13 @@ vue
                     <div class="mb-8">Review the automation conditions and actions, save, and enjoy having your tracks played during an activity shown in Strava.</div>
 
                     <h2 class="mb-2">Available Spotify tags</h2>
-                    <div class="mb-2">
-                        <p>The following tags are available for Spotify:</p>
-                        <ul class="ml-n2">
-                            <li>Full track list</li>
-                            <li>Title of track playing at the start or end</li>
-                            <li>Lyrics of the track playing at the start or end</li>
-                        </ul>
-                    </div>
+                    <p>The following tags are available for Spotify:</p>
+                    <ul class="ml-n2 mb-6">
+                        <li>Full track list</li>
+                        <li>Title of track playing at the start or end</li>
+                        <li>Lyrics of the track playing at the start or end</li>
+                    </ul>
+                    <p>The Spotify integration is available to all users, but its usage might be restricted to PRO accounts at peak times.</p>
                 </div>
             </v-card-text>
         </v-card>
@@ -48,7 +47,7 @@ export default {
     components: {FeatureTitle, BtnAutomations},
     head() {
         return {
-            title: "Spotify tracks and lyrics on your activities"
+            title: "Spotify tracks and lyrics on your Strava activities"
         }
     },
     methods: {

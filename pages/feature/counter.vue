@@ -37,7 +37,7 @@ export default {
     components: {FeatureTitle, BtnAutomations},
     head() {
         return {
-            title: "Auto-incrementing counters on your activities"
+            title: "Auto-incrementing counters on your Strava activities"
         }
     },
     methods: {

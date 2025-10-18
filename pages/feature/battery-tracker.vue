@@ -42,7 +42,7 @@ export default {
     components: {FeatureTitle, BtnGear},
     head() {
         return {
-            title: "Track your Strava equipment mileage"
+            title: "Track your sensor batteries from Strava activities"
         }
     },
     methods: {

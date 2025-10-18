@@ -43,9 +43,7 @@
 
                     <h2 class="mb-2">How accurate is the estimation?</h2>
                     <div class="mb-2">The calculation of the FTP based on the activity power and time is using well known formulas.</div>
-                    <div class="mb-2">
-                        The final estimation of your FTP is quite conservative, as it gives more weight to your current FTP set on Strava. So if you're taking it easy on the bike for some weeks, it won't drastically underestimate your threshold.
-                    </div>
+                    <div class="mb-2">The final estimation of your FTP is quite conservative, as it gives more weight to your current FTP set on Strava. So if you're taking it easy on the bike for some weeks, it won't drastically lower it.</div>
                 </div>
             </v-card-text>
         </v-card>
