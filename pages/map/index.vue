@@ -27,7 +27,9 @@
                                         <th>Date (next {{ days }} days)</th>
                                         <th>Title</th>
                                         <th class="text-center">Details</th>
-                                        <th class="text-center">Weather</th>
+                                        <th class="text-center">
+                                            Weather<sup>{{ user.isPro ? "" : "*" }}</sup>
+                                        </th>
                                         <th class="text-center">Joined</th>
                                         <th class="text-right">Map</th>
                                     </tr>
@@ -50,7 +52,7 @@
                                             {{ getEstimatedHours(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            <template v-if="!user.isPro"><v-chip outlined small>PRO</v-chip></template>
+                                            <template v-if="!user.isPro">-</template>
                                             <template v-else-if="ed.event.route">
                                                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                                 <template v-else-if="ed.weather.length == 0">-</template>
@@ -83,7 +85,7 @@
                                     <v-icon v-if="ed.event.joined" small>mdi-check-circle</v-icon>
                                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                     <div class="ml-1 float-right text-right" v-else>
-                                        <div>{{ ed.weatherIcons.join(" ") }}</div>
+                                        <div>{{ user.isPro ? ed.weatherIcons.join(" ") : "" }}</div>
                                         <div class="text-caption">
                                             <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
                                             <template v-else>{{ ed.minTemperature }} / {{ ed.maxTemperature }}</template>
@@ -98,6 +100,7 @@
                                     <v-divider class="mt-3 mb-1"></v-divider>
                                 </div>
                             </div>
+                            <div class="caption text-md-right" v-if="!user.isPro">* Weather forecast is available to PRO users</div>
                             <div class="text-center text-md-left mt-4 mt-md-3">
                                 <v-btn color="primary" title="Download routes" @click.stop="showDownloadDialog" :disabled="!routeIds || !user.isPro" small rounded>
                                     <v-icon left>mdi-folder-download</v-icon>
