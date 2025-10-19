@@ -417,7 +417,7 @@ export default {
         },
         async loadWeather() {
             try {
-                if (!user.isPro) return
+                if (!this.user.isPro) return
 
                 const idDateFormat = "MMDD-HHmm"
                 const query = []
