@@ -50,7 +50,8 @@
                                             {{ getEstimatedHours(ed.event) }}
                                         </td>
                                         <td class="pt-2 pb-2 text-center">
-                                            <template v-if="ed.event.route">
+                                            <template v-if="!user.isPro"><v-chip outlined small>PRO</v-chip></template>
+                                            <template v-else-if="ed.event.route">
                                                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                                 <template v-else-if="ed.weather.length == 0">-</template>
                                                 <div v-else>
@@ -105,7 +106,7 @@
                             </div>
                         </template>
                         <div v-else>
-                            <p>Oh, crap... your clubs have no upcoming events planned in the next {{ days }} days.</p>
+                            <p>Oh, crap... your clubs have no upcoming events planned for the next {{ days }} days.</p>
                             <v-alert border="top" color="accent" class="mb-0" v-if="!user.isPro">
                                 <div>PRO accounts can access up to the next {{ $store.state.proPlanDetails.futureCalendarDays }} days on the calendar!</div>
                                 <v-btn color="primary" class="mt-4" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
@@ -163,6 +164,7 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 import mapStyles from "~/plugins/mapstyles.js"
+import {user} from "../../../core/lib/loghelper"
 
 let zIndexMax = 100
 const fullscreenEvents = ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange"]
@@ -415,6 +417,8 @@ export default {
         },
         async loadWeather() {
             try {
+                if (!user.isPro) return
+
                 const idDateFormat = "MMDD-HHmm"
                 const query = []
 
