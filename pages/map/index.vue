@@ -167,7 +167,6 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
 import mapStyles from "~/plugins/mapstyles.js"
-import {user} from "../../../core/lib/loghelper"
 
 let zIndexMax = 100
 const fullscreenEvents = ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange"]
