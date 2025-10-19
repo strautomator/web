@@ -154,6 +154,9 @@ export default {
         isSpotify() {
             return this.selectedProperty?.value == "spotify.track"
         },
+        isPace() {
+            return this.selectedProperty?.value.substring(0, 4) == "pace"
+        },
         isBoolean() {
             return this.selectedProperty?.type == "boolean"
         },
@@ -373,7 +376,11 @@ export default {
                         result.friendlyValue = `From ${fromDate} to ${toDate}`
                     } else if (this.selectedProperty.type == "time") {
                         const arrTime = result.value.split(":")
-                        result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
+                        if (this.isPace()) {
+                            result.value = parseInt(arrTime[0]) * 60 + parseInt(arrTime[1])
+                        } else {
+                            result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
+                        }
                         result.friendlyValue = this.valueInput
                     }
                 }
