@@ -10,7 +10,7 @@
             <v-alert v-if="stravaStatus" color="error" border="top" class="mb-4">
                 <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
                 <div>
-                    Please note that some of the automations might fail to run during this incident. For more information please check
+                    Please note that some of the automations might fail to run, and some features might not work reliably during this incident. For more information please check
                     <a class="secondary--text" href="https://status.strava.com" title="Strava API status" target="strava">status.strava.com.</a>
                 </div>
             </v-alert>
