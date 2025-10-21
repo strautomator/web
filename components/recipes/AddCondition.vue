@@ -376,7 +376,7 @@ export default {
                         result.friendlyValue = `From ${fromDate} to ${toDate}`
                     } else if (this.selectedProperty.type == "time") {
                         const arrTime = result.value.split(":")
-                        if (this.isPace()) {
+                        if (this.isPace) {
                             result.value = parseInt(arrTime[0]) * 60 + parseInt(arrTime[1])
                         } else {
                             result.value = parseInt(arrTime[0]) * 3600 + parseInt(arrTime[1]) * 60
