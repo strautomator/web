@@ -1,9 +1,15 @@
 {
     "default": {
-        "au": "https://icancycling.com/collections/au-warehouse?ref=strautomator&utm_source=affiliate",
+        "any": "https://icancycling.com/?ref=strautomator&utm_source=affiliate",
+        "be": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
+        "ca": "https://icancycling.com/collections/us-warehouse?ref=strautomator&utm_source=affiliate",
         "de": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
+        "dk": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
         "es": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
-        "uk": "https://icancycling.com/collections/uk-warehouse?ref=strautomator&utm_source=affiliate",
+        "fr": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
+        "nl": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
+        "pt": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
+        "uk": "https://icancycling.com/collections/ican-wheels-frames-europe?ref=strautomator&utm_source=affiliate",
         "us": "https://icancycling.com/collections/us-warehouse?ref=strautomator&utm_source=affiliate"
     },
 
