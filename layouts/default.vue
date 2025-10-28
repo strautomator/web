@@ -148,7 +148,7 @@ export default {
     authenticated: true,
     components: {AdsPanel, FooterSection, TopNotifications},
     head: {
-        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
+        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava"}]
     },
     data() {
         return {

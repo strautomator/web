@@ -11,18 +11,23 @@
             </v-container>
         </v-main>
 
+        <div class="mt-6 mb-2" v-if="$route.path != '/feature'">
+            <btn-automations />
+        </div>
+
         <footer-section />
     </v-app>
 </template>
 
 <script>
+import BtnAutomations from "~/components/buttons/Automations.vue"
 import FeatureLinks from "~/components/FeatureLinks.vue"
 import FooterSection from "~/components/FooterSection.vue"
 
 export default {
-    components: {FeatureLinks, FooterSection},
+    components: {BtnAutomations, FeatureLinks, FooterSection},
     head: {
-        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava."}]
+        meta: [{hid: "description", name: "description", content: "Automate your Strava activities! Strautomator is like IFTTT, but for Strava"}]
     }
 }
 </script>
