@@ -54,7 +54,6 @@ export default {
                 {id: "365rider", title: "365 Rider", url: "https://links.strautomator.com/l/365rider"},
                 {id: "aliexpress", title: "AliExpress", url: "https://links.strautomator.com/l/aliexpress-cycling-components"},
                 {id: "decathlon", title: "Decathlon", url: "https://links.strautomator.com/l/decathlon", country: ["AT", "DE", "GB", "IT", "IE", "UK"]},
-                {id: "halfords", title: "Halfords", url: "https://links.strautomator.com/l/halfords", country: ["GB", "IE", "IM", "UK"]},
                 {id: "ican", title: "ICAN", url: "https://links.strautomator.com/l/ican"},
                 {id: "nextdns", title: "NextDNS", url: "https://links.strautomator.com/l/nextdns"},
                 {id: "ribble", title: "Ribble", url: "https://links.strautomator.com/l/ribble", country: ["AT", "DE", "GB", "IE", "IM", "UK"]},

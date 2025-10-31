@@ -27,7 +27,7 @@
                             </div>
                             <div class="mt-1 ml-n1">
                                 <v-chip class="mb-1 mr-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fs-${propName}`" small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
-                                <v-chip class="mb-1" v-if="activity.linkback" title="Link to strautomator.com" small>Linkback</v-chip>
+                                <v-chip class="mb-1" v-if="activity.linkback || activity.backlink" title="Link to strautomator.com" small>Backlink</v-chip>
                                 <v-chip class="mb-1" v-if="isActivityRecord(activity)" title="PR" small><v-icon class="mr-1" small>mdi-medal</v-icon>PR</v-chip>
                             </div>
                         </template>
@@ -46,7 +46,7 @@
                     </td>
                     <td class="pt-2 pb-2" v-if="$breakpoint.mdAndUp">
                         <v-chip class="mb-1 mr-1" v-for="(value, propName) in activity.updatedFields" :title="value" :key="`${activity.id}-fm-${propName}`" small>{{ getFriendlyUpdatedField(propName) }}</v-chip>
-                        <v-chip class="mb-1" v-if="activity.linkback" title="Link to strautomator.com" small>Linkback</v-chip>
+                        <v-chip class="mb-1" v-if="activity.linkback || activity.backlink" title="Link to strautomator.com" small>Backlink</v-chip>
                         <v-chip class="mb-1" v-if="isActivityRecord(activity)" title="PR" small><v-icon class="mr-1" small>mdi-medal</v-icon>PR</v-chip>
                     </td>
                 </tr>

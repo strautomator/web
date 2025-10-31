@@ -178,11 +178,11 @@
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
-                        <h3 class="mb-2">Linkback preferences</h3>
+                        <h3 class="mb-2">Backlink preferences</h3>
                         <div class="body-2">
-                            <span v-if="linksOn == 1">A linkback will be added to all activities processed by Strautomator.</span>
-                            <span v-else-if="linksOn > 0">A linkback {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
-                            <span v-else>A linkback won't be added to your activities.</span>
+                            <span v-if="linksOn == 1">A backlink will be added to all activities processed by Strautomator.</span>
+                            <span v-else-if="linksOn > 0">A backlink {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
+                            <span v-else>A backlink won't be added to your activities.</span>
                             <v-radio-group v-model="linksOn" :row="$breakpoint.mdAndUp">
                                 <v-radio label="100%" :value="1"></v-radio>
                                 <v-radio label="50%" :value="2"></v-radio>
@@ -194,7 +194,7 @@
 
                     <div class="mt-4" v-if="linksOn > 0">
                         <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for linkbacks?</div>
+                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for backlinks?</div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
 

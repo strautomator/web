@@ -88,7 +88,7 @@
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
                         <tr>
-                            <td>No linkbacks</td>
+                            <td>No backlinks</td>
                             <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                             <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                         </tr>
