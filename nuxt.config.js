@@ -14,7 +14,7 @@ module.exports = {
             {
                 hid: "description",
                 name: "description",
-                content: "Turbocharge your Strava activities with automated rules! Strautomator is like IFTTT, but for Strava."
+                content: "Turbocharge your Strava activities with automated rules! Strautomator is like IFTTT, but for Strava"
             }
         ],
         link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}],
