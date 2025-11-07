@@ -16,7 +16,8 @@
                 <span>Strautomator.com</span>
                 <v-chip v-if="isPro" color="primary" class="caption mb-1 ml-1" small outlined>PRO</v-chip>
                 <div class="mt-3 caption">
-                    <n-link to="/tc" title="Terms and Conditions" nuxt>Terms and Conditions</n-link>
+                    <n-link to="/billing" title="Get PRO" v-if="!isPro" nuxt>Get PRO</n-link>
+                    <n-link to="/tc" title="Terms and Conditions" class="ml-5" nuxt>Terms and Conditions</n-link>
                     <n-link to="/impressum" title="Impressum" class="ml-5" v-if="impressum" nuxt>Impressum</n-link>
                 </div>
             </div>
