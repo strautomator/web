@@ -211,7 +211,7 @@ export default {
             }
 
             const actionType = actionObj.text
-            const valueText = action.friendlyValue || action.value
+            const valueText = (action.friendlyValue || action.value).replace(/\n/g, " ↵ ")
             const isBoolean = this.booleanActions.includes(action.type)
 
             if (isBoolean) {
