@@ -448,7 +448,6 @@ import _ from "lodash"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
-import {user} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
