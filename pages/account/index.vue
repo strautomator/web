@@ -33,6 +33,10 @@
                 </template>
             </v-snackbar>
             <div>
+                <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" v-if="!user.isPro" small rounded nuxt>
+                    <v-icon left>mdi-credit-card</v-icon>
+                    Subscribe to PRO
+                </v-btn>
                 <div class="mt-3">
                     {{ user.profile.firstName }} {{ user.profile.lastName }}
                     <span v-if="user.preferences.privacyMode">(anonymized)</span>
@@ -221,8 +225,10 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <h3 class="mt-5 mb-3">Status: {{ $store.state.user.isPro ? "PRO" : "Free" }} account</h3>
-            <free-pro-table />
+            <template v-if="!user.isPro">
+                <h3 class="mt-5 mb-3">Free vs. PRO</h3>
+                <free-pro-table />
+            </template>
             <div class="mt-4 text-center text-md-left">
                 <v-btn color="primary" to="/billing" title="PRO Subscription" rounded nuxt>
                     <v-icon left>mdi-credit-card-outline</v-icon>
@@ -442,6 +448,7 @@ import _ from "lodash"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
+import {user} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,
