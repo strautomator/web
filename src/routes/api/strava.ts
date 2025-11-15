@@ -162,7 +162,7 @@ router.get("/:userId/processed-activities/:id", async (req: express.Request, res
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const activity = await strava.activityProcessing.getProcessedActivity(user, req.params.id)
+        const activity = await strava.activityProcessing.getProcessedActivity(user, parseInt(req.params.id))
         webserver.renderJson(req, res, activity)
     } catch (ex) {
         webserver.renderError(req, res, ex, 404)
@@ -536,7 +536,7 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
         const options = {
             method: "GET",
             baseURL: settings.api.url || `${settings.app.url}api/`,
-            url: `/strava/webhook/${settings.strava.api.urlToken}/${userId}/${objId}?action=${objAspect}`,
+            url: `/strava/webhook/${settings.strava.api.urlToken}/${userId}/${objId}?action=${objAspect}&timestamp=${obj.event_time}`,
             headers: {"User-Agent": `${settings.app.title} / ${packageVersion}`}
         }
 
@@ -589,15 +589,15 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
                     user.dateLastProcessedActivity = now
                 }
             }
-            events.emit("Strava.createActivity", user, activityId)
+            events.emit("Strava.activityCreated", user, activityId)
         }
         // Activity updated?
         else if (action == "update") {
-            events.emit("Strava.updateActivity", user, activityId)
+            events.emit("Strava.activityUpdated", user, activityId)
         }
         // Activity deleted?
         else if (action == "delete") {
-            events.emit("Strava.deleteActivity", user, activityId)
+            events.emit("Strava.activityDeleted", user, activityId)
         }
 
         // Update user.
