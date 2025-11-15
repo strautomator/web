@@ -274,6 +274,24 @@ export default {
             if (recipe.op == "AND" && (recipe.samePropertyOp == "AND" || recipe.conditions.length < 3)) return "ALL"
             if (recipe.op == "OR" && (recipe.samePropertyOp == "OR" || recipe.conditions.length < 3)) return "ANY"
             return "SOME"
+        },
+        // Share the specified recipe.
+        async shareRecipe(recipe) {
+            const data = {
+                title: recipe.title,
+                actions: recipe.actions,
+                conditions: recipe.conditions,
+                defaultFor: recipe.defaultFor,
+                op: recipe.op,
+                samePropertyOp: recipe.samePropertyOp
+            }
+
+            try {
+                const sharedRecipe = await this.$axios.$post(`/api/shared-recipes/${this.$store.state.user.id}/new`, data)
+                this.$router.push({path: `/automations/shared?new=${sharedRecipe.id}&title=${sharedRecipe.title}`})
+            } catch (ex) {
+                this.$webError(this, "RecipeMixin.shareRecipe", ex)
+            }
         }
     }
 }
