@@ -133,8 +133,6 @@
                 </v-btn>
             </div>
 
-            <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig && gearwearConfig.components.length > 0" />
-
             <v-card class="mt-4" v-if="gearwearHistory?.length > 0" outlined>
                 <v-card-title class="accent">
                     <span>History</span>
@@ -144,7 +142,7 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Components</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -158,6 +156,8 @@
                     </v-simple-table>
                 </v-card-text>
             </v-card>
+
+            <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig?.components.length > 0" />
 
             <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
@@ -500,6 +500,11 @@ export default {
         buildHistory() {
             const dateHistory = {}
 
+            if (this.gearwearConfig.lastUpdate) {
+                const hDate = this.$dayjs(this.gearwearConfig.lastUpdate.date).format(historyDateFormat)
+                dateHistory[hDate] = [{message: `Activities tracked: ${this.gearwearConfig.lastUpdate.activities.join(", ")}`, tracking: true}]
+            }
+
             for (let c of this.gearwearConfig.components) {
                 if (c.history?.length > 0) {
                     for (let h of c.history) {
@@ -507,7 +512,7 @@ export default {
                         if (!dateHistory[hDate]) {
                             dateHistory[hDate] = []
                         }
-                        dateHistory[hDate].push({message: `${c.name} changed (${h.distance}${this.distanceUnits})`, reset: true})
+                        dateHistory[hDate].push({message: `${c.name} replaced (${h.distance}${this.distanceUnits})`, reset: true})
                     }
                 }
 
