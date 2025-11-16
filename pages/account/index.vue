@@ -33,10 +33,6 @@
                 </template>
             </v-snackbar>
             <div>
-                <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" v-if="!user.isPro" small rounded nuxt>
-                    <v-icon left>mdi-credit-card</v-icon>
-                    Subscribe to PRO
-                </v-btn>
                 <div class="mt-3">
                     {{ user.profile.firstName }} {{ user.profile.lastName }}
                     <span v-if="user.preferences.privacyMode">(anonymized)</span>
