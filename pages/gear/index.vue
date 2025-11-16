@@ -118,7 +118,7 @@
                     </v-alert>
                     <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
                         <template v-if="user.isPro">
-                            Gear tracking happens instantly for the vast majority of activities processed by Strautomator, but can have a delay of up to {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} to complete.
+                            Gear tracking happens instantly for the vast majority of activities processed by Strautomator PRO, but can have a delay of up to {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} to get triggered.
                             <br v-if="$breakpoint.mdAndUp" />
                             You can change this setting on your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
                         </template>

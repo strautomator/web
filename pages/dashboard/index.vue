@@ -28,11 +28,18 @@
                     <n-link color="primary" v-else-if="lastAnnouncement.href" :title="lastAnnouncement.title" :to="lastAnnouncement.href" @click.native="readAnnouncement()" nuxt>More...</n-link>
                 </div>
             </v-alert>
+            <div v-if="!user.isPro">
+                Want to get the most out of Strautomator? Consider
+                <n-link to="/billing" title="Strautomator PRO" nuxt>upgrading to PRO</n-link>
+                for only {{ currencySymbol }}{{ $store.state.proPlanDetails.price.yearly.toFixed(2) }}
+                to unlock all the features!
+            </div>
             <div class="mb-4">
                 See something new? Check the
                 <n-link to="/changelog" title="Strautomator updates" nuxt>changelog</n-link>
                 to keep track of new features and bug fixes.
             </div>
+
             <div v-if="!recipes || recipes.length == 0">
                 <create-first />
             </div>
@@ -121,13 +128,14 @@ import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
 import stravaMixin from "~/mixins/stravaMixin.js"
+import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 import CreateFirst from "~/components/recipes/CreateFirst.vue"
 import ProcessedActivities from "~/components/ProcessedActivities.vue"
 
 export default {
     authenticated: true,
     components: {CreateFirst, ProcessedActivities},
-    mixins: [userMixin, recipeMixin, stravaMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin, subscriptionMixin],
     head() {
         return {
             title: "Dashboard"

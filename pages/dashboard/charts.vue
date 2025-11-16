@@ -22,10 +22,11 @@
                         </div>
                     </div>
                     <div class="mt-4 pl-4 pr-4" v-if="loading">
-                        <p>
-                            <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                            Loading statistics...
-                        </p>
+                        <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                        <span>Loading statistics...</span>
+                    </div>
+                    <div v-else-if="!processedActivities || processedActivities.length == 0" class="mt-4 pl-4 pr-4">
+                        <span>No processed activities found to display statistics.</span>
                     </div>
                     <canvas id="main-chart" :height="$breakpoint.mdAndUp ? '' : '320'"></canvas>
                 </v-card-text>
@@ -35,7 +36,7 @@
                 <div class="mb-3 mb-md-0">
                     Thinking about the future instead?
                     <br v-if="!$breakpoint.mdAndUp" />
-                    Try the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Upcoming Events Map</n-link>.
+                    See your upcoming events on the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Map</n-link>.
                 </div>
             </v-alert>
         </v-container>
@@ -115,12 +116,12 @@ export default {
     },
     methods: {
         createChart() {
-            if (!this.processedActivities || this.processedActivities.length == 0) {
-                return
-            }
-
             if (this.loading) {
                 this.loading = false
+            }
+
+            if (!this.processedActivities || this.processedActivities.length == 0) {
+                return
             }
 
             let now = this.$dayjs()
