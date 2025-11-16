@@ -42,48 +42,71 @@
 
             <div class="mt-5 mb-3" v-else>
                 <template v-if="gearwearConfig?.components.length > 0">
-                    <template v-for="comp of gearwearConfig.components">
-                        <v-card class="mb-4" outlined>
-                            <v-card-title class="accent">
-                                <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
-                                    <span>{{ comp.name }}</span>
-                                </a>
-                                <v-spacer></v-spacer>
-                                <span class="grey--text caption" v-if="comp.disabled"></span>
-                            </v-card-title>
-                            <v-card-text class="pa-0">
-                                <v-row class="pl-5 pr-5" no-gutters>
-                                    <v-col cols="12">
-                                        <div class="mt-4">
-                                            <span>{{ comp.currentDistance }} {{ distanceUnits }}</span>
-                                            <span class="float-right" v-if="comp.alertDistance">{{ comp.alertDistance }} {{ distanceUnits }}</span>
-                                            <span class="float-right" v-else>-</span>
-                                            <v-progress-linear class="mt-2" color="secondary" v-if="comp.alertDistance" :background-color="getProgressBg(comp, 'distance')" :value="getProgressValue(comp, 'distance')" rounded></v-progress-linear>
-                                        </div>
-                                        <div class="mt-1">
-                                            <v-progress-linear class="mb-2" color="secondary" v-if="comp.alertTime" :background-color="getProgressBg(comp, 'time')" :value="getProgressValue(comp, 'time')" rounded></v-progress-linear>
-                                            {{ getGearHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
-                                            <span class="float-right" v-if="comp.alertTime">{{ getGearHours(comp.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</span>
-                                            <span class="float-right" v-else>-</span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <div class="float-right">
-                                                <v-switch class="pa-0 ma-0 mr-n2" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
+                    <v-row>
+                        <v-col cols="12" sm="12" md="6" v-for="comp of gearwearConfig.components" :key="comp.name">
+                            <v-card outlined>
+                                <v-card-title class="accent">
+                                    <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
+                                        <v-icon color="primary" class="mt-n1">{{ getComponentIcon(comp) }}</v-icon>
+                                        <span>{{ comp.name }}</span>
+                                    </a>
+                                    <v-spacer></v-spacer>
+                                    <span class="grey--text caption" v-if="comp.disabled">DISABLED</span>
+                                </v-card-title>
+                                <v-card-text class="pa-0">
+                                    <v-row class="pl-5 pr-5" no-gutters>
+                                        <v-col cols="12">
+                                            <div class="mt-4">
+                                                <span>{{ comp.currentDistance }} {{ distanceUnits }}</span>
+                                                <span class="float-right" v-if="comp.alertDistance">{{ comp.alertDistance }} {{ distanceUnits }}</span>
+                                                <span class="float-right" v-else>-</span>
+                                                <v-progress-linear
+                                                    class="mt-2"
+                                                    v-if="comp.alertDistance"
+                                                    :color="getProgressColor(comp)"
+                                                    :background-color="getProgressBg(comp, 'distance')"
+                                                    :value="getProgressValue(comp, 'distance')"
+                                                    rounded
+                                                ></v-progress-linear>
                                             </div>
-                                            <v-btn color="removal" class="ml-n1 mr-2" :title="'Delete ' + comp.name" @click.stop="showDeleteComponentDialog(comp)" outlined small rounded>
-                                                <v-icon left>mdi-minus-circle-outline</v-icon>
-                                                Delete
-                                            </v-btn>
-                                            <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" outlined small rounded>
-                                                <v-icon left>mdi-refresh</v-icon>
-                                                Reset
-                                            </v-btn>
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </template>
+                                            <div class="mt-1">
+                                                <v-progress-linear class="mb-2" v-if="comp.alertTime" :color="getProgressColor(comp)" :background-color="getProgressBg(comp, 'time')" :value="getProgressValue(comp, 'time')" rounded></v-progress-linear>
+                                                {{ getGearHours(comp.currentTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}
+                                                <span class="float-right" v-if="comp.alertTime">{{ getGearHours(comp.alertTime) }} {{ $breakpoint.mdAndUp ? "hours" : "h" }}</span>
+                                                <span class="float-right" v-else>-</span>
+                                            </div>
+                                            <div class="mt-3">
+                                                <div class="float-right">
+                                                    <v-switch class="pa-0 ma-0 mr-n2" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
+                                                </div>
+                                                <v-btn color="removal" class="ml-n1 mr-2" :title="'Delete ' + comp.name" @click.stop="showDeleteComponentDialog(comp)" outlined small rounded>
+                                                    <v-icon left>mdi-minus-circle-outline</v-icon>
+                                                    Delete
+                                                </v-btn>
+                                                <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" outlined small rounded>
+                                                    <v-icon left>mdi-refresh</v-icon>
+                                                    Reset
+                                                </v-btn>
+                                            </div>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="6" key="new">
+                            <v-card @click="showComponentDialog({})" outlined>
+                                <v-card-title class="accent">
+                                    <a title="Add new component">
+                                        <v-icon color="primary" class="mt-n1">mdi-plus-circle</v-icon>
+                                        <span class="primary--text">Add new component</span>
+                                    </a>
+                                </v-card-title>
+                                <v-card-text class="pa-4 pt-8">
+                                    <v-skeleton-loader type="text" :boilerplate="true" />
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </template>
 
                 <div v-else>
@@ -98,14 +121,7 @@
                 </div>
             </div>
 
-            <div class="mt-1 mb-4 text-center text-md-left">
-                <v-btn color="primary" title="Add a new component" @click.stop="showComponentDialog({})" small rounded>
-                    <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                    Add component
-                </v-btn>
-            </div>
-
-            <div class="text-center text-md-left mt-3 mb-8">
+            <div class="text-center text-md-left mt-8 mb-8">
                 <v-btn color="primary" title="Save this configuration" :disabled="!isConfigValid() || overMaxGearWear" @click="saveConfig" rounded>
                     <v-icon left>mdi-content-save</v-icon>
                     Save configuration
@@ -209,7 +225,7 @@
             <v-dialog v-model="deleteGearWearDialog" width="440" overlay-opacity="0.95">
                 <v-card>
                     <v-toolbar color="removal">
-                        <v-toolbar-title>Delete Gear configuration</v-toolbar-title>
+                        <v-toolbar-title>Delete gear configuration</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn icon @click.stop="hideDeleteGearWearDialog">
@@ -219,14 +235,14 @@
                     </v-toolbar>
                     <v-card-text>
                         <h3 class="mt-4">{{ gear.name }}</h3>
-                        <p class="mt-2">Sure you want to delete this Gear configuration?</p>
+                        <p class="mt-2">Sure you want to delete this gear configuration?</p>
                         <div class="text-right">
                             <v-spacer></v-spacer>
                             <v-btn class="mr-2" color="grey" title="Cancel deletion" @click.stop="hideDeleteGearWearDialog" text rounded>
                                 <v-icon left>mdi-cancel</v-icon>
                                 Cancel
                             </v-btn>
-                            <v-btn color="removal" title="Confirm and delete this Gear" @click="deleteGearWear" rounded>
+                            <v-btn color="removal" title="Confirm and delete this gear" @click="deleteGearWear" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Delete
                             </v-btn>
@@ -406,7 +422,7 @@ export default {
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges) {
-            const answer = window.confirm("You have unsaved changes on this Gear config. Sure you want to leave?")
+            const answer = window.confirm("You have unsaved changes on this gear config. Sure you want to leave?")
 
             if (answer) {
                 next()
@@ -461,10 +477,15 @@ export default {
             return percent
         },
         getProgressBg(component, alertType) {
+            if (component.disabled) return "transparent"
             const current = alertType == "distance" ? component.currentDistance : component.currentTime
             const alert = alertType == "distance" ? component.alertDistance : component.alertTime
             if (current / alert >= 1) return "error"
             return "accent"
+        },
+        getProgressColor(component) {
+            if (component.disabled) return "accent"
+            return "secondary"
         },
         canReset(component) {
             return component.currentDistance > 0 || component.currentTime > 0

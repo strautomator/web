@@ -167,17 +167,24 @@
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
-                        <h3 class="mb-2">GearWear preferences</h3>
+                        <h3 class="mb-2">Gear tracking preferences</h3>
                         <div class="body-2">
-                            GearWear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can decrease or increase that delay, according to your use case.
+                            <template v-if="user.isPro">
+                                Gear tracking is done almost instantly for the majority of processed activities, but you can still set the maximum delay you want Strautomator to wait before tracking the gear usage from your activities.
+                            </template>
+                            <template v-else>
+                                Gear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can decrease or increase that delay, according to your use case.
+                            </template>
                         </div>
                         <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
-                            <v-radio label="1 day (yesterday)" :value="1"></v-radio>
+                            <v-radio label="1 day" :value="1"></v-radio>
                             <v-radio label="2 days" :value="2"></v-radio>
                             <v-radio label="3 days" :value="3"></v-radio>
                         </v-radio-group>
-                        <div class="body-2">Do you want to receive an email or notification when GearWear detects a sensor with a low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
-                        <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I don\'t want the notifications'"></v-switch>
+                        <template v-if="user.garmin || user.wahoo">
+                            <div class="body-2">Do you want to be notified when a connected sensor has low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
+                            <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I don\'t want the notifications'"></v-switch>
+                        </template>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
@@ -448,6 +455,7 @@ import _ from "lodash"
 import EmailDialog from "~/components/account/EmailDialog.vue"
 import FreeProTable from "~/components/FreeProTable.vue"
 import userMixin from "~/mixins/userMixin.js"
+import {user} from "../../../core/lib/loghelper"
 
 export default {
     authenticated: true,

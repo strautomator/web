@@ -59,7 +59,7 @@
                             <h2>Is it free?</h2>
                             <div>
                                 <p>
-                                    The basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations and {{ $store.state.freePlanDetails.maxGearWear }} Gear configurations, are free. Unlimited automations, Gear and more
+                                    The basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations and {{ $store.state.freePlanDetails.maxGearWear }} gear configurations, are free. Unlimited automations, gears and more
                                     advanced features can be unlocked with a paid PRO subscription.
                                 </p>
                             </div>

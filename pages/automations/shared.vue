@@ -69,11 +69,12 @@
                 <v-card class="mb-5" v-for="(recipe, recipeIndex) in sharedRecipes" :key="recipe.id" outlined>
                     <v-card-title class="accent">
                         <span>{{ recipe.title }}</span>
+                        <v-icon class="ml-2" color="secondary" v-if="$route.query.new == recipe.id">mdi-new-box</v-icon>
                     </v-card-title>
                     <v-card-text class="white--text pb-2">
                         <div class="ml-4 mb-2 mt-2">ID: {{ recipe.id }}</div>
                         <conditions-actions-list :recipe="recipe" />
-                        <div class="mt-3 mb-2">
+                        <div class="mt-4 mb-2">
                             <v-btn color="primary" title="Copy URL for sharing" @click="copyURL(recipe)" small rounded nuxt>
                                 <v-icon left>mdi-content-copy</v-icon>
                                 Copy URL
@@ -85,7 +86,9 @@
                         </div>
                     </v-card-text>
                 </v-card>
-                <v-alert class="mt-6 text-center text-md-left">To share more automations, use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation card.</v-alert>
+                <v-alert class="mt-6 text-center text-md-left" v-if="user.isPro">To share more automations, use the <v-icon color="primary" small>mdi-share-variant</v-icon> icon on the bottom right of the automation card.</v-alert>
+                <v-alert class="mt-6 text-center text-md-left" v-else>To share more automations, you'll need to <n-link to="/billing" title="Get PRO" v-if="!isPro" nuxt>get PRO</n-link> again.</v-alert>
+
                 <div class="mt-4 text-center text-md-left">
                     <v-btn color="primary" title="Back to my automations" to="/automations" exact nuxt outlined small rounded>
                         <v-icon left>mdi-arrow-left</v-icon>

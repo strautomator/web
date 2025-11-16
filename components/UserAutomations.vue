@@ -6,8 +6,8 @@
                     <v-hover v-slot:default="{hover}">
                         <n-link :to="'/automations/edit?id=' + recipe.id" :title="recipe.title">
                             <v-card-title class="accent">
-                                <v-icon class="ml-n1 mr-2" :color="isRecipeDisabled(recipe, recipeIndex) ? 'removal' : 'primary'" v-if="recipe.defaultFor">{{ getSportIcon(recipe.defaultFor) }}</v-icon>
                                 <span>{{ recipe.title }}</span>
+                                <v-icon class="ml-2" color="secondary" v-if="$route.query.new == recipe.id">mdi-new-box</v-icon>
                                 <v-icon class="ml-2" v-show="hover" small>mdi-pencil-outline</v-icon>
                                 <v-spacer></v-spacer>
                                 <v-chip class="mr-2" color="removal" title="This automation is disabled" v-if="isRecipeDisabled(recipe, recipeIndex)" small>DISABLED</v-chip>
@@ -20,7 +20,7 @@
                         <div class="mt-2 mb-2" v-if="recipe.killSwitch">
                             <v-chip class="mb-0 ml-1" color="removal" title="Stop processing further automations if this one is triggered" outlined small>STOP HERE</v-chip>
                         </div>
-                        <v-btn v-if="user.isPro" class="font-weight-bold float-right mr-n1" color="primary" title="Share this automation" @click="showShareDialog(recipe.id)" small icon rounded nuxt>
+                        <v-btn v-if="user.isPro" class="font-weight-bold float-right mr-n1" color="primary" title="Share this automation" @click="shareRecipe(recipe)" small icon rounded nuxt>
                             <v-icon small>mdi-share-variant</v-icon>
                         </v-btn>
                         <div class="mt-2 mb-2 mb-md-0" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
@@ -66,34 +66,6 @@
                 </v-alert>
             </div>
         </div>
-        <v-dialog v-if="sharingRecipe" v-model="shareDialog" width="440" overlay-opacity="0.95">
-            <v-card>
-                <v-toolbar color="primary">
-                    <v-toolbar-title>Share automation</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon @click.stop="hideShareDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
-                <v-card-text>
-                    <h3 class="mt-4">{{ sharingRecipe.title }}</h3>
-                    <p class="mt-2">You can share this automation recipe with other users. Shared automations can be accessed by anyone with the generated link, and will contain the same conditions and actions as the original automation. Proceed?</p>
-                    <div class="text-right">
-                        <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Cancel and close" @click.stop="hideShareDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
-                            Cancel
-                        </v-btn>
-                        <v-btn color="primary" title="Confirm and share" @click="shareRecipe" rounded>
-                            <v-icon left>mdi-share-variant</v-icon>
-                            Share
-                        </v-btn>
-                    </div>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
     </div>
 </template>
 
@@ -135,8 +107,6 @@ export default {
         return {
             hasChanges: false,
             dragging: false,
-            shareDialog: false,
-            sharingRecipe: null,
             recipeStats: {},
             recipes: []
         }
@@ -211,34 +181,6 @@ export default {
                 await this.$axios.$post(`/api/users/${this.user.id}/recipes/order`, data)
             } catch (ex) {
                 this.$webError(this, "UserAutomations.saveOrder", ex)
-            }
-        },
-        showShareDialog(recipeId) {
-            this.sharingRecipe = this.user.recipes[recipeId]
-            this.shareDialog = true
-        },
-        hideShareDialog() {
-            this.sharingRecipe = null
-            this.shareDialog = false
-        },
-        async shareRecipe() {
-            const recipe = this.sharingRecipe
-            const data = {
-                title: recipe.title,
-                actions: recipe.actions,
-                conditions: recipe.conditions,
-                defaultFor: recipe.defaultFor,
-                op: recipe.op,
-                samePropertyOp: recipe.samePropertyOp
-            }
-
-            try {
-                const sharedRecipe = await this.$axios.$post(`/api/shared-recipes/${this.user.id}/new`, data)
-                this.shareDialog = false
-                this.$router.push({path: `/automations/shared?new=${sharedRecipe.id}&title=${sharedRecipe.title}`})
-            } catch (ex) {
-                this.shareDialog = false
-                this.$webError(this, "UserAutomations.shareRecipe", ex)
             }
         }
     }

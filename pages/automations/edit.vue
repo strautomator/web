@@ -257,7 +257,12 @@
                 <br v-if="!$breakpoint.mdAndUp" />
                 <v-btn color="primary" title="Duplicate this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" :disabled="!valid" @click="duplicate" rounded outlined>
                     <v-icon left>mdi-content-duplicate</v-icon>
-                    Duplicate automation
+                    Duplicate
+                </v-btn>
+                <br v-if="!$breakpoint.mdAndUp" />
+                <v-btn color="primary" title="Share this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id && user.isPro" :disabled="!valid" @click="shareRecipe(recipe)" rounded outlined>
+                    <v-icon left>mdi-share-variant</v-icon>
+                    Share
                 </v-btn>
                 <br v-if="!$breakpoint.mdAndUp" />
                 <v-btn color="removal" title="Delete this automation" class="mt-4 mt-md-0 ml-md-2" v-if="recipe.id" @click.stop="showDeleteDialog" rounded outlined>

@@ -95,37 +95,43 @@
                             </div>
                         </v-card-text>
                     </v-card>
-                    <v-alert class="mt-5 text-center text-md-left" v-if="!batteryTracker && !user.preferences.privacyMode">
+                    <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="!user.isPro" colored-border>
+                        <p v-if="gearwearRemaining == 0">
+                            You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
+                            GearWear configurations on your free account.
+                            <br v-if="$breakpoint.mdAndUp" />
+                            To use this feature with more bikes or shoes you'll need a PRO account.
+                        </p>
+                        <p>Want instant usage updates and additional tracking of your connected Garmin and Wahoo sensor batteries as well?</p>
+                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
+                            <v-icon left>mdi-credit-card</v-icon>
+                            Subscribe to PRO
+                        </v-btn>
+                    </v-alert>
+                    <v-alert class="mt-5 text-center text-md-left" v-else-if="!batteryTracker && !user.preferences.privacyMode">
                         <div class="mt-2 mt-md-0" v-if="user.isPro && !noGear">
                             Want to keep track of your connected sensor batteries as well?
                             <br />
                             Simply link your <n-link to="/account?garmin=link" title="Link your Garmin account" nuxt>Garmin</n-link> or <n-link to="/account?wahoo=link" title="Link your Wahoo account" nuxt>Wahoo</n-link>
                             account, and you'll see a list of all your device sensors here.
                         </div>
-                        <div class="mt-2 mt-md-0" v-else-if="!user.isPro">
-                            Want to keep track of your connected sensor batteries as well?
-                            <br />
-                            <n-link to="/billing" title="Manual automation trigger" nuxt>Get a PRO subscription</n-link> and link your Garmin or Wahoo accounts.
-                        </div>
                     </v-alert>
-                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear && delayDays > 0">
-                        Please note that the gear tracking happens with a {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities. You can change the delay on
-                        your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
-                        <div class="mt-1">Today's activities will be processed on {{ trackingDay }}.</div>
+                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
+                        <template v-if="user.isPro">
+                            Gear tracking happens instantly for the vast majority of activities processed by Strautomator, but can have a delay of up to {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} to complete.
+                            <br v-if="$breakpoint.mdAndUp" />
+                            You can change this setting on your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
+                        </template>
+                        <template v-else>
+                            Gear tracking happens with a {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities.
+                            <br v-if="$breakpoint.mdAndUp" />
+                            You can change the delay on your
+                            <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
+                            <div class="mt-1">Today's activities will be processed on {{ trackingDay }}.</div>
+                        </template>
                     </v-alert>
                 </template>
-                <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="gearwearRemaining == 0" colored-border>
-                    <p>
-                        You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
-                        GearWear configurations on your free account.
-                        <br v-if="$breakpoint.mdAndUp" />
-                        To use this feature with more bikes or shoes you'll need a PRO account.
-                    </p>
-                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
-                        <v-icon left>mdi-credit-card</v-icon>
-                        Subscribe to PRO
-                    </v-btn>
-                </v-alert>
+
                 <v-alert class="mt-5 text-center text-md-left" border="top" color="error" v-if="gearwearRemaining < 0" colored-border>
                     <p>
                         You are over the limit of {{ $store.state.freePlanDetails.maxGearWear }}

@@ -6,6 +6,7 @@
                     <v-icon class="ml-n1 mr-2" color="primary">{{ gearIcon }}</v-icon>
                     <v-icon class="ml-n1 mr-2" color="primary" v-if="gear.primary">mdi-bookmark</v-icon>
                     <span>{{ gear.name }}</span>
+                    <v-icon class="ml-2" color="secondary" v-if="$route.query.new == gear.id">mdi-new-box</v-icon>
                     <v-icon class="ml-2" v-show="hover && canEdit" small>mdi-pencil-outline</v-icon>
                     <v-spacer></v-spacer>
                     <v-chip color="removal" title="This GearWear configuration is disabled" v-if="gearwearConfig?.disabled" small>DISABLED</v-chip>
@@ -19,6 +20,7 @@
                         <v-col cols="12" :sm="12" :md="5">
                             <div class="font-weight-bold" v-if="gear.brand || gear.model">{{ gear.brand }} {{ gear.model }}</div>
                             <div>Total distance: {{ gear.distance }} {{ units }}</div>
+                            <div v-if="gearwearConfig.lastUpdate?.date">Last update: {{ this.$dayjs(gearwearConfig.lastUpdate.date).format("ll") }}</div>
                             <div v-if="lastResetDetails">Last replacement: {{ lastResetDetails }}</div>
                         </v-col>
                         <v-col class="pt-2 pt-md-0" cols="12" :sm="12" :md="7">
@@ -30,10 +32,9 @@
                         </v-col>
                     </v-row>
                 </v-container>
-
                 <div v-else>
                     <div>
-                        No GearWear configuration for this gear yet.
+                        No configuration for this gear yet.
                         <br v-if="!$breakpoint.mdAndUp" />
                         <n-link v-if="gearwearRemaining > 0" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" nuxt>Create one now?</n-link>
                     </div>
@@ -95,11 +96,13 @@ export default {
     methods: {
         getChipClass(comp) {
             if (comp.currentDistance >= comp.alertDistance * 1.2) return "font-weight-bold"
+            if (comp.disabled) return "text--disabled"
             return ""
         },
         getChipColor(comp) {
             if (comp.alertDistance > 0 && comp.currentDistance >= comp.alertDistance) return "error"
             if (comp.alertHours > 0 && comp.currentHours >= comp.alertHours) return "error"
+            if (comp.disabled) return "accent"
             return ""
         },
         getChipText(comp) {

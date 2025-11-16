@@ -11,7 +11,7 @@
                 <div class="text-center text-caption mb-6">If you're interested you can also view the <n-link to="/changelog" title="Strautomator updates" nuxt>changelog</n-link>.</div>
                 <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 class="mb-1 ml-1">{{ group.title }}</h2>
-                    <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0"> No results found. </v-alert>
+                    <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0">No results found.</v-alert>
                     <v-expansion-panels class="mb-4" :value="expandedPanels" multiple hover>
                         <v-expansion-panel v-for="(item, index) in group.questions" :key="'faq-' + index">
                             <v-expansion-panel-header>
@@ -145,7 +145,7 @@ export default {
                     this.searchQuery = this.searchValue
                 }
                 if (this.$route.query.expand) {
-                    this.expandedPanels = [...Array(this.groupedQuestions.length).keys()]
+                    this.expandedPanels = [...Array(999).keys()]
                 }
             }
         } catch (ex) {
