@@ -165,6 +165,13 @@ a {
     filter: invert(1);
 }
 
+.inline-text-separator:after {
+    content: " - ";
+}
+.inline-text-separator:last-child:after {
+    content: "";
+}
+
 .poem {
     white-space: pre;
 }
