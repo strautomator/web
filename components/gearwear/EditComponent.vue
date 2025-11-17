@@ -19,7 +19,7 @@
                 </div>
                 <div class="d-flex">
                     <div class="flex-grow-1">
-                        <v-text-field v-model="currentDistance" type="number" class="mr-1" label="Distance" min="0" :suffix="distanceUnits" outlined rounded></v-text-field>
+                        <v-text-field v-model="currentDistance" type="number" class="mr-1" label="Current distance" min="0" :suffix="distanceUnits" outlined rounded></v-text-field>
                     </div>
                     <div class="flex-grow-0 text-center">
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertDistance > 0 ? 'primary' : ''">mdi-sign-direction</v-icon>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="d-flex mt-1">
                     <div class="flex-grow-1">
-                        <v-text-field v-model="currentHours" type="number" class="mr-1" label="Hours" min="0" suffix="h" outlined rounded></v-text-field>
+                        <v-text-field v-model="currentHours" type="number" class="mr-1" label="Current hours" min="0" suffix="h" outlined rounded></v-text-field>
                     </div>
                     <div class="flex-grow-0 text-center">
                         <v-icon class="mt-4 ml-1 mr-1" :color="alertHours > 0 ? 'primary' : ''">mdi-clock-outline</v-icon>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="mb-3 ml-md-2 text-center text-md-left">
                     <div class="mb-1">Send a first reminder when usage reaches:</div>
-                    <div class="d-flex">
+                    <div class="d-flex justify-center justify-md-start">
                         <v-radio-group v-model="preAlertPercent" class="mt-0 mb-0" row>
                             <v-radio label="Don't" :value="0"></v-radio>
                             <v-radio label="50%" :value="50"></v-radio>

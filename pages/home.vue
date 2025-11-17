@@ -56,11 +56,15 @@
                         </v-responsive>
 
                         <div class="home-faq mt-8 px-1 text-left">
-                            <h2>Is it free?</h2>
+                            <h2>How much does it cost?</h2>
                             <div>
                                 <p>
-                                    The basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations and {{ $store.state.freePlanDetails.maxGearWear }} gear configurations, are free. Unlimited automations, gears and more
-                                    advanced features can be unlocked with a paid PRO subscription.
+                                    You can start for free with the basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations, {{ $store.state.freePlanDetails.maxGearWear }} gears, up to
+                                    {{ $store.state.freePlanDetails.pastCalendarDays }} days exported to your calendar, weather summaries and some limited AI integrations.
+                                </p>
+                                <p>
+                                    Unlimited automations, gears, years of exported activities to your calendar, many AI providers, Garmin, Wahoo, and many more advanced features can be unlocked with a PRO subscription, costing less than an espresso
+                                    per month.
                                 </p>
                             </div>
                             <free-pro-table />

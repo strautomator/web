@@ -45,14 +45,17 @@
                     <v-row>
                         <v-col cols="12" sm="12" md="6" v-for="comp of gearwearConfig.components" :key="comp.name">
                             <v-card outlined>
-                                <v-card-title class="accent">
+                                <v-hover v-slot:default="{hover}">
                                     <a :title="'Edit details of ' + comp.name" @click="showComponentDialog(comp)">
-                                        <v-icon color="primary" class="mt-n1">{{ getComponentIcon(comp) }}</v-icon>
-                                        <span>{{ comp.name }}</span>
+                                        <v-card-title class="accent">
+                                            <v-icon color="primary" class="mr-2">{{ getComponentIcon(comp) }}</v-icon>
+                                            <span>{{ comp.name }}</span>
+                                            <v-icon class="ml-2" v-show="hover" small>mdi-pencil-outline</v-icon>
+                                            <v-spacer></v-spacer>
+                                            <span class="grey--text caption" v-if="comp.disabled">DISABLED</span>
+                                        </v-card-title>
                                     </a>
-                                    <v-spacer></v-spacer>
-                                    <span class="grey--text caption" v-if="comp.disabled">DISABLED</span>
-                                </v-card-title>
+                                </v-hover>
                                 <v-card-text class="pa-0">
                                     <v-row class="pl-5 pr-5" no-gutters>
                                         <v-col cols="12">
@@ -79,10 +82,6 @@
                                                 <div class="float-right">
                                                     <v-switch class="pa-0 ma-0 mr-n2" :input-value="!comp.disabled" @change="setComponentState(comp)"></v-switch>
                                                 </div>
-                                                <v-btn color="removal" class="ml-n1 mr-2" :title="'Delete ' + comp.name" @click.stop="showDeleteComponentDialog(comp)" outlined small rounded>
-                                                    <v-icon left>mdi-minus-circle-outline</v-icon>
-                                                    Delete
-                                                </v-btn>
                                                 <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" outlined small rounded>
                                                     <v-icon left>mdi-refresh</v-icon>
                                                     Reset
@@ -149,7 +148,14 @@
                             <tr v-for="data in gearwearHistory">
                                 <td class="pt-2 pb-2">{{ $dayjs(data.date).format($breakpoint.mdAndUp ? "LL" : "l") }}</td>
                                 <td class="pt-2 pb-2">
-                                    <div v-for="h in data.history">{{ h.message }}</div>
+                                    <div v-for="h in data.history">
+                                        {{ h.message }}
+                                        <template v-if="h.activities" v-for="(a, i) in h.activities">
+                                            <span class="inline-text-separator">
+                                                <a target="strava" :href="'https://www.strava.com/activities/' + a">{{ a }}</a>
+                                            </span>
+                                        </template>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -159,7 +165,7 @@
 
             <past-usage-panel :gearwear-config="gearwearConfig" :is-new="isNew" v-if="gearwearConfig?.components.length > 0" />
 
-            <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95">
+            <v-dialog v-model="componentDialog" width="540" overlay-opacity="0.95" :fullscreen="$breakpoint.smAndDown">
                 <edit-component ref="editComponent" :gearwear-config="gearwearConfig" :component="gearwearComponent" @closed="closedComponentDialog" />
             </v-dialog>
 
@@ -502,7 +508,7 @@ export default {
 
             if (this.gearwearConfig.lastUpdate) {
                 const hDate = this.$dayjs(this.gearwearConfig.lastUpdate.date).format(historyDateFormat)
-                dateHistory[hDate] = [{message: `Activities tracked: ${this.gearwearConfig.lastUpdate.activities.join(", ")}`, tracking: true}]
+                dateHistory[hDate] = [{message: "Last activity: ", activities: this.gearwearConfig.lastUpdate.activities}]
             }
 
             for (let c of this.gearwearConfig.components) {
