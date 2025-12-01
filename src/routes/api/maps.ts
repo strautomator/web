@@ -1,6 +1,6 @@
 // Strautomator API: Maps
 
-import {maps} from "strautomator-core"
+import {maps, UserData} from "strautomator-core"
 import auth from "../auth"
 import express = require("express")
 import webserver = require("../../webserver")
@@ -11,11 +11,12 @@ const router: express.Router = express.Router()
  */
 router.get("/:userId/geocode", async (req: express.Request, res: express.Response) => {
     try {
-        const validated = await auth.requestValidator(req, res)
-        if (!validated) return
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
 
         const region: string = req.headers["cf-ipcountry"] as string
-        const results = await maps.getGeocode(req.query.address as string, region || "")
+        const provider = user.isPro || Math.random() > 0.4 ? "google" : "locationiq"
+        const results = await maps.getGeocode(req.query.address as string, region || "", provider)
 
         webserver.renderJson(req, res, results)
     } catch (ex) {
@@ -28,13 +29,14 @@ router.get("/:userId/geocode", async (req: express.Request, res: express.Respons
  */
 router.get("/:userId/reverse-geocode", async (req: express.Request, res: express.Response) => {
     try {
-        const validated = await auth.requestValidator(req, res)
-        if (!validated) return
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
         if (!req.query.c) throw new Error("Missing query coordinates")
 
         const query = req.query.c.toString()
         const coordinates = query.split(",").map((c) => parseFloat(c))
-        const result = await maps.getReverseGeocode(coordinates as [number, number])
+        const provider = user.isPro || Math.random() > 0.4 ? "google" : "locationiq"
+        const result = await maps.getReverseGeocode(coordinates as [number, number], provider)
 
         webserver.renderJson(req, res, result)
     } catch (ex) {
