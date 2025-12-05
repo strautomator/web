@@ -27,7 +27,8 @@
                 </div>
             </template>
             <template v-else>
-                <p>Which weather provider has the most accurate readings on your location?</p>
+                <div>Which weather provider has the most accurate readings on your location?</div>
+                <div class="text-caption">Coordinates {{ coordinates.join(" - ") }}, timezone offset {{ tzOffset }}min</div>
                 <v-radio-group v-model="weatherProvider">
                     <v-simple-table v-if="$breakpoint.mdAndUp">
                         <thead>
@@ -110,7 +111,9 @@ export default {
             saved: false,
             positionFailed: false,
             weatherProvider: this.$store.state.user.preferences.weatherProvider || "openmeteo",
-            weatherSummaries: []
+            weatherSummaries: [],
+            coordinates: [],
+            tzOffset: new Date().getTimezoneOffset() * -1
         }
     },
     methods: {
@@ -132,7 +135,7 @@ export default {
                 const latitude = position.coords.latitude
                 const longitude = position.coords.longitude
                 const dateString = new Date().toString()
-                const result = await this.$axios.$get(`/api/weather/${this.user.id}/coordinates/${latitude.toFixed(4)},${longitude.toFixed(4)}/${new Date().getTimezoneOffset()}`)
+                const result = await this.$axios.$get(`/api/weather/${this.user.id}/coordinates/${latitude.toFixed(4)},${longitude.toFixed(4)}/${this.tzOffset}`)
 
                 // Iterate weather summaries to set the provider name and append to the weatherSummaries list.
                 for (let id of Object.keys(result)) {
@@ -142,7 +145,7 @@ export default {
                 }
 
                 this.weatherSummaries = summaries
-
+                this.coordinates = [latitude.toFixed(4), longitude.toFixed(4)]
                 this.loading = false
             } catch (ex) {
                 this.$webError(this, "Weather.getWeather", ex)
