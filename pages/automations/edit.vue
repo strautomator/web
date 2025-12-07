@@ -227,6 +227,9 @@
                         <v-col :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
                             <v-select v-model="recipe.counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
                         </v-col>
+                        <v-col v-if="requiredCounterCondition" :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
+                            <v-text-field v-model="recipe.counterCondition" :label="requiredCounterCondition.label" class="flex-shrink" dense outlined rounded></v-text-field>
+                        </v-col>
                         <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
                         </v-col>
@@ -325,13 +328,16 @@ export default {
             {text: "Distance", value: "distance"},
             {text: "Elevation gain", value: "elevationGain"},
             {text: "Lap count", value: "lapCount"},
+            {text: "Specific segment completion count", value: "segmentCounts"},
             {text: "Segment PR count", value: "prSegments"}
         ]
+        const counterPropsWithCondition = ["segmentCounts"]
         return {
             recipe: null,
             recipeStats: {counter: 0},
             recipePropertiesActions: [],
             counterProps: counterProps,
+            counterPropsWithCondition,
             currentCounter: 0,
             valid: false,
             disabledActions: [],
@@ -365,6 +371,18 @@ export default {
         groupedConditions() {
             if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
             return _.groupBy(this.recipe.conditions, "property")
+        },
+        requiredCounterCondition() {
+            if (!this.recipe || !this.recipe.counterProp) return null
+            const requiresCounterCondition = this.counterPropsWithCondition.includes(this.recipe.counterProp)
+            if (!requiresCounterCondition) return null
+
+            switch (this.recipe.counterProp) {
+                case "segmentCounts":
+                    return {label: "Segment ID"}
+                default:
+                    return null
+            }
         }
     },
     watch: {
@@ -376,6 +394,11 @@ export default {
                 this.recipe = recipe
                 this.valid = false
                 this.isNew = true
+            }
+        },
+        requiredCounterCondition: function (newVal) {
+            if (!newVal) {
+                delete this.recipe.counterCondition
             }
         }
     },
