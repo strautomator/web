@@ -228,7 +228,7 @@
                             <v-select v-model="recipe.counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
                         </v-col>
                         <v-col v-if="requiredCounterCondition" :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
-                            <v-text-field v-model="recipe.counterCondition" :label="requiredCounterCondition.label" class="flex-shrink" :items="counterProps" dense outlined rounded></v-text-field>
+                            <v-text-field v-model="recipe.counterCondition" :label="requiredCounterCondition.label" class="flex-shrink" dense outlined rounded></v-text-field>
                         </v-col>
                         <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
