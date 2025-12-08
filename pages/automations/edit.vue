@@ -225,10 +225,10 @@
                     <div>You can customize which data should be used to increment the ${counter} tag.</div>
                     <v-row class="mt-6" no-gutters>
                         <v-col :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
-                            <v-select v-model="recipe.counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
+                            <v-select v-model="counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
                         </v-col>
-                        <v-col v-if="requiredCounterCondition" :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
-                            <v-text-field v-model="recipe.counterCondition" :label="requiredCounterCondition.label" class="flex-shrink" dense outlined rounded></v-text-field>
+                        <v-col v-if="counterPropLabel" :cols="$breakpoint.mdAndUp ? 3 : 12" class="mr-md-4">
+                            <v-text-field v-model="counterPropValue" :label="counterPropLabel" class="flex-shrink" dense outlined rounded></v-text-field>
                         </v-col>
                         <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
@@ -328,16 +328,22 @@ export default {
             {text: "Distance", value: "distance"},
             {text: "Elevation gain", value: "elevationGain"},
             {text: "Lap count", value: "lapCount"},
-            {text: "Specific segment completion count", value: "segmentCounts"},
-            {text: "Segment PR count", value: "prSegments"}
+            {text: "Specific segment count", value: "segments"},
+            {text: "Any segment PR count", value: "segments.pr"},
+            {text: "Any segment KOM count", value: "segments.kom"}
         ]
-        const counterPropsWithCondition = ["segmentCounts"]
+        const counterPropLabels = {
+            segments: "Segment ID"
+        }
+
         return {
             recipe: null,
             recipeStats: {counter: 0},
             recipePropertiesActions: [],
+            counterProp: null,
             counterProps: counterProps,
-            counterPropsWithCondition,
+            counterPropLabels: counterPropLabels,
+            counterPropValue: null,
             currentCounter: 0,
             valid: false,
             disabledActions: [],
@@ -372,17 +378,9 @@ export default {
             if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
             return _.groupBy(this.recipe.conditions, "property")
         },
-        requiredCounterCondition() {
-            if (!this.recipe || !this.recipe.counterProp) return null
-            const requiresCounterCondition = this.counterPropsWithCondition.includes(this.recipe.counterProp)
-            if (!requiresCounterCondition) return null
-
-            switch (this.recipe.counterProp) {
-                case "segmentCounts":
-                    return {label: "Segment ID"}
-                default:
-                    return null
-            }
+        counterPropLabel() {
+            if (!this.recipe || !this.counterProp || !this.counterPropLabels[this.counterProp]) return null
+            return this.counterPropLabels[this.counterProp] || null
         }
     },
     watch: {
@@ -394,11 +392,6 @@ export default {
                 this.recipe = recipe
                 this.valid = false
                 this.isNew = true
-            }
-        },
-        requiredCounterCondition: function (newVal) {
-            if (!newVal) {
-                delete this.recipe.counterCondition
             }
         }
     },
@@ -475,6 +468,13 @@ export default {
         this.valid = valid
         this.isNew = isNew
         this.recipePropertiesActions = recipePropertiesActions
+
+        // Counter has its own state.
+        if (this.recipe.counterProp) {
+            const arrPropValue = this.recipe.counterProp.split(".")
+            this.counterProp = arrPropValue[0]
+            this.counterPropValue = this.arrPropValue.length > 1 ? this.arrPropValue[1] : null
+        }
     },
     beforeRouteLeave(to, from, next) {
         if (this.hasChanges || this.changedCounter) {
@@ -566,6 +566,10 @@ export default {
                         }
                     }
                 }
+
+                if (this.counterPropLabel && !this.counterPropValue) {
+                    vErrors.push({message: `Counter ${this.recipe.counterProp} must have an identifier specified`, path: ["counterProp"]})
+                }
             } catch (ex) {
                 vErrors.push(ex.toString())
             }
@@ -591,7 +595,12 @@ export default {
                         this.setCounter()
                     }
 
-                    // Remove unecessary props.
+                    // Set the right counter prop.
+                    if (this.counterProp) {
+                        this.recipe.counterProp = this.counterPropValue ? `${this.counterProp}.${this.counterPropValue}` : this.counterProp
+                    }
+
+                    // Remove unnecessary props.
                     if (this.recipe.defaultFor == null) {
                         delete this.recipe.defaultFor
                     }
