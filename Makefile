@@ -33,8 +33,8 @@ docker-build:
 run: build
 	-cp -r ../core/settings*.json ./node_modules/strautomator-core/
 	-cp -r ../core/lib/. ./node_modules/strautomator-core/lib/
-	-cp -r ../../Devv/country-linkify/lib/. ./node_modules/country-linkify/lib/
-	-cp    ../../Devv/country-linkify/settings.default.json ./node_modules/country-linkify/
+	-cp -r ../../Personal/country-linkify/lib/. ./node_modules/country-linkify/lib/
+	-cp    ../../Personal/country-linkify/settings.default.json ./node_modules/country-linkify/
 	npm run start:dev
 
 # Update dependencies and set new version

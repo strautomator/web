@@ -4,7 +4,7 @@ This is Strautomator's web frontend, built with NuxtJS + Vuetify. It depends on 
 
 ## Settings
 
-Strautomator is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its [docs](https://setmeup.devv.com). The settings are split as follows:
+Strautomator is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its docs. The settings are split as follows:
 
 -   **settings.json** - settings shared by all environments, targeting production by default
 -   **settings.development.json** - development settings, mostly when running on your dev machine
