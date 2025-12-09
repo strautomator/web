@@ -103,13 +103,14 @@ export default {
             aiHumours: aiHumours,
             selectedAiHumour: aiHumours[0],
             aiProviders: [
+                {value: "openrouter", text: "Auto"},
                 {value: "anthropic", text: "Anthropic"},
                 {value: "gemini", text: "Gemini"},
                 {value: "mistral", text: "Mistral"},
                 {value: "openai", text: "OpenAI"},
                 {value: "xai", text: "xAI"}
             ],
-            selectedAiProvider: "gemini",
+            selectedAiProvider: "openrouter",
             syncError: null
         }
     },

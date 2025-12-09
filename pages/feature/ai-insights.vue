@@ -17,8 +17,9 @@
                         <li>Anthropic (Claude)</li>
                         <li>Mistral (Mistral AI)</li>
                         <li>OpenAI (ChatGPT)</li>
-                        <li>Gemini (Google)</li>
+                        <li>Google (Gemini)</li>
                         <li>xAI (Grok)</li>
+                        <li>OpenRouter (other models)</li>
                     </ul>
 
                     <p>This feature is available to PRO users only.</p>

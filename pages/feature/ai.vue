@@ -16,11 +16,12 @@
                         <li>Anthropic (Claude)</li>
                         <li>Mistral (Mistral AI)</li>
                         <li>OpenAI (ChatGPT)</li>
-                        <li>Gemini (Google)</li>
+                        <li>Google (Gemini)</li>
                         <li>xAI (Grok)</li>
+                        <li>OpenRouter (other models)</li>
                     </ul>
 
-                    <p>PRO users will have unlimited use and access to the most advanced models. Users with a free account are limited to a maximum of 10% of processed activities using AI, with no access to the most advanced models.</p>
+                    <p>PRO users will have unlimited use and access to the most advanced models. Users with a free account are limited to a maximum of 10% of processed activities using AI, with access to smaller models via OpenRouter.</p>
                     <p>To use this feature, you have the following automation actions:</p>
                     <ul class="ml-n2 mb-4">
                         <li>Generate the activity name with AI</li>
