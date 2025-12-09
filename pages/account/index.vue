@@ -75,9 +75,10 @@
             <v-card class="mt-5" outlined>
                 <v-card-title class="accent">My preferences</v-card-title>
                 <v-card-text>
+                    <h3 class="mb-2 mt-5">Weather settings</h3>
                     <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
                         <div class="flex-grow-1">
-                            <v-select label="Weather provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
                             <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
@@ -212,7 +213,7 @@
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
-                            <v-radio label="Default" :value="''"></v-radio>
+                            <v-radio label="Auto" :value="''"></v-radio>
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="Mistral" :value="'mistral'"></v-radio>
