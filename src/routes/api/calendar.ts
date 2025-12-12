@@ -45,9 +45,9 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         // Set the correct cache TTL based on user plan and preferences.
         let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
         if (user.isPro && options.fresher) {
-            cacheAge = Math.round(cacheAge * 0.45)
+            cacheAge = Math.round(cacheAge * 0.4)
         } else {
-            cacheAge = Math.round(cacheAge * 0.95)
+            cacheAge = Math.round(cacheAge * 0.8)
         }
 
         // Update cache headers and send response.
