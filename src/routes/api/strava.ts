@@ -114,6 +114,33 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
 })
 
 /**
+ * Build and download a FIT file for the activity.
+ */
+router.get("/:userId/:urlToken/activities/:id/fit", async (req: express.Request, res: express.Response) => {
+    try {
+        const user = await users.getById(req.params.userId)
+        if (!user) return
+        if (!user.isPro) throw new Error("FIT file downloads are available to PRO users only")
+        if (user.urlToken != req.params.urlToken) throw new Error(`Download not found`)
+        if (!req.params.id) throw new Error("Missing activity ID")
+
+        const activityId = req.params.id.toString()
+        const activity = await strava.activities.getActivity(user, activityId)
+        const fitfile = await fitparser.buildFitFile(user, activity)
+
+        // Send the FIT file to the client.
+        res.setHeader("Content-Type", "application/octet-stream")
+        res.setHeader("Content-Disposition", `attachment; filename="${activityId}.fit"`)
+        res.setHeader("Cache-Control", `public, max-age=${settings.strava.cacheDuration["activities-streams"]}`)
+        res.send(fitfile)
+    } catch (ex) {
+        const errorMessage = ex.message || ex.toString().toLowerCase()
+        const status = errorMessage.includes("not found") ? 404 : 500
+        webserver.renderError(req, res, errorMessage, status)
+    }
+})
+
+/**
  * Get logged user's activities that were processed by Strautomator.
  */
 router.get("/:userId/processed-activities", async (req: express.Request, res: express.Response) => {
