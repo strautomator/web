@@ -39,26 +39,6 @@
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="n26" class="mt-5" outlined>
-                <v-card-title class="accent text-center text-md-left">
-                    <a href="https://links.strautomator.com/l/n26" title="Go to N26" target="n26"><img src="https://links.strautomator.com/images/n26.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
-                </v-card-title>
-                <v-card-text>
-                    <div class="mt-3 mb-1">
-                        <p>N26 is an online bank with more than 10 million customers worldwide. Very similar to Revolut, it also offers many features and added services on top of a regular checking account.</p>
-                        <ul class="ml-n2">
-                            <li>Open your N26 account with our link</li>
-                            <li>If requested, use the code igorr8338</li>
-                            <li>Make at least 1 purchase of 10+ EUR</li>
-                            <li>Steps must be completed within 21 days</li>
-                        </ul>
-                        <div class="mt-5 text-center text-md-left">
-                            <a href="https://links.strautomator.com/l/n26" title="Go to N26" target="n26"><v-btn color="primary" rounded nuxt>Go to N26</v-btn></a>
-                        </div>
-                    </div>
-                </v-card-text>
-            </v-card>
-
             <v-card v-if="tradeRepublic" class="mt-5" outlined>
                 <v-card-title class="accent text-center text-md-left">
                     <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="tr"><img src="https://links.strautomator.com/images/traderepublic.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
@@ -127,7 +107,6 @@ export default {
 
         return {
             revolut: true,
-            n26: ["AT", "BE", "DE", "ES", "FI", "FR", "GR", "IE", "IT", "IS", "LI", "LV", "LT", "NL", "NO", "PL", "PT", "SE", "SI", "SK"].includes(country),
             tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country),
             amex: ["DE"].includes(country)
         }

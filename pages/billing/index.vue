@@ -47,15 +47,16 @@
                             <div v-else-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDetails }}</div>
                             <div>{{ nextPaymentDetails }}</div>
 
-                            <div v-if="subscriptionSource == 'Paypal'">
-                                <div>Migrate your subscription to our new payment provider, Paddle!</div>
+                            <div class="mt-4" v-if="subscription.source == 'paypal'">
+                                <div>Hint: migrate your subscription to our new payment provider, Paddle!</div>
                             </div>
+
                             <div class="mt-6 text-center text-md-left" v-if="['paddle', 'paypal'].includes(subscription.source) && subscription.frequency != 'lifetime'">
-                                <v-btn class="mt-4 mt-md-0" color="primary" title="Migrate to paddle" to="/billing/paddlemigration" v-if="subscription.source == 'paypal'" rounded>
+                                <v-btn class="mr-md-2" color="primary" title="Migrate to Paddle" to="/billing/paddlemigration" v-if="subscription.source == 'paypal'" rounded>
                                     <v-icon left>mdi-database-import-outline</v-icon>
                                     Migrate subscription
                                 </v-btn>
-                                <v-btn class="mr-md-2" color="primary" title="View subscription at Paddle" v-if="subscription.source == 'paddle'" @click.stop="paddleManage" rounded>
+                                <v-btn class="mt-4 mt-md-0 mr-md-2" color="primary" title="View subscription at Paddle" v-if="subscription.source == 'paddle'" @click.stop="paddleManage" rounded>
                                     <v-icon left>{{ subscription.status == "CANCELLED" ? "mdi-refresh" : "mdi-credit-card-outline" }}</v-icon>
                                     {{ subscription.status == "CANCELLED" ? "Reactivate subscription" : "Manage subscription" }}
                                 </v-btn>
@@ -189,7 +190,7 @@ export default {
     },
     computed: {
         isAffiliate() {
-            return ["Amex", "Friend", "N26", "Revolut", "Trade Republic"].includes(this.subscriptionSource)
+            return ["Amex", "Friend", "Revolut", "Trade Republic"].includes(this.subscriptionSource)
         },
         paymentAmount() {
             if (!this.subscription || this.isAffiliate) return "free"
