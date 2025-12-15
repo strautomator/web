@@ -64,6 +64,9 @@
                             </ul>
                             <div class="mt-4">Last processed: {{ $dayjs(processedActivity.dateProcessed).format("lll") }}</div>
                         </div>
+                        <div v-if="user.isPro && (!activity.device || !activity.device.includes('garmin'))" class="mt-4">
+                            <v-btn color="primary" title="Generate a .fit file for this activity" @click="fitDownload" rounded>Export FIT file</v-btn>
+                        </div>
                     </v-card-text>
                 </v-card>
             </template>
@@ -187,6 +190,9 @@ export default {
             }
 
             this.loading = false
+        },
+        fitDownload() {
+            window.open(`/api/strava/${this.user.id}/${this.user.urlToken}/activities/${this.activity.id}/fit`, "_blank")
         },
         friendlyValue(value) {
             if (_.isArray(value)) {
