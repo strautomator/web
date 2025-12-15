@@ -15,6 +15,8 @@
                     <li>Only 1 batch sync operation can be triggered every 24 hours.</li>
                 </ul>
 
+                <p v-if="user.isTrial">Please note that during your PRO trial period you can only process activities for a limited date range!</p>
+
                 <v-card class="mt-6" v-if="!recentlyTriggered" outlined>
                     <v-card-text class="mb-4 mb-md-0 pb-0">
                         <p>
@@ -180,7 +182,7 @@ export default {
             return this.$dayjs().subtract(24, "hours").isBefore(this.$dayjs(this.user.dateLastBatchProcessing))
         },
         maxDays() {
-            return this.user.isPro ? this.$store.state.proPlanDetails.batchDays : this.$store.state.freePlanDetails.batchDays
+            return !this.user.isTrial && this.user.isPro ? this.$store.state.proPlanDetails.batchDays : this.$store.state.freePlanDetails.batchDays
         },
         maxHours() {
             return Math.ceil(this.activityCount / 70)

@@ -43,14 +43,23 @@
                         <template v-else-if="subscription">
                             <div>Subscription method: {{ subscriptionSource }}</div>
                             <div class="mb-2">Price: {{ paymentAmount }}</div>
-                            <div v-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDetails }}</div>
+                            <div v-if="user.isTrial">Trial period</div>
+                            <div v-else-if="subscriptionSource != 'Friend'">Last payment: {{ lastPaymentDetails }}</div>
                             <div>{{ nextPaymentDetails }}</div>
+
+                            <div v-if="subscriptionSource == 'Paypal'">
+                                <div>Migrate your subscription to our new payment provider, Paddle!</div>
+                            </div>
                             <div class="mt-6 text-center text-md-left" v-if="['paddle', 'paypal'].includes(subscription.source) && subscription.frequency != 'lifetime'">
+                                <v-btn class="mt-4 mt-md-0" color="primary" title="Migrate to paddle" to="/billing/paddlemigration" v-if="subscription.source == 'paypal'" rounded>
+                                    <v-icon left>mdi-database-import-outline</v-icon>
+                                    Migrate subscription
+                                </v-btn>
                                 <v-btn class="mr-md-2" color="primary" title="View subscription at Paddle" v-if="subscription.source == 'paddle'" @click.stop="paddleManage" rounded>
                                     <v-icon left>{{ subscription.status == "CANCELLED" ? "mdi-refresh" : "mdi-credit-card-outline" }}</v-icon>
                                     {{ subscription.status == "CANCELLED" ? "Reactivate subscription" : "Manage subscription" }}
                                 </v-btn>
-                                <v-btn class="mt-4 mt-md-0" color="removal" title="Confirm and unsubscribe" v-if="subscription.status != 'CANCELLED'" @click.stop="showUnsubDialog" rounded>
+                                <v-btn class="mt-4 mt-md-0" color="removal" title="Unsubscribe" v-if="subscription.status != 'CANCELLED'" @click.stop="showUnsubDialog" rounded>
                                     <v-icon left>mdi-cancel</v-icon>
                                     Cancel subscription
                                 </v-btn>
@@ -65,6 +74,7 @@
                         </template>
                     </v-card-text>
                 </v-card>
+
                 <div class="mt-4 text-center text-md-left">
                     <v-btn color="primary" to="/account" title="Back to my account" exact outlined rounded small nuxt>
                         <v-icon left>mdi-arrow-left</v-icon>
