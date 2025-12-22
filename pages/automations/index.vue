@@ -40,7 +40,7 @@
                     <div class="mt-2 mt-md-0">
                         Want to test your automations with an activity?
                         <br v-if="!$breakpoint.mdAndUp" />
-                        Try a <n-link to="/activities/sync" title="Manual automation trigger" nuxt>manual sync.</n-link>
+                        Try a <n-link to="/activities/recent" title="Manual automation trigger" nuxt>manual processing.</n-link>
                     </div>
                     <div class="mt-2 mt-md-0" v-if="user.isPro">
                         Want to see your shared automations?
