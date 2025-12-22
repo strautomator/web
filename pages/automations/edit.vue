@@ -473,7 +473,7 @@ export default {
         if (this.recipe.counterProp) {
             const arrPropValue = this.recipe.counterProp.split(".")
             this.counterProp = arrPropValue[0]
-            this.counterPropValue = this.arrPropValue.length > 1 ? this.arrPropValue[1] : null
+            this.counterPropValue = arrPropValue.length > 1 ? arrPropValue[1] : null
         }
     },
     beforeRouteLeave(to, from, next) {
