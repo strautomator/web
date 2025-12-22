@@ -67,6 +67,11 @@
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                     </tr>
                     <tr>
+                        <td>Export to FIT</td>
+                        <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                        <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                    </tr>
+                    <tr>
                         <td>Garmin sensors</td>
                         <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>

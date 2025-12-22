@@ -56,7 +56,7 @@
         <div class="mt-2 mb-2 ml-5 mr-5 text-center text-md-left">
             Missing something?
             <br v-if="!$breakpoint.mdAndUp" />
-            Try the <n-link to="/activities/sync" title="Try your automations with a specific activity" nuxt>manual activity sync</n-link>.
+            Try the <n-link to="/activities/recent" title="Try your automations with a specific activity" nuxt>manual activity sync</n-link>.
         </div>
         <v-alert color="accent" class="caption mt-4 text-center text-md-left ma-4 pa-2" v-if="user?.preferences.privacyMode">Privacy mode is enabled, some details about your processed activities and personal records won't be saved!</v-alert>
     </div>

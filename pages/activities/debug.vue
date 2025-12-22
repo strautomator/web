@@ -1,8 +1,8 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Debug</h1>
-            <v-card outlined>
+            <h1>Debug activity</h1>
+            <v-card class="mb-4" outlined>
                 <v-card-text class="pb-2 pb-md-0">
                     <v-container class="ma-0 pa-0" fluid>
                         <v-row no-gutters>
@@ -11,27 +11,32 @@
                             </v-col>
                             <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
                                 <v-btn color="primary" class="mt-n6 mt-md-0" @click="setActivityRoute()" :loading="loading" :disabled="activityId.length < 5" rounded>
-                                    <v-icon left>mdi-text-search</v-icon>
-                                    Inspect
+                                    <v-icon left>mdi-bug</v-icon>
+                                    Debug
                                 </v-btn>
                             </v-col>
                         </v-row>
                     </v-container>
                     <div v-if="activity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above.</div>
-                    <v-alert class="mt-4 mt-md-0" border="top" color="error" v-else-if="syncError">
-                        {{ syncError }}
-                    </v-alert>
                 </v-card-text>
             </v-card>
-            <template v-if="activity">
-                <v-card class="mt-4" outlined>
+
+            <div v-if="loading">
+                <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
+                Fetching details for activity {{ activityId }}...
+            </div>
+            <template v-else-if="activity">
+                <v-alert border="top" color="error" v-if="syncError">
+                    {{ syncError }}
+                </v-alert>
+                <v-card v-else outlined>
                     <v-card-title class="accent text-center text-md-left nobreak">Activity {{ activity.id }}</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in activity">
-                                    <span class="font-weight-bold">{{ key }}</span> -
-                                    {{ friendlyValue(value) }}
+                                    <span class="font-weight-bold">{{ key }}</span>
+                                    <span v-html="friendlyValue(value)"></span>
                                 </li>
                             </ul>
                         </div>
@@ -39,7 +44,7 @@
                             <h3 class="mb-1">Garmin metadata:</h3>
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in garminActivity">
-                                    <span class="font-weight-bold">garmin.{{ key }}</span> -
+                                    <span class="font-weight-bold">garmin.{{ key }}</span>
                                     {{ friendlyValue(value) }}
                                 </li>
                             </ul>
@@ -48,12 +53,12 @@
                             <h3 class="mb-1">Wahoo metadata:</h3>
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in wahooActivity">
-                                    <span class="font-weight-bold">wahoo.{{ key }}</span> -
+                                    <span class="font-weight-bold">wahoo.{{ key }}</span>
                                     {{ friendlyValue(value) }}
                                 </li>
                             </ul>
                         </div>
-                        <div v-if="processedActivity" class="mt-4">
+                        <div v-if="processedActivity?.recipes" class="mt-4">
                             <h3 class="mb-1">Executed automations:</h3>
                             <ul class="ml-0 pl-4">
                                 <li v-for="(value, key) in processedActivity.recipes">
@@ -78,13 +83,14 @@
 import _ from "lodash"
 import userMixin from "~/mixins/userMixin.js"
 import recipeMixin from "~/mixins/recipeMixin.js"
+import stravaMixin from "~/mixins/stravaMixin.js"
 
 export default {
     authenticated: true,
-    mixins: [userMixin, recipeMixin],
+    mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
-            title: "Activity debug"
+            title: "Debug activity"
         }
     },
     data() {
@@ -116,31 +122,20 @@ export default {
             await this.getActivity()
         },
         async getActivity() {
-            this.activity = null
-            this.garminActivity = null
-            this.garminError = null
-            this.wahooActivity = null
-            this.wahooError = null
-
-            if (isNaN(this.activityId)) {
-                const arrUrl = this.activityId.replace("https://", "").split("/")
-
-                if (arrUrl.length < 3) {
-                    this.syncError = "Invalid activity URL."
-                    return
-                }
-
-                this.activityId = arrUrl[2]
-            }
-
-            if (isNaN(this.activityId)) {
-                this.syncError = "Invalid activity ID."
+            const id = this.activityIdFromUrl(this.activityId)
+            if (!id) {
+                this.syncError = "Invalid activity ID or URL."
                 return
             }
 
             try {
                 this.loading = true
                 this.syncError = null
+                this.activity = null
+                this.garminActivity = null
+                this.garminError = null
+                this.wahooActivity = null
+                this.wahooError = null
 
                 const activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
                 if (!activity) {
@@ -187,9 +182,9 @@ export default {
                 } else {
                     this.syncError = ex.response?.data?.error ? ex.response.data.error : ex.toString()
                 }
+            } finally {
+                this.loading = false
             }
-
-            this.loading = false
         },
         fitDownload() {
             window.open(`/api/strava/${this.user.id}/${this.user.urlToken}/activities/${this.activity.id}/fit`, "_blank")
@@ -200,7 +195,22 @@ export default {
             }
             if (_.isObject(value)) {
                 const keys = Object.keys(value)
-                return keys.map((k) => `${k}: ${value[k]}`).join(", ")
+                return (
+                    "<br />" +
+                    keys
+                        .map((k) => {
+                            if (_.isArray(value[k])) {
+                                return `${k}: [${value[k].join(", ")}]`
+                            }
+                            if (_.isObject(value[k])) {
+                                return `${k}: ${Object.entries(value[k])
+                                    .map(([subK, subV]) => `${subK} = ${subV}`)
+                                    .join(", ")}`
+                            }
+                            return `${k}: ${value[k]}`
+                        })
+                        .join("<br />")
+                )
             }
 
             return value

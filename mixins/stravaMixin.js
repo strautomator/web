@@ -79,6 +79,28 @@ export default {
 
             // Find a record with a matching activity ID.
             return records[activity.sportType] ? Object.entries(records[activity.sportType]).find((e) => e[1].activityId == activity.id) : null
+        },
+        // Extract activity ID from the URL.
+        activityIdFromUrl(idOrUrl) {
+            let result = idOrUrl
+
+            if (isNaN(idOrUrl)) {
+                const arrUrl = idOrUrl.replace("https://", "").split("/")
+                if (!idOrUrl.includes("strava.com")) {
+                    return null
+                }
+                if (arrUrl.length < 3) {
+                    return null
+                }
+
+                result = arrUrl[2]
+            }
+
+            if (isNaN(result)) {
+                return null
+            }
+
+            return result
         }
     }
 }

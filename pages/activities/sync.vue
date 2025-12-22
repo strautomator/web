@@ -1,101 +1,32 @@
 <template>
     <v-layout column>
         <v-container fluid>
-            <h1>Activity sync</h1>
-            <template v-if="recipes.length == 0">
-                <create-first />
-            </template>
-            <template v-else-if="processedActivity === false">
-                <div>Want to try out your automations with one of your recent Strava activities?</div>
-                <div class="mt-4" v-if="loading">
-                    <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                    Loading recent activities from Strava...
-                </div>
-                <v-simple-table class="mt-4" v-else>
-                    <thead v-if="$breakpoint.mdAndUp && recentActivities.length > 0">
-                        <tr>
-                            <th></th>
-                            <th>Activity</th>
-                            <th>Distance</th>
-                            <th>Total Time</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-if="recentActivities.length == 0">
-                            <td :colspan="$breakpoint.mdAndUp ? 5 : 4" class="pt-4 pb-2 pl-8">No recent activities found.</td>
-                        </tr>
-                        <tr v-for="activity in recentActivities" :key="activity.id">
-                            <td>
-                                <v-icon>{{ getSportIcon(activity.sportType) }}</v-icon>
-                            </td>
-                            <td>
-                                <div class="mt-2 mb-2">
-                                    <template v-if="!$breakpoint.mdAndUp">
-                                        {{ activity.name }}
-
-                                        <div class="caption">
-                                            {{ getDate(activity.dateStart).format("lll") }}
-                                            <br />
-                                            <template v-if="activity.distance">{{ activity.distance }} {{ user.profile.units == "imperial" ? "mi" : "km" }}</template>
-                                            <template v-else-if="activity.hrAvg">{{ activity.hrAvg }} bpm</template>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        {{ activity.name }}
-                                        <br />
-                                        {{ getDate(activity.dateStart).format("lll") }}
-                                    </template>
-                                </div>
-                            </td>
-                            <td v-if="$breakpoint.mdAndUp">
-                                {{ activity.distance }}
-                                {{ user.profile.units == "imperial" ? "mi" : "km" }}
-                            </td>
-                            <td v-if="$breakpoint.mdAndUp">
-                                {{ getDuration(activity.totalTime) }}
-                            </td>
-                            <td class="text-md-right">
-                                <v-btn color="primary" :title="`Try automations on activity ${activity.id}`" @click="syncActivity(activity.id)" :icon="!$breakpoint.mdAndUp" :rounded="$breakpoint.mdAndUp">
-                                    <v-icon class="mr-1">mdi-play-circle</v-icon>
-                                    {{ $breakpoint.mdAndUp ? "Sync" : "" }}
-                                </v-btn>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td :colspan="$breakpoint.mdAndUp ? 4 : 2" class="pt-4">
-                                <div class="caption ml-4 mb-1">Another activity?</div>
-                                <div>
-                                    <v-text-field v-model="activityId" label="ID or URL" outlined rounded dense></v-text-field>
-                                </div>
-                            </td>
-                            <td class="text-md-right">
-                                <v-btn color="primary" class="mt-4" :disabled="activityId.length < 5" :title="`Enter the activity ID or URL`" @click="syncActivity()" :icon="!$breakpoint.mdAndUp" :rounded="$breakpoint.mdAndUp">
-                                    <v-icon class="mr-1">mdi-play-circle</v-icon>
-                                    {{ $breakpoint.mdAndUp ? " Sync" : "" }}
-                                </v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-simple-table>
-                <v-card class="mt-4" outlined>
-                    <v-card-text>
-                        <div class="text-center text-md-left">
-                            <div>Want to execute your automations on many Strava activities at once?</div>
-                            <v-btn color="primary" class="mt-4" to="/activities/batchsync" rounded small>
-                                <v-icon left>mdi-animation-play</v-icon>
-                                Proceed to batch processing
-                            </v-btn>
-                        </div>
+            <h1>Process activity</h1>
+            <template v-if="recipes.length > 0">
+                <v-card class="mb-4" outlined>
+                    <v-card-text class="pb-2 pb-md-0">
+                        <v-container class="ma-0 pa-0" fluid>
+                            <v-row no-gutters>
+                                <v-col cols="12" :sm="12" :md="10">
+                                    <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
+                                </v-col>
+                                <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
+                                    <v-btn color="primary" class="mt-n6 mt-md-0" @click="setActivityRoute()" :loading="loading" :disabled="activityId.length < 5" rounded>
+                                        <v-icon left>mdi-playlist-play</v-icon>
+                                        Process
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                        <div v-if="processedActivity === false" class="text-center text-md-left mt-4 mt-md-0 pb-md-4">Enter the activity URL or ID above.</div>
                     </v-card-text>
                 </v-card>
-            </template>
-            <template v-else>
+
                 <div v-if="loading">
                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
-                    Processing activity ID {{ activityId }}...
+                    Processing activity {{ activityId }}...
                 </div>
-                <div v-else>
+                <template v-else>
                     <v-alert border="top" color="error" v-if="syncError">
                         {{ syncError }}
                     </v-alert>
@@ -138,13 +69,12 @@
                             <v-icon left>mdi-text-search</v-icon>
                             Debug this activity
                         </v-btn>
-                        <br v-if="!$breakpoint.mdAndUp" />
-                        <v-btn color="primary" title="Try syncing another activity" class="mt-4 mt-md-0 ml-md-2" @click="tryAgain" rounded outlined>
-                            <v-icon left>mdi-reload</v-icon>
-                            Try another activity
-                        </v-btn>
                     </div>
-                </div>
+                </template>
+            </template>
+
+            <template v-else>
+                <create-first />
             </template>
         </v-container>
     </v-layout>
@@ -163,14 +93,13 @@ export default {
     mixins: [userMixin, recipeMixin, stravaMixin],
     head() {
         return {
-            title: "Activity sync"
+            title: "Process activity"
         }
     },
     data() {
         return {
             loading: true,
             activityId: "",
-            recentActivities: [],
             processedActivity: false,
             syncError: null
         }
@@ -207,15 +136,19 @@ export default {
     },
     async fetch() {
         try {
-            this.loading = true
-            this.recentActivities = await this.$axios.$get(`/api/strava/${this.user.id}/activities/recent`)
-            this.loading = false
+            if (this.$route.query?.id) {
+                this.activityId = this.$route.query.id
+                await this.syncActivity(this.activityId)
+            }
         } catch (ex) {
-            this.loading = false
-            this.$webError(this, "ActivitiesSync.fetch", ex)
+            this.$webError(this, "ActivitySync.fetch", ex)
         }
     },
     methods: {
+        async setActivityRoute() {
+            this.$router.push({query: {id: this.activityId}})
+            await this.syncActivity()
+        },
         getDate(date) {
             return this.$dayjs(date)
         },
@@ -227,45 +160,30 @@ export default {
             if (minutes < 10) minutes = `0${minutes}`
             return `${hours}:${minutes}`
         },
-        async syncActivity(id) {
+        async syncActivity() {
+            const id = this.activityIdFromUrl(this.activityId)
             if (!id) {
-                if (isNaN(this.activityId)) {
-                    const arrUrl = this.activityId.replace("https://", "").split("/")
-
-                    if (arrUrl.length < 3) {
-                        this.processedActivity = null
-                        this.syncError = "Invalid activity URL"
-                        return
-                    }
-
-                    this.activityId = arrUrl[2]
-                }
-
-                id = this.activityId
+                this.syncError = "Invalid activity ID or URL."
+                return
             }
 
             try {
+                this.loading = true
                 this.syncError = null
-                this.activityId = id
                 this.processedActivity = null
                 this.loading = true
 
                 const processedActivity = await this.$axios.$get(`/api/strava/${this.user.id}/process-activity/${id}`)
                 this.processedActivity = processedActivity
-                this.loading = false
             } catch (ex) {
                 this.processedActivity = null
                 this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
+            } finally {
                 this.loading = false
             }
         },
-        debugActivity() {
-            this.$router.push({path: `/activities/debug?id=${this.activityId}`})
-        },
-        tryAgain() {
-            this.processedActivity = false
-            this.syncError = null
-            this.activityId = ""
+        debugActivity(activityId) {
+            this.$router.push({path: `/activities/debug?id=${activityId || this.activityId}`})
         }
     }
 }
