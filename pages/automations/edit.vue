@@ -505,21 +505,54 @@ export default {
                     this.hasChanges = currentData != JSON.stringify(jsonData, null, 0).replace(/ /, "")
 
                     if (this.jsonErrors.length == 0) {
+                        this.recipe.actions = jsonData.actions
                         if (jsonData.defaultFor) {
                             this.recipe.defaultFor = jsonData.defaultFor
                         } else {
                             this.recipe.conditions = jsonData.conditions
                         }
-                        this.recipe.actions = jsonData.actions
+                        if (jsonData.op) {
+                            this.recipe.op = jsonData.op
+                        }
+                        if (jsonData.samePropertyOp) {
+                            this.recipe.samePropertyOp = jsonData.samePropertyOp
+                        }
+                        if (jsonData.counterProp) {
+                            if (jsonData.counterProp.toString().includes(".")) {
+                                const arrPropValue = jsonData.counterProp.split(".")
+                                this.counterProp = arrPropValue[0]
+                                this.counterPropValue = arrPropValue[1]
+                            } else {
+                                this.counterProp = jsonData.counterProp
+                                this.counterPropValue = null
+                            }
+                        }
+                        if (jsonData.counterNoReset) {
+                            this.recipe.counterNoReset = jsonData.counterNoReset
+                        }
                     }
                 } else {
                     const jsonData = {}
+                    jsonData.actions = _.cloneDeep(this.recipe.actions)
+
                     if (this.recipe.defaultFor) {
                         jsonData.defaultFor = _.cloneDeep(this.recipe.defaultFor)
                     } else {
                         jsonData.conditions = _.cloneDeep(this.recipe.conditions)
                     }
-                    jsonData.actions = _.cloneDeep(this.recipe.actions)
+                    if (this.recipe.op) {
+                        jsonData.op = this.recipe.op
+                    }
+                    if (this.recipe.samePropertyOp) {
+                        jsonData.samePropertyOp = this.recipe.samePropertyOp
+                    }
+                    if (this.counterProp || this.counterPropValue) {
+                        jsonData.counterProp = this.counterPropValue ? `${this.counterProp}.${this.counterPropValue}` : this.counterProp
+                    }
+                    if (this.recipe.counterNoReset) {
+                        jsonData.counterNoReset = this.recipe.counterNoReset
+                    }
+
                     this.jsonData = jsonData
                     this.jsonErrors = []
                 }
@@ -565,6 +598,13 @@ export default {
                             vErrors.push({message: `Action ${i} is missing the "property" type`, path: ["actions", i]})
                         }
                     }
+                }
+
+                if (jsonData.op && !["AND", "OR"].includes(jsonData.op)) {
+                    vErrors.push({message: `Logical operator "op" must be either "AND" or "OR"`, path: ["op"]})
+                }
+                if (jsonData.samePropertyOp && !["AND", "OR"].includes(jsonData.samePropertyOp)) {
+                    vErrors.push({message: `Logical operator "samePropertyOp" must be either "AND" or "OR"`, path: ["samePropertyOp"]})
                 }
 
                 if (this.counterPropLabel && !this.counterPropValue) {
