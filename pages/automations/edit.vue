@@ -781,8 +781,7 @@ export default {
 
             this.$store.commit("deleteUserRecipe", this.recipe)
             this.$router.push({path: `/automations?deleted=${recipeId}&title=${recipeTitle}`})
-        },
-        async fromShared() {}
+        }
     }
 }
 </script>

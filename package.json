@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "25.521.11552",
+    "version": "26.21.12235",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -37,7 +37,7 @@
         "floating-vue": "^1.0.0-beta.19",
         "json-editor-vue": "^0.18.1",
         "nuxt": "^2.18.1",
-        "qs": "^6.14.0",
+        "qs": "^6.14.1",
         "strautomator-core": "strautomator/core",
         "vanilla-jsoneditor": "^3.11.0",
         "vue": "^2.7.16",
