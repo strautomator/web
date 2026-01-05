@@ -177,8 +177,8 @@ export default {
                 const timestamp = Math.round(new Date().valueOf() / 1000)
                 const result = await this.$axios.$post(`/api/ai/${this.user.id}/activity-generate`, body)
 
-                this.activityName = result.name.response
-                this.activityDescription = result.description.response
+                this.activityName = result.name?.response || "Failed!"
+                this.activityDescription = result.description?.response || "Failed!"
                 this.loading = false
             } catch (ex) {
                 this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
