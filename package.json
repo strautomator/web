@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "26.22.12159",
+    "version": "26.31.11008",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "main": "server/index.js",
@@ -24,7 +24,7 @@
         "@paddle/paddle-node-sdk": "^3.5.0",
         "axios": "^0.30.2",
         "Base64": "^1.3.0",
-        "body-parser": "^2.2.1",
+        "body-parser": "^2.2.2",
         "chart.js": "^3.9.1",
         "chartjs-adapter-dayjs-3": "^1.2.3",
         "chroma-js": "^3.2.0",
@@ -48,8 +48,8 @@
     "devDependencies": {
         "@nuxt/types": "^2.18.1",
         "@types/express": "^5.0.6",
-        "@types/lodash": "^4.17.21",
-        "@types/node": "^25.0.3",
+        "@types/lodash": "^4.17.23",
+        "@types/node": "^25.0.6",
         "axios-debug-log": "^0.8.4",
         "chalk": "^4.1.2",
         "nodemon": "^3.1.11",
