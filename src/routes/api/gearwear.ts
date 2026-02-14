@@ -57,8 +57,8 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         if (!user) return
 
         // Get GearWear config and gear details from Strava.
-        const config = await gearwear.getById(gearId)
-        const gear = await strava.athletes.getGear(user, gearId)
+        const config = await gearwear.getById(gearId as string)
+        const gear = await strava.athletes.getGear(user, gearId as string)
 
         // Stop here if owner of the specified gear is not the logged user.
         if (config && config.userId != user.id) {
@@ -78,14 +78,14 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const gearId = req.params.gearId
-        const userId = req.params.userId
+        const gearId = req.params.gearId as string
+        const userId = req.params.userId as string
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
         const max = settings.plans.free.maxGearWear
         let configs = await gearwear.getByUser(user)
-        let existingConfig: GearWearConfig = _.find(configs, {id: gearId})
+        let existingConfig: GearWearConfig = _.find(configs, {id: gearId}) as GearWearConfig
 
         // Check if user has reached the limit of gearwear configs on free accounts.
         if (!user.isPro && !existingConfig && configs.length >= max) {
@@ -108,8 +108,8 @@ router.post("/:userId/:gearId", async (req: express.Request, res: express.Respon
         // Is it a GearWear config update, or a reset distance request?
         if (!req.body.resetTracking) {
             const config = {
-                id: gearId,
-                userId: userId,
+                id: gearId as string,
+                userId: userId as string,
                 components: req.body.components,
                 updating: false
             }
@@ -138,7 +138,7 @@ router.delete("/:userId/:gearId", async (req: express.Request, res: express.Resp
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const gearId = req.params.gearId
+        const gearId = req.params.gearId as string
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
@@ -174,7 +174,7 @@ router.delete("/:userId/battery-tracker/:deviceId", async (req: express.Request,
         if (!user) return
 
         // Delete the device from the battery tracker.
-        await gearwear.deleteBatteryTrackerDevice(user, req.params.deviceId)
+        await gearwear.deleteBatteryTrackerDevice(user, req.params.deviceId as string)
         webserver.renderJson(req, res, {deleted: true})
     } catch (ex) {
         webserver.renderError(req, res, ex)

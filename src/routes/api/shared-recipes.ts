@@ -36,7 +36,7 @@ router.get("/:userId/:id", async (req: express.Request, res: express.Response) =
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const recipeId = req.params.id
+        const recipeId = req.params.id as string
         const result = await recipes.getSharedRecipe(user, recipeId)
         const owner = await users.getById(result.userId)
         result.userDisplayName = owner.displayName || owner.id
@@ -71,7 +71,7 @@ router.delete("/:userId/:id", async (req: express.Request, res: express.Response
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const recipeId = req.params.id
+        const recipeId = req.params.id as string
         await recipes.deleteSharedRecipe(user, recipeId)
 
         webserver.renderJson(req, res, {deleted: recipeId})

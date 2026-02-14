@@ -59,7 +59,7 @@ router.get("/:userId/activity-tracks/:activityId", async (req: express.Request, 
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const activity = await strava.activities.getActivity(user, req.params.activityId)
+        const activity = await strava.activities.getActivity(user, req.params.activityId as string)
         const tracks = await spotify.getActivityTracks(user, activity)
 
         webserver.renderJson(req, res, tracks)

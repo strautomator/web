@@ -118,7 +118,7 @@ router.get("/:userId/activities/:id/details", async (req: express.Request, res: 
  */
 router.get("/:userId/:urlToken/activities/:id/fit", async (req: express.Request, res: express.Response) => {
     try {
-        const user = await users.getById(req.params.userId)
+        const user = await users.getById(req.params.userId as string)
         if (!user) return
         if (!user.isPro) throw new Error("FIT file downloads are available to PRO users only")
         if (user.urlToken != req.params.urlToken) throw new Error(`Download not found`)
@@ -189,7 +189,7 @@ router.get("/:userId/processed-activities/:id", async (req: express.Request, res
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const activity = await strava.activityProcessing.getProcessedActivity(user, parseInt(req.params.id))
+        const activity = await strava.activityProcessing.getProcessedActivity(user, parseInt(req.params.id as string))
         webserver.renderJson(req, res, activity)
     } catch (ex) {
         webserver.renderError(req, res, ex, 404)
@@ -252,7 +252,7 @@ router.get("/:userId/process-activity/:activityId", async (req: express.Request,
         if (!user) return
 
         // Process the passed activity.
-        const processedActivity = await strava.activityProcessing.processActivity(user, {id: parseInt(req.params.activityId)})
+        const processedActivity = await strava.activityProcessing.processActivity(user, {id: parseInt(req.params.activityId as string)})
         webserver.renderJson(req, res, processedActivity || {processed: false})
     } catch (ex) {
         const errorMessage = ex.toString()
@@ -321,8 +321,8 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
 
         // Record parameters.
         const sportsList = Object.keys(StravaSport)
-        const sport = req.params.sport
-        const field = req.body.field
+        const sport = req.params.sport as string
+        const field = req.body.field as string
         const value = req.body.value
         const previous = req.body.previous
 
@@ -333,8 +333,8 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
 
         // Update record and save to the database.
         const records: StravaAthleteRecords = {
-            [sport]: {
-                [field]: {
+            [sport as string]: {
+                [field as string]: {
                     value: parseFloat(value),
                     activityId: null,
                     date: new Date()
@@ -344,7 +344,7 @@ router.post("/:userId/athlete-records/:sport", async (req: express.Request, res:
 
         // Also update the previous value?
         if (previous && !isNaN(previous)) {
-            records[sport][field].previous = previous
+            records[sport as string][field as string].previous = previous
         }
 
         await strava.athletes.setAthleteRecords(user, records)
@@ -461,7 +461,7 @@ router.get("/:userId/:urlToken/routes.zip", async (req: express.Request, res: ex
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const user = await users.getById(req.params.userId)
+        const user = await users.getById(req.params.userId as string)
 
         // Validate user and URL token.
         if (!user) throw new Error(`User ${req.params.userId} not found`)
@@ -588,7 +588,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
         if (!req.params) throw new Error("Missing request params")
         if (!req.headers["user-agent"].includes(settings.app.title)) throw new Error("Unauthorized client")
 
-        const userId = req.params.userId
+        const userId = req.params.userId as string
         const user = await users.getById(userId)
 
         // User not found, suspended or missing tokens? Stop here.
@@ -603,7 +603,7 @@ router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async
 
         const now = dayjs.utc().toDate()
         const action = req.query.action as string
-        const activityId = parseInt(req.params.activityId)
+        const activityId = parseInt(req.params.activityId as string)
 
         // New activity uploaded?
         if (action == "create") {

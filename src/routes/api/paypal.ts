@@ -71,7 +71,7 @@ router.post("/:userId/subscribe/:billingPlanId", async (req: express.Request, re
         if (!user) return
 
         // Check if billing plan is valid.
-        const billingPlan = paypal.currentBillingPlans[req.params.billingPlanId]
+        const billingPlan = paypal.currentBillingPlans[req.params.billingPlanId as string]
         if (!billingPlan) {
             throw new Error("Invalid billing plan")
         }

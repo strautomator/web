@@ -33,7 +33,7 @@ router.get("/:userId/coordinates/:coordinates/:timeoffset", async (req: express.
         }
 
         const result = {}
-        const now = dayjs().utcOffset(parseInt(req.params.timeoffset))
+        const now = dayjs().utcOffset(parseInt(req.params.timeoffset as string))
         const coordinates = req.params.coordinates.toString()
         const arrCoordinates = coordinates.split(",").map((c) => parseFloat(c)) as [number, number]
 

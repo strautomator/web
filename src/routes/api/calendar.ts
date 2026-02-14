@@ -15,8 +15,8 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const user = await users.getById(req.params.userId)
-        const calType = req.params.calType
+        const user = await users.getById(req.params.userId as string)
+        const calType = req.params.calType as string
 
         // Validate user and URL token.
         if (!["all", "activities", "clubs", "gear"].includes(calType)) throw new Error("Calendar not found")
