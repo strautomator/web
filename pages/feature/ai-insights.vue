@@ -19,7 +19,7 @@
                         <li>OpenAI (ChatGPT)</li>
                         <li>Google (Gemini)</li>
                         <li>xAI (Grok)</li>
-                        <li>OpenRouter (other models)</li>
+                        <li>OpenRouter (all models)</li>
                     </ul>
 
                     <p>This feature is available to PRO users only.</p>

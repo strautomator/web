@@ -18,7 +18,7 @@
                         <li>OpenAI (ChatGPT)</li>
                         <li>Google (Gemini)</li>
                         <li>xAI (Grok)</li>
-                        <li>OpenRouter (other models)</li>
+                        <li>OpenRouter (all models)</li>
                     </ul>
 
                     <p>PRO users will have unlimited use and access to the most advanced models. Users with a free account are limited to a maximum of 10% of processed activities using AI, with access to smaller models via OpenRouter.</p>
