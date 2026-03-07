@@ -213,7 +213,7 @@
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
-                            <v-radio label="Auto" :value="''"></v-radio>
+                            <v-radio label="Auto (OpenRouter)" :value="''"></v-radio>
                             <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
                             <v-radio label="Gemini" :value="'gemini'"></v-radio>
                             <v-radio label="Mistral" :value="'mistral'"></v-radio>
