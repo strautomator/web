@@ -60,7 +60,7 @@ export default {
         ]
 
         // Wahoo tags.
-        const garminTags = [
+        const wahooTags = [
             {value: "wahoo.tss", label: "Garmin: TSS"},
             {value: "wahoo.trainingLoad", label: "Garmin: Training load"},
             {value: "wahoo.pedalBalance", label: "Garmin: Pedal balance"},
