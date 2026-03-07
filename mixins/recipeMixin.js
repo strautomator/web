@@ -56,7 +56,15 @@ export default {
             {value: "garmin.sportProfile", label: "Garmin: Sport profile"},
             {value: "garmin.workoutName", label: "Garmin: Workout name"},
             {value: "garmin.workoutNotes", label: "Garmin: Workout notes"},
-            {value: "garmin.splits", label: "Garmin: Split summaries"}
+            {value: "garmin.splitsText", label: "Garmin: Split summaries"}
+        ]
+
+        // Wahoo tags.
+        const garminTags = [
+            {value: "wahoo.tss", label: "Garmin: TSS"},
+            {value: "wahoo.trainingLoad", label: "Garmin: Training load"},
+            {value: "wahoo.pedalBalance", label: "Garmin: Pedal balance"},
+            {value: "wahoo.splitsText", label: "Garmin: Split summaries"}
         ]
 
         // Activity lap tags.
@@ -135,7 +143,7 @@ export default {
         for (let t of mainActivityTags) {
             t.value = "{" + t.value + "}"
         }
-        const extraActivityTags = _.concat(garminTags, musicTags, weatherTags)
+        const extraActivityTags = _.concat(garminTags, wahooTags, musicTags, weatherTags)
         for (let t of extraActivityTags) {
             t.value = "{" + t.value + "}"
         }
