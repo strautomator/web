@@ -617,6 +617,9 @@ export default {
         language(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         },
+        noSuffixes(newValue, oldValue) {
+            this.preferenceChanged(newValue, oldValue)
+        },
         privacyMode(newValue, oldValue) {
             this.preferenceChanged(newValue, oldValue)
         },
