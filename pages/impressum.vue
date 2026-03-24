@@ -18,8 +18,8 @@
                             Business ID: DE454468590
                         </p>
                         <p>
-                            Pappelallee 3<br />
-                            10437 Berlin<br />
+                            Straße 18 16<br />
+                            13089 Berlin<br />
                             Germany
                         </p>
 
