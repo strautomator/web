@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "",
         "rootDir": "src",
         "outDir": "server",
         "target": "es2024",
@@ -11,8 +10,10 @@
         "noUnusedLocals": true,
         "declaration": true,
         "skipLibCheck": true,
+        "strict": false,
+        "types": ["node"],
         "paths": {
-            "strautomator-core": ["../core/", "node_modules/strautomator-core/"]
+            "strautomator-core": ["../core/", "./node_modules/strautomator-core/"]
         }
     },
     "vueCompilerOptions": {
