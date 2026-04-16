@@ -54,6 +54,22 @@
                                         no-resize
                                     ></v-textarea>
                                 </div>
+                                <div v-else-if="selectedAction.value == 'aiProcess'">
+                                    <v-textarea
+                                        v-model="valueInput"
+                                        height="100"
+                                        label="AI prompt to process the activity"
+                                        placeholder="Enter your instructions to process the activity data here."
+                                        :rules="actionRules"
+                                        :maxlength="$store.state.recipeMaxLength.actionValue"
+                                        @keydown="inputKeyDown($event)"
+                                        dense
+                                        outlined
+                                        rounded
+                                        no-resize
+                                    ></v-textarea>
+                                    <div class="mt-n1 text-caption text-center">The AI will process the activity data based on your prompt. It can update any existing activity field (name, description, commute, map, tags, sport type,...)</div>
+                                </div>
                                 <div v-else-if="selectedAction.value == 'webhook'">
                                     <div>
                                         <v-select label="HTTP method" v-model="webhookMethod" :items="['POST', 'GET']" dense outlined rounded></v-select>
@@ -365,7 +381,7 @@ export default {
                             result.value = "custom" + promptResult.prompt
                             result.friendlyValue = "custom prompt: " + promptResult.prompt
                         } catch (aiEx) {
-                            this.valueInput = `Prompt failed moderation: ${aiEx.toString()}`
+                            this.valueInput = `ERROR! Prompt failed moderation: ${aiEx.toString()}`
                             return
                         } finally {
                             this.loading = false
@@ -373,6 +389,23 @@ export default {
                     } else {
                         result.value = this.selectedAiHumour.value
                         result.friendlyValue = result.type == "generateInsights" ? "Default" : this.selectedAiHumour.text
+                    }
+                } else if (result.type == "aiProcess") {
+                    if (!this.valueInput?.trim()) return
+                    this.loading = true
+                    try {
+                        const promptResult = await this.$axios.$post(`/api/ai/${this.user.id}/validate-prompt`, {prompt: this.valueInput.trim()})
+                        if (promptResult.failed) {
+                            this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
+                            return
+                        }
+                        result.value = promptResult.prompt
+                        result.friendlyValue = promptResult.prompt
+                    } catch (aiEx) {
+                        this.valueInput = `ERROR! Prompt failed moderation: ${aiEx.toString()}`
+                        return
+                    } finally {
+                        this.loading = false
                     }
                 } else {
                     result.value = this.valueInput || true

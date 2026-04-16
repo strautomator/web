@@ -170,9 +170,9 @@ export default {
                 this.loading = true
                 this.syncError = null
 
-                const body = {activity: this.activity, humourPrompt: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
+                const body = {activity: this.activity, customPrompt: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
                 if (this.selectedAiHumour.value == "custom") {
-                    body.humourPrompt += `:${this.customPrompt}`
+                    body.customPrompt += `:${this.customPrompt}`
                 }
                 const timestamp = Math.round(new Date().valueOf() / 1000)
                 const result = await this.$axios.$post(`/api/ai/${this.user.id}/activity-generate`, body)

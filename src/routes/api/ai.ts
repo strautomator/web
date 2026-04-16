@@ -25,7 +25,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         if (!req.body || !req.body.activity || Object.keys(req.body.activity).length == 0) throw new Error("Missing activity details")
 
         const provider = req.body.provider
-        const humourPrompt = req.body.humourPrompt
+        const customPrompt = req.body.customPrompt
 
         // Rate limit Free accounts to a max of 1 request per provider per hour.
         const rateLimitId = `${user.id}-${provider}`
@@ -56,8 +56,8 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
             }
         }
 
-        const name = await ai.generateActivityName(user, {activity, humourPrompt, provider, activityWeather})
-        const description = await ai.generateActivityDescription(user, {activity, humourPrompt, provider, activityWeather})
+        const name = await ai.generateActivityName(user, {activity, customPrompt, provider, activityWeather})
+        const description = await ai.generateActivityDescription(user, {activity, customPrompt, provider, activityWeather})
         user.preferences.language = language
 
         if (user.isPro) {
