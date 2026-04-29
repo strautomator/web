@@ -32,6 +32,18 @@
                     <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
+            <v-snackbar v-if="lastfmLinked" v-model="lastfmLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Last.fm account "{{ user.lastfm.username }}" linked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
+            <v-snackbar v-else-if="lastfmUnlinked" v-model="lastfmUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+                Last.fm account unlinked successfully!
+                <template v-slot:action="{attrs}">
+                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                </template>
+            </v-snackbar>
             <div>
                 <div class="mt-3">
                     {{ user.profile.firstName }} {{ user.profile.lastName }}
@@ -57,6 +69,7 @@
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units on Strava: {{ user.profile.units }}</div>
                 <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
+                <div v-if="user.lastfm">Last.fm: {{ user.lastfm.username }}</div>
                 <div class="ml-n1 mt-3 text-left">
                     <v-btn class="ma-1" color="primary" title="Garmin account" @click="garminDialog = true" :disabled="!user.isPro" nuxt small rounded>
                         <v-icon left>mdi-triangle</v-icon>
@@ -69,6 +82,10 @@
                     <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
                         {{ user.spotify ? "Unlink Spotify account" : "Link Spotify account" }}
+                    </v-btn>
+                    <v-btn class="ma-1" color="primary" title="Last.fm account" @click="showLastfmDialog" nuxt small rounded>
+                        <v-icon left>mdi-music</v-icon>
+                        {{ user.lastfm ? "Change Last.fm account" : "Link Last.fm account" }}
                     </v-btn>
                 </div>
             </div>
@@ -293,7 +310,7 @@
                             <v-icon left>mdi-link</v-icon>
                             Go to Garmin
                         </v-btn>
-                        <v-btn color="primary" title="Unlink my Garmin account" @click="unlinkGarmin" v-else rounded>
+                        <v-btn color="removal" title="Unlink my Garmin account" @click="unlinkGarmin" v-else rounded>
                             <v-icon left>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
@@ -326,7 +343,7 @@
                             <v-icon left>mdi-link</v-icon>
                             Go to Wahoo
                         </v-btn>
-                        <v-btn color="primary" title="Unlink my Wahoo account" @click="unlinkWahoo" v-else rounded>
+                        <v-btn color="removal" title="Unlink my Wahoo account" @click="unlinkWahoo" v-else rounded>
                             <v-icon left>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
@@ -359,9 +376,44 @@
                             <v-icon left>mdi-link</v-icon>
                             Go to Spotify
                         </v-btn>
-                        <v-btn color="primary" title="Unlink my Spotify account" @click="unlinkSpotify" v-else rounded>
+                        <v-btn color="removal" title="Unlink my Spotify account" @click="unlinkSpotify" v-else rounded>
                             <v-icon left>mdi-link-off</v-icon>
                             Unlink
+                        </v-btn>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="lastfmDialog" width="540" overlay-opacity="0.95">
+            <v-card>
+                <v-toolbar color="primary">
+                    <v-toolbar-title>Last.fm account</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn icon @click.stop="hideLastfmDialog">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-card-text>
+                    <p class="mt-4" v-if="!user.lastfm">You can link your Last.fm account to your Strautomator profile to use scrobbled tracks as part of conditions or actions in your automations.</p>
+                    <p class="mt-4" v-else>You have linked the Last.fm account "{{ user.lastfm.username }}" to your profile. If you unlink it, existing automations relying on Last.fm tracks might stop working.</p>
+                    <v-text-field v-model="lastfmUsernameInput" label="Last.fm username" placeholder="Your last.fm username" maxlength="64" prepend-inner-icon="mdi-account-music" @keyup.enter="linkLastfm" outlined rounded></v-text-field>
+                    <v-alert class="error mt-n4" dense round v-if="lastfmError">{{ lastfmError }}</v-alert>
+                    <div class="text-right mt-1">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideLastfmDialog" text rounded>
+                            <v-icon left>mdi-cancel</v-icon>
+                            Cancel
+                        </v-btn>
+                        <v-btn class="ml-2" color="removal" title="Unlink my Last.fm account" @click="unlinkLastfm" v-if="user.lastfm" rounded>
+                            <v-icon left>mdi-link-off</v-icon>
+                            Unlink
+                        </v-btn>
+                        <v-btn color="primary" title="Save my Last.fm username" @click="linkLastfm" :disabled="!lastfmUsernameInput || lastfmUsernameInput.trim().length < 2" rounded>
+                            <v-icon left>mdi-link</v-icon>
+                            {{ user.lastfm ? "Update" : "Link" }}
                         </v-btn>
                     </div>
                 </v-card-text>
@@ -527,6 +579,11 @@ export default {
             spotifyDialog: this.$route.query.spotify == "link" && !user.spotify,
             spotifyLinked: this.$route.query.spotify == "linked",
             spotifyUnlinked: this.$route.query.spotify == "unlinked",
+            lastfmDialog: this.$route.query.lastfm == "link" && !user.lastfm,
+            lastfmLinked: false,
+            lastfmUnlinked: false,
+            lastfmUsernameInput: user.lastfm?.username || "",
+            lastfmError: null,
             linksOn: linksOn || defaultLinksOn,
             delayedProcessing: delayedProcessing,
             gearwearDelayDays: gearwearDelayDays,
@@ -734,6 +791,47 @@ export default {
                 this.$webError(this, "Account.unlinkSpotify", ex)
             }
         },
+        showLastfmDialog() {
+            this.lastfmUsernameInput = this.user.lastfm?.username || ""
+            this.lastfmDialog = true
+        },
+        hideLastfmDialog() {
+            this.lastfmDialog = false
+        },
+        async linkLastfm() {
+            const username = (this.lastfmUsernameInput || "").trim().toLowerCase()
+            if (!username || username.length < 2) return
+
+            try {
+                this.lastfmError = null
+
+                await this.$axios.$post("/api/lastfm/auth/link", {username})
+                await this.refreshUser()
+
+                this.lastfmLinked = true
+                this.lastfmUnlinked = false
+                this.hideLastfmDialog()
+            } catch (ex) {
+                if (ex.response?.status == 404) {
+                    this.lastfmError = `User ${this.lastfmUsernameInput} not found`
+                } else {
+                    this.$webError(this, "Account.linkLastfm", ex)
+                }
+            }
+        },
+        async unlinkLastfm() {
+            try {
+                await this.$axios.$get("/api/lastfm/auth/unlink")
+                await this.refreshUser()
+
+                this.lastfmLinked = false
+                this.lastfmUnlinked = true
+                this.lastfmUsernameInput = ""
+                this.hideLastfmDialog()
+            } catch (ex) {
+                this.$webError(this, "Account.unlinkLastfm", ex)
+            }
+        },
         confirmPrivacyDialog() {
             if (!this.privacyMode) {
                 this.privacyDialog = true
@@ -818,6 +916,8 @@ export default {
         closeAlert() {
             this.spotifyLinked = false
             this.spotifyUnlinked = false
+            this.lastfmLinked = false
+            this.lastfmUnlinked = false
         }
     }
 }
