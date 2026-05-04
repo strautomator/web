@@ -102,7 +102,12 @@ export default {
             {value: "spotify.trackStart", label: "Spotify: Track title (start)"},
             {value: "spotify.trackEnd", label: "Spotify: Track title (end)"},
             {value: "spotify.lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
-            {value: "spotify.lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true}
+            {value: "spotify.lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true},
+            {value: "lastfm.trackList", label: "Last.fm: Full track list"},
+            {value: "lastfm.trackStart", label: "Last.fm: Track title (start)"},
+            {value: "lastfm.trackEnd", label: "Last.fm: Track title (end)"},
+            {value: "lastfm.lyricsStart", label: "Last.fm: Track lyrics (first)", pro: true},
+            {value: "lastfm.lyricsEnd", label: "Last.fm: Track lyrics (last)", pro: true}
         ]
 
         // Weather tags.

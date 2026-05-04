@@ -8,6 +8,7 @@
                     <li><n-link to="/feature/ai-insights" nuxt>Private AI insights on your activities</n-link></li>
                     <li><n-link to="/feature/weather" nuxt>Weather data on your activities</n-link></li>
                     <li><n-link to="/feature/spotify" nuxt>Spotify tracks on your activities</n-link></li>
+                    <li><n-link to="/feature/lastfm" nuxt>Last.fm tracks on your activities</n-link></li>
                     <li><n-link to="/feature/commute" nuxt>Automatically tag your commutes</n-link></li>
                     <li><n-link to="/feature/mute" nuxt>Automatically mute your activities</n-link></li>
                     <li><n-link to="/feature/counter" nuxt>Auto-incrementing activity counter</n-link></li>
