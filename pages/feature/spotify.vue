@@ -27,7 +27,7 @@ vue
                         <li>Title of track playing at the start or end</li>
                         <li>Lyrics of the track playing at the start or end</li>
                     </ul>
-                    <p>The Spotify integration is available to all users, but its usage might be restricted to PRO accounts at peak times.</p>
+                    <p>The Spotify integration is available to all users, but some of its tags and features are available to PRO users only.</p>
                 </div>
             </v-card-text>
         </v-card>

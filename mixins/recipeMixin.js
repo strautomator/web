@@ -98,14 +98,14 @@ export default {
 
         // Music track tags.
         const musicTags = [
-            {value: "spotify.trackList", label: "Spotify: Full track list"},
             {value: "spotify.trackStart", label: "Spotify: Track title (start)"},
-            {value: "spotify.trackEnd", label: "Spotify: Track title (end)"},
+            {value: "spotify.trackEnd", label: "Spotify: Track title (end)", pro: true},
+            {value: "spotify.trackList", label: "Spotify: Full track list", pro: true},
             {value: "spotify.lyricsStart", label: "Spotify: Track lyrics (first)", pro: true},
             {value: "spotify.lyricsEnd", label: "Spotify: Track lyrics (last)", pro: true},
-            {value: "lastfm.trackList", label: "Last.fm: Full track list"},
             {value: "lastfm.trackStart", label: "Last.fm: Track title (start)"},
-            {value: "lastfm.trackEnd", label: "Last.fm: Track title (end)"},
+            {value: "lastfm.trackList", label: "Last.fm: Full track list", pro: true},
+            {value: "lastfm.trackEnd", label: "Last.fm: Track title (end)", pro: true},
             {value: "lastfm.lyricsStart", label: "Last.fm: Track lyrics (first)", pro: true},
             {value: "lastfm.lyricsEnd", label: "Last.fm: Track lyrics (last)", pro: true}
         ]

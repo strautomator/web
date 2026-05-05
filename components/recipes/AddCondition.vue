@@ -272,6 +272,13 @@ export default {
                 spotifyProp.disabled = true
             }
 
+            // Disable Last.fm if user has no account linked.
+            const lastfmProp = _.find(recipeProperties, {value: "lastfm.track"})
+            if (!user.lastfm) {
+                lastfmProp.text += " (needs linked Last.fm)"
+                lastfmProp.disabled = true
+            }
+
             // Gear condition.
             const gearMap = (g) => {
                 return {value: g.id, text: g.name}
