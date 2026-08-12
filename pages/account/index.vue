@@ -81,13 +81,17 @@
                     </v-btn>
                     <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
                         <v-icon left>mdi-spotify</v-icon>
-                        {{ user.spotify ? "Unlink Spotify account" : "Link Spotify account" }}
+                        {{ user.spotify ? "Manage Spotify account" : "Link Spotify account" }}
                     </v-btn>
                     <v-btn class="ma-1" color="primary" title="Last.fm account" @click="showLastfmDialog" nuxt small rounded>
                         <v-icon left>mdi-music</v-icon>
                         {{ user.lastfm ? "Change Last.fm account" : "Link Last.fm account" }}
                     </v-btn>
                 </div>
+                <v-alert class="body-2 mt-2 text-left" color="warning" v-if="relinkAccounts.length > 0" dense outlined rounded>
+                    <v-icon class="mr-1 mt-n1" color="warning" small>mdi-alert-outline</v-icon>
+                    Your {{ relinkAccounts.join(" and ") }} authentication is about to expire, please link {{ relinkAccounts.length > 1 ? "these accounts" : "it" }} again to avoid interruptions.
+                </v-alert>
             </div>
             <v-card class="mt-5" outlined>
                 <v-card-title class="accent">My preferences</v-card-title>
@@ -366,19 +370,20 @@
                 <v-card-text>
                     <p class="mt-4" v-if="!user.spotify">You can link your Spotify account to your Strautomator profile to use recent tracks as part of conditions or actions in your automations.</p>
                     <p class="mt-4" v-else>You have linked the Spotify account {{ user.spotify.email }} to your profile. If you unlink it, existing automations having Spotify related properties might stop working.</p>
+                    <p v-if="spotifyExpiryDate">Spotify requires you to authenticate again every few months, and your current authentication expires on {{ spotifyExpiryDate }}.</p>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
                         <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideSpotifyDialog" text rounded>
                             <v-icon left>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
-                        <v-btn color="primary" title="Proceed to authentication with Spotify" @click="linkSpotify" v-if="!user.spotify" rounded>
-                            <v-icon left>mdi-link</v-icon>
-                            Go to Spotify
-                        </v-btn>
-                        <v-btn color="removal" title="Unlink my Spotify account" @click="unlinkSpotify" v-else rounded>
+                        <v-btn class="mr-2" color="removal" title="Unlink my Spotify account" @click="unlinkSpotify" v-if="user.spotify" rounded>
                             <v-icon left>mdi-link-off</v-icon>
                             Unlink
+                        </v-btn>
+                        <v-btn color="primary" title="Proceed to authentication with Spotify" @click="linkSpotify" rounded>
+                            <v-icon left>mdi-link</v-icon>
+                            {{ user.spotify ? "Reauthenticate" : "Go to Spotify" }}
                         </v-btn>
                     </div>
                 </v-card-text>
@@ -576,7 +581,7 @@ export default {
             wahooDialog: this.$route.query.wahoo == "link" && !user.wahoo,
             wahooLinked: this.$route.query.wahoo == "linked",
             wahooUnlinked: this.$route.query.wahoo == "unlinked",
-            spotifyDialog: this.$route.query.spotify == "link" && !user.spotify,
+            spotifyDialog: this.$route.query.spotify == "link",
             spotifyLinked: this.$route.query.spotify == "linked",
             spotifyUnlinked: this.$route.query.spotify == "unlinked",
             lastfmDialog: this.$route.query.lastfm == "link" && !user.lastfm,
@@ -637,6 +642,16 @@ export default {
         },
         stravaProfileUrl() {
             return `https://www.strava.com/athletes/${this.user.id}`
+        },
+        spotifyExpiryDate() {
+            return this.user.spotify?.dateRefreshExpiry ? this.$dayjs(this.user.spotify.dateRefreshExpiry).format("ll") : null
+        },
+        relinkAccounts() {
+            const result = []
+            if (this.user.spotify?.dateRefreshExpiry && this.$dayjs(this.user.spotify.dateRefreshExpiry).isBefore(this.$dayjs().add(14, "days"))) {
+                result.push("Spotify")
+            }
+            return result
         },
         dateResetCounterFormatted() {
             const result = this.$dayjs(this.dateResetCounter)
