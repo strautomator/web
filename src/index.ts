@@ -66,8 +66,8 @@ async function start() {
         const webserver = require("./webserver")
         await webserver.init(nuxt.render)
     } catch (ex) {
-        logger.error("Strautomator.startup", "Failed to start", ex)
-        process.exit(1)
+        logger.error("Strautomator.startup", "Failed to start the web server", ex)
+        return process.exit(1)
     }
 }
 
