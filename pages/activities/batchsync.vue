@@ -17,6 +17,11 @@
 
                 <p v-if="user.isTrial">Please note that during your PRO trial period you can only process activities for a limited date range!</p>
 
+                <p v-if="user.garmin || user.wahoo">
+                    Want the Garmin / Wahoo sensor data of those older activities? You can
+                    <n-link to="/activities/fitupload" title="Upload a ZIP archive with your FIT files" nuxt>upload their FIT files as a ZIP archive</n-link> first.
+                </p>
+
                 <v-card class="mt-6" v-if="!recentlyTriggered" outlined>
                     <v-card-text class="mb-4 mb-md-0 pb-0">
                         <p>

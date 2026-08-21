@@ -81,11 +81,14 @@ class WebServer {
                 })
             }
 
-            // Add body parser, but avoid parsing JSON for the Paddle webhooks route.
+            // Add body parser, but avoid parsing JSON for the Paddle webhooks
+            // and for the FIT uploads, which are consumed as raw streams.
             const bodyParser = require("body-parser")
             this.app.use((req: express.Request, res: express.Response, next) => {
                 if (req.originalUrl.substring(0, 19) == "/api/paddle/webhook") {
                     bodyParser.raw({type: "application/json"})(req, res, next)
+                } else if (req.originalUrl.substring(0, 14) == "/api/fitupload") {
+                    next()
                 } else {
                     bodyParser.json()(req, res, next)
                 }
