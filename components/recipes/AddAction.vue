@@ -378,7 +378,7 @@ export default {
                                 this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
                                 return
                             }
-                            result.value = "custom" + promptResult.prompt
+                            result.value = "custom:" + promptResult.prompt
                             result.friendlyValue = "custom prompt: " + promptResult.prompt
                         } catch (aiEx) {
                             this.valueInput = `ERROR! Prompt failed moderation: ${aiEx.toString()}`
