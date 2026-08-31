@@ -233,14 +233,11 @@
                         <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
                         <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
-                        <v-radio-group v-model="aiProvider" :row="$breakpoint.mdAndUp" :disabled="!user.isPro">
-                            <v-radio label="Auto (OpenRouter)" :value="''"></v-radio>
-                            <v-radio label="Anthropic" :value="'anthropic'"></v-radio>
-                            <v-radio label="Gemini" :value="'gemini'"></v-radio>
-                            <v-radio label="Mistral" :value="'mistral'"></v-radio>
-                            <v-radio label="OpenAI" :value="'openai'"></v-radio>
-                            <v-radio label="xAI" :value="'xai'"></v-radio>
-                        </v-radio-group>
+                        <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                            <div class="flex-grow-1">
+                                <v-select label="Provider" v-model="aiProvider" :items="listAiProviders" :disabled="!user.isPro" outlined rounded></v-select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mt-n2 text-center text-md-left">
                         <n-link title="Help me selecting a weather provider" to="/activities/fortune" nuxt router>
@@ -611,6 +608,16 @@ export default {
             weatherProvider: weatherProvider,
             weatherUnit: weatherUnit,
             windSpeedUnit: windSpeedUnit,
+            listAiProviders: [
+                {value: "", text: "Auto"},
+                {value: "anthropic", text: "Anthropic"},
+                {value: "deepseek", text: "DeepSeek"},
+                {value: "gemini", text: "Gemini"},
+                {value: "mistral", text: "Mistral"},
+                {value: "openai", text: "OpenAI"},
+                {value: "spacexai", text: "SpaceX AI"},
+                {value: "zai", text: "Z.ai"}
+            ],
             listWeatherProviders: listWeatherProviders,
             listWeatherUnits: [
                 {value: "c", text: "Celsius"},

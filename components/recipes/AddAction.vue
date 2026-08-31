@@ -109,7 +109,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-col class="mt-4 text-center" cols="12">
-                            <v-btn color="primary" @click="save" title="Save this action" :loading="loading" :disabled="!selectedAction?.value" rounded>
+                            <v-btn color="primary" @click="save" title="Save this action" :disabled="!selectedAction?.value" rounded>
                                 <v-icon left>mdi-check</v-icon>
                                 Save action
                             </v-btn>
@@ -230,7 +230,6 @@ export default {
 
             return {
                 action: {},
-                loading: false,
                 valid: true,
                 recipeActions: recipeActions,
                 selectedAction: {},
@@ -338,7 +337,7 @@ export default {
             const reset = () => Object.assign(this.$data, this.initialData())
             setTimeout(reset, 500)
         },
-        async save() {
+        save() {
             if (this.$refs.form.validate()) {
                 const result = {
                     type: this.selectedAction.value
@@ -371,42 +370,17 @@ export default {
                     result.friendlyValue = webhookValue
                 } else if (this.actionIsAI && (!this.selectedAiHumour || this.selectedAiHumour.value != "random")) {
                     if (this.valueInput && (result.type == "generateInsights" || this.selectedAiHumour.value == "custom")) {
-                        this.loading = true
-                        try {
-                            const promptResult = await this.$axios.$post(`/api/ai/${this.user.id}/validate-prompt`, {prompt: this.valueInput.trim()})
-                            if (promptResult.failed) {
-                                this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
-                                return
-                            }
-                            result.value = "custom:" + promptResult.prompt
-                            result.friendlyValue = "custom prompt: " + promptResult.prompt
-                        } catch (aiEx) {
-                            this.valueInput = `ERROR! Prompt failed moderation: ${aiEx.toString()}`
-                            return
-                        } finally {
-                            this.loading = false
-                        }
+                        const prompt = this.valueInput.trim()
+                        result.value = "custom:" + prompt
+                        result.friendlyValue = "custom prompt: " + prompt
                     } else {
                         result.value = this.selectedAiHumour.value
                         result.friendlyValue = result.type == "generateInsights" ? "Default" : this.selectedAiHumour.text
                     }
                 } else if (result.type == "aiProcess") {
                     if (!this.valueInput?.trim()) return
-                    this.loading = true
-                    try {
-                        const promptResult = await this.$axios.$post(`/api/ai/${this.user.id}/validate-prompt`, {prompt: this.valueInput.trim()})
-                        if (promptResult.failed) {
-                            this.valueInput = `Prompt failed moderation: ${promptResult.failed}`
-                            return
-                        }
-                        result.value = promptResult.prompt
-                        result.friendlyValue = promptResult.prompt
-                    } catch (aiEx) {
-                        this.valueInput = `ERROR! Prompt failed moderation: ${aiEx.toString()}`
-                        return
-                    } finally {
-                        this.loading = false
-                    }
+                    result.value = this.valueInput.trim()
+                    result.friendlyValue = result.value
                 } else {
                     result.value = this.valueInput || true
                 }

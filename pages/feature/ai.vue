@@ -14,14 +14,15 @@
                     <h2 class="mb-2">Multiple AI providers</h2>
                     <ul class="ml-n2 mb-6">
                         <li>Anthropic (Claude)</li>
+                        <li>DeepSeek</li>
+                        <li>Google (Gemini)</li>
                         <li>Mistral (Mistral AI)</li>
                         <li>OpenAI (ChatGPT)</li>
-                        <li>Google (Gemini)</li>
-                        <li>xAI (Grok)</li>
-                        <li>OpenRouter (all models)</li>
+                        <li>SpaceXAI (Grok)</li>
+                        <li>Z.ai (GLM)</li>
                     </ul>
 
-                    <p>PRO users will have unlimited use and access to the most advanced models. Users with a free account are limited to a maximum of 10% of processed activities using AI, with access to smaller models via OpenRouter.</p>
+                    <p>PRO users will have unlimited use and access to the most advanced models. Users with a free account are limited to a maximum of 10% of processed activities using AI, with access to smaller models only.</p>
                     <p>To use this feature, you have the following automation actions:</p>
                     <ul class="ml-n2 mb-4">
                         <li>Generate the activity name with AI</li>

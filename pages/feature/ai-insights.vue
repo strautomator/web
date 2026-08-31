@@ -15,11 +15,12 @@
                     <h2 class="mb-2">Multiple AI providers</h2>
                     <ul class="ml-n2 mb-6">
                         <li>Anthropic (Claude)</li>
+                        <li>DeepSeek</li>
+                        <li>Google (Gemini)</li>
                         <li>Mistral (Mistral AI)</li>
                         <li>OpenAI (ChatGPT)</li>
-                        <li>Google (Gemini)</li>
-                        <li>xAI (Grok)</li>
-                        <li>OpenRouter (all models)</li>
+                        <li>SpaceXAI (Grok)</li>
+                        <li>Z.ai (GLM)</li>
                     </ul>
 
                     <p>This feature is available to PRO users only.</p>

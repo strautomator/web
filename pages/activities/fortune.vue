@@ -105,10 +105,12 @@ export default {
             aiProviders: [
                 {value: "openrouter", text: "Auto"},
                 {value: "anthropic", text: "Anthropic"},
+                {value: "deepseek", text: "DeepSeek"},
                 {value: "gemini", text: "Gemini"},
                 {value: "mistral", text: "Mistral"},
                 {value: "openai", text: "OpenAI"},
-                {value: "xai", text: "xAI"}
+                {value: "spacexai", text: "SpaceXAI"},
+                {value: "zai", text: "Z.ai"}
             ],
             selectedAiProvider: "openrouter",
             syncError: null
