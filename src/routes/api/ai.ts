@@ -29,7 +29,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
 
         // Rate limit Free accounts to a max of 1 request per provider per hour.
         const rateLimitId = `${user.id}-${provider}`
-        if (user.isPro && rateLimitFree[rateLimitId]) {
+        if (!user.isPro && rateLimitFree[rateLimitId]) {
             const lastRequest = dayjs(rateLimitFree[rateLimitId])
             const nextRequest = lastRequest.add(10, "minutes")
             if (nextRequest.isAfter(dayjs())) {
@@ -60,7 +60,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
         const description = await ai.generateActivityDescription(user, {activity, customPrompt, provider, activityWeather})
         user.preferences.language = language
 
-        if (user.isPro) {
+        if (!user.isPro) {
             rateLimitFree[rateLimitId] = new Date()
         }
 

@@ -2,6 +2,7 @@
 
 import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
+import {validateRecipeWebhookActions} from "../../utils/urls"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -470,6 +471,7 @@ const routeUserRecipe = async (req: any, res: any) => {
         if (req.method != "DELETE") {
             try {
                 recipes.validate(user, recipe)
+                validateRecipeWebhookActions(recipe)
             } catch (ex) {
                 if (asJson && ex.message) {
                     ex.message += " (recipe edited as JSON)"

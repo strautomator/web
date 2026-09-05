@@ -140,6 +140,8 @@ class WebServer {
                         } else {
                             res.end()
                         }
+
+                        return
                     }
                     next()
                 })
