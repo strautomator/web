@@ -32,19 +32,49 @@ Handler.prototype.checkRequestAuthorization = async function checkRequestAuthori
     return false
 }
 
+Handler.prototype.getSafeRedirectUrl = function getSafeRedirectUrl(redirectUrl, defaultRedirect = "/dashboard") {
+    if (!redirectUrl || typeof redirectUrl !== "string") {
+        return defaultRedirect
+    }
+
+    const value = redirectUrl.trim()
+    let path
+
+    // Relative paths must stay on this site (no protocol-relative or backslash tricks).
+    if (value.startsWith("/") && !value.startsWith("//") && !value.startsWith("/\\")) {
+        if (value.includes("\\") || value.includes("://") || /[\r\n\t]/.test(value)) {
+            return defaultRedirect
+        }
+        path = value
+    } else {
+        try {
+            const target = new URL(value)
+            const app = new URL(settings.app.url)
+            if (target.origin !== app.origin) {
+                return defaultRedirect
+            }
+            path = `${target.pathname}${target.search}${target.hash}` || "/"
+        } catch (ex) {
+            return defaultRedirect
+        }
+    }
+
+    // Make sure we never redirect back to home or error pages.
+    const redirectPath = path.replace("/", "").substring(0, 4)
+    if (redirectPath == "home" || redirectPath == "erro" || redirectPath == "auth") {
+        return defaultRedirect
+    }
+
+    return path
+}
+
 Handler.prototype.authenticateCallbackToken = async function authenticateCallbackToken() {
     const defaultRedirect = "/dashboard"
     let redirectUrl
 
     try {
         const {state} = parse(this.req.url.split("?")[1])
-        redirectUrl = atob(state)
-
-        // Make sure we never redirect back to home or error pages.
-        const redirectPath = redirectUrl.replace("/", "").substring(0, 4)
-        if (redirectPath == "home" || redirectPath == "erro" || redirectPath == "auth") {
-            redirectUrl = defaultRedirect
-        }
+        redirectUrl = this.getSafeRedirectUrl(atob(state), defaultRedirect)
     } catch (ex) {
         logger.error("OAuth.authenticateCallbackToken", "Can't parse redirect URL", ex)
         redirectUrl = defaultRedirect
@@ -236,7 +266,7 @@ Handler.prototype.redirectAccessDenied = async function redirectToOAuth() {
 
 Handler.prototype.redirectToOAuth = async function redirectToOAuth(redirectUrl) {
     if (redirectUrl) {
-        redirectUrl = btoa(redirectUrl)
+        redirectUrl = btoa(this.getSafeRedirectUrl(redirectUrl))
     }
 
     return this.redirect(core.strava.getAuthUrl(redirectUrl))

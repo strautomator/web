@@ -1,6 +1,7 @@
 // Strautomator: Auth
 
 import {logHelper, strava, users, UserData} from "strautomator-core"
+import {isAppOriginUrl} from "../utils/urls"
 import fs = require("fs")
 import logger from "anyhow"
 import webserver = require("../webserver")
@@ -36,7 +37,7 @@ export class Auth {
             if (options.referer) {
                 const referer = req.headers["referer"] || "unknown"
 
-                if (!referer.includes(settings.app.url)) {
+                if (!isAppOriginUrl(referer, settings.app.url)) {
                     logger.error("Auth.requestValidator", req.originalUrl, `Invalid referer: ${referer}`, `From ${req.ip}`)
 
                     res.setHeader("cache-control", "no-cache")

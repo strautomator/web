@@ -1,6 +1,7 @@
 // Strautomator API: Recipes
 
 import {recipes, users, UserData} from "strautomator-core"
+import {validateRecipeWebhookActions} from "../../utils/urls"
 import auth from "../auth"
 import express = require("express")
 import webserver = require("../../webserver")
@@ -55,6 +56,7 @@ router.post("/:userId/:id", async (req: express.Request, res: express.Response) 
         if (!user) return
 
         const data = req.body
+        validateRecipeWebhookActions(data)
         const result = await recipes.setSharedRecipe(user, data)
 
         webserver.renderJson(req, res, result)

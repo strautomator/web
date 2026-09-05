@@ -189,9 +189,16 @@ export default {
         fitDownload() {
             window.open(`/api/strava/${this.user.id}/${this.user.urlToken}/activities/${this.activity.id}/fit`, "_blank")
         },
+        escapeHtml(value) {
+            if (value == null) {
+                return ""
+            }
+
+            return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+        },
         friendlyValue(value) {
             if (_.isArray(value)) {
-                return value.map((a) => (_.isObject(a) ? Object.values(a).join(": ") : a)).join(", ")
+                return this.escapeHtml(value.map((a) => (_.isObject(a) ? Object.values(a).join(": ") : a)).join(", "))
             }
             if (_.isObject(value)) {
                 const keys = Object.keys(value)
@@ -199,21 +206,22 @@ export default {
                     "<br />" +
                     keys
                         .map((k) => {
+                            const label = this.escapeHtml(k)
                             if (_.isArray(value[k])) {
-                                return `${k}: [${value[k].join(", ")}]`
+                                return `${label}: [${this.escapeHtml(value[k].join(", "))}]`
                             }
                             if (_.isObject(value[k])) {
-                                return `${k}: ${Object.entries(value[k])
-                                    .map(([subK, subV]) => `${subK} = ${subV}`)
+                                return `${label}: ${Object.entries(value[k])
+                                    .map(([subK, subV]) => `${this.escapeHtml(subK)} = ${this.escapeHtml(subV)}`)
                                     .join(", ")}`
                             }
-                            return `${k}: ${value[k]}`
+                            return `${label}: ${this.escapeHtml(value[k])}`
                         })
                         .join("<br />")
                 )
             }
 
-            return value
+            return this.escapeHtml(value)
         }
     }
 }

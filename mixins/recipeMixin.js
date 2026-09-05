@@ -209,8 +209,29 @@ export default {
                 },
                 url: (value) => {
                     if (!value) return "Empty URL"
-                    if (/(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(value)) return true
-                    return "Invalid URL"
+
+                    let parsed
+                    try {
+                        parsed = new URL(value)
+                    } catch (ex) {
+                        return "Invalid URL"
+                    }
+
+                    if (parsed.protocol != "http:" && parsed.protocol != "https:") return "Invalid URL"
+                    if (parsed.username || parsed.password) return "Invalid URL"
+
+                    const host = (parsed.hostname || "").replace(/^\[|\]$/g, "").toLowerCase()
+                    if (!host || host.includes(":") || /^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
+                        return "Webhook URL must be an external domain"
+                    }
+                    if (host == "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal") || host.endsWith(".localdomain")) {
+                        return "Webhook URL must be an external domain"
+                    }
+                    if (!host.includes(".") || host.startsWith(".") || host.endsWith(".") || host.includes("..") || !/^[a-z0-9.-]+$/.test(host)) {
+                        return "Webhook URL must be an external domain"
+                    }
+
+                    return true
                 }
             }
         }
