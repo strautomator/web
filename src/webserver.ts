@@ -90,7 +90,12 @@ class WebServer {
                 } else if (req.originalUrl.substring(0, 14) == "/api/fitupload") {
                     next()
                 } else {
-                    bodyParser.json()(req, res, next)
+                    bodyParser.json()(req, res, (jsonErr) => {
+                        if (jsonErr) {
+                            return next(jsonErr)
+                        }
+                        bodyParser.urlencoded({extended: false})(req, res, next)
+                    })
                 }
             })
             this.app.use((err: Error, req: express.Request, res: express.Response, next) => {
@@ -119,6 +124,8 @@ class WebServer {
 
                 const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
                 this.app.use("/api/*catchall", rateLimit)
+                this.app.use("/mcp", rateLimit)
+                this.app.use("/mcp/*catchall", rateLimit)
                 this.app.use("/api/*catchall", (req, res, next) => {
                     const reqRateLimit = (req as any).rateLimit
                     const statusCode = res.statusCode || "not sent"
@@ -157,6 +164,10 @@ class WebServer {
                     this.app.use(`/api/${basename}`, require(`./routes/api/${r}`))
                 }
             }
+
+            // MCP server (OAuth + Streamable HTTP). Must be registered before the Nuxt renderer.
+            const mcp = require("./mcp")
+            mcp.setup(this.app)
 
             // Setup affiliate links.
             if (settings.affiliates.server.url) {

@@ -57,6 +57,11 @@
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                     </tr>
                     <tr>
+                        <td>MCP server</td>
+                        <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
+                        <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
+                    </tr>
+                    <tr>
                         <td>Shared automations</td>
                         <td class="text-center"><v-icon>mdi-checkbox-blank-circle-outline</v-icon></td>
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
