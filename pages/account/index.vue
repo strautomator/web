@@ -94,6 +94,27 @@
                 </v-alert>
             </div>
             <v-card class="mt-5" outlined>
+                <v-card-title class="accent">MCP{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
+                <v-card-text class="pt-4">
+                    <div class="body-2">
+                        Connect Cursor, Claude or other MCP clients to your Strautomator account. You will be asked to sign in with Strava and authorize the client. MCP access is limited to PRO members.
+                    </div>
+                    <template v-if="user.isPro">
+                        <div class="mt-3 text-caption">Server URL</div>
+                        <code class="d-inline-block mt-1 pa-2">{{ mcpUrl }}</code>
+                        <div class="mt-3">
+                            <v-btn color="primary" title="Copy MCP URL" @click="copyMcpUrl" outlined rounded small>
+                                <v-icon left>mdi-content-copy</v-icon>
+                                {{ mcpCopied ? "Copied" : "Copy URL" }}
+                            </v-btn>
+                        </div>
+                    </template>
+                    <div class="mt-3" v-else>
+                        <n-link to="/billing" title="Upgrade to PRO" nuxt>Upgrade to PRO</n-link> to enable the MCP server.
+                    </div>
+                </v-card-text>
+            </v-card>
+            <v-card class="mt-5" outlined>
                 <v-card-title class="accent">My preferences</v-card-title>
                 <v-card-text>
                     <h3 class="mb-2 mt-5">Weather settings</h3>
@@ -640,7 +661,8 @@ export default {
                 {value: "pt", text: "Português"},
                 {value: "se", text: "Svenska"},
                 {value: "sk", text: "Slovenčina"}
-            ]
+            ],
+            mcpCopied: false
         }
     },
     computed: {
@@ -663,6 +685,10 @@ export default {
         dateResetCounterFormatted() {
             const result = this.$dayjs(this.dateResetCounter)
             return result.format("MMM DD")
+        },
+        mcpUrl() {
+            const base = (this.$axios.defaults.baseURL || "").replace(/\/+$/, "")
+            return `${base}/mcp`
         }
     },
     watch: {
@@ -738,6 +764,17 @@ export default {
             if (newValue != oldValue) {
                 this.savePending = true
                 this.delaySavePreferences()
+            }
+        },
+        async copyMcpUrl() {
+            try {
+                await navigator.clipboard.writeText(this.mcpUrl)
+                this.mcpCopied = true
+                setTimeout(() => {
+                    this.mcpCopied = false
+                }, 2500)
+            } catch (ex) {
+                this.$webError(this, "Account.copyMcpUrl", ex)
             }
         },
         hideEmailDialog(emailSaved) {

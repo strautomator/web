@@ -1,6 +1,7 @@
 // Strautomator API: Strava
 
-import {database, events, fitparser, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter, StravaProcessedActivity} from "strautomator-core"
+import {database, events, fitparser, maps, strava, users, UserData, StravaAthleteRecords, StravaSport, StravaActivityFilter} from "strautomator-core"
+import {getProcessedActivities, saveEstimatedFtp} from "../logic"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -148,33 +149,7 @@ router.get("/:userId/processed-activities", async (req: express.Request, res: ex
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Limit number of activities returned?
-        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : null
-        const dateFrom: Date = req.query.from ? dayjs(req.query.from.toString()).startOf("day").toDate() : null
-        const dateTo: Date = req.query.to ? dayjs(req.query.to.toString()).endOf("day").toDate() : null
-
-        const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
-
-        // If user has a Garmin or Wahoo account linked, append the related FIT file activities as well.
-        if (user.garmin) {
-            const getGarminActivity = async (activity: StravaProcessedActivity) => {
-                const garminActivity = await fitparser.getMatchingActivity(user, activity, "garmin")
-                if (garminActivity) {
-                    activity.garminActivity = garminActivity
-                }
-            }
-            await Promise.allSettled(activities.map(getGarminActivity))
-        }
-        if (user.wahoo) {
-            const getWahooActivity = async (activity: StravaProcessedActivity) => {
-                const garminActivity = await fitparser.getMatchingActivity(user, activity, "wahoo")
-                if (garminActivity) {
-                    activity.wahooActivity = garminActivity
-                }
-            }
-            await Promise.allSettled(activities.map(getWahooActivity))
-        }
-
+        const activities = await getProcessedActivities(user, req.query)
         webserver.renderJson(req, res, activities)
     } catch (ex) {
         webserver.renderError(req, res, ex)
@@ -385,14 +360,7 @@ router.post("/:userId/ftp/estimate", async (req: express.Request, res: express.R
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const estimation = await strava.performance.estimateFtp(user)
-        if (req.body?.ftp && req.body.ftp > 0) {
-            estimation.ftpWatts = parseInt(req.body.ftp)
-        }
-
-        // Update the user's FTP.
-        const updated = await strava.performance.saveFtp(user, estimation)
-        const result = updated ? {ftp: estimation.ftpWatts} : false
+        const result = await saveEstimatedFtp(user, req.body?.ftp)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)

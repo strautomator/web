@@ -46,6 +46,18 @@ To properly test all APIs and webhooks from Strava and PayPal, you'll need to ch
 
 If for whatever reason you want to split the Strautomator API from the frontend, you can use the `api.url` setting to specify the base path for the API. By default, it runs on the `/api/` path under the same URL set on the `app.url`.
 
+### MCP server
+
+The web app also hosts a remote MCP server at `/mcp` for PRO members. MCP clients (Cursor, Claude, etc.) authenticate with OAuth 2.1:
+
+- Protected resource metadata: `/.well-known/oauth-protected-resource`
+- Authorization server metadata: `/.well-known/oauth-authorization-server`
+- Dynamic client registration: `/mcp/oauth/register`
+- Authorization (Strava login + consent): `/mcp/oauth/authorize`
+- Token + PKCE: `/mcp/oauth/token`
+
+Users stay on Strava for identity. The MCP authorization server issues its own tokens (audience-bound to `/mcp`) and never accepts or forwards Strava access tokens. Connect from an MCP client using the server URL `https://strautomator.com/mcp`.
+
 If you plan to deploy the instance to production and build the nuxt app beforehand, it's mandatory to set the app URL via the environment variable `$SMU_app_url`.
 
 ### Cloudflare Tunnel
