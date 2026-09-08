@@ -1,6 +1,7 @@
 // Strautomator API: GearWear
 
-import {logHelper, gearwear, GearWearConfig, strava, UserData} from "strautomator-core"
+import {logHelper, gearwear, GearWearConfig, UserData} from "strautomator-core"
+import {getGearwearById, getGearwearByUser} from "../logic"
 import auth from "../auth"
 import _ from "lodash"
 import express = require("express")
@@ -21,24 +22,7 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const result: any = {}
-        const gearwearConfigs = await gearwear.getByUser(user)
-        result.configs = gearwearConfigs
-
-        // Also get battery tracker for PRO users.
-        if (user.isPro && (user.garmin?.id || user.wahoo?.id)) {
-            const batteryTracker = await gearwear.getBatteryTracker(user)
-            if (batteryTracker) {
-                result.batteryTracker = batteryTracker
-            }
-        }
-
-        // If a refresh query was passed, trigger an async call to
-        // refresh gear details from Strava.
-        if (req.query?.refresh) {
-            gearwear.refreshGearDetails(user)
-        }
-
+        const result = await getGearwearByUser(user, !!req.query?.refresh)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)
@@ -56,18 +40,10 @@ router.get("/:userId/:gearId", async (req: express.Request, res: express.Respons
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // Get GearWear config and gear details from Strava.
-        const config = await gearwear.getById(gearId as string)
-        const gear = await strava.athletes.getGear(user, gearId as string)
-
-        // Stop here if owner of the specified gear is not the logged user.
-        if (config && config.userId != user.id) {
-            return webserver.renderError(req, res, `${logHelper.user(user)} has no access to GearWear ${gearId}`, 403)
-        }
-
-        webserver.renderJson(req, res, {config: config, gear: gear})
+        const result = await getGearwearById(user, gearId as string)
+        webserver.renderJson(req, res, result)
     } catch (ex) {
-        webserver.renderError(req, res, ex)
+        webserver.renderError(req, res, ex, ex.status)
     }
 })
 

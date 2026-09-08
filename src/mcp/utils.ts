@@ -178,17 +178,6 @@ export const sanitizeUser = (user: UserData): any => {
 }
 
 /**
- * Remove heavy / unused fields from activities returned to MCP clients.
- */
-export const sanitizeActivity = (activity: any): any => {
-    if (!activity || typeof activity != "object") {
-        return activity
-    }
-
-    return _.omit(activity, ["polyline", "polylineSummary", "streams", "splits", "splitsMetric", "splitsStandard"])
-}
-
-/**
  * JSON-serialize a value, converting dates to ISO strings.
  */
 export const toJsonText = (data: any): string => {

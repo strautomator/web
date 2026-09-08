@@ -1,8 +1,8 @@
 // Strautomator API: Users
 
-import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, RecipeData, RecipeStatsData, UserData, UserPreferences} from "strautomator-core"
+import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
-import {validateRecipeWebhookActions} from "../../utils/urls"
+import {getPublicUser, getRecipeStats, upsertUserRecipe} from "../logic"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -22,62 +22,10 @@ router.get("/:userId", async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
 
-        const userId = req.params.userId as string
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        // DEPRECATED! Recipes with no order must have a default set now.
-        let recipeCounter = 0
-        for (let recipe of Object.values(user.recipes)) {
-            if (!recipe.order) {
-                recipe.order = recipeCounter
-                recipeCounter++
-            }
-        }
-
-        // Refresh profile from Strava?
-        if (req.query?.refresh) {
-            const profile = await strava.athletes.getAthlete(user.stravaTokens)
-
-            // Merge bikes and shoes.
-            // Do not overwrite all gear details, as they won't have brand and model (coming from the athlete endpoint).
-            // Merge the bikes and shoes instead.
-            for (let bike of profile.bikes) {
-                const existingBike = _.find(user.profile.bikes, {id: bike.id})
-                if (existingBike) _.defaults(bike, existingBike)
-            }
-            for (let shoes of profile.shoes) {
-                const existingShoes = _.find(user.profile.shoes, {id: shoes.id})
-                if (existingShoes) _.defaults(shoes, existingShoes)
-            }
-
-            // Save updated profile on the database.
-            const data: Partial<UserData> = {
-                id: userId,
-                profile: profile,
-                displayName: user.preferences.privacyMode ? user.displayName : profile.username || profile.firstName || profile.lastName
-            }
-            users.update(data)
-
-            // Update profile on current user.
-            user.profile = profile
-        }
-
-        // Clone user object and remove sensitive data.
-        const result = _.cloneDeep(user)
-        if (result.confirmEmail) {
-            result.confirmEmail = result.confirmEmail.substring(result.confirmEmail.indexOf(":") + 1)
-        }
-        if (result.garmin) {
-            delete result.garmin.tokens
-        }
-        if (result.wahoo) {
-            delete result.wahoo.tokens
-        }
-        if (result.spotify) {
-            delete result.spotify.tokens
-        }
-
+        const result = await getPublicUser(user, !!req.query?.refresh)
         webserver.renderJson(req, res, result)
     } catch (ex) {
         webserver.renderError(req, res, ex)
@@ -455,85 +403,10 @@ const routeUserRecipe = async (req: any, res: any) => {
             return webserver.renderError(req, res, `User ${userId} not found`, 404)
         }
 
-        // Get and validate the recipe data.
-        const recipeId: string = req.params.recipeId || req.body?.id
-        const recipe: RecipeData = req.body?.title ? req.body : user.recipes[recipeId]
-        if (!recipe) {
-            return webserver.renderError(req, res, `Recipe ${recipeId} not found`, 404)
-        }
-
-        const asJson = recipe ? recipe["asJson"] || false : false
-        if (asJson) {
-            delete recipe["asJson"]
-        }
-
-        // Make sure recipe was sent in the correct format.
-        if (req.method != "DELETE") {
-            try {
-                recipes.validate(user, recipe)
-                validateRecipeWebhookActions(recipe)
-            } catch (ex) {
-                if (asJson && ex.message) {
-                    ex.message += " (recipe edited as JSON)"
-                }
-
-                return webserver.renderError(req, res, ex, 400)
-            }
-        }
-
-        // If 2 conditions or less, we don't need to set a value for samePropertyOp, as we only use the default op.
-        if (recipe.conditions?.length <= 2 && recipe.samePropertyOp) {
-            delete recipe.samePropertyOp
-        }
-
-        const operatorLog = !recipe.samePropertyOp || recipe.op == recipe.samePropertyOp ? recipe.op : `${recipe.samePropertyOp} ${recipe.op}`
-
-        // Creating a new recipe?
-        if (!recipe.id && req.method == "POST") {
-            if (!user.isPro && user.recipeCount >= settings.plans.free.maxRecipes) {
-                return webserver.renderError(req, res, `Maximum of ${settings.plans.free.maxRecipes} automations allowed on the free plan`, 402)
-            }
-
-            recipe.id = recipes.generateId()
-
-            // Add to user's recipe list.
-            user.recipes[recipe.id] = recipe
-            logger.info("Routes.users", logHelper.user(user), `New recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
-        } else {
-            const existingRecipe = user.recipes[recipeId]
-
-            // Recipe not found?
-            if (!existingRecipe) {
-                return webserver.renderError(req, res, `Recipe ${recipeId} not found`, 404)
-            }
-
-            // Updating an existing recipe?
-            if (req.method == "POST") {
-                user.recipes[recipe.id] = recipe
-                logger.info("Routes.users", logHelper.user(user), `Updated recipe ${recipe.id}: ${recipe.title}`, operatorLog, `${recipe.conditions.length} conditions, ${recipe.actions.length} actions`)
-            }
-            // Deleting a recipe?
-            else if (req.method == "DELETE") {
-                delete user.recipes[recipeId]
-                logger.info("Routes.users", logHelper.user(user), `Deleted recipe ${recipeId}: ${recipe.title}`)
-            }
-            // Invalid call.
-            else {
-                return webserver.renderError(req, res, `Invalid method for recipe ${recipeId}`, 405)
-            }
-        }
-
-        // User was recently suspended? Unset the flag.
-        if (user.suspended) {
-            user.suspended = false
-        }
-
-        // Update recipe count on user data.
-        user.recipeCount = Object.keys(user.recipes).length
-        await users.update(user, true)
+        const recipe = await upsertUserRecipe(user, req.body, req.method, req.params.recipeId)
         webserver.renderJson(req, res, recipe)
     } catch (ex) {
-        webserver.renderError(req, res, ex)
+        webserver.renderError(req, res, ex, ex.status)
     }
 }
 
@@ -576,11 +449,7 @@ router.get("/:userId/recipes/stats", async (req: express.Request, res: express.R
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        const arrStats = (await recipes.stats.getStats(user)) as RecipeStatsData[]
-
-        // We don't need full list of activity IDs sent to the client.
-        arrStats.forEach((s) => delete s.activities)
-        webserver.renderJson(req, res, arrStats)
+        webserver.renderJson(req, res, await getRecipeStats(user))
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }
@@ -597,12 +466,7 @@ router.get("/:userId/recipes/stats/:recipeId", async (req: express.Request, res:
         const user: UserData = (await auth.requestValidator(req, res)) as UserData
         if (!user) return
 
-        if (!user.recipes[recipeId]) {
-            throw new Error(`Invalid recipe: ${recipeId}`)
-        }
-
-        const stats = (await recipes.stats.getStats(user, user.recipes[recipeId])) as RecipeStatsData
-        webserver.renderJson(req, res, stats)
+        webserver.renderJson(req, res, await getRecipeStats(user, recipeId))
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

@@ -1,13 +1,9 @@
-// Strautomator MCP tools (wrap existing core / API behaviour)
+// Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
-import {database, fitparser, gearwear, notifications, recipes, strava, subscriptions, users, UserData, RecipeData} from "strautomator-core"
-import {validateRecipeWebhookActions} from "../utils/urls"
-import {sanitizeActivity, sanitizeUser, toolError, toolResult} from "./utils"
-import dayjs from "../dayjs"
-import _ from "lodash"
+import {database, notifications, recipes, strava, users, UserData} from "strautomator-core"
+import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, upsertUserRecipe} from "../routes/logic"
+import {sanitizeUser, toolError, toolResult} from "./utils"
 import logger from "anyhow"
-const settings = require("setmeup").settings
-const packageVersion = require("../../package.json").version
 
 type ToolHandler = (user: UserData, args: any) => Promise<any>
 
@@ -18,77 +14,20 @@ interface ToolDef {
     handler: ToolHandler
 }
 
-const requireNumber = (value: any, label: string): number => {
-    const parsed = typeof value == "number" ? value : parseInt(value, 10)
-    if (!Number.isFinite(parsed)) {
-        throw new Error(`Invalid ${label}`)
-    }
-    return parsed
-}
-
 const tools: ToolDef[] = [
     {
         name: "get_account",
-        description: "Get the authenticated Strautomator user profile, preferences, subscription flags and linked accounts. Secrets and API tokens are omitted.",
-        inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async (user) => {
-            const result = sanitizeUser(user)
-            if (user.subscriptionId) {
-                try {
-                    result.subscription = await subscriptions.getById(user.subscriptionId)
-                } catch (ex) {
-                    logger.warn("McpTools.get_account", user.id, "Failed to load subscription", ex)
-                }
-            }
-            return result
-        }
-    },
-    {
-        name: "list_recent_activities",
-        description: "List recent Strava activities for the authenticated user. Defaults to the last 10 activities from the past 21 days (max 50, lookback capped at 30 days).",
+        description: "Get the authenticated Strautomator user profile, preferences, automations and linked accounts. Secrets and API tokens are omitted.",
         inputSchema: {
             type: "object",
-            properties: {
-                limit: {type: "number", description: "Max activities to return (default 10, max 50)"},
-                since: {type: "number", description: "Unix timestamp to start from"}
-            },
+            properties: {refresh: {type: "boolean", description: "If true, refresh the Strava profile first (same as GET /api/users/:userId?refresh=1)"}},
             additionalProperties: false
         },
-        handler: async (user, args) => {
-            let limit = args.limit ? requireNumber(args.limit, "limit") : 10
-            if (limit > 50) limit = 50
-            if (limit < 1) limit = 1
-
-            let dateFrom = args.since ? dayjs.unix(requireNumber(args.since, "since")) : dayjs().subtract(21, "days")
-            const minDate = dayjs().subtract(30, "days")
-            if (dateFrom.isBefore(minDate)) dateFrom = minDate
-
-            let activities = await strava.activities.getActivities(user, {after: dateFrom})
-            activities.reverse()
-            if (activities.length > limit) {
-                activities = activities.slice(0, limit)
-            }
-            return activities.map(sanitizeActivity)
-        }
-    },
-    {
-        name: "get_activity",
-        description: "Get a single Strava activity by ID, including details used by automations.",
-        inputSchema: {
-            type: "object",
-            properties: {activityId: {type: "string", description: "Strava activity ID"}},
-            required: ["activityId"],
-            additionalProperties: false
-        },
-        handler: async (user, args) => {
-            if (!args.activityId) throw new Error("Missing activityId")
-            const activity = await strava.activities.getActivity(user, args.activityId.toString())
-            return sanitizeActivity(activity)
-        }
+        handler: async (user, args) => sanitizeUser(await getPublicUser(user, args.refresh === true))
     },
     {
         name: "list_processed_activities",
-        description: "List activities that Strautomator already processed (automation history).",
+        description: "List activities that Strautomator already processed (automation history). Same as GET /api/strava/:userId/processed-activities.",
         inputSchema: {
             type: "object",
             properties: {
@@ -98,49 +37,22 @@ const tools: ToolDef[] = [
             },
             additionalProperties: false
         },
-        handler: async (user, args) => {
-            const limit = args.limit ? requireNumber(args.limit, "limit") : null
-            const dateFrom = args.from ? dayjs(args.from.toString()).startOf("day").toDate() : null
-            const dateTo = args.to ? dayjs(args.to.toString()).endOf("day").toDate() : null
-            const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
-
-            if (user.garmin) {
-                await Promise.allSettled(
-                    activities.map(async (activity) => {
-                        const garminActivity = await fitparser.getMatchingActivity(user, activity, "garmin")
-                        if (garminActivity) activity.garminActivity = garminActivity
-                    })
-                )
-            }
-            if (user.wahoo) {
-                await Promise.allSettled(
-                    activities.map(async (activity) => {
-                        const wahooActivity = await fitparser.getMatchingActivity(user, activity, "wahoo")
-                        if (wahooActivity) activity.wahooActivity = wahooActivity
-                    })
-                )
-            }
-
-            return activities.map(sanitizeActivity)
-        }
+        handler: async (user, args) => getProcessedActivities(user, args)
     },
     {
         name: "get_processed_activity",
-        description: "Get a single Strautomator-processed activity, including which automations ran.",
+        description: "Get a single Strautomator-processed activity. Same as GET /api/strava/:userId/processed-activities/:id.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Strava activity ID"}},
             required: ["activityId"],
             additionalProperties: false
         },
-        handler: async (user, args) => {
-            const activity = await strava.activityProcessing.getProcessedActivity(user, parseInt(args.activityId, 10))
-            return sanitizeActivity(activity)
-        }
+        handler: async (user, args) => strava.activityProcessing.getProcessedActivity(user, parseInt(args.activityId, 10))
     },
     {
         name: "process_activity",
-        description: "Run Strautomator automations on a specific Strava activity now (same as processing it from the website).",
+        description: "Run Strautomator automations on a specific Strava activity now. Same as GET /api/strava/:userId/process-activity/:activityId.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Strava activity ID"}},
@@ -154,28 +66,22 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_automations",
-        description: "List the user's Strautomator automations (recipes), including conditions and actions.",
+        description: "List the user's Strautomator automations (recipes).",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async (user) => {
-            return Object.values(user.recipes || {})
+            const result = await getPublicUser(user)
+            return result.recipes || {}
         }
     },
     {
         name: "get_automation_schema",
-        description: "Return valid automation condition properties, operators and action types. Call this before save_automation.",
+        description: "Return valid automation condition properties, operators and action types from core. Call this before save_automation.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async () => {
-            return {
-                operators: ["any", "=", "!=", "like", "notlike", "approx", ">", "<"],
-                logicalOperators: ["AND", "OR"],
-                properties: recipes.propertyList.map((p: any) => _.pick(p, ["value", "text", "type", "isPro"])),
-                actions: recipes.actionList.map((a: any) => _.pick(a, ["value", "text", "isPro"]))
-            }
-        }
+        handler: async () => ({properties: recipes.propertyList, actions: recipes.actionList})
     },
     {
         name: "save_automation",
-        description: "Create or update an automation. Omit id to create. Conditions and actions must follow get_automation_schema. Each condition needs property, operator and value. Each action needs type and value.",
+        description: "Create or update an automation. Same as POST /api/users/:userId/recipes. Omit id to create. Call get_automation_schema first.",
         inputSchema: {
             type: "object",
             properties: {
@@ -197,37 +103,12 @@ const tools: ToolDef[] = [
         },
         handler: async (user, args) => {
             const fresh = await users.getById(user.id)
-            const recipe: RecipeData = args as RecipeData
-
-            recipes.validate(fresh, recipe)
-            validateRecipeWebhookActions(recipe)
-
-            if (recipe.conditions?.length <= 2 && recipe.samePropertyOp) {
-                delete recipe.samePropertyOp
-            }
-
-            if (!recipe.id) {
-                recipe.id = recipes.generateId()
-                fresh.recipes = fresh.recipes || {}
-                fresh.recipes[recipe.id] = recipe
-            } else {
-                if (!fresh.recipes?.[recipe.id]) {
-                    throw new Error(`Automation ${recipe.id} not found`)
-                }
-                fresh.recipes[recipe.id] = recipe
-            }
-
-            if (fresh.suspended) {
-                fresh.suspended = false
-            }
-            fresh.recipeCount = Object.keys(fresh.recipes).length
-            await users.update(fresh, true)
-            return recipe
+            return upsertUserRecipe(fresh, args, "POST")
         }
     },
     {
         name: "delete_automation",
-        description: "Delete an automation by ID.",
+        description: "Delete an automation by ID. Same as DELETE /api/users/:userId/recipes/:recipeId.",
         inputSchema: {
             type: "object",
             properties: {id: {type: "string", description: "Automation ID"}},
@@ -236,96 +117,49 @@ const tools: ToolDef[] = [
         },
         handler: async (user, args) => {
             const fresh = await users.getById(user.id)
-            const recipeId = args.id.toString()
-            if (!fresh.recipes?.[recipeId]) {
-                throw new Error(`Automation ${recipeId} not found`)
-            }
-            delete fresh.recipes[recipeId]
-            fresh.recipeCount = Object.keys(fresh.recipes).length
-            await users.update(fresh, true)
-            return {deleted: true, id: recipeId}
+            return upsertUserRecipe(fresh, null, "DELETE", args.id.toString())
         }
     },
     {
         name: "get_automation_stats",
-        description: "Get execution stats for all automations, or a single automation if id is set.",
+        description: "Get execution stats for all automations, or a single automation if id is set. Same as GET /api/users/:userId/recipes/stats.",
         inputSchema: {
             type: "object",
             properties: {id: {type: "string", description: "Optional automation ID"}},
             additionalProperties: false
         },
-        handler: async (user, args) => {
-            if (args.id) {
-                if (!user.recipes?.[args.id]) {
-                    throw new Error(`Automation ${args.id} not found`)
-                }
-                return recipes.stats.getStats(user, user.recipes[args.id])
-            }
-            const arrStats = (await recipes.stats.getStats(user)) as any[]
-            arrStats.forEach((s) => delete s.activities)
-            return arrStats
-        }
+        handler: async (user, args) => getRecipeStats(user, args.id)
     },
     {
         name: "list_gearwear",
-        description: "List GearWear configurations for the user, including battery tracker when Garmin or Wahoo is linked.",
-        inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async (user) => {
-            const result: any = {configs: await gearwear.getByUser(user)}
-            if (user.garmin?.id || user.wahoo?.id) {
-                const batteryTracker = await gearwear.getBatteryTracker(user)
-                if (batteryTracker) result.batteryTracker = batteryTracker
-            }
-            return result
-        }
+        description: "List GearWear configurations for the user. Same as GET /api/gearwear/:userId.",
+        inputSchema: {
+            type: "object",
+            properties: {refresh: {type: "boolean", description: "If true, refresh gear details from Strava in the background"}},
+            additionalProperties: false
+        },
+        handler: async (user, args) => getGearwearByUser(user, args.refresh === true)
     },
     {
         name: "get_gearwear",
-        description: "Get one GearWear configuration plus the Strava gear details.",
+        description: "Get one GearWear configuration plus the Strava gear details. Same as GET /api/gearwear/:userId/:gearId.",
         inputSchema: {
             type: "object",
             properties: {gearId: {type: "string", description: "Strava gear ID"}},
             required: ["gearId"],
             additionalProperties: false
         },
-        handler: async (user, args) => {
-            const config = await gearwear.getById(args.gearId.toString())
-            if (config && config.userId != user.id) {
-                throw new Error("No access to this GearWear configuration")
-            }
-            const gear = await strava.athletes.getGear(user, args.gearId.toString())
-            return {config, gear}
-        }
+        handler: async (user, args) => getGearwearById(user, args.gearId.toString())
     },
     {
         name: "list_athlete_records",
-        description: "Get the athlete's personal records tracked by Strautomator.",
+        description: "Get the athlete's personal records tracked by Strautomator. Same as GET /api/strava/:userId/athlete-records.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async (user) => strava.athletes.getAthleteRecords(user)
     },
     {
-        name: "list_routes",
-        description: "List the athlete's Strava routes.",
-        inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async (user) => strava.routes.getUserRoutes(user)
-    },
-    {
-        name: "list_upcoming_club_events",
-        description: "List upcoming Strava club events. PRO accounts can look further ahead than the website default.",
-        inputSchema: {
-            type: "object",
-            properties: {days: {type: "number", description: "How many days ahead to look"}},
-            additionalProperties: false
-        },
-        handler: async (user, args) => {
-            const days = args.days ? requireNumber(args.days, "days") : settings.plans.pro.futureCalendarDays
-            const events = await strava.clubs.getUpcomingClubEvents(user, days, [user.profile.country])
-            return events
-        }
-    },
-    {
         name: "estimate_ftp",
-        description: "Estimate cycling FTP from recent activities with power. Does not write to Strava unless save is true.",
+        description: "Estimate cycling FTP from recent activities with power. Same as GET /api/strava/:userId/ftp/estimate. Set save=true to write it to Strava (POST).",
         inputSchema: {
             type: "object",
             properties: {
@@ -335,23 +169,15 @@ const tools: ToolDef[] = [
             additionalProperties: false
         },
         handler: async (user, args) => {
-            const estimation = await strava.performance.estimateFtp(user)
-            if (!estimation) {
-                return {estimated: false}
-            }
             if (args.save) {
-                if (args.ftp && args.ftp > 0) {
-                    estimation.ftpWatts = parseInt(args.ftp, 10)
-                }
-                const updated = await strava.performance.saveFtp(user, estimation)
-                return {saved: !!updated, ftp: estimation.ftpWatts, estimation}
+                return saveEstimatedFtp(user, args.ftp)
             }
-            return estimation
+            return (await strava.performance.estimateFtp(user)) || false
         }
     },
     {
         name: "list_notifications",
-        description: "List Strautomator notifications for the user.",
+        description: "List Strautomator notifications for the user. Same as GET /api/notifications/:userId/unread or /all.",
         inputSchema: {
             type: "object",
             properties: {includeRead: {type: "boolean", description: "If true, include already-read / expired notifications"}},
@@ -361,11 +187,11 @@ const tools: ToolDef[] = [
     },
     {
         name: "get_strava_status",
-        description: "Get the current Strava API / incident status tracked by Strautomator.",
+        description: "Get the current Strava API / incident status tracked by Strautomator. Same as GET /api/strava/status.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async () => {
             const stravaState = await database.appState.get("strava")
-            return {incident: stravaState?.incident || null, version: packageVersion}
+            return {incident: stravaState?.incident || null}
         }
     }
 ]
