@@ -143,7 +143,7 @@ export class McpStore {
 
     /**
      * Consume an authorization code after the token request has been fully validated.
-     * Deletes the code before returning so concurrent exchanges cannot both succeed.
+     * Uses a Firestore transaction so only one concurrent exchange can succeed.
      */
     consumeAuthCode = async (code: string): Promise<McpAuthCode> => {
         if (!code) {
@@ -151,14 +151,20 @@ export class McpStore {
         }
 
         const id = hashToken(code)
-        const doc: McpAuthCode = await database.get(COL_CODES, id)
-        await database.delete(COL_CODES, id)
 
-        if (!doc || isExpired(doc)) {
-            return null
-        }
+        return database.runTransaction(async (tx) => {
+            const doc: McpAuthCode = await tx.get(COL_CODES, id)
+            if (!doc) {
+                return null
+            }
 
-        return doc
+            tx.delete(COL_CODES, id)
+            if (isExpired(doc)) {
+                return null
+            }
+
+            return doc
+        })
     }
 
     // TOKENS
@@ -246,8 +252,8 @@ export class McpStore {
     }
 
     /**
-     * Consume a refresh token (rotation). Deletes the refresh token and its paired access token.
-     * Call only after the token request has been fully validated.
+     * Consume a refresh token (rotation). Deletes the refresh token and its paired access token
+     * inside a Firestore transaction so only one concurrent refresh can succeed.
      */
     consumeRefreshToken = async (refreshToken: string): Promise<McpToken> => {
         if (!refreshToken) {
@@ -255,25 +261,28 @@ export class McpStore {
         }
 
         const id = hashToken(refreshToken)
-        const doc: McpToken = await database.get(COL_TOKENS, id)
-        if (!doc || doc.type != "refresh") {
+
+        try {
+            return await database.runTransaction(async (tx) => {
+                const doc: McpToken = await tx.get(COL_TOKENS, id)
+                if (!doc || doc.type != "refresh") {
+                    return null
+                }
+
+                tx.delete(COL_TOKENS, id)
+                if (doc.accessId) {
+                    tx.delete(COL_TOKENS, doc.accessId)
+                }
+                if (isExpired(doc)) {
+                    return null
+                }
+
+                return doc
+            })
+        } catch (ex) {
+            logger.error("McpStore.consumeRefreshToken", id, ex)
             return null
         }
-        if (isExpired(doc)) {
-            await database.delete(COL_TOKENS, id)
-            return null
-        }
-
-        await database.delete(COL_TOKENS, id)
-        if (doc.accessId) {
-            try {
-                await database.delete(COL_TOKENS, doc.accessId)
-            } catch (ex) {
-                logger.warn("McpStore.consumeRefreshToken", "Failed to delete previous access token", ex)
-            }
-        }
-
-        return doc
     }
 
     /**
