@@ -9,10 +9,20 @@ import express = require("express")
 import logger from "anyhow"
 const packageVersion = require("../../package.json").version
 
+// INTERNAL HELPERS
+// --------------------------------------------------------------------------
+
+/**
+ * Build a JSON-RPC 2.0 error response.
+ */
 const jsonRpcError = (id: JsonRpcRequest["id"], code: number, message: string): JsonRpcResponse => {
     return {jsonrpc: "2.0", id: id ?? null, error: {code, message}}
 }
 
+/**
+ * Authenticate the MCP request using the OAuth bearer token issued by this server.
+ * Strava tokens are never accepted here.
+ */
 const authenticateRequest = async (req: express.Request, res: express.Response): Promise<UserData> => {
     const header = req.headers.authorization || ""
     const match = header.match(/^Bearer\s+(.+)$/i)
@@ -44,6 +54,9 @@ const authenticateRequest = async (req: express.Request, res: express.Response):
     return user
 }
 
+/**
+ * Dispatch a single JSON-RPC message for the authenticated user.
+ */
 const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonRpcResponse> => {
     const id = message?.id ?? null
     if (!message || message.jsonrpc != "2.0" || !message.method) {
@@ -85,10 +98,12 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
         return {jsonrpc: "2.0", id, result}
     }
 
+    // Client notifications do not expect a response.
     if (message.method == "notifications/initialized" || message.method.startsWith("notifications/")) {
         return null
     }
 
+    // Advertise empty resource and prompt lists (tools-only server).
     if (message.method == "resources/list") {
         return {jsonrpc: "2.0", id, result: {resources: []}}
     }
@@ -99,8 +114,11 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
     return jsonRpcError(id, -32601, `Method not found: ${message.method}`)
 }
 
+// STREAMABLE HTTP
+// --------------------------------------------------------------------------
+
 /**
- * Handle MCP Streamable HTTP requests.
+ * Handle MCP Streamable HTTP requests (POST /mcp).
  */
 export const handleMcp = async (req: express.Request, res: express.Response): Promise<void> => {
     setCorsHeaders(res)
@@ -110,6 +128,7 @@ export const handleMcp = async (req: express.Request, res: express.Response): Pr
         return
     }
 
+    // Stateless server: only POST carries JSON-RPC payloads.
     if (req.method == "GET" || req.method == "DELETE") {
         res.status(405).setHeader("Allow", "POST, OPTIONS").json({error: "method_not_allowed", error_description: "This MCP server is stateless and only accepts POST"})
         return
@@ -134,6 +153,7 @@ export const handleMcp = async (req: express.Request, res: express.Response): Pr
             }
         }
 
+        // Notification-only batches return 202 with no body.
         if (responses.length == 0) {
             res.status(202).send()
             return

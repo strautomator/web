@@ -2,6 +2,9 @@
 
 import {escapeHtml, getMcpConfig} from "./utils"
 
+/**
+ * Shared HTML layout for OAuth consent and error pages.
+ */
 const layout = (title: string, body: string): string => {
     const config = getMcpConfig()
     return `<!DOCTYPE html>
@@ -38,6 +41,9 @@ const layout = (title: string, body: string): string => {
 </html>`
 }
 
+/**
+ * OAuth consent page shown to logged-in PRO users before issuing an authorization code.
+ */
 export const consentPage = (options: {clientName: string; userName: string; requestId: string; consentToken: string}): string => {
     const clientName = escapeHtml(options.clientName || "An MCP client")
     const userName = escapeHtml(options.userName || "your account")
@@ -60,12 +66,17 @@ export const consentPage = (options: {clientName: string; userName: string; requ
     )
 }
 
+/**
+ * Generic error page for the OAuth consent flow.
+ */
 export const errorPage = (title: string, message: string, href?: string, hrefLabel?: string): string => {
     const link = href ? `<p><a class="btn primary" href="${escapeHtml(href)}">${escapeHtml(hrefLabel || "Continue")}</a></p>` : ""
     return layout(title, `<h2>${escapeHtml(title)}</h2><div class="card"><p>${escapeHtml(message)}</p>${link}</div>`)
 }
 
+/**
+ * Shown when a non-PRO user completes Strava login but cannot authorize MCP access.
+ */
 export const proRequiredPage = (): string => {
     return errorPage("PRO required", "The Strautomator MCP server is available to PRO members only. Upgrade your account, then try connecting again.", "/billing", "Go to billing")
 }
-
