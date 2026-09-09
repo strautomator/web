@@ -1,6 +1,6 @@
 // Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
-import {calendar, database, notifications, recipes, strava, users, StravaEstimatedFtp, UserData} from "strautomator-core"
+import {announcements, calendar, database, notifications, recipes, strava, users, StravaEstimatedFtp, UserData} from "strautomator-core"
 import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, upsertUserRecipe} from "../routes/logic"
 import {sanitizeUser, toolError, toolResult} from "./utils"
 import dayjs from "../dayjs"
@@ -231,6 +231,12 @@ const tools: ToolDef[] = [
             additionalProperties: false
         },
         handler: async (user, args) => notifications.getByUser(user, args.includeRead === true)
+    },
+    {
+        name: "list_announcements",
+        description: "List Strautomator announcements available to the user.",
+        inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        handler: async (user) => (await announcements.getActive(user)).map(({readCount, ...announcement}) => announcement)
     },
     {
         name: "get_strava_status",
