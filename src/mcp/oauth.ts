@@ -209,7 +209,7 @@ export const registerClient = async (req: express.Request, res: express.Response
         const result: any = {
             client_id: client.id,
             client_id_issued_at: now.unix(),
-            client_secret_expires_at: 0,
+            client_secret_expires_at: confidential ? dayjs(client.dateExpiry).unix() : 0,
             redirect_uris: client.redirectUris,
             grant_types: client.grantTypes,
             response_types: client.responseTypes,
@@ -296,7 +296,8 @@ export const authorize = withSession(async (req: express.Request, res: express.R
                 res.status(400).send(errorPage("Invalid request", created.description || created.error))
                 return
             }
-            request = created.request
+            res.redirect(302, `/mcp/oauth/authorize?request_id=${encodeURIComponent(created.request.id)}`)
+            return
         } else {
             res.status(400).send(errorPage("Invalid request", "Missing authorization request."))
             return
@@ -383,8 +384,8 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!verifyPkce(codeVerifier, authCode.codeChallenge)) {
                 return oauthErrorJson(res, 400, "invalid_grant", "PKCE verification failed")
             }
-            if (resource && !resourceMatches(resource, authCode.resource)) {
-                return oauthErrorJson(res, 400, "invalid_target", "resource mismatch")
+            if (!resource || !resourceMatches(resource, authCode.resource)) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
             const tokens = await store.issueTokens({clientId: auth.client.id, userId: authCode.userId, resource: authCode.resource, scope: authCode.scope})
@@ -401,8 +402,8 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!existing || existing.clientId != auth.client.id) {
                 return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
             }
-            if (resource && !resourceMatches(resource, existing.resource)) {
-                return oauthErrorJson(res, 400, "invalid_target", "resource mismatch")
+            if (!resource || !resourceMatches(resource, existing.resource)) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
             const tokens = await store.issueTokens({clientId: existing.clientId, userId: existing.userId, resource: existing.resource, scope: existing.scope})

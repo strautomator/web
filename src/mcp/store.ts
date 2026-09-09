@@ -154,8 +154,13 @@ export class McpStore {
             return null
         }
 
-        const doc: McpToken = await database.get(COL_TOKENS, hashToken(accessToken))
-        if (!doc || doc.type != "access" || isExpired(doc)) {
+        const id = hashToken(accessToken)
+        const doc: McpToken = await database.get(COL_TOKENS, id)
+        if (!doc || doc.type != "access") {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_TOKENS, id)
             return null
         }
 
@@ -169,7 +174,11 @@ export class McpStore {
 
         const id = hashToken(refreshToken)
         const doc: McpToken = await database.get(COL_TOKENS, id)
-        if (!doc || doc.type != "refresh" || isExpired(doc)) {
+        if (!doc || doc.type != "refresh") {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_TOKENS, id)
             return null
         }
 
