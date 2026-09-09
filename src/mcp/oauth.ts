@@ -129,7 +129,7 @@ const authenticateClient = async (req: express.Request): Promise<{client: McpOAu
 const getLoggedUser = async (req: express.Request): Promise<UserData> => {
     const config = getMcpConfig()
     const session = (req as any)[config.cookieName]
-    const userId = session?.userId
+    const userId = session?.userId || config.assumeUser
     if (!userId) {
         return null
     }

@@ -13,6 +13,7 @@ import type {UserData} from "strautomator-core"
 export const getMcpConfig = () => {
     const settings = require("setmeup").settings
     const mcp = settings.mcp || {}
+    const oauth = settings.oauth || {}
     const appUrl = (settings.app.url || "").replace(/\/+$/, "")
 
     return {
@@ -28,6 +29,7 @@ export const getMcpConfig = () => {
         clientDays: mcp.clientDays || 365,
         cookieName: settings.cookie.sessionName,
         cookieSecret: settings.cookie.secret,
+        assumeUser: process.env.NODE_ENV == "production" ? undefined : oauth.assumeUser,
         protocolVersions: ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
     }
 }

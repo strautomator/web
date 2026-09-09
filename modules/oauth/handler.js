@@ -144,6 +144,27 @@ Handler.prototype.getSessionToken = function getSessionToken() {
     return this.req[this.opts.sessionName]?.token || null
 }
 
+Handler.prototype.assumeUser = async function assumeUser() {
+    if (process.env.NODE_ENV == "production" || !settings.oauth?.assumeUser) {
+        return false
+    }
+
+    await this.createSession()
+    if (this.req[this.opts.sessionName].userId) {
+        return false
+    }
+
+    const user = await core.users.getById(settings.oauth.assumeUser)
+    if (!user) {
+        logger.warn("OAuth.assumeUser", `User ${settings.oauth.assumeUser} not found`)
+        return false
+    }
+
+    this.req[this.opts.sessionName].userId = user.id
+    this.req.userId = user.id
+    return true
+}
+
 Handler.prototype.updateToken = async function updateToken() {
     await this.createSession()
 

@@ -34,6 +34,9 @@ module.exports = (options) => async (req, res, next) => {
         arrUrl.shift()
 
         const redirectUrl = parse(arrUrl.join("?"))["redirect-url"] || "/"
+        if (await handler.assumeUser()) {
+            return handler.redirect(handler.getSafeRedirectUrl(redirectUrl))
+        }
         return handler.redirectToOAuth(redirectUrl)
     }
 
