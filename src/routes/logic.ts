@@ -7,6 +7,9 @@ import _ from "lodash"
 import logger from "anyhow"
 const settings = require("setmeup").settings
 
+// USER
+// --------------------------------------------------------------------------
+
 /**
  * Public user payload returned by GET /api/users/:userId.
  */
@@ -56,6 +59,9 @@ export const getPublicUser = async (user: UserData, refresh?: boolean): Promise<
 
     return result
 }
+
+// RECIPES
+// --------------------------------------------------------------------------
 
 /**
  * Create, update or delete a user automation (same as POST/DELETE /api/users/:userId/recipes).
@@ -141,6 +147,9 @@ export const getRecipeStats = async (user: UserData, recipeId?: string): Promise
     return arrStats
 }
 
+// STRAVA
+// --------------------------------------------------------------------------
+
 /**
  * Processed activities returned by GET /api/strava/:userId/processed-activities.
  */
@@ -185,6 +194,9 @@ export const saveEstimatedFtp = async (user: UserData, ftp?: number): Promise<an
     const updated = await strava.performance.saveFtp(user, estimation)
     return updated ? {ftp: estimation.ftpWatts} : false
 }
+
+// GEARWEAR
+// --------------------------------------------------------------------------
 
 /**
  * GearWear list returned by GET /api/gearwear/:userId.

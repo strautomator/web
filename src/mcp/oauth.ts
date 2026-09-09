@@ -11,12 +11,22 @@ import logger from "anyhow"
 import dayjs from "../dayjs"
 const sessions = require("client-sessions")
 
+/** Grant types advertised and accepted by this authorization server. */
 const supportedGrantTypes = ["authorization_code", "refresh_token"]
+/** Response types supported on the authorize endpoint. */
 const supportedResponseTypes = ["code"]
+/** Token endpoint client authentication methods (public clients use "none"). */
 const supportedAuthMethods = ["none", "client_secret_post", "client_secret_basic"]
 
+/** Lazy-initialized session middleware (same cookie as the Strava login flow). */
 let sessionMiddleware: express.RequestHandler
 
+// SESSION
+// --------------------------------------------------------------------------
+
+/**
+ * Return the client-sessions middleware used to read the Strava login cookie on the consent page.
+ */
 const getSessionMiddleware = (): express.RequestHandler => {
     if (!sessionMiddleware) {
         const config = getMcpConfig()
@@ -29,12 +39,21 @@ const getSessionMiddleware = (): express.RequestHandler => {
     return sessionMiddleware
 }
 
+/**
+ * Wrap a route handler so the Strava session cookie is available on the request.
+ */
 const withSession = (handler: express.RequestHandler): express.RequestHandler => {
     return (req, res, next) => {
         getSessionMiddleware()(req, res, () => handler(req, res, next))
     }
 }
 
+// INTERNAL HELPERS
+// --------------------------------------------------------------------------
+
+/**
+ * Redirect back to the MCP client with OAuth query parameters (code or error).
+ */
 const oauthRedirect = (res: express.Response, redirectUri: string, params: Record<string, string>): void => {
     const url = new URL(redirectUri)
     for (const [key, value] of Object.entries(params)) {
@@ -45,10 +64,16 @@ const oauthRedirect = (res: express.Response, redirectUri: string, params: Recor
     res.redirect(302, url.toString())
 }
 
+/**
+ * Send a JSON OAuth error response.
+ */
 const oauthErrorJson = (res: express.Response, status: number, error: string, description: string): void => {
     res.status(status).json({error, error_description: description})
 }
 
+/**
+ * Parse client_id and client_secret from an HTTP Basic Authorization header.
+ */
 const parseBasicClient = (req: express.Request): {clientId?: string; clientSecret?: string} => {
     const header = req.headers.authorization || ""
     if (!header.toLowerCase().startsWith("basic ")) {
@@ -67,6 +92,10 @@ const parseBasicClient = (req: express.Request): {clientId?: string; clientSecre
     }
 }
 
+/**
+ * Authenticate the OAuth client on the token and revoke endpoints.
+ * Public clients (token_endpoint_auth_method "none") skip secret validation.
+ */
 const authenticateClient = async (req: express.Request): Promise<{client: McpOAuthClient; error?: string}> => {
     const basic = parseBasicClient(req)
     const clientId = firstString(req.body?.client_id) || basic.clientId
@@ -93,6 +122,10 @@ const authenticateClient = async (req: express.Request): Promise<{client: McpOAu
     return {client}
 }
 
+/**
+ * Resolve the logged-in Strautomator user from the Strava session cookie.
+ * Returns null when the user has not signed in yet.
+ */
 const getLoggedUser = async (req: express.Request): Promise<UserData> => {
     const config = getMcpConfig()
     const session = (req as any)[config.cookieName]
@@ -109,6 +142,9 @@ const getLoggedUser = async (req: express.Request): Promise<UserData> => {
     }
 }
 
+/**
+ * Compare two resource indicator URIs, ignoring trailing slashes.
+ */
 const resourceMatches = (requested: string, expected: string): boolean => {
     if (!requested) {
         return true
@@ -117,6 +153,9 @@ const resourceMatches = (requested: string, expected: string): boolean => {
     const b = expected.replace(/\/+$/, "")
     return a == b
 }
+
+// METADATA
+// --------------------------------------------------------------------------
 
 /**
  * Protected resource metadata (RFC 9728).
@@ -154,6 +193,9 @@ export const authorizationServerMetadata = (_req: express.Request, res: express.
         resource_indicators_supported: true
     })
 }
+
+// DYNAMIC CLIENT REGISTRATION
+// --------------------------------------------------------------------------
 
 /**
  * Dynamic client registration (RFC 7591).
@@ -209,7 +251,8 @@ export const registerClient = async (req: express.Request, res: express.Response
         const result: any = {
             client_id: client.id,
             client_id_issued_at: now.unix(),
-            client_secret_expires_at: 0,
+            // Public clients have no secret (0). Confidential clients expire with the registration.
+            client_secret_expires_at: confidential ? dayjs(client.dateExpiry).unix() : 0,
             redirect_uris: client.redirectUris,
             grant_types: client.grantTypes,
             response_types: client.responseTypes,
@@ -228,6 +271,10 @@ export const registerClient = async (req: express.Request, res: express.Response
     }
 }
 
+/**
+ * Validate the authorize query string and persist a pending authorization request.
+ * The request survives the Strava login redirect and is referenced by request_id.
+ */
 const createAuthRequest = async (req: express.Request): Promise<{request?: McpAuthRequest; error?: string; description?: string; redirectUri?: string; state?: string}> => {
     const config = getMcpConfig()
     const clientId = firstString(req.query.client_id)
@@ -270,8 +317,12 @@ const createAuthRequest = async (req: express.Request): Promise<{request?: McpAu
     return {request}
 }
 
+// AUTHORIZATION
+// --------------------------------------------------------------------------
+
 /**
- * Authorization endpoint (authorization code + PKCE). GET shows consent; POST records the decision.
+ * Authorization endpoint (authorization code + PKCE).
+ * GET shows the consent page; POST records the user's decision.
  */
 export const authorize = withSession(async (req: express.Request, res: express.Response): Promise<void> => {
     const config = getMcpConfig()
@@ -281,12 +332,14 @@ export const authorize = withSession(async (req: express.Request, res: express.R
         const requestId = firstString(req.body?.request_id) || firstString(req.query.request_id)
 
         if (requestId) {
+            // Resume a pending request (after Strava login or after the canonical redirect).
             request = await store.getAuthRequest(requestId)
             if (!request) {
                 res.status(400).send(errorPage("Authorization expired", "This authorization request is no longer valid. Start the connection again from your MCP client."))
                 return
             }
         } else if (req.method == "GET") {
+            // First visit from the MCP client: validate params, persist, then redirect to a stable URL.
             const created = await createAuthRequest(req)
             if (created.error) {
                 if (created.redirectUri) {
@@ -296,7 +349,9 @@ export const authorize = withSession(async (req: express.Request, res: express.R
                 res.status(400).send(errorPage("Invalid request", created.description || created.error))
                 return
             }
-            request = created.request
+            // Canonical URL so refreshing the consent page does not invalidate the consent_token.
+            res.redirect(302, `/mcp/oauth/authorize?request_id=${encodeURIComponent(created.request.id)}`)
+            return
         } else {
             res.status(400).send(errorPage("Invalid request", "Missing authorization request."))
             return
@@ -351,8 +406,11 @@ export const authorize = withSession(async (req: express.Request, res: express.R
     }
 })
 
+// TOKEN ENDPOINT
+// --------------------------------------------------------------------------
+
 /**
- * Token endpoint.
+ * Token endpoint (authorization_code and refresh_token grants).
  */
 export const token = async (req: express.Request, res: express.Response): Promise<void> => {
     setCorsHeaders(res)
@@ -372,8 +430,13 @@ export const token = async (req: express.Request, res: express.Response): Promis
             const redirectUri = firstString(req.body?.redirect_uri)
             const codeVerifier = firstString(req.body?.code_verifier)
             const resource = firstString(req.body?.resource)
-            const authCode = await store.consumeAuthCode(code)
 
+            // RFC 8707: reject before touching the authorization code so the client can retry.
+            if (!resource) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
+            }
+
+            const authCode = await store.getAuthCode(code)
             if (!authCode || authCode.clientId != auth.client.id) {
                 return oauthErrorJson(res, 400, "invalid_grant", "Invalid authorization code")
             }
@@ -383,31 +446,45 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!verifyPkce(codeVerifier, authCode.codeChallenge)) {
                 return oauthErrorJson(res, 400, "invalid_grant", "PKCE verification failed")
             }
-            if (resource && !resourceMatches(resource, authCode.resource)) {
-                return oauthErrorJson(res, 400, "invalid_target", "resource mismatch")
+            if (!resourceMatches(resource, authCode.resource)) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
-            const tokens = await store.issueTokens({clientId: auth.client.id, userId: authCode.userId, resource: authCode.resource, scope: authCode.scope})
-            logger.info("McpOAuth.token", `User ${authCode.userId}`, `Client ${auth.client.id}`, "authorization_code")
-            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: authCode.scope})
+            const consumed = await store.consumeAuthCode(code)
+            if (!consumed) {
+                return oauthErrorJson(res, 400, "invalid_grant", "Invalid authorization code")
+            }
+
+            const tokens = await store.issueTokens({clientId: auth.client.id, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
+            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "authorization_code")
+            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
 
         if (grantType == "refresh_token") {
             const refreshToken = firstString(req.body?.refresh_token)
             const resource = firstString(req.body?.resource)
-            const existing = await store.consumeRefreshToken(refreshToken)
 
+            if (!resource) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
+            }
+
+            const existing = await store.getRefreshToken(refreshToken)
             if (!existing || existing.clientId != auth.client.id) {
                 return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
             }
-            if (resource && !resourceMatches(resource, existing.resource)) {
-                return oauthErrorJson(res, 400, "invalid_target", "resource mismatch")
+            if (!resourceMatches(resource, existing.resource)) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
-            const tokens = await store.issueTokens({clientId: existing.clientId, userId: existing.userId, resource: existing.resource, scope: existing.scope})
-            logger.info("McpOAuth.token", `User ${existing.userId}`, `Client ${auth.client.id}`, "refresh_token")
-            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: existing.scope})
+            const consumed = await store.consumeRefreshToken(refreshToken)
+            if (!consumed) {
+                return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
+            }
+
+            const tokens = await store.issueTokens({clientId: consumed.clientId, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
+            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "refresh_token")
+            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
 
@@ -419,7 +496,7 @@ export const token = async (req: express.Request, res: express.Response): Promis
 }
 
 /**
- * Token revocation (RFC 7009).
+ * Token revocation (RFC 7009). Always returns 200 per the spec, even on errors.
  */
 export const revoke = async (req: express.Request, res: express.Response): Promise<void> => {
     setCorsHeaders(res)

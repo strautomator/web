@@ -1,5 +1,8 @@
 // Strautomator MCP types
 
+// OAUTH PERSISTENCE
+// --------------------------------------------------------------------------
+
 export interface McpOAuthClient {
     /** Client ID (document ID). */
     id: string
@@ -83,6 +86,9 @@ export interface McpToken {
     /** Date this token expires. */
     dateExpiry: Date
 }
+
+// MCP PROTOCOL
+// --------------------------------------------------------------------------
 
 export interface McpToolResult {
     content: {type: "text"; text: string}[]

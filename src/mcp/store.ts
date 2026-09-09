@@ -6,11 +6,18 @@ import {getMcpConfig, hashToken, randomToken} from "./utils"
 import dayjs from "../dayjs"
 import logger from "anyhow"
 
+/** Firestore collection for dynamically registered OAuth clients. */
 const COL_CLIENTS = "mcp-clients"
+/** Firestore collection for pending authorization requests (consent flow). */
 const COL_REQUESTS = "mcp-auth-requests"
+/** Firestore collection for single-use authorization codes. */
 const COL_CODES = "mcp-auth-codes"
+/** Firestore collection for issued access and refresh tokens (stored hashed). */
 const COL_TOKENS = "mcp-tokens"
 
+/**
+ * Whether a persisted document has passed its dateExpiry.
+ */
 const isExpired = (doc: {dateExpiry?: Date}): boolean => {
     if (!doc?.dateExpiry) {
         return true
@@ -31,11 +38,17 @@ export class McpStore {
     // CLIENTS
     // --------------------------------------------------------------------------
 
+    /**
+     * Persist a dynamically registered OAuth client.
+     */
     saveClient = async (client: McpOAuthClient): Promise<void> => {
         await database.set(COL_CLIENTS, client, client.id)
         logger.info("McpStore.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
     }
 
+    /**
+     * Load a registered client by ID. Expired registrations are deleted and return null.
+     */
     getClient = async (clientId: string): Promise<McpOAuthClient> => {
         if (!clientId) {
             return null
@@ -56,10 +69,16 @@ export class McpStore {
     // AUTH REQUESTS
     // --------------------------------------------------------------------------
 
+    /**
+     * Save a pending authorization request while the user signs in or reviews consent.
+     */
     saveAuthRequest = async (request: McpAuthRequest): Promise<void> => {
         await database.set(COL_REQUESTS, request, request.id)
     }
 
+    /**
+     * Load a pending authorization request. Expired requests are deleted and return null.
+     */
     getAuthRequest = async (id: string): Promise<McpAuthRequest> => {
         if (!id) {
             return null
@@ -77,6 +96,9 @@ export class McpStore {
         return request
     }
 
+    /**
+     * Remove a pending authorization request after consent or denial.
+     */
     deleteAuthRequest = async (id: string): Promise<void> => {
         try {
             await database.delete(COL_REQUESTS, id)
@@ -88,6 +110,9 @@ export class McpStore {
     // AUTH CODES
     // --------------------------------------------------------------------------
 
+    /**
+     * Issue a single-use authorization code. Only the SHA-256 hash is stored.
+     */
     issueAuthCode = async (data: Omit<McpAuthCode, "id">): Promise<string> => {
         const code = randomToken(32)
         const doc: McpAuthCode = {id: hashToken(code), ...data}
@@ -95,25 +120,60 @@ export class McpStore {
         return code
     }
 
-    consumeAuthCode = async (code: string): Promise<McpAuthCode> => {
+    /**
+     * Load an authorization code without consuming it. Expired codes are deleted and return null.
+     */
+    getAuthCode = async (code: string): Promise<McpAuthCode> => {
         if (!code) {
             return null
         }
 
         const id = hashToken(code)
         const doc: McpAuthCode = await database.get(COL_CODES, id)
-        await database.delete(COL_CODES, id)
-
-        if (!doc || isExpired(doc)) {
+        if (!doc) {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_CODES, id)
             return null
         }
 
         return doc
     }
 
+    /**
+     * Consume an authorization code after the token request has been fully validated.
+     * Uses a Firestore transaction so only one concurrent exchange can succeed.
+     */
+    consumeAuthCode = async (code: string): Promise<McpAuthCode> => {
+        if (!code) {
+            return null
+        }
+
+        const id = hashToken(code)
+
+        return database.runTransaction(async (tx) => {
+            const doc: McpAuthCode = await tx.get(COL_CODES, id)
+            if (!doc) {
+                return null
+            }
+
+            tx.delete(COL_CODES, id)
+            if (isExpired(doc)) {
+                return null
+            }
+
+            return doc
+        })
+    }
+
     // TOKENS
     // --------------------------------------------------------------------------
 
+    /**
+     * Issue a new access/refresh token pair. Previous tokens for the same grant are not affected
+     * until the refresh token is consumed or revoked.
+     */
     issueTokens = async (data: {clientId: string; userId: string; resource: string; scope: string}): Promise<{accessToken: string; refreshToken: string; expiresIn: number}> => {
         const config = getMcpConfig()
         const accessToken = `mcp_at_${randomToken(32)}`
@@ -149,42 +209,80 @@ export class McpStore {
         return {accessToken, refreshToken, expiresIn: config.accessTokenHours * 3600}
     }
 
+    /**
+     * Validate a bearer access token for MCP requests. Expired tokens are deleted on read.
+     */
     getAccessToken = async (accessToken: string): Promise<McpToken> => {
         if (!accessToken) {
             return null
         }
 
-        const doc: McpToken = await database.get(COL_TOKENS, hashToken(accessToken))
-        if (!doc || doc.type != "access" || isExpired(doc)) {
+        const id = hashToken(accessToken)
+        const doc: McpToken = await database.get(COL_TOKENS, id)
+        if (!doc || doc.type != "access") {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_TOKENS, id)
             return null
         }
 
         return doc
     }
 
-    consumeRefreshToken = async (refreshToken: string): Promise<McpToken> => {
+    /**
+     * Load a refresh token without consuming it. Expired tokens are deleted and return null.
+     */
+    getRefreshToken = async (refreshToken: string): Promise<McpToken> => {
         if (!refreshToken) {
             return null
         }
 
         const id = hashToken(refreshToken)
         const doc: McpToken = await database.get(COL_TOKENS, id)
-        if (!doc || doc.type != "refresh" || isExpired(doc)) {
+        if (!doc || doc.type != "refresh") {
             return null
         }
-
-        await database.delete(COL_TOKENS, id)
-        if (doc.accessId) {
-            try {
-                await database.delete(COL_TOKENS, doc.accessId)
-            } catch (ex) {
-                logger.warn("McpStore.consumeRefreshToken", "Failed to delete previous access token", ex)
-            }
+        if (isExpired(doc)) {
+            await database.delete(COL_TOKENS, id)
+            return null
         }
 
         return doc
     }
 
+    /**
+     * Consume a refresh token (rotation). Deletes the refresh token and its paired access token
+     * inside a Firestore transaction so only one concurrent refresh can succeed.
+     */
+    consumeRefreshToken = async (refreshToken: string): Promise<McpToken> => {
+        if (!refreshToken) {
+            return null
+        }
+
+        const id = hashToken(refreshToken)
+
+        return database.runTransaction(async (tx) => {
+            const doc: McpToken = await tx.get(COL_TOKENS, id)
+            if (!doc || doc.type != "refresh") {
+                return null
+            }
+
+            tx.delete(COL_TOKENS, id)
+            if (doc.accessId) {
+                tx.delete(COL_TOKENS, doc.accessId)
+            }
+            if (isExpired(doc)) {
+                return null
+            }
+
+            return doc
+        })
+    }
+
+    /**
+     * Revoke an access or refresh token and its paired token, if present.
+     */
     revokeToken = async (token: string): Promise<void> => {
         if (!token) {
             return
