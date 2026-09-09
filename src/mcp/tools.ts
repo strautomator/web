@@ -17,7 +17,7 @@ interface ToolDef {
 
 interface CachedFtpEstimate {
     id: string
-    estimation: StravaEstimatedFtp | false
+    estimation: StravaEstimatedFtp
     dateEstimated: Date
     dateExpiry: Date
 }
@@ -27,11 +27,15 @@ const FTP_ESTIMATE_CACHE_DAYS = 7
 
 const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: StravaEstimatedFtp | false; cached: boolean}> => {
     const cached: CachedFtpEstimate = await database.get(FTP_ESTIMATE_COLLECTION, user.id)
-    if (cached?.dateExpiry && dayjs(cached.dateExpiry).isAfter(dayjs()) && Object.prototype.hasOwnProperty.call(cached, "estimation")) {
+    if (cached?.estimation && cached.dateExpiry && dayjs(cached.dateExpiry).isAfter(dayjs())) {
         return {estimation: cached.estimation, cached: true}
     }
 
-    const estimation = (await strava.performance.estimateFtp(user)) || false
+    const estimation = await strava.performance.estimateFtp(user)
+    if (!estimation) {
+        return {estimation: false, cached: false}
+    }
+
     const dateEstimated = new Date()
     await database.set(
         FTP_ESTIMATE_COLLECTION,
