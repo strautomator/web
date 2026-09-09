@@ -1,8 +1,9 @@
 // Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
-import {database, notifications, recipes, strava, users, UserData} from "strautomator-core"
+import {calendar, database, notifications, recipes, strava, users, StravaEstimatedFtp, UserData} from "strautomator-core"
 import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, upsertUserRecipe} from "../routes/logic"
 import {sanitizeUser, toolError, toolResult} from "./utils"
+import dayjs from "../dayjs"
 import logger from "anyhow"
 
 type ToolHandler = (user: UserData, args: any) => Promise<any>
@@ -12,6 +13,41 @@ interface ToolDef {
     description: string
     inputSchema: any
     handler: ToolHandler
+}
+
+interface CachedFtpEstimate {
+    id: string
+    estimation: StravaEstimatedFtp
+    dateEstimated: Date
+    dateExpiry: Date
+}
+
+const FTP_ESTIMATE_COLLECTION = "mcp-ftp-estimates"
+const FTP_ESTIMATE_CACHE_DAYS = 7
+
+const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: StravaEstimatedFtp | false; cached: boolean}> => {
+    const cached: CachedFtpEstimate = await database.get(FTP_ESTIMATE_COLLECTION, user.id)
+    if (cached?.estimation && cached.dateExpiry && dayjs(cached.dateExpiry).isAfter(dayjs())) {
+        return {estimation: cached.estimation, cached: true}
+    }
+
+    const estimation = await strava.performance.estimateFtp(user)
+    if (!estimation) {
+        return {estimation: false, cached: false}
+    }
+
+    const dateEstimated = new Date()
+    await database.set(
+        FTP_ESTIMATE_COLLECTION,
+        {
+            id: user.id,
+            estimation,
+            dateEstimated,
+            dateExpiry: dayjs(dateEstimated).add(FTP_ESTIMATE_CACHE_DAYS, "days").toDate()
+        } as CachedFtpEstimate,
+        user.id
+    )
+    return {estimation, cached: false}
 }
 
 // TOOL DEFINITIONS
@@ -24,7 +60,7 @@ interface ToolDef {
 const tools: ToolDef[] = [
     {
         name: "get_account",
-        description: "Get the authenticated Strautomator user profile, preferences, automations and linked accounts. Secrets and API tokens are omitted.",
+        description: "Get the authenticated Strautomator user profile, preferences and linked accounts. Secrets, API tokens, automations and FIT device names are omitted.",
         inputSchema: {
             type: "object",
             properties: {refresh: {type: "boolean", description: "If true, refresh the Strava profile first (same as GET /api/users/:userId?refresh=1)"}},
@@ -79,6 +115,12 @@ const tools: ToolDef[] = [
             const result = await getPublicUser(user)
             return result.recipes || {}
         }
+    },
+    {
+        name: "list_fit_device_names",
+        description: "List the custom names assigned to FIT device IDs in the user's account.",
+        inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        handler: async (user) => user.fitDeviceNames || {}
     },
     {
         name: "get_automation_schema",
@@ -140,7 +182,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_gearwear",
-        description: "List GearWear configurations for the user. Same as GET /api/gearwear/:userId.",
+        description: "List GearWear configurations and device battery tracking information for the user. Same as GET /api/gearwear/:userId.",
         inputSchema: {
             type: "object",
             properties: {refresh: {type: "boolean", description: "If true, refresh gear details from Strava in the background"}},
@@ -167,7 +209,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "estimate_ftp",
-        description: "Estimate cycling FTP from recent activities with power. Same as GET /api/strava/:userId/ftp/estimate. Set save=true to write it to Strava (POST).",
+        description: "Estimate cycling FTP from recent activities with power. Results are cached for 7 days, so this can effectively be called only once every 7 days. Set save=true to write the estimate to Strava (only applied when a fresh, non-cached estimate is generated).",
         inputSchema: {
             type: "object",
             properties: {
@@ -177,11 +219,18 @@ const tools: ToolDef[] = [
             additionalProperties: false
         },
         handler: async (user, args) => {
-            if (args.save) {
-                return saveEstimatedFtp(user, args.ftp)
+            const {estimation, cached} = await getCachedFtpEstimate(user)
+            if (args.save && !cached) {
+                return estimation ? saveEstimatedFtp(user, args.ftp, estimation) : false
             }
-            return (await strava.performance.estimateFtp(user)) || false
+            return estimation
         }
+    },
+    {
+        name: "list_calendars",
+        description: "List metadata for the user's generated calendars without returning calendar contents.",
+        inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        handler: async (user) => calendar.getByUser(user)
     },
     {
         name: "list_notifications",

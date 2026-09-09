@@ -174,6 +174,8 @@ export const sanitizeUser = (user: UserData): any => {
     delete result.spotifyAuthState
     delete result.paddleId
     delete result.paddleTransactionId
+    delete result.recipes
+    delete result.fitDeviceNames
 
     if (result.confirmEmail) {
         result.confirmEmail = result.confirmEmail.substring(result.confirmEmail.indexOf(":") + 1)
