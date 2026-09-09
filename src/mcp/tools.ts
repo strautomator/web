@@ -25,10 +25,10 @@ interface CachedFtpEstimate {
 const FTP_ESTIMATE_COLLECTION = "mcp-ftp-estimates"
 const FTP_ESTIMATE_CACHE_DAYS = 7
 
-const getCachedFtpEstimate = async (user: UserData): Promise<StravaEstimatedFtp | false> => {
+const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: StravaEstimatedFtp | false; cached: boolean}> => {
     const cached: CachedFtpEstimate = await database.get(FTP_ESTIMATE_COLLECTION, user.id)
     if (cached?.dateExpiry && dayjs(cached.dateExpiry).isAfter(dayjs()) && Object.prototype.hasOwnProperty.call(cached, "estimation")) {
-        return cached.estimation
+        return {estimation: cached.estimation, cached: true}
     }
 
     const estimation = (await strava.performance.estimateFtp(user)) || false
@@ -43,7 +43,7 @@ const getCachedFtpEstimate = async (user: UserData): Promise<StravaEstimatedFtp 
         } as CachedFtpEstimate,
         user.id
     )
-    return estimation
+    return {estimation, cached: false}
 }
 
 // TOOL DEFINITIONS
@@ -205,7 +205,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "estimate_ftp",
-        description: "Estimate cycling FTP from recent activities with power. Results are cached for 7 days. Set save=true to write the estimate to Strava.",
+        description: "Estimate cycling FTP from recent activities with power. Results are cached for 7 days, so this can effectively be called only once every 7 days. Set save=true to write the estimate to Strava (only applied when a fresh, non-cached estimate is generated).",
         inputSchema: {
             type: "object",
             properties: {
@@ -215,8 +215,8 @@ const tools: ToolDef[] = [
             additionalProperties: false
         },
         handler: async (user, args) => {
-            const estimation = await getCachedFtpEstimate(user)
-            if (args.save) {
+            const {estimation, cached} = await getCachedFtpEstimate(user)
+            if (args.save && !cached) {
                 return estimation ? saveEstimatedFtp(user, args.ftp, estimation) : false
             }
             return estimation
