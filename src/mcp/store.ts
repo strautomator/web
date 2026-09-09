@@ -262,27 +262,22 @@ export class McpStore {
 
         const id = hashToken(refreshToken)
 
-        try {
-            return await database.runTransaction(async (tx) => {
-                const doc: McpToken = await tx.get(COL_TOKENS, id)
-                if (!doc || doc.type != "refresh") {
-                    return null
-                }
+        return database.runTransaction(async (tx) => {
+            const doc: McpToken = await tx.get(COL_TOKENS, id)
+            if (!doc || doc.type != "refresh") {
+                return null
+            }
 
-                tx.delete(COL_TOKENS, id)
-                if (doc.accessId) {
-                    tx.delete(COL_TOKENS, doc.accessId)
-                }
-                if (isExpired(doc)) {
-                    return null
-                }
+            tx.delete(COL_TOKENS, id)
+            if (doc.accessId) {
+                tx.delete(COL_TOKENS, doc.accessId)
+            }
+            if (isExpired(doc)) {
+                return null
+            }
 
-                return doc
-            })
-        } catch (ex) {
-            logger.error("McpStore.consumeRefreshToken", id, ex)
-            return null
-        }
+            return doc
+        })
     }
 
     /**
