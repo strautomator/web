@@ -45,7 +45,9 @@ const sanitized: any = sanitizeUser({
     garmin: {id: "g1", tokens: {accessToken: "g"}},
     wahoo: {id: "w1", tokens: {accessToken: "w"}},
     spotify: {id: "s1", tokens: {accessToken: "s"}},
-    paddleId: "p1"
+    paddleId: "p1",
+    recipes: {recipe1: {title: "Morning ride"}},
+    fitDeviceNames: {"123": "Bike computer"}
 } as any)
 assert(!sanitized.stravaTokens, "Strava tokens are stripped")
 assert(!sanitized.urlToken, "Calendar URL token is stripped")
@@ -53,6 +55,8 @@ assert(!sanitized.garmin.tokens, "Garmin tokens are stripped")
 assert(!sanitized.wahoo.tokens, "Wahoo tokens are stripped")
 assert(!sanitized.spotify.tokens, "Spotify tokens are stripped")
 assert(!sanitized.paddleId, "Paddle ID is stripped")
+assert(!sanitized.recipes, "Automation recipes are stripped")
+assert(!sanitized.fitDeviceNames, "FIT device names are stripped")
 assert(sanitized.confirmEmail == "user@example.com", "Email confirmation token is stripped")
 assert(sanitized.garmin.id == "g1", "Garmin profile id is kept")
 

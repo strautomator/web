@@ -1,6 +1,6 @@
 // Shared handlers used by the HTTP API and the MCP tools.
 
-import {fitparser, gearwear, logHelper, recipes, strava, users, RecipeData, RecipeStatsData, StravaProcessedActivity, UserData} from "strautomator-core"
+import {fitparser, gearwear, logHelper, recipes, strava, users, RecipeData, RecipeStatsData, StravaEstimatedFtp, StravaProcessedActivity, UserData} from "strautomator-core"
 import {validateRecipeWebhookActions} from "../utils/urls"
 import dayjs from "../dayjs"
 import _ from "lodash"
@@ -185,8 +185,8 @@ export const getProcessedActivities = async (user: UserData, query?: {limit?: an
 /**
  * Save estimated FTP, same as POST /api/strava/:userId/ftp/estimate.
  */
-export const saveEstimatedFtp = async (user: UserData, ftp?: number): Promise<any> => {
-    const estimation = await strava.performance.estimateFtp(user)
+export const saveEstimatedFtp = async (user: UserData, ftp?: number, estimation?: StravaEstimatedFtp): Promise<any> => {
+    estimation = estimation || (await strava.performance.estimateFtp(user))
     if (ftp && ftp > 0) {
         estimation.ftpWatts = parseInt(ftp as any)
     }
