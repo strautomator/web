@@ -362,7 +362,7 @@ export const token = async (req: express.Request, res: express.Response): Promis
     try {
         const auth = await authenticateClient(req)
         if (!auth.client) {
-            res.setHeader("WWW-Authenticate", "Basic realm=\"mcp\"")
+            res.setHeader("WWW-Authenticate", 'Basic realm="mcp"')
             return oauthErrorJson(res, 401, "invalid_client", "Client authentication failed")
         }
 
