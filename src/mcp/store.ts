@@ -121,7 +121,29 @@ export class McpStore {
     }
 
     /**
-     * Consume an authorization code (delete-first, then validate). Returns null if missing or expired.
+     * Load an authorization code without consuming it. Expired codes are deleted and return null.
+     */
+    getAuthCode = async (code: string): Promise<McpAuthCode> => {
+        if (!code) {
+            return null
+        }
+
+        const id = hashToken(code)
+        const doc: McpAuthCode = await database.get(COL_CODES, id)
+        if (!doc) {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_CODES, id)
+            return null
+        }
+
+        return doc
+    }
+
+    /**
+     * Consume an authorization code after the token request has been fully validated.
+     * Deletes the code before returning so concurrent exchanges cannot both succeed.
      */
     consumeAuthCode = async (code: string): Promise<McpAuthCode> => {
         if (!code) {
@@ -203,7 +225,29 @@ export class McpStore {
     }
 
     /**
+     * Load a refresh token without consuming it. Expired tokens are deleted and return null.
+     */
+    getRefreshToken = async (refreshToken: string): Promise<McpToken> => {
+        if (!refreshToken) {
+            return null
+        }
+
+        const id = hashToken(refreshToken)
+        const doc: McpToken = await database.get(COL_TOKENS, id)
+        if (!doc || doc.type != "refresh") {
+            return null
+        }
+        if (isExpired(doc)) {
+            await database.delete(COL_TOKENS, id)
+            return null
+        }
+
+        return doc
+    }
+
+    /**
      * Consume a refresh token (rotation). Deletes the refresh token and its paired access token.
+     * Call only after the token request has been fully validated.
      */
     consumeRefreshToken = async (refreshToken: string): Promise<McpToken> => {
         if (!refreshToken) {

@@ -430,8 +430,13 @@ export const token = async (req: express.Request, res: express.Response): Promis
             const redirectUri = firstString(req.body?.redirect_uri)
             const codeVerifier = firstString(req.body?.code_verifier)
             const resource = firstString(req.body?.resource)
-            const authCode = await store.consumeAuthCode(code)
 
+            // RFC 8707: reject before touching the authorization code so the client can retry.
+            if (!resource) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
+            }
+
+            const authCode = await store.getAuthCode(code)
             if (!authCode || authCode.clientId != auth.client.id) {
                 return oauthErrorJson(res, 400, "invalid_grant", "Invalid authorization code")
             }
@@ -441,32 +446,45 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!verifyPkce(codeVerifier, authCode.codeChallenge)) {
                 return oauthErrorJson(res, 400, "invalid_grant", "PKCE verification failed")
             }
-            // RFC 8707: tokens are audience-bound to the MCP resource URI.
-            if (!resource || !resourceMatches(resource, authCode.resource)) {
+            if (!resourceMatches(resource, authCode.resource)) {
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
-            const tokens = await store.issueTokens({clientId: auth.client.id, userId: authCode.userId, resource: authCode.resource, scope: authCode.scope})
-            logger.info("McpOAuth.token", `User ${authCode.userId}`, `Client ${auth.client.id}`, "authorization_code")
-            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: authCode.scope})
+            const consumed = await store.consumeAuthCode(code)
+            if (!consumed) {
+                return oauthErrorJson(res, 400, "invalid_grant", "Invalid authorization code")
+            }
+
+            const tokens = await store.issueTokens({clientId: auth.client.id, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
+            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "authorization_code")
+            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
 
         if (grantType == "refresh_token") {
             const refreshToken = firstString(req.body?.refresh_token)
             const resource = firstString(req.body?.resource)
-            const existing = await store.consumeRefreshToken(refreshToken)
 
-            if (!existing || existing.clientId != auth.client.id) {
-                return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
-            }
-            if (!resource || !resourceMatches(resource, existing.resource)) {
+            if (!resource) {
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
-            const tokens = await store.issueTokens({clientId: existing.clientId, userId: existing.userId, resource: existing.resource, scope: existing.scope})
-            logger.info("McpOAuth.token", `User ${existing.userId}`, `Client ${auth.client.id}`, "refresh_token")
-            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: existing.scope})
+            const existing = await store.getRefreshToken(refreshToken)
+            if (!existing || existing.clientId != auth.client.id) {
+                return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
+            }
+            if (!resourceMatches(resource, existing.resource)) {
+                return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
+            }
+
+            const consumed = await store.consumeRefreshToken(refreshToken)
+            if (!consumed) {
+                return oauthErrorJson(res, 400, "invalid_grant", "Invalid refresh token")
+            }
+
+            const tokens = await store.issueTokens({clientId: consumed.clientId, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
+            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "refresh_token")
+            res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
 
