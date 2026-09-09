@@ -6,11 +6,18 @@ import {getMcpConfig, hashToken, randomToken} from "./utils"
 import dayjs from "../dayjs"
 import logger from "anyhow"
 
+/** Firestore collection for dynamically registered OAuth clients. */
 const COL_CLIENTS = "mcp-clients"
+/** Firestore collection for pending authorization requests (consent flow). */
 const COL_REQUESTS = "mcp-auth-requests"
+/** Firestore collection for single-use authorization codes. */
 const COL_CODES = "mcp-auth-codes"
+/** Firestore collection for issued access and refresh tokens (stored hashed). */
 const COL_TOKENS = "mcp-tokens"
 
+/**
+ * Whether a persisted document has passed its dateExpiry.
+ */
 const isExpired = (doc: {dateExpiry?: Date}): boolean => {
     if (!doc?.dateExpiry) {
         return true
@@ -31,11 +38,17 @@ export class McpStore {
     // CLIENTS
     // --------------------------------------------------------------------------
 
+    /**
+     * Persist a dynamically registered OAuth client.
+     */
     saveClient = async (client: McpOAuthClient): Promise<void> => {
         await database.set(COL_CLIENTS, client, client.id)
         logger.info("McpStore.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
     }
 
+    /**
+     * Load a registered client by ID. Expired registrations are deleted and return null.
+     */
     getClient = async (clientId: string): Promise<McpOAuthClient> => {
         if (!clientId) {
             return null
@@ -56,10 +69,16 @@ export class McpStore {
     // AUTH REQUESTS
     // --------------------------------------------------------------------------
 
+    /**
+     * Save a pending authorization request while the user signs in or reviews consent.
+     */
     saveAuthRequest = async (request: McpAuthRequest): Promise<void> => {
         await database.set(COL_REQUESTS, request, request.id)
     }
 
+    /**
+     * Load a pending authorization request. Expired requests are deleted and return null.
+     */
     getAuthRequest = async (id: string): Promise<McpAuthRequest> => {
         if (!id) {
             return null
@@ -77,6 +96,9 @@ export class McpStore {
         return request
     }
 
+    /**
+     * Remove a pending authorization request after consent or denial.
+     */
     deleteAuthRequest = async (id: string): Promise<void> => {
         try {
             await database.delete(COL_REQUESTS, id)
@@ -88,6 +110,9 @@ export class McpStore {
     // AUTH CODES
     // --------------------------------------------------------------------------
 
+    /**
+     * Issue a single-use authorization code. Only the SHA-256 hash is stored.
+     */
     issueAuthCode = async (data: Omit<McpAuthCode, "id">): Promise<string> => {
         const code = randomToken(32)
         const doc: McpAuthCode = {id: hashToken(code), ...data}
@@ -95,6 +120,9 @@ export class McpStore {
         return code
     }
 
+    /**
+     * Consume an authorization code (delete-first, then validate). Returns null if missing or expired.
+     */
     consumeAuthCode = async (code: string): Promise<McpAuthCode> => {
         if (!code) {
             return null
@@ -114,6 +142,10 @@ export class McpStore {
     // TOKENS
     // --------------------------------------------------------------------------
 
+    /**
+     * Issue a new access/refresh token pair. Previous tokens for the same grant are not affected
+     * until the refresh token is consumed or revoked.
+     */
     issueTokens = async (data: {clientId: string; userId: string; resource: string; scope: string}): Promise<{accessToken: string; refreshToken: string; expiresIn: number}> => {
         const config = getMcpConfig()
         const accessToken = `mcp_at_${randomToken(32)}`
@@ -149,6 +181,9 @@ export class McpStore {
         return {accessToken, refreshToken, expiresIn: config.accessTokenHours * 3600}
     }
 
+    /**
+     * Validate a bearer access token for MCP requests. Expired tokens are deleted on read.
+     */
     getAccessToken = async (accessToken: string): Promise<McpToken> => {
         if (!accessToken) {
             return null
@@ -167,6 +202,9 @@ export class McpStore {
         return doc
     }
 
+    /**
+     * Consume a refresh token (rotation). Deletes the refresh token and its paired access token.
+     */
     consumeRefreshToken = async (refreshToken: string): Promise<McpToken> => {
         if (!refreshToken) {
             return null
@@ -194,6 +232,9 @@ export class McpStore {
         return doc
     }
 
+    /**
+     * Revoke an access or refresh token and its paired token, if present.
+     */
     revokeToken = async (token: string): Promise<void> => {
         if (!token) {
             return

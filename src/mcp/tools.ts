@@ -14,6 +14,13 @@ interface ToolDef {
     handler: ToolHandler
 }
 
+// TOOL DEFINITIONS
+// --------------------------------------------------------------------------
+
+/**
+ * MCP tool catalog. Each handler delegates to src/routes/logic.ts or the equivalent core module
+ * so behaviour stays aligned with the website API.
+ */
 const tools: ToolDef[] = [
     {
         name: "get_account",
@@ -77,6 +84,7 @@ const tools: ToolDef[] = [
         name: "get_automation_schema",
         description: "Return valid automation condition properties, operators and action types from core. Call this before save_automation.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        // Full core lists (not filtered by isPro) because MCP access is already PRO-only.
         handler: async () => ({properties: recipes.propertyList, actions: recipes.actionList})
     },
     {
@@ -196,10 +204,19 @@ const tools: ToolDef[] = [
     }
 ]
 
+// EXPORTS
+// --------------------------------------------------------------------------
+
+/**
+ * Return the MCP tool list (name, description and JSON Schema) for tools/list.
+ */
 export const listTools = () => {
     return tools.map((t) => ({name: t.name, description: t.description, inputSchema: t.inputSchema}))
 }
 
+/**
+ * Execute a tool by name for the authenticated user.
+ */
 export const callTool = async (user: UserData, name: string, args: any) => {
     const tool = tools.find((t) => t.name == name)
     if (!tool) {

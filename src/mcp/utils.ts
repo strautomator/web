@@ -4,6 +4,9 @@ import crypto from "crypto"
 import _ from "lodash"
 import type {UserData} from "strautomator-core"
 
+// CONFIG
+// --------------------------------------------------------------------------
+
 /**
  * MCP runtime config derived from SetMeUp settings.
  */
@@ -28,6 +31,9 @@ export const getMcpConfig = () => {
         protocolVersions: ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
     }
 }
+
+// TOKENS AND PKCE
+// --------------------------------------------------------------------------
 
 /**
  * Encode a buffer as base64url (no padding).
@@ -87,6 +93,9 @@ export const verifyPkce = (verifier: string, challenge: string): boolean => {
     return crypto.timingSafeEqual(a, b)
 }
 
+// OAUTH VALIDATION
+// --------------------------------------------------------------------------
+
 /**
  * Whether a redirect URI is acceptable for dynamic client registration.
  */
@@ -126,6 +135,9 @@ export const isValidRedirectUri = (value: string): boolean => {
 
     return false
 }
+
+// REQUEST / RESPONSE HELPERS
+// --------------------------------------------------------------------------
 
 /**
  * Escape text for safe use in HTML.
@@ -177,6 +189,9 @@ export const sanitizeUser = (user: UserData): any => {
     return result
 }
 
+// MCP TOOL PAYLOADS
+// --------------------------------------------------------------------------
+
 /**
  * JSON-serialize a value, converting dates to ISO strings.
  */
@@ -206,6 +221,9 @@ export const toolResult = (data: any) => {
 export const toolError = (message: string) => {
     return {content: [{type: "text" as const, text: message}], isError: true}
 }
+
+// HTTP HEADERS
+// --------------------------------------------------------------------------
 
 /**
  * Apply CORS headers required by browser-based MCP clients.
