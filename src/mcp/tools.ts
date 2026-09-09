@@ -60,17 +60,13 @@ const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: Strava
 const tools: ToolDef[] = [
     {
         name: "get_account",
-        description: "Get the authenticated Strautomator user profile, preferences and linked accounts. Secrets, API tokens, automations and FIT device names are omitted.",
-        inputSchema: {
-            type: "object",
-            properties: {refresh: {type: "boolean", description: "If true, refresh the Strava profile first (same as GET /api/users/:userId?refresh=1)"}},
-            additionalProperties: false
-        },
-        handler: async (user, args) => sanitizeUser(await getPublicUser(user, args.refresh === true))
+        description: "Get the authenticated Strautomator user profile, preferences and linked accounts. Does not include automations and FIT device details.",
+        inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        handler: async (user) => sanitizeUser(await getPublicUser(user))
     },
     {
         name: "list_processed_activities",
-        description: "List activities that Strautomator already processed (automation history). Same as GET /api/strava/:userId/processed-activities.",
+        description: "List activities that Strautomator already processed (automation history), with optional date filters.",
         inputSchema: {
             type: "object",
             properties: {
@@ -84,7 +80,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "get_processed_activity",
-        description: "Get a single Strautomator-processed activity. Same as GET /api/strava/:userId/processed-activities/:id.",
+        description: "Get a single activity processed by Strautomator. Returns null if the activity was not processed by Strautomator.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Strava activity ID"}},
@@ -95,7 +91,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "process_activity",
-        description: "Run Strautomator automations on a specific Strava activity now. Same as GET /api/strava/:userId/process-activity/:activityId.",
+        description: "Run Strautomator automations on a specific Strava activity now. Returns the processing result or {processed: false} if not processed.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Strava activity ID"}},
@@ -109,7 +105,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_automations",
-        description: "List the user's Strautomator automations (recipes).",
+        description: "List the user's automations recipes.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async (user) => {
             const result = await getPublicUser(user)
@@ -126,16 +122,15 @@ const tools: ToolDef[] = [
         name: "get_automation_schema",
         description: "Return valid automation condition properties, operators and action types from core. Call this before save_automation.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        // Full core lists (not filtered by isPro) because MCP access is already PRO-only.
         handler: async () => ({properties: recipes.propertyList, actions: recipes.actionList})
     },
     {
         name: "save_automation",
-        description: "Create or update an automation. Same as POST /api/users/:userId/recipes. Omit id to create. Call get_automation_schema first.",
+        description: "Create or update an automation. Omit id to create. Call get_automation_schema first to know the lists of allowed properties.",
         inputSchema: {
             type: "object",
             properties: {
-                id: {type: "string", description: "Existing automation ID to update"},
+                id: {type: "string", description: "Existing automation ID to update, omit to create a new automation"},
                 title: {type: "string"},
                 conditions: {type: "array", items: {type: "object"}},
                 actions: {type: "array", items: {type: "object"}},
@@ -158,7 +153,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "delete_automation",
-        description: "Delete an automation by ID. Same as DELETE /api/users/:userId/recipes/:recipeId.",
+        description: "Delete an automation by ID.",
         inputSchema: {
             type: "object",
             properties: {id: {type: "string", description: "Automation ID"}},
@@ -172,7 +167,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "get_automation_stats",
-        description: "Get execution stats for all automations, or a single automation if id is set. Same as GET /api/users/:userId/recipes/stats.",
+        description: "Get execution stats for all automations, or a single automation if id is set.",
         inputSchema: {
             type: "object",
             properties: {id: {type: "string", description: "Optional automation ID"}},
@@ -182,17 +177,13 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_gearwear",
-        description: "List GearWear configurations and device battery tracking information for the user. Same as GET /api/gearwear/:userId.",
-        inputSchema: {
-            type: "object",
-            properties: {refresh: {type: "boolean", description: "If true, refresh gear details from Strava in the background"}},
-            additionalProperties: false
-        },
-        handler: async (user, args) => getGearwearByUser(user, args.refresh === true)
+        description: "List GearWear configurations and device battery tracking information for the user.",
+        inputSchema: {type: "object", properties: {}, additionalProperties: false},
+        handler: async (user) => getGearwearByUser(user)
     },
     {
         name: "get_gearwear",
-        description: "Get one GearWear configuration plus the Strava gear details. Same as GET /api/gearwear/:userId/:gearId.",
+        description: "Get one GearWear configuration plus the Strava gear details.",
         inputSchema: {
             type: "object",
             properties: {gearId: {type: "string", description: "Strava gear ID"}},
@@ -203,25 +194,24 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_athlete_records",
-        description: "Get the athlete's personal records tracked by Strautomator. Same as GET /api/strava/:userId/athlete-records.",
+        description: "Get the athlete's personal records tracked by Strautomator.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async (user) => strava.athletes.getAthleteRecords(user)
     },
     {
         name: "estimate_ftp",
-        description: "Estimate cycling FTP from recent activities with power. Results are cached for 7 days, so this can effectively be called only once every 7 days. Set save=true to write the estimate to Strava (only applied when a fresh, non-cached estimate is generated).",
+        description: "Estimate cycling FTP from recent activities with power. Results are cached for 7 days, so this can effectively be called only once every 7 days.",
         inputSchema: {
             type: "object",
             properties: {
-                save: {type: "boolean", description: "If true, save the estimated FTP to Strava"},
-                ftp: {type: "number", description: "Override watts to save when save=true"}
+                save: {type: "boolean", description: "If true, save the estimated FTP to Strava (if result was not cached)"}
             },
             additionalProperties: false
         },
         handler: async (user, args) => {
             const {estimation, cached} = await getCachedFtpEstimate(user)
             if (args.save && !cached) {
-                return estimation ? saveEstimatedFtp(user, args.ftp, estimation) : false
+                return estimation ? saveEstimatedFtp(user, 0, estimation) : false
             }
             return estimation
         }
@@ -234,7 +224,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "list_notifications",
-        description: "List Strautomator notifications for the user. Same as GET /api/notifications/:userId/unread or /all.",
+        description: "List Strautomator notifications for the user.",
         inputSchema: {
             type: "object",
             properties: {includeRead: {type: "boolean", description: "If true, include already-read / expired notifications"}},
@@ -244,7 +234,7 @@ const tools: ToolDef[] = [
     },
     {
         name: "get_strava_status",
-        description: "Get the current Strava API / incident status tracked by Strautomator. Same as GET /api/strava/status.",
+        description: "Get the current Strava API / incident status tracked by Strautomator.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async () => {
             const stravaState = await database.appState.get("strava")
