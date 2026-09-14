@@ -1,7 +1,7 @@
 // Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
 import {announcements, calendar, database, notifications, recipes, strava, users, StravaEstimatedFtp, UserData} from "strautomator-core"
-import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, upsertUserRecipe} from "../routes/logic"
+import {getActivityDebug, getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, upsertUserRecipe} from "../routes/logic"
 import {sanitizeUser, toolError, toolResult} from "./utils"
 import dayjs from "../dayjs"
 import logger from "anyhow"
@@ -102,6 +102,17 @@ const tools: ToolDef[] = [
             const processed = await strava.activityProcessing.processActivity(user, {id: parseInt(args.activityId, 10)})
             return processed || {processed: false}
         }
+    },
+    {
+        name: "get_activity_debug",
+        description: "Get full debug details for a Strava activity, including Garmin / Wahoo FIT file metadata and executed automations.",
+        inputSchema: {
+            type: "object",
+            properties: {activityId: {type: "string", description: "Strava activity ID or URL"}},
+            required: ["activityId"],
+            additionalProperties: false
+        },
+        handler: async (user, args) => getActivityDebug(user, args.activityId || args.id)
     },
     {
         name: "list_automations",

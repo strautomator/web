@@ -1,6 +1,6 @@
 // Shared handlers used by the HTTP API and the MCP tools.
 
-import {fitparser, gearwear, logHelper, recipes, strava, users, RecipeData, RecipeStatsData, StravaEstimatedFtp, StravaProcessedActivity, UserData} from "strautomator-core"
+import {fitparser, gearwear, logHelper, recipes, strava, users, ActivityDebug, FitFileActivity, RecipeData, RecipeStatsData, StravaActivity, StravaEstimatedFtp, StravaProcessedActivity, UserData} from "strautomator-core"
 import {validateRecipeWebhookActions} from "../utils/urls"
 import dayjs from "../dayjs"
 import _ from "lodash"
@@ -193,6 +193,107 @@ export const saveEstimatedFtp = async (user: UserData, ftp?: number, estimation?
 
     const updated = await strava.performance.saveFtp(user, estimation)
     return updated ? {ftp: estimation.ftpWatts} : false
+}
+
+/**
+ * Extract activity ID from a number, string, or Strava URL.
+ */
+export const parseActivityId = (idOrUrl: any): string => {
+    if (!idOrUrl) return null
+    const str = idOrUrl.toString().trim()
+    if (!str || str === "0") return null
+
+    if (/^\d+$/.test(str)) {
+        return str
+    }
+
+    const match = str.match(/activities\/(\d+)/)
+    if (match && match[1] !== "0") {
+        return match[1]
+    }
+
+    return null
+}
+
+/**
+ * Get activity debug details.
+ */
+export const getActivityDebug = async (user: UserData, idOrUrl: string | number): Promise<ActivityDebug> => {
+    const activityId = parseActivityId(idOrUrl)
+    if (!activityId) {
+        throw Object.assign(new Error("Invalid activity ID or URL"), {status: 400})
+    }
+
+    let activity: StravaActivity
+    try {
+        activity = await strava.activities.getActivity(user, activityId)
+    } catch (ex) {
+        const msg = ex.message || ex.toString().toLowerCase()
+        if (msg.includes("not found") || msg.includes("404")) {
+            throw Object.assign(new Error("Activity not found"), {status: 404})
+        }
+        throw ex
+    }
+
+    if (!activity) {
+        throw Object.assign(new Error("Activity not found"), {status: 404})
+    }
+
+    let garminActivity: FitFileActivity = null
+    let wahooActivity: FitFileActivity = null
+    let processedActivity: StravaProcessedActivity = null
+
+    // Match Garmin and Wahoo parsed FIT data if the user is PRO.
+    if (user.isPro) {
+        const device = activity.device?.toLowerCase() || ""
+        const tasks: Promise<any>[] = []
+
+        if (device.includes("garmin") || user.garmin) {
+            tasks.push(
+                fitparser
+                    .getMatchingActivity(user, activity, "garmin")
+                    .then((match) => {
+                        if (match) garminActivity = match
+                    })
+                    .catch((ex) => {
+                        logger.warn("Routes.logic.getActivityDebug", logHelper.user(user), `Activity ${activityId}`, "Garmin match failed", ex)
+                    })
+            )
+        }
+        if (device.includes("wahoo") || user.wahoo) {
+            tasks.push(
+                fitparser
+                    .getMatchingActivity(user, activity, "wahoo")
+                    .then((match) => {
+                        if (match) wahooActivity = match
+                    })
+                    .catch((ex) => {
+                        logger.warn("Routes.logic.getActivityDebug", logHelper.user(user), `Activity ${activityId}`, "Wahoo match failed", ex)
+                    })
+            )
+        }
+        if (tasks.length > 0) {
+            await Promise.allSettled(tasks)
+        }
+    }
+
+    try {
+        const processed = await strava.activityProcessing.getProcessedActivity(user, parseInt(activityId, 10))
+        if (processed && (!processed.userId || processed.userId == user.id)) {
+            processedActivity = processed
+        }
+    } catch (innerEx) {
+        logger.warn("Routes.logic.getActivityDebug", logHelper.user(user), `Activity ${activityId}`, "Could not get processed activity", innerEx)
+    }
+
+    const result: ActivityDebug = {
+        activity,
+        garminActivity: garminActivity || null,
+        wahooActivity: wahooActivity || null,
+        processedActivity: processedActivity || null
+    }
+
+    return result
 }
 
 // GEARWEAR

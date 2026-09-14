@@ -60,6 +60,31 @@ assert(!sanitized.fitDeviceNames, "FIT device names are stripped")
 assert(sanitized.confirmEmail == "user@example.com", "Email confirmation token is stripped")
 assert(sanitized.garmin.id == "g1", "Garmin profile id is kept")
 
+import {parseActivityId} from "../routes/logic"
+import {listTools} from "./tools"
+
+assert(parseActivityId("123456789") == "123456789", "parseActivityId handles numeric string")
+assert(parseActivityId(123456789) == "123456789", "parseActivityId handles number")
+assert(parseActivityId("https://www.strava.com/activities/123456789") == "123456789", "parseActivityId handles Strava URL")
+assert(parseActivityId("https://www.strava.com/activities/123456789/") == "123456789", "parseActivityId handles Strava URL with trailing slash")
+assert(parseActivityId("https://www.strava.com/activities/123456789?param=1") == "123456789", "parseActivityId handles Strava URL with query")
+assert(parseActivityId("https://www.strava.com/activities/123456789#details") == "123456789", "parseActivityId handles Strava URL with hash")
+assert(parseActivityId("https://www.strava.com/activities/123456789/segments/987") == "123456789", "parseActivityId handles Strava URL with segments path")
+assert(parseActivityId("strava.com/activities/123456789") == "123456789", "parseActivityId handles URL without scheme")
+assert(parseActivityId("http://strava.com/activities/123456789") == "123456789", "parseActivityId handles http URL")
+assert(parseActivityId("invalid") == null, "parseActivityId returns null for invalid string")
+assert(parseActivityId("0") == null, "parseActivityId returns null for 0 string")
+assert(parseActivityId(0) == null, "parseActivityId returns null for 0 number")
+assert(parseActivityId("") == null, "parseActivityId returns null for empty string")
+assert(parseActivityId(null) == null, "parseActivityId returns null for null")
+assert(parseActivityId(undefined) == null, "parseActivityId returns null for undefined")
+
+const tools = listTools()
+const debugTool = tools.find((t) => t.name == "get_activity_debug")
+assert(!!debugTool, "get_activity_debug tool is registered")
+assert(debugTool?.inputSchema?.properties?.activityId, "get_activity_debug requires activityId property")
+assert(debugTool?.inputSchema?.required?.includes("activityId"), "get_activity_debug has activityId as required")
+
 if (failed > 0) {
     console.error(`${failed} assertion(s) failed`)
     process.exit(1)
