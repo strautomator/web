@@ -18,7 +18,7 @@ module.exports = {
             }
         ],
         link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}],
-        script: [{src: "https://cdn.paddle.com/paddle/v2/paddle.js"}]
+        script: [{src: "https://cdn.paddle.com/paddle/v2/paddle.js", crossorigin: "anonymous"}]
     },
 
     // Additional axios config.
