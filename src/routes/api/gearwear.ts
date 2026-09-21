@@ -4,7 +4,7 @@ import {logHelper, gearwear, GearWearConfig, UserData} from "strautomator-core"
 import {getGearwearById, getGearwearByUser} from "../logic"
 import auth from "../auth"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 const settings = require("setmeup").settings

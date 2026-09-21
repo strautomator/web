@@ -2,7 +2,7 @@
 
 import {strava, paypal} from "strautomator-core"
 import countryLinkify from "country-linkify"
-import express = require("express")
+import express from "express"
 import _ from "lodash"
 import fs = require("fs")
 import http = require("http")

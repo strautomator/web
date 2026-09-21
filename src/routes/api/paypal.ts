@@ -1,7 +1,7 @@
 // Strautomator API: PayPal
 
 import {paypal, subscriptions, users, UserData, PayPalSubscription} from "strautomator-core"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 import auth from "../auth"

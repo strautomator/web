@@ -3,7 +3,7 @@
 import * as oauth from "./oauth"
 import {handleMcp} from "./protocol"
 import {setCorsHeaders} from "./utils"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 
 /**

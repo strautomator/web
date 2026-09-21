@@ -3,7 +3,7 @@
 import {notifications, UserData} from "strautomator-core"
 import _ from "lodash"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()

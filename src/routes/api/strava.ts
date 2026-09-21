@@ -5,7 +5,7 @@ import {getProcessedActivities, saveEstimatedFtp} from "../logic"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import jaul from "jaul"
 import logger from "anyhow"
 import webserver = require("../../webserver")

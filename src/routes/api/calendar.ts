@@ -2,7 +2,7 @@
 
 import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()

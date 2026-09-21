@@ -6,7 +6,7 @@ import store from "./store"
 import {McpAuthRequest, McpOAuthClient} from "./types"
 import {firstString, getMcpConfig, hashToken, isValidRedirectUri, randomToken, setCorsHeaders, verifyPkce} from "./utils"
 import crypto from "crypto"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import dayjs from "../dayjs"
 const sessions = require("client-sessions")

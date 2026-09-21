@@ -63,4 +63,4 @@ router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express
     }
 })
 
-export default router
+export = router

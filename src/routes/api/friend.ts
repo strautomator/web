@@ -1,7 +1,7 @@
 // Strautomator API: Friend routes
 
 import {mailer, users, UserData} from "strautomator-core"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 import auth from "../auth"
 const settings = require("setmeup").settings

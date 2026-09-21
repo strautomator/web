@@ -2,7 +2,7 @@
 
 import {weather, UserData, WeatherSummary} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 import dayjs from "dayjs"

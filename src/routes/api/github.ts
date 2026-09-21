@@ -3,7 +3,7 @@
 import {database, github} from "strautomator-core"
 import crypto from "crypto"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings
 const router: express.Router = express.Router()

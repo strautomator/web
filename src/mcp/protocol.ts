@@ -5,7 +5,7 @@ import store from "./store"
 import {callTool, listTools} from "./tools"
 import {JsonRpcRequest, JsonRpcResponse} from "./types"
 import {getMcpConfig, setCorsHeaders, setWwwAuthenticate} from "./utils"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 const packageVersion = require("../../package.json").version
 

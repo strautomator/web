@@ -3,7 +3,7 @@
 import {recipes, users, UserData} from "strautomator-core"
 import {validateRecipeWebhookActions} from "../../utils/urls"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
