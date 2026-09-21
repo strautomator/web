@@ -116,7 +116,8 @@ export default {
             const query = this.searchValue.trim()
 
             if (query.length >= 2) {
-                const regex = new RegExp(this.searchQuery, "i")
+                const escapedQuery = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+                const regex = new RegExp(escapedQuery, "i")
                 const filterTitle = (item) => item.question.search(regex) >= 0
                 const filterContent = (item) => item.tags.indexOf(query) >= 0 || item.answer.search(regex) >= 0
                 const questions = _.filter(this.faq, filterTitle).concat(_.filter(this.faq, filterContent))
@@ -213,7 +214,8 @@ export default {
                 return text
             }
 
-            const iQuery = new RegExp("\\b " + this.searchQuery + " \\b", "ig")
+            const escapedQuery = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+            const iQuery = new RegExp("\\b " + escapedQuery + " \\b", "ig")
             return text.replace(iQuery, function (matchedTxt, a, b) {
                 return " <span class='search-highlight'>" + matchedTxt.trim() + "</span> "
             })
