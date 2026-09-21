@@ -48,7 +48,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
 
         // Get weather, if available.
         let activityWeather = null
-        if (activity.trainer && activity.locationStart) {
+        if (!activity.trainer && activity.locationStart) {
             try {
                 activityWeather = await weather.getActivityWeather(user, activity, true)
             } catch (weatherEx) {
