@@ -81,8 +81,8 @@ class WebServer {
                 })
             }
 
-            // Add body parser, but avoid parsing JSON for the Paddle webhooks
-            // and for the FIT uploads, which are consumed as raw streams.
+            // Add body parser, retaining GitHub's raw webhook payload for signature validation.
+            // Paddle webhooks and FIT uploads are consumed as raw streams.
             const bodyParser = require("body-parser")
             this.app.use((req: express.Request, res: express.Response, next) => {
                 if (req.originalUrl.substring(0, 19) == "/api/paddle/webhook") {
@@ -126,6 +126,7 @@ class WebServer {
                 this.app.use("/api/*catchall", rateLimit)
                 this.app.use("/mcp", rateLimit)
                 this.app.use("/mcp/*catchall", rateLimit)
+                this.app.use("/auth/*catchall", rateLimit)
                 this.app.use("/api/*catchall", (req, res, next) => {
                     const reqRateLimit = (req as any).rateLimit
                     const statusCode = res.statusCode || "not sent"
@@ -136,10 +137,10 @@ class WebServer {
                 })
             }
 
-            // Only accept connections coming via Cloudflare?
+            // Only accept connections coming via Cloudflare? Require both CF-Ray and CF-Connecting-IP headers.
             if (settings.api.requireCloudflare) {
                 this.app.use("/api/*catchall", (req, res, next) => {
-                    if (!req.headers["cf-ray"]) {
+                    if (!req.headers["cf-ray"] || !req.headers["cf-connecting-ip"]) {
                         logger.error("WebServer.requireCloudflare", req.method, req.originalUrl, "Missing CF-Ray header", req.ip)
 
                         if (!res.headersSent) {
@@ -181,6 +182,14 @@ class WebServer {
                 await countryLinkify(settings.affiliates, this.app)
                 logger.info("WebServer.init", `Affiliate links available at ${settings.affiliates.server.url}`)
             }
+
+            // Basic security headers.
+            this.app.use((_req, res, next) => {
+                res.setHeader("X-Frame-Options", "SAMEORIGIN")
+                res.setHeader("X-Content-Type-Options", "nosniff")
+                res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+                next()
+            })
 
             // Use Nuxt render.
             this.app.use(nuxtRender)
