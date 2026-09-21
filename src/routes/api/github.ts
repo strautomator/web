@@ -3,7 +3,7 @@
 import {database, github} from "strautomator-core"
 import crypto from "crypto"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const settings = require("setmeup").settings
 const router: express.Router = express.Router()
@@ -13,29 +13,41 @@ const router: express.Router = express.Router()
  */
 const validateWebhook = (req, res): boolean => {
     try {
-        const hubHeader = req.headers["x-hub-signature"]
+        const secret = settings.github.api.urlToken
+        const sig256 = req.headers["x-hub-signature-256"] as string
+        const sigLegacy = req.headers["x-hub-signature"] as string
 
-        if (!req.body || !hubHeader) {
+        if (!secret) {
+            throw new Error("Missing webhook secret")
+        }
+        if (!req.body || (!sig256 && !sigLegacy)) {
             throw new Error("Missing request body or headers")
         }
 
-        // Parse payload JSON to get the checksum.
-        const payload = JSON.stringify(req.body).replace(/[^\\]\\u[\da-f]{4}/g, (s) => {
-            return s.substring(0, 3) + s.substring(3).toUpperCase()
-        })
+        // Use the raw body when available, otherwise the stringified JSON body.
+        const rawBody = (req as any).rawBody || JSON.stringify(req.body)
+        const payload: Buffer = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(rawBody, "utf8")
+
+        // Prefer SHA-256, keep the legacy SHA-1 as fallback.
+        const header = sig256 || sigLegacy
+        const algorithm = sig256 ? "sha256" : "sha1"
+        const prefix = `${algorithm}=`
+        if (!header.startsWith(prefix)) {
+            throw new Error("Invalid signature format")
+        }
 
         // Calculate checksums.
-        const hmac = crypto.createHmac("sha1", settings.github.api.urlToken)
-        const digest = Buffer.from("sha1=" + hmac.update(payload).digest("hex"), "utf8")
-        const checksum = Buffer.from(hubHeader.toString(), "utf8")
+        const hmac = crypto.createHmac(algorithm, secret)
+        const digest = Buffer.from(prefix + hmac.update(payload).digest("hex"), "utf8")
+        const checksum = Buffer.from(header.toString(), "utf8")
 
         if (checksum.length != digest.length || !crypto.timingSafeEqual(digest, checksum)) {
-            throw new Error(`Request checksum invalid, got ${checksum}, expected ${digest}`)
+            throw new Error("Request checksum invalid")
         }
 
         return true
     } catch (ex) {
-        webserver.renderError(req, res, ex, 400)
+        webserver.renderError(req, res, ex, 401)
         return false
     }
 }

@@ -33,7 +33,7 @@ router.post("/:userId/zip", async (req: express.Request, res: express.Response) 
             return webserver.renderError(req, res, "Uploading FIT files is available to PRO users only", 402)
         }
 
-        // Reject oversized archives upfront, the actual streamed size is enforced by the core.
+        // Reject oversized archives upfront.
         const maxSize = settings.fitparser.upload.maxSize
         const contentLength = parseInt(req.headers["content-length"] as string) || 0
         if (contentLength > maxSize) {
@@ -52,7 +52,7 @@ router.post("/:userId/zip", async (req: express.Request, res: express.Response) 
             onStart: async (total: number) => await write({type: "start", total: total}),
             onFile: async (result: FitUploadResult) => await write({type: "file", result: result})
         }
-        const results = await fitparser.upload.processZip(user, req, callbacks)
+        const results = await fitparser.upload.processZip(user, req, callbacks, contentLength)
 
         await write({type: "end", results: results})
         res.end()

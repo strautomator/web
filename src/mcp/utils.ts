@@ -131,10 +131,6 @@ export const isValidRedirectUri = (value: string): boolean => {
         return host == "localhost" || host == "127.0.0.1" || host == "[::1]" || host == "::1"
     }
 
-    if (/^[a-z][a-z0-9+.-]*:$/.test(protocol) && protocol != "javascript:" && protocol != "data:" && protocol != "file:") {
-        return host.length > 0 || parsed.pathname.length > 0
-    }
-
     return false
 }
 
@@ -232,8 +228,10 @@ export const toolError = (message: string) => {
 /**
  * Apply CORS headers required by browser-based MCP clients.
  */
-export const setCorsHeaders = (res: any): void => {
-    res.setHeader("Access-Control-Allow-Origin", "*")
+export const setCorsHeaders = (res: any, req?: any): void => {
+    const origin = req?.headers?.origin
+    res.setHeader("Access-Control-Allow-Origin", origin || "*")
+    res.setHeader("Vary", "Origin")
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
     res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, MCP-Protocol-Version, MCP-Session-Id")
     res.setHeader("Access-Control-Expose-Headers", "WWW-Authenticate, MCP-Protocol-Version, MCP-Session-Id")

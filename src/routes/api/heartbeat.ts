@@ -1,6 +1,6 @@
 // Strautomator API: Heartbeat
 
-import express = require("express")
+import express from "express"
 const router: express.Router = express.Router()
 const packageVersion = require("../../../package.json").version
 

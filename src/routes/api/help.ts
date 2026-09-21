@@ -2,7 +2,7 @@
 
 import {chatbase, faq, UserData} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 

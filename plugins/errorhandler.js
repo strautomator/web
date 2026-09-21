@@ -31,7 +31,7 @@ Vue.prototype.$webError = async (context, method, ex) => {
         }
         if (!message || message == "[object Object]") {
             if (status == 400) message = "The data sent to server could not be validate. If you're adding or updating details on your account, please double check the data and make sure it's valid."
-            else if (status == 401 || status == 403) "You don't have the necessary permissions to access this resource. If you think this is a mistake, please login and try again."
+            else if (status == 401 || status == 403) message = "You don't have the necessary permissions to access this resource. If you think this is a mistake, please login and try again."
             else if (status == 402) message = "The request was rejected by the server. You might need a PRO account to proceed."
             else if (status == 408) message = "The server or a 3rd party service did not respond in time. Please try again in a few minutes."
             else if (status == 429) message = "Your browser made too many requests to the server. Please give it some time, and try again."

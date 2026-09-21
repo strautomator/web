@@ -4,7 +4,7 @@ import {ai, weather, UserData, StravaActivity} from "strautomator-core"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
@@ -48,7 +48,7 @@ router.post("/:userId/activity-generate", async (req: express.Request, res: expr
 
         // Get weather, if available.
         let activityWeather = null
-        if (activity.trainer && activity.locationStart) {
+        if (!activity.trainer && activity.locationStart) {
             try {
                 activityWeather = await weather.getActivityWeather(user, activity, true)
             } catch (weatherEx) {

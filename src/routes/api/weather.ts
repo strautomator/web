@@ -2,7 +2,7 @@
 
 import {weather, UserData, WeatherSummary} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 import dayjs from "dayjs"
@@ -70,6 +70,8 @@ router.get("/:userId/multi-forecast", async (req: express.Request, res: express.
 
         const provider = req.query.provider && settings.weather[req.query.provider.toString()] ? req.query.provider.toString() : null
         const arrQuery = req.query.data.toString().split("|")
+        if (arrQuery.length > settings.weather.maxBatchSize) return webserver.renderError(req, res, `Too many forecast requests (${arrQuery.length}), max allowed: ${settings.weather.maxBatchSize}`, 400)
+
         const result: MultiForecastResult[] = []
         let hadError = false
 

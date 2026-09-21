@@ -2,7 +2,7 @@
 
 import {maps, UserData} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
 
@@ -52,8 +52,10 @@ router.get("/:userId/image", async (req: express.Request, res: express.Response)
     try {
         const validated = await auth.requestValidator(req, res, {anonymous: true, image: true, referer: true})
         if (!validated) return
+        if (!req.query.latlong) return webserver.renderError(req, res, "Missing latlong", 400)
 
         const latlong = req.query.latlong.toString().split(",")
+        if (latlong.length != 2 || latlong.some((c) => !isFinite(parseFloat(c)))) return webserver.renderError(req, res, "Invalid latlong", 400)
         const coordinates = {
             latitude: latlong[0] as any,
             longitude: latlong[1] as any

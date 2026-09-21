@@ -6,7 +6,7 @@ import store from "./store"
 import {McpAuthRequest, McpOAuthClient} from "./types"
 import {firstString, getMcpConfig, hashToken, isValidRedirectUri, randomToken, setCorsHeaders, verifyPkce} from "./utils"
 import crypto from "crypto"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import dayjs from "../dayjs"
 const sessions = require("client-sessions")
@@ -20,9 +20,6 @@ const supportedAuthMethods = ["none", "client_secret_post", "client_secret_basic
 
 /** Lazy-initialized session middleware (same cookie as the Strava login flow). */
 let sessionMiddleware: express.RequestHandler
-
-// SESSION
-// --------------------------------------------------------------------------
 
 /**
  * Return the client-sessions middleware used to read the Strava login cookie on the consent page.
@@ -47,9 +44,6 @@ const withSession = (handler: express.RequestHandler): express.RequestHandler =>
         getSessionMiddleware()(req, res, () => handler(req, res, next))
     }
 }
-
-// INTERNAL HELPERS
-// --------------------------------------------------------------------------
 
 /**
  * Redirect back to the MCP client with OAuth query parameters (code or error).
@@ -154,15 +148,12 @@ const resourceMatches = (requested: string, expected: string): boolean => {
     return a == b
 }
 
-// METADATA
-// --------------------------------------------------------------------------
-
 /**
  * Protected resource metadata (RFC 9728).
  */
-export const protectedResourceMetadata = (_req: express.Request, res: express.Response): void => {
+export const protectedResourceMetadata = (req: express.Request, res: express.Response): void => {
     const config = getMcpConfig()
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
     res.json({
         resource: config.resource,
         authorization_servers: [config.issuer],
@@ -175,9 +166,9 @@ export const protectedResourceMetadata = (_req: express.Request, res: express.Re
 /**
  * Authorization server metadata (RFC 8414).
  */
-export const authorizationServerMetadata = (_req: express.Request, res: express.Response): void => {
+export const authorizationServerMetadata = (req: express.Request, res: express.Response): void => {
     const config = getMcpConfig()
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
     res.json({
         issuer: config.issuer,
         authorization_endpoint: `${config.issuer}/mcp/oauth/authorize`,
@@ -194,15 +185,12 @@ export const authorizationServerMetadata = (_req: express.Request, res: express.
     })
 }
 
-// DYNAMIC CLIENT REGISTRATION
-// --------------------------------------------------------------------------
-
 /**
  * Dynamic client registration (RFC 7591).
  */
 export const registerClient = async (req: express.Request, res: express.Response): Promise<void> => {
     try {
-        setCorsHeaders(res)
+        setCorsHeaders(res, req)
 
         const body = req.body || {}
         const redirectUris: string[] = Array.isArray(body.redirect_uris) ? body.redirect_uris : []
@@ -317,9 +305,6 @@ const createAuthRequest = async (req: express.Request): Promise<{request?: McpAu
     return {request}
 }
 
-// AUTHORIZATION
-// --------------------------------------------------------------------------
-
 /**
  * Authorization endpoint (authorization code + PKCE).
  * GET shows the consent page; POST records the user's decision.
@@ -406,14 +391,11 @@ export const authorize = withSession(async (req: express.Request, res: express.R
     }
 })
 
-// TOKEN ENDPOINT
-// --------------------------------------------------------------------------
-
 /**
  * Token endpoint (authorization_code and refresh_token grants).
  */
 export const token = async (req: express.Request, res: express.Response): Promise<void> => {
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
     res.setHeader("Cache-Control", "no-store")
     res.setHeader("Pragma", "no-cache")
 
@@ -499,7 +481,7 @@ export const token = async (req: express.Request, res: express.Response): Promis
  * Token revocation (RFC 7009). Always returns 200 per the spec, even on errors.
  */
 export const revoke = async (req: express.Request, res: express.Response): Promise<void> => {
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
 
     try {
         const auth = await authenticateClient(req)

@@ -6,7 +6,7 @@ import {getPublicUser, getRecipeStats, upsertUserRecipe} from "../logic"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()

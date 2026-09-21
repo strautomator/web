@@ -2,7 +2,7 @@
 
 import {CalendarOptions, UserData, UserCalendarTemplate, calendar, users} from "strautomator-core"
 import auth from "../auth"
-import express = require("express")
+import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
 const router: express.Router = express.Router()
@@ -41,6 +41,9 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         if (req.query.daysfrom) options.daysFrom = parseInt(req.query.daysfrom as string)
         if (req.query.daysto) options.daysTo = parseInt(req.query.daysto as string)
         if (req.query.fresher) options.fresher = true
+
+        if (options.clubIds?.length > settings.calendar.maxItemsPerFilter) return res.status(400).send(`Too many clubs, max ${settings.calendar.maxItemsPerFilter}`)
+        if (options.sportTypes?.length > settings.calendar.maxItemsPerFilter) return res.status(400).send(`Too many sports, max ${settings.calendar.maxItemsPerFilter}`)
 
         // Set the correct cache TTL based on user plan and preferences.
         let cacheAge = user.isPro ? settings.plans.pro.calendarCacheDuration : settings.plans.free.calendarCacheDuration
