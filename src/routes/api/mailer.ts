@@ -13,7 +13,10 @@ const router: express.Router = express.Router()
  */
 router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express.Response) => {
     try {
-        if (settings.mailer.bounceUrlToken && req.params.bounceUrlToken != settings.mailer.bounceUrlToken) {
+        if (!settings.mailer.bounceUrlToken) {
+            return webserver.renderError(req, res, "Bounce notifications not enabled on this server", 403)
+        }
+        if (req.params.bounceUrlToken != settings.mailer.bounceUrlToken) {
             return webserver.renderError(req, res, "Invalid URL bounce token", 401)
         }
 
@@ -28,9 +31,19 @@ router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express
 
         // Handle SNS SubscriptionConfirmation.
         if (body.Type == "SubscriptionConfirmation" && body.SubscribeURL) {
+            let subscribeUrl: URL
+            try {
+                subscribeUrl = new URL(body.SubscribeURL)
+            } catch {
+                return webserver.renderError(req, res, "Invalid SubscribeURL", 400)
+            }
+            if (subscribeUrl.protocol != "https:" || !/^sns\.[a-z0-9-]+\.amazonaws\.com$/.test(subscribeUrl.hostname)) {
+                return webserver.renderError(req, res, "Invalid SubscribeURL", 400)
+            }
+
             logger.info("Routes.mailer", req.method, req.originalUrl, "Subscription confirmed")
 
-            await axios.get(body.SubscribeURL)
+            await axios.get(subscribeUrl.href)
             return webserver.renderJson(req, res, {confirmed: true})
         }
 
