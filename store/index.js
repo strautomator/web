@@ -137,9 +137,6 @@ export const mutations = {
     deleteUserRecipe(state, recipe) {
         delete state.user.recipes[recipe.id]
     },
-    deleteUserRecipe(state, recipe) {
-        delete state.user.recipes[recipe.id]
-    },
     setPaddle(state, data) {
         state.paddle = {
             environment: data.api.environment,
