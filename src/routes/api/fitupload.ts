@@ -33,21 +33,11 @@ router.post("/:userId/zip", async (req: express.Request, res: express.Response) 
             return webserver.renderError(req, res, "Uploading FIT files is available to PRO users only", 402)
         }
 
-        // Reject oversized archives upfront, the actual streamed size is enforced by the core.
-        // No Content-Length (chunked)? Cap the stream at maxSize to avoid unbounded buffering.
+        // Reject oversized archives upfront.
         const maxSize = settings.fitparser.upload.maxSize
         const contentLength = parseInt(req.headers["content-length"] as string) || 0
         if (contentLength > maxSize) {
             return webserver.renderError(req, res, `The archive is bigger than ${Math.round(maxSize / 1024 / 1024)}MB`, 413)
-        }
-        if (!contentLength) {
-            let received = 0
-            req.on("data", (chunk) => {
-                received += chunk.length
-                if (received > maxSize) {
-                    req.destroy(new Error(`The archive is bigger than ${Math.round(maxSize / 1024 / 1024)}MB`))
-                }
-            })
         }
 
         res.status(200)
