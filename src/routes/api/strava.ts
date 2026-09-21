@@ -9,7 +9,8 @@ import express = require("express")
 import jaul from "jaul"
 import logger from "anyhow"
 import webserver = require("../../webserver")
-const axios = require("axios").default
+const axiosModule = require("axios")
+const axios = axiosModule.default || axiosModule
 const settings = require("setmeup").settings
 const router: express.Router = express.Router()
 const packageVersion = require("../../../package.json").version
@@ -39,9 +40,9 @@ router.get("/:userId/activities/recent", async (req: express.Request, res: expre
         let limit: number = req.query.limit ? parseInt(req.query.limit as string) : 10
         if (limit > 50) limit = 50
 
-        // Get activities for the past 21 days by default, with a hard limit of 48 days.
-        let dateFrom = req.query.since ? dayjs.unix(parseInt(req.query.since as string)) : dayjs().subtract(48, "days")
-        let minDate = dayjs().subtract(30, "days")
+        // Get activities for the past 30 days by default, with a hard limit of 60 days.
+        let dateFrom = req.query.since ? dayjs.unix(parseInt(req.query.since as string)) : dayjs().subtract(30, "days")
+        let minDate = dayjs().subtract(60, "days")
         if (dateFrom.isBefore(minDate)) dateFrom = minDate
 
         // Fetch recent activities.
@@ -188,8 +189,8 @@ router.post("/:userId/process-activities", async (req: express.Request, res: exp
         let filterType = req.body.filterType ? req.body.filterType : "all"
 
         // Check if passed dates are valid
-        if (!dateFrom || !dateFrom.isValid) throw new Error(`Invalid "from" date`)
-        if (dateTo && !dateTo.isValid) throw new Error(`Invalid "to" date`)
+        if (!dateFrom || !dateFrom.isValid()) throw new Error(`Invalid "from" date`)
+        if (dateTo && !dateTo.isValid()) throw new Error(`Invalid "to" date`)
 
         // Limit batch operations per day.
         if (user.dateLastBatchProcessing && dayjs().subtract(settings.strava.processingQueue.batchPerHours, "hours").isBefore(user.dateLastBatchProcessing)) {
@@ -439,6 +440,7 @@ router.get("/:userId/:urlToken/routes.zip", async (req: express.Request, res: ex
         if (!routes) {
             throw new Error("Missing route IDs")
         }
+        if (routes.split(",").length > 50) throw Object.assign(new Error("Too many routes"), {status: 400})
 
         const zip = await strava.routes.zipGPX(user, routes.split(","))
         zip.pipe(res).on("error", (err) => logger.error("Routes.strava", req.method, req.originalUrl, err))
@@ -554,7 +556,7 @@ router.post(`/webhook/${settings.strava.api.urlToken}`, async (req: express.Requ
 router.get(`/webhook/${settings.strava.api.urlToken}/:userId/:activityId`, async (req: express.Request, res: express.Response) => {
     try {
         if (!req.params) throw new Error("Missing request params")
-        if (!req.headers["user-agent"].includes(settings.app.title)) throw new Error("Unauthorized client")
+        if (!(req.headers["user-agent"] as string)?.includes(settings.app.title)) throw new Error("Unauthorized client")
 
         const userId = req.params.userId as string
         const user = await users.getById(userId)
