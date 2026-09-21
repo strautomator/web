@@ -9,9 +9,6 @@ import express = require("express")
 import logger from "anyhow"
 const packageVersion = require("../../package.json").version
 
-// INTERNAL HELPERS
-// --------------------------------------------------------------------------
-
 /**
  * Build a JSON-RPC 2.0 error response.
  */
@@ -115,14 +112,11 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
     return jsonRpcError(id, -32601, `Method not found: ${message.method}`)
 }
 
-// STREAMABLE HTTP
-// --------------------------------------------------------------------------
-
 /**
  * Handle MCP Streamable HTTP requests (POST /mcp).
  */
 export const handleMcp = async (req: express.Request, res: express.Response): Promise<void> => {
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
 
     if (req.method == "OPTIONS") {
         res.status(204).send()

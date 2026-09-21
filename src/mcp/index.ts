@@ -10,7 +10,7 @@ import logger from "anyhow"
  * Apply CORS headers and short-circuit OPTIONS preflight requests.
  */
 const corsPreflight = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    setCorsHeaders(res)
+    setCorsHeaders(res, req)
     if (req.method == "OPTIONS") {
         res.status(204).send()
         return
