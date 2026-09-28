@@ -13,7 +13,7 @@ const router: express.Router = express.Router()
 router.get("/limits", async (req: express.Request, res: express.Response) => {
     try {
         const upload = settings.fitparser.upload
-        webserver.renderJson(req, res, {maxSize: upload.maxSize, maxFiles: upload.maxFiles, maxFileSize: upload.maxFileSize})
+        webserver.renderJson(req, res, {maxSize: upload.maxSize, maxFiles: upload.maxFiles, maxFileSize: upload.maxFileSize, maxExpandedSize: upload.maxExpandedSize})
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

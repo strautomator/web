@@ -59,7 +59,10 @@ export default {
             {value: "garmin.splitsText", label: "Garmin: Split summaries"},
             {value: "garmin.laps.totalTime", label: "Garmin: Active lap times"},
             {value: "garmin.laps.speedAvg", label: "Garmin: Active lap avg speeds"},
-            {value: "garmin.laps.distance", label: "Garmin: Active lap distances"}
+            {value: "garmin.laps.distance", label: "Garmin: Active lap distances"},
+            {value: "garmin.laps.ascent", label: "Garmin: Active lap ascents"},
+            {value: "garmin.laps.descent", label: "Garmin: Active lap descents"},
+            {value: "garmin.laps.calories", label: "Garmin: Active lap calories"}
         ]
 
         // Wahoo tags.
@@ -70,7 +73,10 @@ export default {
             {value: "wahoo.splitsText", label: "Wahoo: Split summaries"},
             {value: "wahoo.laps.totalTime", label: "Wahoo: Active lap times"},
             {value: "wahoo.laps.speedAvg", label: "Wahoo: Active lap avg speeds"},
-            {value: "wahoo.laps.distance", label: "Wahoo: Active lap distances"}
+            {value: "wahoo.laps.distance", label: "Wahoo: Active lap distances"},
+            {value: "wahoo.laps.ascent", label: "Wahoo: Active lap ascents"},
+            {value: "wahoo.laps.descent", label: "Wahoo: Active lap descents"},
+            {value: "wahoo.laps.calories", label: "Wahoo: Active lap calories"}
         ]
 
         // Activity lap tags.

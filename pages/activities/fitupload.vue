@@ -134,8 +134,8 @@ export default {
             total: 0,
             results: [],
             jobError: null,
-            maxSize: 104857600,
-            maxFiles: 500
+            maxSize: 20000000,
+            maxFiles: 50
         }
     },
     computed: {
