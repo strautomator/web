@@ -73,6 +73,14 @@ class WebServer {
             // When running behind a proxy / LB.
             this.app.set("trust proxy", settings.app.trustProxy)
 
+            // Basic security headers, set before any route so API and MCP pages get them too.
+            this.app.use((_req, res, next) => {
+                res.setHeader("X-Frame-Options", "SAMEORIGIN")
+                res.setHeader("X-Content-Type-Options", "nosniff")
+                res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+                next()
+            })
+
             // Debug enabled? Log all requests.
             if (settings.app.debug) {
                 this.app.use((req: express.Request, _res, next) => {
@@ -84,17 +92,24 @@ class WebServer {
             // Add body parser, retaining GitHub's raw webhook payload for signature validation.
             // Paddle webhooks and FIT uploads are consumed as raw streams.
             const bodyParser = require("body-parser")
+            const verify = (req: any, _res, buf: Buffer) => {
+                if (req.originalUrl.substring(0, 19) == "/api/github/webhook") {
+                    req.rawBody = buf
+                }
+            }
             this.app.use((req: express.Request, res: express.Response, next) => {
                 if (req.originalUrl.substring(0, 19) == "/api/paddle/webhook") {
                     bodyParser.raw({type: "application/json"})(req, res, next)
                 } else if (req.originalUrl.substring(0, 14) == "/api/fitupload") {
                     next()
+                } else if (req.originalUrl.substring(0, 18) == "/api/mailer/bounce") {
+                    bodyParser.text({type: "*/*"})(req, res, next)
                 } else {
-                    bodyParser.json()(req, res, (jsonErr) => {
+                    bodyParser.json({verify})(req, res, (jsonErr) => {
                         if (jsonErr) {
                             return next(jsonErr)
                         }
-                        bodyParser.urlencoded({extended: false})(req, res, next)
+                        bodyParser.urlencoded({extended: false, verify})(req, res, next)
                     })
                 }
             })
@@ -122,7 +137,7 @@ class WebServer {
                     }
                 }
 
-                const rateLimit = require("express-rate-limit")(settings.api.rateLimit)
+                const rateLimit = require("express-rate-limit")(rateLimitOptions)
                 this.app.use("/api/*catchall", rateLimit)
                 this.app.use("/mcp", rateLimit)
                 this.app.use("/mcp/*catchall", rateLimit)
@@ -139,7 +154,7 @@ class WebServer {
 
             // Only accept connections coming via Cloudflare? Require both CF-Ray and CF-Connecting-IP headers.
             if (settings.api.requireCloudflare) {
-                this.app.use("/api/*catchall", (req, res, next) => {
+                this.app.use(["/api/*catchall", "/mcp", "/mcp/*catchall", "/auth/*catchall"], (req, res, next) => {
                     if (!req.headers["cf-ray"] || !req.headers["cf-connecting-ip"]) {
                         logger.error("WebServer.requireCloudflare", req.method, req.originalUrl, "Missing CF-Ray header", req.ip)
 
@@ -182,14 +197,6 @@ class WebServer {
                 await countryLinkify(settings.affiliates, this.app)
                 logger.info("WebServer.init", `Affiliate links available at ${settings.affiliates.server.url}`)
             }
-
-            // Basic security headers.
-            this.app.use((_req, res, next) => {
-                res.setHeader("X-Frame-Options", "SAMEORIGIN")
-                res.setHeader("X-Content-Type-Options", "nosniff")
-                res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
-                next()
-            })
 
             // Use Nuxt render.
             this.app.use(nuxtRender)

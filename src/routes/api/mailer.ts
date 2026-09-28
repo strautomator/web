@@ -20,7 +20,11 @@ router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express
             return webserver.renderError(req, res, "Invalid URL bounce token", 401)
         }
 
+        // SNS posts JSON with a text/plain content type.
         let body = req.body
+        if (!body) {
+            return webserver.renderError(req, res, "Missing body", 400)
+        }
         if (typeof body === "string") {
             try {
                 body = JSON.parse(body)

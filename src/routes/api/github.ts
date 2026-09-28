@@ -24,9 +24,11 @@ const validateWebhook = (req, res): boolean => {
             throw new Error("Missing request body or headers")
         }
 
-        // Use the raw body when available, otherwise the stringified JSON body.
-        const rawBody = (req as any).rawBody || JSON.stringify(req.body)
-        const payload: Buffer = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(rawBody, "utf8")
+        // Signature must be validated against the exact bytes sent by GitHub.
+        const payload: Buffer = (req as any).rawBody
+        if (!Buffer.isBuffer(payload)) {
+            throw new Error("Missing raw request body")
+        }
 
         // Prefer SHA-256, keep the legacy SHA-1 as fallback.
         const header = sig256 || sigLegacy
