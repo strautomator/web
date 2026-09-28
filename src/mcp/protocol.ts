@@ -9,6 +9,9 @@ import express from "express"
 import logger from "anyhow"
 const packageVersion = require("../../package.json").version
 
+// Maximum number of JSON-RPC messages accepted in a single batch.
+const maxBatchSize = 20
+
 /**
  * Build a JSON-RPC 2.0 error response.
  */
@@ -139,6 +142,12 @@ export const handleMcp = async (req: express.Request, res: express.Response): Pr
         const batch = Array.isArray(body)
         const messages: JsonRpcRequest[] = batch ? body : [body]
         const responses: JsonRpcResponse[] = []
+
+        // Each message may call tools that hit Strava and the database, so batches are capped.
+        if (messages.length == 0 || messages.length > maxBatchSize) {
+            res.status(400).json(jsonRpcError(null, -32600, `Invalid Request: batches must have 1 to ${maxBatchSize} messages`))
+            return
+        }
 
         for (const message of messages) {
             const isNotification = message && message.id === undefined && typeof message.method == "string" && (message.method.startsWith("notifications/") || message.method == "initialized")

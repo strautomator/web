@@ -76,7 +76,7 @@ const tools: ToolDef[] = [
             },
             additionalProperties: false
         },
-        handler: async (user, args) => getProcessedActivities(user, args)
+        handler: async (user, args) => getProcessedActivities(user, {...args, limit: Math.min(parseInt(args.limit) || 50, 200)})
     },
     {
         name: "get_processed_activity",
