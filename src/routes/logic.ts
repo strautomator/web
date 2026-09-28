@@ -160,23 +160,22 @@ export const getProcessedActivities = async (user: UserData, query?: {limit?: an
 
     const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
 
-    if (user.garmin) {
-        const getGarminActivity = async (activity: StravaProcessedActivity) => {
-            const garminActivity = await fitparser.getMatchingActivity(user, activity, "garmin")
-            if (garminActivity) {
-                activity.garminActivity = garminActivity
+    // Match the FIT file activities in batches, instead of one query per activity.
+    if (user.garmin && activities.length > 0) {
+        const garminActivities = await fitparser.getMatchingActivities(user, activities, "garmin")
+        for (let activity of activities) {
+            if (garminActivities[activity.id]) {
+                activity.garminActivity = garminActivities[activity.id]
             }
         }
-        await Promise.allSettled(activities.map(getGarminActivity))
     }
-    if (user.wahoo) {
-        const getWahooActivity = async (activity: StravaProcessedActivity) => {
-            const wahooActivity = await fitparser.getMatchingActivity(user, activity, "wahoo")
-            if (wahooActivity) {
-                activity.wahooActivity = wahooActivity
+    if (user.wahoo && activities.length > 0) {
+        const wahooActivities = await fitparser.getMatchingActivities(user, activities, "wahoo")
+        for (let activity of activities) {
+            if (wahooActivities[activity.id]) {
+                activity.wahooActivity = wahooActivities[activity.id]
             }
         }
-        await Promise.allSettled(activities.map(getWahooActivity))
     }
 
     return activities
