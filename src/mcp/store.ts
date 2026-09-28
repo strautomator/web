@@ -74,12 +74,17 @@ export class McpStore {
             return
         }
 
-        const now = dayjs()
-        const config = getMcpConfig()
-        client.dateActivated = now.toDate()
-        client.dateExpiry = now.add(config.clientDays, "days").toDate()
-        await database.merge(COL_CLIENTS, {id: client.id, dateActivated: client.dateActivated, dateExpiry: client.dateExpiry})
-        logger.info("McpStore.activateClient", client.id, client.clientName || "unnamed")
+        // Failures are only logged, as tokens were already issued and must still reach the client.
+        try {
+            const now = dayjs()
+            const config = getMcpConfig()
+            client.dateActivated = now.toDate()
+            client.dateExpiry = now.add(config.clientDays, "days").toDate()
+            await database.merge(COL_CLIENTS, {id: client.id, dateActivated: client.dateActivated, dateExpiry: client.dateExpiry})
+            logger.info("McpStore.activateClient", client.id, client.clientName || "unnamed")
+        } catch (ex) {
+            logger.error("McpStore.activateClient", client.id, ex)
+        }
     }
 
     // AUTH REQUESTS

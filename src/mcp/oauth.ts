@@ -244,7 +244,7 @@ export const registerClient = async (req: express.Request, res: express.Response
             client_id_issued_at: now.unix(),
             // Public clients have no secret (0). Confidential clients expire with the registration,
             // which is extended to the full lifetime once the client is used for the first time.
-            client_secret_expires_at: confidential ? now.add(config.clientDays, "days").unix() : 0,
+            client_secret_expires_at: confidential ? dayjs(client.dateExpiry).unix() : 0,
             redirect_uris: client.redirectUris,
             grant_types: client.grantTypes,
             response_types: client.responseTypes,
