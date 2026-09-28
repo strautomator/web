@@ -56,15 +56,21 @@ export default {
             {value: "garmin.sportProfile", label: "Garmin: Sport profile"},
             {value: "garmin.workoutName", label: "Garmin: Workout name"},
             {value: "garmin.workoutNotes", label: "Garmin: Workout notes"},
-            {value: "garmin.splitsText", label: "Garmin: Split summaries"}
+            {value: "garmin.splitsText", label: "Garmin: Split summaries"},
+            {value: "garmin.laps.totalTime", label: "Garmin: Active lap times"},
+            {value: "garmin.laps.speedAvg", label: "Garmin: Active lap avg speeds"},
+            {value: "garmin.laps.distance", label: "Garmin: Active lap distances"}
         ]
 
         // Wahoo tags.
         const wahooTags = [
-            {value: "wahoo.tss", label: "Garmin: TSS"},
-            {value: "wahoo.trainingLoad", label: "Garmin: Training load"},
-            {value: "wahoo.pedalBalance", label: "Garmin: Pedal balance"},
-            {value: "wahoo.splitsText", label: "Garmin: Split summaries"}
+            {value: "wahoo.tss", label: "Wahoo: TSS"},
+            {value: "wahoo.trainingLoad", label: "Wahoo: Training load"},
+            {value: "wahoo.pedalBalance", label: "Wahoo: Pedal balance"},
+            {value: "wahoo.splitsText", label: "Wahoo: Split summaries"},
+            {value: "wahoo.laps.totalTime", label: "Wahoo: Active lap times"},
+            {value: "wahoo.laps.speedAvg", label: "Wahoo: Active lap avg speeds"},
+            {value: "wahoo.laps.distance", label: "Wahoo: Active lap distances"}
         ]
 
         // Activity lap tags.
