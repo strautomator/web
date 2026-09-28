@@ -2,7 +2,7 @@
 
 import * as oauth from "./oauth"
 import {handleMcp} from "./protocol"
-import {setCorsHeaders} from "./utils"
+import {getMcpConfig, setCorsHeaders} from "./utils"
 import express from "express"
 import logger from "anyhow"
 
@@ -36,7 +36,15 @@ const setup = (app: express.Express): void => {
     oauthRouter.use(corsPreflight)
     oauthRouter.get("/authorize", oauth.authorize)
     oauthRouter.post("/authorize", oauth.authorize)
-    oauthRouter.post("/register", oauth.registerClient)
+    const registerLimit = require("express-rate-limit")({
+        windowMs: 3600000,
+        max: getMcpConfig().registerPerHour,
+        standardHeaders: true,
+        legacyHeaders: false,
+        statusCode: 429,
+        message: {error: "temporarily_unavailable", error_description: "Too many client registrations, please try again later"}
+    })
+    oauthRouter.post("/register", registerLimit, oauth.registerClient)
     oauthRouter.post("/token", oauth.token)
     oauthRouter.post("/revoke", oauth.revoke)
     app.use("/mcp/oauth", oauthRouter)

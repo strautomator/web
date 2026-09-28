@@ -22,6 +22,8 @@ export interface McpOAuthClient {
     dateIssued: Date
     /** Date the client registration expires. */
     dateExpiry: Date
+    /** Date the client was first used to issue tokens. Unused clients expire quickly. */
+    dateActivated?: Date
 }
 
 export interface McpAuthRequest {

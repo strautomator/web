@@ -66,6 +66,22 @@ export class McpStore {
         return client
     }
 
+    /**
+     * Mark the client as used, extending its registration to the full lifetime.
+     */
+    activateClient = async (client: McpOAuthClient): Promise<void> => {
+        if (client.dateActivated) {
+            return
+        }
+
+        const now = dayjs()
+        const config = getMcpConfig()
+        client.dateActivated = now.toDate()
+        client.dateExpiry = now.add(config.clientDays, "days").toDate()
+        await database.merge(COL_CLIENTS, {id: client.id, dateActivated: client.dateActivated, dateExpiry: client.dateExpiry})
+        logger.info("McpStore.activateClient", client.id, client.clientName || "unnamed")
+    }
+
     // AUTH REQUESTS
     // --------------------------------------------------------------------------
 
