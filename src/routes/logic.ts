@@ -39,7 +39,7 @@ export const getPublicUser = async (user: UserData, refresh?: boolean): Promise<
             profile: profile,
             displayName: user.preferences.privacyMode ? user.displayName : profile.username || profile.firstName || profile.lastName
         }
-        users.update(data)
+        await users.update(data)
         user.profile = profile
     }
 

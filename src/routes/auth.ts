@@ -51,9 +51,7 @@ export class Auth {
                         res.send("Access denied")
                     }
 
-                    if (options.anonymous) {
-                        return false
-                    }
+                    return false
                 }
 
                 if (options.anonymous) {
