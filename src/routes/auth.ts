@@ -2,10 +2,23 @@
 
 import {logHelper, strava, users, UserData} from "strautomator-core"
 import {isAppOriginUrl} from "../utils/urls"
+import crypto from "crypto"
 import fs = require("fs")
 import logger from "anyhow"
 import webserver = require("../webserver")
 const settings = require("setmeup").settings
+
+// Short-lived in-memory token caches, keyed by the SHA-256 of the token. Only user IDs are cached
+// (the user itself is always fetched fresh), and tokens that are unknown to both the database and Strava.
+const tokenCacheMaxSize = 20000
+const tokenUserIds = new Map<string, {userId: string; expiry: number}>()
+const invalidTokens = new Map<string, number>()
+const setCacheEntry = <T>(cache: Map<string, T>, key: string, value: T): void => {
+    if (cache.size >= tokenCacheMaxSize) {
+        cache.delete(cache.keys().next().value)
+    }
+    cache.set(key, value)
+}
 
 /**
  * Database wrapper.
@@ -65,16 +78,49 @@ export class Auth {
                 return false
             }
 
-            // Find user by token.
+            // Token recently seen as invalid? Stop here, without hitting the database or Strava.
             let token: string = bearer.substring(1, 6) == "earer" ? bearer.substring(6).trim() : bearer.trim()
-            let user = await users.getByToken({accessToken: token})
+            const tokenHash = crypto.createHash("sha256").update(token).digest("hex")
+            const invalidExpiry = invalidTokens.get(tokenHash)
+            if (invalidExpiry && invalidExpiry > Date.now()) {
+                webserver.renderError(req, res, "User not found", 404)
+                return false
+            }
+
+            // Token recently matched to a user? Get the user directly, and make sure the token is still valid.
+            let user: UserData = null
+            const cachedUserId = tokenUserIds.get(tokenHash)
+            if (cachedUserId && cachedUserId.expiry > Date.now()) {
+                user = await users.getById(cachedUserId.userId)
+                if (user && user.stravaTokens?.accessToken != token && user.stravaTokens?.previousAccessToken != token) {
+                    user = null
+                }
+            }
+            const fromCache = user ? true : false
+            if (!fromCache) {
+                tokenUserIds.delete(tokenHash)
+            }
+
+            // Find user by token.
+            if (!user) {
+                user = await users.getByToken({accessToken: token})
+            }
             if (!user && options.acceptPreviousToken) {
                 user = await users.getByToken({previousAccessToken: token})
             }
 
-            // User not found? Maybe has a new token?
+            // User not found? Maybe has a new token? Tokens rejected by Strava are cached as invalid.
             if (!user) {
-                const athlete = await strava.athletes.getAthlete({accessToken: token})
+                let athlete = null
+                try {
+                    athlete = await strava.athletes.getAthlete({accessToken: token})
+                } catch (athleteEx) {
+                    const status = athleteEx.response?.status || athleteEx.statusCode
+                    if (status == 401 || status == 403) {
+                        setCacheEntry(invalidTokens, tokenHash, Date.now() + (settings.api.invalidTokenCacheSeconds || 600) * 1000)
+                    }
+                    throw athleteEx
+                }
 
                 // User token is valid on Strava? Update previous token saved on the database.
                 if (athlete) {
@@ -108,6 +154,9 @@ export class Auth {
             }
 
             // All good!
+            if (!fromCache) {
+                setCacheEntry(tokenUserIds, tokenHash, {userId: user.id, expiry: Date.now() + (settings.api.tokenCacheSeconds || 300) * 1000})
+            }
             return user
         } catch (ex) {
             webserver.renderError(req, res, ex, 401)
