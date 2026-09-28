@@ -27,6 +27,9 @@ export const getMcpConfig = () => {
         authCodeMinutes: mcp.authCodeMinutes || 10,
         authRequestMinutes: mcp.authRequestMinutes || 15,
         clientDays: mcp.clientDays || 365,
+        unusedClientHours: mcp.unusedClientHours || 24,
+        maxRedirectUris: mcp.maxRedirectUris || 5,
+        registerPerHour: mcp.registerPerHour || 20,
         cookieName: settings.cookie.sessionName,
         cookieSecret: settings.cookie.secret,
         assumeUser: process.env.NODE_ENV == "production" ? undefined : oauth.assumeUser,
@@ -129,6 +132,12 @@ export const isValidRedirectUri = (value: string): boolean => {
 
     if (protocol == "http:") {
         return host == "localhost" || host == "127.0.0.1" || host == "[::1]" || host == "::1"
+    }
+
+    // Custom schemes are used by desktop MCP clients (cursor://, vscode://, etc).
+    const blockedSchemes = ["javascript:", "data:", "file:", "vbscript:", "blob:", "about:", "ws:", "wss:", "ftp:"]
+    if (/^[a-z][a-z0-9+.-]*:$/.test(protocol) && !blockedSchemes.includes(protocol)) {
+        return host.length > 0 || parsed.pathname.length > 0
     }
 
     return false
