@@ -14,7 +14,7 @@ const settings = require("setmeup").settings
  */
 export class Auth {
     private constructor() {
-        const cacheDuration = settings.oauth.tokenCacheSeconds || 120
+        const cacheDuration = settings.oauth.tokenCacheSeconds
         cache.setup("auth-token-users", cacheDuration)
         cache.setup("auth-invalid-tokens", cacheDuration)
     }
