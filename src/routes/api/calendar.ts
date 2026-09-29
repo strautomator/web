@@ -64,13 +64,11 @@ router.get("/:userId/:urlToken/:calType.ics", async (req: express.Request, res: 
         const message = ex.message || ex.toString()
         if (message.includes(" not found")) {
             logger.warn("Routes.calendar", req.method, req.originalUrl, "Not found")
-            res.status(404)
+            res.status(404).send("Calendar not found")
         } else {
             logger.error("Routes.calendar", req.method, req.originalUrl, ex)
-            res.status(500)
+            res.status(500).send("Failed to generate the calendar")
         }
-
-        res.send(ex.toString())
     }
 })
 

@@ -15,6 +15,7 @@ router.post("/webhook", async (req: express.Request, res: express.Response) => {
         await paddle.processWebhook(req as any)
     } catch (ex) {
         logger.error("Routes.paddle", req.method, req.originalUrl, ex)
+        return webserver.renderError(req, res, "Failed to process webhook", 500)
     }
 
     webserver.renderJson(req, res, {ok: true})

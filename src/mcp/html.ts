@@ -44,9 +44,10 @@ const layout = (title: string, body: string): string => {
 /**
  * OAuth consent page shown to logged-in PRO users before issuing an authorization code.
  */
-export const consentPage = (options: {clientName: string; userName: string; requestId: string; consentToken: string}): string => {
+export const consentPage = (options: {clientName: string; userName: string; redirectTarget: string; requestId: string; consentToken: string}): string => {
     const clientName = escapeHtml(options.clientName || "An MCP client")
     const userName = escapeHtml(options.userName || "your account")
+    const redirectTarget = escapeHtml(options.redirectTarget)
 
     return layout(
         "Authorize MCP access",
@@ -54,6 +55,7 @@ export const consentPage = (options: {clientName: string; userName: string; requ
         <div class="card">
             <p><strong>${clientName}</strong> wants to access Strautomator as <strong>${userName}</strong>.</p>
             <p>This lets the client read your activities, automations and GearWear, and make changes that you already can make in the Strautomator app. Access is limited to PRO members.</p>
+            <p>After authorizing, you'll be sent back to <strong>${redirectTarget}</strong>. Only continue if you recognize it and you started this request.</p>
             <form method="post" action="/mcp/oauth/authorize">
                 <input type="hidden" name="request_id" value="${escapeHtml(options.requestId)}" />
                 <input type="hidden" name="consent_token" value="${escapeHtml(options.consentToken)}" />

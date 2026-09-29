@@ -197,6 +197,9 @@ export const registerClient = async (req: express.Request, res: express.Response
         if (redirectUris.length < 1) {
             return oauthErrorJson(res, 400, "invalid_redirect_uri", "redirect_uris is required")
         }
+        if (redirectUris.length > getMcpConfig().maxRedirectUris) {
+            return oauthErrorJson(res, 400, "invalid_redirect_uri", "Too many redirect_uris")
+        }
         if (redirectUris.some((uri) => !isValidRedirectUri(uri))) {
             return oauthErrorJson(res, 400, "invalid_redirect_uri", "One or more redirect_uris are not allowed")
         }
@@ -231,7 +234,7 @@ export const registerClient = async (req: express.Request, res: express.Response
             grantTypes,
             responseTypes,
             dateIssued: now.toDate(),
-            dateExpiry: now.add(config.clientDays, "days").toDate()
+            dateExpiry: now.add(config.unusedClientHours, "hours").toDate()
         }
 
         await store.saveClient(client)
@@ -239,7 +242,8 @@ export const registerClient = async (req: express.Request, res: express.Response
         const result: any = {
             client_id: client.id,
             client_id_issued_at: now.unix(),
-            // Public clients have no secret (0). Confidential clients expire with the registration.
+            // Public clients have no secret (0). Confidential clients expire with the registration,
+            // which is extended to the full lifetime once the client is used for the first time.
             client_secret_expires_at: confidential ? dayjs(client.dateExpiry).unix() : 0,
             redirect_uris: client.redirectUris,
             grant_types: client.grantTypes,
@@ -356,7 +360,7 @@ export const authorize = withSession(async (req: express.Request, res: express.R
         if (req.method == "POST") {
             const consentToken = firstString(req.body?.consent_token)
             const decision = firstString(req.body?.decision)
-            if (!consentToken || consentToken != request.consentToken) {
+            if (!consentToken || !request.consentToken || hashToken(consentToken) != hashToken(request.consentToken)) {
                 res.status(400).send(errorPage("Invalid request", "The consent form could not be validated. Please try again."))
                 return
             }
@@ -384,7 +388,9 @@ export const authorize = withSession(async (req: express.Request, res: express.R
         }
 
         const client = await store.getClient(request.clientId)
-        res.send(consentPage({clientName: client?.clientName || "MCP client", userName: user.displayName || user.id, requestId: request.id, consentToken: request.consentToken}))
+        const redirectUrl = new URL(request.redirectUri)
+        const redirectTarget = redirectUrl.host ? `${redirectUrl.protocol}//${redirectUrl.host}` : redirectUrl.protocol
+        res.send(consentPage({clientName: client?.clientName || "MCP client", userName: user.displayName || user.id, redirectTarget, requestId: request.id, consentToken: request.consentToken}))
     } catch (ex) {
         logger.error("McpOAuth.authorize", ex)
         res.status(500).send(errorPage("Server error", "Could not complete the authorization request."))
@@ -431,6 +437,9 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!resourceMatches(resource, authCode.resource)) {
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
+
+            // Activate the client before consuming the code, so a failed write can be retried by the client.
+            await store.activateClient(auth.client)
 
             const consumed = await store.consumeAuthCode(code)
             if (!consumed) {

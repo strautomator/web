@@ -1,7 +1,9 @@
 // Strautomator API: Mailer
 
 import {events} from "strautomator-core"
+import {isSnsUrl, verifySnsMessage} from "../../utils/sns"
 import axios from "axios"
+import crypto from "crypto"
 import express from "express"
 import logger from "anyhow"
 import webserver = require("../../webserver")
@@ -16,11 +18,16 @@ router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express
         if (!settings.mailer.bounceUrlToken) {
             return webserver.renderError(req, res, "Bounce notifications not enabled on this server", 403)
         }
-        if (req.params.bounceUrlToken != settings.mailer.bounceUrlToken) {
+        const tokenHash = (value: string) => crypto.createHash("sha256").update(value || "").digest()
+        if (!crypto.timingSafeEqual(tokenHash(req.params.bounceUrlToken as string), tokenHash(settings.mailer.bounceUrlToken))) {
             return webserver.renderError(req, res, "Invalid URL bounce token", 401)
         }
 
+        // SNS posts JSON with a text/plain content type.
         let body = req.body
+        if (!body) {
+            return webserver.renderError(req, res, "Missing body", 400)
+        }
         if (typeof body === "string") {
             try {
                 body = JSON.parse(body)
@@ -29,21 +36,25 @@ router.post("/bounce/:bounceUrlToken", async (req: express.Request, res: express
             }
         }
 
+        // Only accept messages signed by SNS, optionally from the expected topic.
+        if (settings.mailer.bounceTopicArn && body.TopicArn != settings.mailer.bounceTopicArn) {
+            logger.warn("Routes.mailer", req.method, req.originalUrl, `Unexpected topic: ${body.TopicArn}`)
+            return webserver.renderError(req, res, "Invalid topic", 403)
+        }
+        if (!(await verifySnsMessage(body))) {
+            logger.warn("Routes.mailer", req.method, req.originalUrl, "Invalid SNS signature")
+            return webserver.renderError(req, res, "Invalid signature", 403)
+        }
+
         // Handle SNS SubscriptionConfirmation.
         if (body.Type == "SubscriptionConfirmation" && body.SubscribeURL) {
-            let subscribeUrl: URL
-            try {
-                subscribeUrl = new URL(body.SubscribeURL)
-            } catch {
-                return webserver.renderError(req, res, "Invalid SubscribeURL", 400)
-            }
-            if (subscribeUrl.protocol != "https:" || !/^sns\.[a-z0-9-]+\.amazonaws\.com$/.test(subscribeUrl.hostname)) {
+            if (!isSnsUrl(body.SubscribeURL)) {
                 return webserver.renderError(req, res, "Invalid SubscribeURL", 400)
             }
 
             logger.info("Routes.mailer", req.method, req.originalUrl, "Subscription confirmed")
 
-            await axios.get(subscribeUrl.href)
+            await axios.get(body.SubscribeURL, {maxRedirects: 0, timeout: 10000})
             return webserver.renderJson(req, res, {confirmed: true})
         }
 
