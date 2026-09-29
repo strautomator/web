@@ -3,8 +3,9 @@
 import axios from "axios"
 import crypto from "crypto"
 
-// Signing certificates cached by URL.
-const certificates: {[url: string]: string} = {}
+// Signing certificates cached by URL (only a few are used by SNS at any time).
+const certificates = new Map<string, string>()
+const maxCertificates = 20
 
 // Fields included in the string to sign, per message type (in this exact order).
 const notificationFields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
@@ -36,10 +37,14 @@ export const verifySnsMessage = async (message: any): Promise<boolean> => {
         return false
     }
 
-    const certUrl = message.SigningCertURL
-    if (!isSnsUrl(certUrl) || !new URL(certUrl).pathname.endsWith(".pem")) {
+    if (!isSnsUrl(message.SigningCertURL)) {
         return false
     }
+    const parsedCertUrl = new URL(message.SigningCertURL)
+    if (parsedCertUrl.search || parsedCertUrl.hash || !parsedCertUrl.pathname.endsWith(".pem")) {
+        return false
+    }
+    const certUrl = `${parsedCertUrl.origin}${parsedCertUrl.pathname}`
 
     let fields: string[]
     if (message.Type == "Notification") {
@@ -55,13 +60,18 @@ export const verifySnsMessage = async (message: any): Promise<boolean> => {
         .map((f) => `${f}\n${message[f]}\n`)
         .join("")
 
-    if (!certificates[certUrl]) {
+    let certificate = certificates.get(certUrl)
+    if (!certificate) {
         const res = await axios.get(certUrl, {responseType: "text", timeout: 5000, maxContentLength: 65536, maxRedirects: 0})
-        certificates[certUrl] = res.data
+        certificate = res.data
+        if (certificates.size >= maxCertificates) {
+            certificates.delete(certificates.keys().next().value)
+        }
+        certificates.set(certUrl, certificate)
     }
 
     const algorithm = message.SignatureVersion == "1" ? "RSA-SHA1" : "RSA-SHA256"
     const verifier = crypto.createVerify(algorithm)
     verifier.update(stringToSign, "utf8")
-    return verifier.verify(certificates[certUrl], message.Signature, "base64")
+    return verifier.verify(certificate, message.Signature, "base64")
 }
