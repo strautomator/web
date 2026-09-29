@@ -2,29 +2,22 @@
 
 import {logHelper, strava, users, UserData} from "strautomator-core"
 import {isAppOriginUrl} from "../utils/urls"
+import cache from "bitecache"
 import crypto from "crypto"
 import fs = require("fs")
 import logger from "anyhow"
 import webserver = require("../webserver")
 const settings = require("setmeup").settings
 
-// Short-lived in-memory token caches, keyed by the SHA-256 of the token. Only user IDs are cached
-// (the user itself is always fetched fresh), and tokens that are unknown to both the database and Strava.
-const tokenCacheMaxSize = 20000
-const tokenUserIds = new Map<string, {userId: string; expiry: number}>()
-const invalidTokens = new Map<string, number>()
-const setCacheEntry = <T>(cache: Map<string, T>, key: string, value: T): void => {
-    if (cache.size >= tokenCacheMaxSize) {
-        cache.delete(cache.keys().next().value)
-    }
-    cache.set(key, value)
-}
-
 /**
  * Database wrapper.
  */
 export class Auth {
-    private constructor() {}
+    private constructor() {
+        const cacheDuration = settings.api.tokenCacheSeconds
+        cache.setup("auth-token-users", cacheDuration)
+        cache.setup("auth-invalid-tokens", cacheDuration)
+    }
     private static _instance: Auth
     static get Instance() {
         return this._instance || (this._instance = new this())
@@ -81,24 +74,23 @@ export class Auth {
             // Token recently seen as invalid? Stop here, without hitting the database or Strava.
             let token: string = bearer.substring(1, 6) == "earer" ? bearer.substring(6).trim() : bearer.trim()
             const tokenHash = crypto.createHash("sha256").update(token).digest("hex")
-            const invalidExpiry = invalidTokens.get(tokenHash)
-            if (invalidExpiry && invalidExpiry > Date.now()) {
+            if (cache.get("auth-invalid-tokens", tokenHash)) {
                 webserver.renderError(req, res, "User not found", 404)
                 return false
             }
 
             // Token recently matched to a user? Get the user directly, and make sure the token is still valid.
             let user: UserData = null
-            const cachedUserId = tokenUserIds.get(tokenHash)
-            if (cachedUserId && cachedUserId.expiry > Date.now()) {
-                user = await users.getById(cachedUserId.userId)
+            const cachedUserId: string = cache.get("auth-token-users", tokenHash)
+            if (cachedUserId) {
+                user = await users.getById(cachedUserId)
                 if (user && user.stravaTokens?.accessToken != token && user.stravaTokens?.previousAccessToken != token) {
                     user = null
                 }
             }
             const fromCache = user ? true : false
-            if (!fromCache) {
-                tokenUserIds.delete(tokenHash)
+            if (cachedUserId && !fromCache) {
+                cache.del("auth-token-users", tokenHash)
             }
 
             // Find user by token.
@@ -117,7 +109,7 @@ export class Auth {
                 } catch (athleteEx) {
                     const status = athleteEx.response?.status || athleteEx.statusCode
                     if (status == 401 || status == 403) {
-                        setCacheEntry(invalidTokens, tokenHash, Date.now() + (settings.api.invalidTokenCacheSeconds || 600) * 1000)
+                        cache.set("auth-invalid-tokens", tokenHash, true)
                     }
                     throw athleteEx
                 }
@@ -155,7 +147,7 @@ export class Auth {
 
             // All good!
             if (!fromCache) {
-                setCacheEntry(tokenUserIds, tokenHash, {userId: user.id, expiry: Date.now() + (settings.api.tokenCacheSeconds || 300) * 1000})
+                cache.set("auth-token-users", tokenHash, user.id)
             }
             return user
         } catch (ex) {
