@@ -438,13 +438,15 @@ export const token = async (req: express.Request, res: express.Response): Promis
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
 
+            // Activate the client before consuming the code, so a failed write can be retried by the client.
+            await store.activateClient(auth.client)
+
             const consumed = await store.consumeAuthCode(code)
             if (!consumed) {
                 return oauthErrorJson(res, 400, "invalid_grant", "Invalid authorization code")
             }
 
             const tokens = await store.issueTokens({clientId: auth.client.id, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
-            await store.activateClient(auth.client)
             logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "authorization_code")
             res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
