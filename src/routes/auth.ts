@@ -117,7 +117,7 @@ export class Auth {
                 } catch (athleteEx) {
                     const status = athleteEx.response?.status || athleteEx.statusCode
                     if (status == 401 || status == 403) {
-                        setCacheEntry(invalidTokens, tokenHash, Date.now() + (settings.api.invalidTokenCacheSeconds || 600) * 1000)
+                        setCacheEntry(invalidTokens, tokenHash, Date.now() + (settings.oauth.tokenCacheSeconds || 120) * 1000)
                     }
                     throw athleteEx
                 }
@@ -155,7 +155,7 @@ export class Auth {
 
             // All good!
             if (!fromCache) {
-                setCacheEntry(tokenUserIds, tokenHash, {userId: user.id, expiry: Date.now() + (settings.api.tokenCacheSeconds || 300) * 1000})
+                setCacheEntry(tokenUserIds, tokenHash, {userId: user.id, expiry: Date.now() + (settings.oauth.tokenCacheSeconds || 120) * 1000})
             }
             return user
         } catch (ex) {
