@@ -76,7 +76,7 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
                 capabilities: {tools: {listChanged: false}},
                 serverInfo: {name: "strautomator", title: "Strautomator", version: packageVersion},
                 instructions:
-                    "Strautomator MCP for PRO subscribers. Tools operate on the authenticated athlete and match the website API. Use get_automation_schema before creating or updating automations. Never ask the user for Strava tokens; authentication is already established."
+                    "Strautomator MCP for PRO subscribers. Tools operate on the authenticated athlete and match the website API. Use get_automation_schema before handling automations. Use list_gearwear or get_gearwear for gear IDs and exact component names before toggle_gearwear_component. Never ask the user for Strautomator or Strava tokens."
             }
         }
     }

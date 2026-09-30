@@ -381,3 +381,299 @@ a {
         background-position: calc(120px * -1) 0;
     }
 }
+
+/* Shared site design (home, feature and help pages) */
+
+$site-bg: #0b0b0d;
+$site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(11, 11, 13, 0) 55%), radial-gradient(ellipse at 90% 25%, rgba(255, 160, 0, 0.15) 0%, rgba(11, 11, 13, 0) 50%);
+
+@mixin site-surface {
+    background-color: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+}
+
+@mixin site-subheading {
+    border-left: 3px solid #ffa000;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    padding-left: 12px;
+}
+
+@mixin site-shot($radius) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $radius;
+    box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.9), 0 0 60px -20px rgba(255, 160, 0, 0.4);
+}
+
+.site-page,
+.theme--dark.v-application.site-page {
+    background: $site-bg;
+}
+
+.site-glow {
+    background: $site-glow;
+}
+
+.site-glow-top {
+    height: 520px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.site-header {
+    margin: 30px 0 34px 0;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #ffca28 0%, #ff6f00 60%, #fc4c02 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.site-brand {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.v-application .site-brand a {
+    color: #ffffff;
+}
+
+.site-brand span {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.site-headline {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 18px;
+}
+
+.site-headline-hero {
+    font-size: 4rem;
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+    margin-bottom: 20px;
+}
+
+.site-headline-cta {
+    font-size: 3rem;
+}
+
+.site-lead,
+.feature .home-wrapper .site-lead {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 620px;
+}
+
+.site-subheading {
+    @include site-subheading;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel {
+    @include site-surface;
+    border-radius: 12px !important;
+    margin-top: 8px;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel::before {
+    box-shadow: none;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel::after {
+    border-top: none !important;
+}
+
+.site-card {
+    @include site-surface;
+    height: 100%;
+    padding: 26px;
+    position: relative;
+    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
+}
+
+.site-shot {
+    @include site-shot(16px);
+    max-width: 100%;
+}
+
+.site-cta {
+    background: radial-gradient(ellipse at center, rgba(252, 76, 2, 0.24) 0%, rgba(11, 11, 13, 0) 65%);
+    padding: 70px 20px 80px 20px;
+    text-align: center;
+}
+
+.site-cta p {
+    margin-bottom: 22px;
+}
+
+@media (max-width: 959px) {
+    .site-headline {
+        font-size: 2.1rem;
+    }
+
+    .site-headline-hero {
+        font-size: 2.8rem;
+    }
+
+    .site-headline-cta {
+        font-size: 2.2rem;
+    }
+
+    .site-lead {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Feature links (feature and help pages) */
+
+.feature-links-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 18px;
+}
+
+.feature-links-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.v-application .feature-link {
+    @include site-surface;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
+}
+
+.feature-link:hover,
+.feature-link.nuxt-link-exact-active {
+    border-color: rgba(255, 160, 0, 0.6);
+    box-shadow: 0 10px 30px -15px rgba(255, 160, 0, 0.5);
+}
+
+.feature-link:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 959px) {
+    .feature-links-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Feature pages */
+
+.site-page .home-wrapper {
+    max-width: 820px;
+}
+
+.feature .feature-section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.feature .feature-block {
+    margin-bottom: 64px;
+}
+
+.feature .v-card.home-panel.black {
+    @include site-surface;
+    background-color: rgba(255, 255, 255, 0.035) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none;
+    padding: 12px 10px;
+}
+
+.feature .home-panel p,
+.feature .home-panel li {
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.65;
+}
+
+.feature .home-panel a {
+    color: #ffb300;
+}
+
+.feature .home-panel h2 {
+    @include site-subheading;
+    margin-top: 8px;
+}
+
+.feature .home-panel .v-image {
+    @include site-shot(12px);
+}
+
+.feature .home-panel .v-alert {
+    background: rgba(255, 160, 0, 0.1) !important;
+    border: 1px solid rgba(255, 160, 0, 0.35);
+    border-radius: 12px;
+}
+
+.feature .home-panel ul {
+    list-style: none;
+    margin-left: 0 !important;
+    padding-left: 0;
+}
+
+.feature .home-panel ul li {
+    margin-bottom: 6px;
+    padding-left: 24px;
+    position: relative;
+}
+
+.feature .home-panel ul li::before {
+    background: linear-gradient(135deg, #ffca28, #fc4c02);
+    border-radius: 50%;
+    content: "";
+    height: 8px;
+    left: 6px;
+    position: absolute;
+    top: 0.65em;
+    width: 8px;
+}
+
+.feature .feature-cta {
+    margin-top: 40px;
+}
+
+/* Help pages */
+
+.v-expansion-panel-header {
+    line-height: 22px;
+}
+
+.v-expansion-panel-header--active {
+    color: #fff8e1;
+    font-weight: bold;
+}
+
+.v-expansion-panel-content {
+    padding-top: 8px;
+}
+
+.search-highlight {
+    color: #ffe082;
+    text-decoration: underline;
+}

@@ -1,122 +1,182 @@
 <template>
-    <v-main fluid>
-        <div class="stripe"></div>
-        <div class="py-2"></div>
-
-        <v-container class="text-center" fluid>
-            <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Enhance your Strava</h1>
-                <div>with</div>
-                <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
-
-                <div class="mt-6 mb-2">
-                    <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
-                </div>
-
-                <v-card color="black" class="mb-2 home-panel">
-                    <v-card-text>
-                        <div class="home-faq mt-4 px-1 text-left">
-                            <h2>What can it do?</h2>
-                            <div>
-                                <ul class="ml-4 pl-0">
-                                    <li>Tag your commutes.</li>
-                                    <li>Set the correct gear based on the activity metadata, date, sensors and more.</li>
-                                    <li>Set the default shoes for runs, walks and hikes, or bike for rides, MTB and gravel.</li>
-                                    <li>Add detailed weather information to activity names and descriptions.</li>
-                                    <li>Give your activities super cool and unique names, generated using AI.</li>
-                                    <li>Get personalized insights and suggestions about your activities, powered by AI.</li>
-                                    <li>Add the Spotify tracks (or lyrics) that you were listening to during your workouts.</li>
-                                    <li>Track the usage and get notified when you need to replace your bike components.</li>
-                                    <li>Export your past activities and upcoming club events to .ics calendars.</li>
-                                    <li>Show your upcoming club events directly on a map, with weather forecasts.</li>
-                                    <li>Estimate and automatically update your FTP based on your recent performance.</li>
-                                    <li>And a lot more!</li>
-                                </ul>
-                            </div>
+    <v-main fluid class="site-page hp">
+        <section class="hp-hero site-glow">
+            <div class="hp-hero-glow"></div>
+            <v-container class="hp-hero-container">
+                <v-row align="center" justify="center">
+                    <v-col cols="12" md="7" class="text-center text-md-left">
+                        <div class="site-brand mb-6">
+                            <img src="/images/logo.svg" width="28" height="28" class="strautologo" />
+                            <span>Strautomator</span>
                         </div>
+                        <h1 class="site-headline site-headline-hero">Your Strava,<br /><span class="gradient-text">on autopilot</span></h1>
+                        <p class="site-lead">
+                            Set the rules once. Strautomator names your rides, tags your commutes, adds the weather, the music and the AI magic, picks the right gear, keeps an eye on your bike parts, and exports your activities and club events to
+                            your personal calendar. All of it while you're still catching your breath.
+                        </p>
+                    </v-col>
 
-                        <div class="home-faq mt-2 px-1 text-left">
-                            <h2>How does it work?</h2>
-                            <div>
-                                <p>All you need to do is connect your Strava account to Strautomator and start using its features.</p>
-                            </div>
-                        </div>
-
-                        <v-responsive>
-                            <div class="fade-out-in">
-                                <div v-for="(sample, index) in samples" :key="`sample-${index}`">
-                                    <div class="home-chip" :class="sampleAlignClass(index)">
-                                        <span class="c-if primary--text">If</span>
-                                        <span class="condition">{{ sample.condition }}<br v-if="$breakpoint.mdAndUp" /></span>
-                                        <span class="c-then primary--text">then</span>
-                                        <span class="action">{{ sample.action }}</span>
+                    <v-col cols="12" md="5">
+                        <div class="hp-rules">
+                            <div class="hp-rules-title"><v-icon small color="primary" left>mdi-lightning-bolt</v-icon>Automations at work</div>
+                            <div class="hp-rules-list">
+                                <transition name="hp-fade">
+                                    <div :key="samplesRound" class="hp-rules-set">
+                                        <div v-for="(sample, index) in samples" :key="sample.condition" class="hp-rule" :style="{'--index': index}">
+                                            <div><span class="hp-tag">IF</span>{{ sample.condition }}</div>
+                                            <div class="mt-1"><span class="hp-tag hp-tag-then">THEN</span>{{ sample.action }}</div>
+                                        </div>
                                     </div>
+                                </transition>
+                            </div>
+                        </div>
+                    </v-col>
+                </v-row>
+            </v-container>
+
+            <div class="text-center pt-10"><connect-strava /></div>
+        </section>
+
+        <section class="hp-section hp-section-alt">
+            <v-container>
+                <h2 class="hp-title">Everything your activities (and gear!) were missing</h2>
+                <p class="hp-subtitle">A toolbox for athletes who'd rather train than fiddle with manual updates.</p>
+
+                <v-row class="mt-6">
+                    <v-col v-for="feature in features" :key="feature.title" cols="12" sm="6" md="4">
+                        <n-link :to="feature.link" class="hp-link" nuxt>
+                            <div class="site-card hp-feature">
+                                <div class="hp-icon">
+                                    <v-icon size="28" color="primary">{{ feature.icon }}</v-icon>
                                 </div>
+                                <v-chip v-if="feature.pro" class="hp-pro-chip" color="primary" x-small outlined>PRO</v-chip>
+                                <h3>{{ feature.title }}</h3>
+                                <p>{{ feature.text }}</p>
+                                <span class="hp-more">Learn more <v-icon small color="primary">mdi-arrow-right</v-icon></span>
                             </div>
-                        </v-responsive>
+                        </n-link>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </section>
 
-                        <div class="home-faq mt-8 px-1 text-left">
-                            <h2>How much does it cost?</h2>
-                            <div>
-                                <p>
-                                    You can start for free with the basic features, including {{ $store.state.freePlanDetails.maxRecipes }} automations, {{ $store.state.freePlanDetails.maxGearWear }} gears, up to
-                                    {{ $store.state.freePlanDetails.pastCalendarDays }} days exported to your calendar, weather summaries and some limited AI integrations.
-                                </p>
-                                <p>
-                                    Unlimited automations, gears, years of exported activities to your calendar, many AI providers, Garmin, Wahoo, and many more advanced features can be unlocked with a PRO subscription, costing less than an espresso
-                                    per month.
-                                </p>
-                            </div>
-                            <free-pro-table />
+        <section class="hp-section">
+            <v-container>
+                <v-row v-for="(spot, index) in spotlights" :key="spot.title" class="hp-spot" align="center" :class="{'flex-md-row-reverse': index % 2 == 1}">
+                    <v-col cols="12" md="6">
+                        <div class="hp-kicker">{{ spot.kicker }}</div>
+                        <h2 class="hp-spot-title">{{ spot.title }}</h2>
+                        <p class="hp-spot-text">{{ spot.text }}</p>
+                        <ul class="hp-checks">
+                            <li v-for="point in spot.points" :key="point"><v-icon small color="primary" left>mdi-check-circle</v-icon>{{ point }}</li>
+                        </ul>
+                        <v-btn :to="spot.link" color="primary" outlined rounded nuxt>
+                            Explore
+                            <v-icon right>mdi-arrow-right</v-icon>
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="12" md="6" class="text-center">
+                        <img class="site-shot" :src="spot.image" :alt="spot.title" />
+                    </v-col>
+                </v-row>
+            </v-container>
+        </section>
+
+        <section class="hp-section hp-section-alt">
+            <v-container>
+                <h2 class="hp-title">See it in action</h2>
+
+                <div class="hp-phones mt-8">
+                    <div v-for="n in 5" :key="n" class="hp-phone">
+                        <img :src="`/images/screenshot-${n}.jpg`" :alt="`Strautomator screenshot ${n}`" loading="lazy" />
+                    </div>
+                </div>
+            </v-container>
+        </section>
+
+        <section id="pricing" class="hp-section">
+            <v-container>
+                <h2 class="hp-title">Start free. Go PRO when you're hooked.</h2>
+                <p class="hp-subtitle">PRO costs less than an espresso per month.</p>
+
+                <v-row class="mt-6" justify="center">
+                    <v-col cols="12" sm="6" md="4">
+                        <div class="site-card hp-plan">
+                            <div class="hp-plan-name">FREE</div>
+                            <div class="hp-plan-price">{{ currencySymbol }}0</div>
+                            <div class="hp-plan-note">forever</div>
+                            <ul class="hp-checks">
+                                <li><v-icon small left>mdi-check</v-icon>{{ freePlanDetails.maxRecipes }} automations</li>
+                                <li><v-icon small left>mdi-check</v-icon>{{ freePlanDetails.maxGearWear }} GearWear configurations</li>
+                                <li><v-icon small left>mdi-check</v-icon>Single weather provider</li>
+                                <li><v-icon small left>mdi-check</v-icon>Limited AI features</li>
+                                <li><v-icon small left>mdi-check</v-icon>Calendar export ({{ freePlanDetails.pastCalendarDays }} to {{ freePlanDetails.futureCalendarDays }} days)</li>
+                                <li><v-icon small left>mdi-check</v-icon>Personal records for bike and run</li>
+                            </ul>
                         </div>
-
-                        <div class="mt-6">
-                            <a title="Connect with Strava..." @click="login()"><img class="strava-connect" src="/images/strava-connect.svg" /></a>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <div class="site-card hp-plan hp-plan-pro">
+                            <div class="hp-plan-badge">All the features</div>
+                            <div class="hp-plan-name">PRO</div>
+                            <div class="hp-plan-price">{{ currencySymbol }}{{ yearlyPrice }} / year</div>
+                            <div class="hp-plan-note">or {{ currencySymbol }}{{ lifetimePrice }} once for lifetime access</div>
+                            <ul class="hp-checks">
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Unlimited automations and GearWear</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Shared automations</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Multiple weather providers</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Extended AI features, multiple AI providers</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Extended calendar export</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Personal records for all sports</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Garmin and Wahoo sensors and battery tracking</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Spotify lyrics and track list</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Automatic FTP estimation and update</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>MCP server</li>
+                                <li><v-icon small left color="primary">mdi-check-all</v-icon>No ads, no backlinks</li>
+                            </ul>
                         </div>
-                    </v-card-text>
-                </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </section>
 
-                <h2 class="display-1 font-weight-light mt-8 mb-4">Screenshots</h2>
-
-                <v-carousel height="600" :interval="5500" cycle continuous hide-delimiter-background show-arrows-on-hover>
-                    <v-carousel-item>
-                        <img class="home-screenshot" src="/images/screenshot-1.jpg" />
-                    </v-carousel-item>
-                    <v-carousel-item>
-                        <img class="home-screenshot" src="/images/screenshot-2.jpg" />
-                    </v-carousel-item>
-                    <v-carousel-item>
-                        <img class="home-screenshot" src="/images/screenshot-3.jpg" />
-                    </v-carousel-item>
-                    <v-carousel-item>
-                        <img class="home-screenshot" src="/images/screenshot-4.jpg" />
-                    </v-carousel-item>
-                    <v-carousel-item>
-                        <img class="home-screenshot" src="/images/screenshot-5.jpg" />
-                    </v-carousel-item>
-                </v-carousel>
-
-                <h3 class="mt-8">Want to know more?</h3>
-                <div>
-                    <v-btn class="mt-2 mb-2" color="primary" to="/help" nuxt rounded>
-                        <v-icon left>mdi-help-circle</v-icon>
-                        Help section
-                    </v-btn>
+        <section class="hp-strip">
+            <v-container>
+                <div class="hp-strip-title">Plays nicely with the services you already use</div>
+                <div class="hp-strip-items">
+                    <img v-for="logo in logos" :key="logo.name" :src="logo.src" :alt="logo.name" :title="logo.name" :height="logo.height" />
                 </div>
+            </v-container>
+        </section>
 
-                <feature-links />
-            </div>
-        </v-container>
-        <div id="cookie-panel" class="hidden">
-            <div class="wrapper columns">
-                <div class="column has-text-left-tablet">
-                    <span class="is-size-7"></span>
+        <section class="hp-section">
+            <v-container class="hp-narrow">
+                <div class="site-card hp-oss">
+                    <v-icon size="56" color="primary" class="hp-oss-icon">mdi-github</v-icon>
+                    <div class="hp-oss-body">
+                        <div class="hp-kicker">Free to download</div>
+                        <h2 class="hp-spot-title">Open source software</h2>
+                        <p class="hp-spot-text">
+                            Strautomator is fully open source, licensed under the AGPL-3.0. Everyone is welcome to view, edit and contribute. And if you are well versed in tech, you can self-host your own instance of the service! PRO features, for
+                            free.
+                        </p>
+                        <v-btn href="https://github.com/strautomator" target="github" color="primary" outlined rounded>
+                            <v-icon left>mdi-github</v-icon>
+                            View on GitHub
+                        </v-btn>
+                    </div>
                 </div>
-                <div class="column is-one-fifth">
-                    <button id="but-cookie" class="button is-rounded is-pulled-right-mobile-only is-size-7">Accept cookies</button>
-                </div>
-            </div>
-        </div>
+            </v-container>
+        </section>
+
+        <section class="site-cta">
+            <v-container class="text-center">
+                <h2 class="site-headline site-headline-cta">Turbocharge <span class="gradient-text">your Strava experience</span></h2>
+                <p class="site-lead mx-auto">Connect your Strava account today!</p>
+                <div class="mt-6"><connect-strava /></div>
+            </v-container>
+        </section>
+
         <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
             This website is using cookies!
             <template v-slot:action="{attrs}">
@@ -128,129 +188,59 @@
 
 <script>
 import _ from "lodash"
-import FeatureLinks from "~/components/FeatureLinks.vue"
-import FreeProTable from "~/components/FreeProTable.vue"
+import ConnectStrava from "~/components/buttons/ConnectStrava.vue"
+import subscriptionMixin from "~/mixins/subscriptionMixin.js"
+
+const allSamples = [
+    {condition: "ride starts at home and ends at the office", action: "mark it as commute and set bike to 'Cityrad'"},
+    {condition: "avg. power is higher than 300 watts", action: "name the activity 'Suffer test'"},
+    {condition: "activity starts before 6AM", action: "name it 'Early bird'"},
+    {condition: "temperature is under 0°C", action: "name it 'Frosty commute' and add the weather"},
+    {condition: "sport type is ride or gravel ride", action: "generate a unique activity name using AI"},
+    {condition: "sport type is run or hike", action: "write the activity description using AI"},
+    {condition: "virtual ride using Zwift", action: "add my Spotify playlist to the description"},
+    {condition: "bike chain reaches 4000km", action: "alert me to swap it via email"},
+    {condition: "ride passes on my favourite bakery", action: "name it 'Cake ride #' with an auto-incrementing counter"},
+    {condition: "no hard efforts during the past weeks", action: "update my FTP on Strava"},
+    {condition: "short ride recorded with a Garmin Edge", action: "mark as commute and mute it from the feed"},
+    {condition: "wind speed higher than 20 m/s", action: "set the description to 'Windy as hell'"}
+]
+
+const allFeatures = [
+    {icon: "mdi-robot-happy-outline", title: "AI activity names and descriptions", text: 'Say goodbye to "Morning Ride". Get unique and funny names and descriptions, generated with AI.', link: "/feature/ai"},
+    {icon: "mdi-brain", title: "Private AI insights", text: "Personalized analysis and suggestions about your workouts, visible only to you.", link: "/feature/ai-insights", pro: true},
+    {icon: "mdi-weather-partly-rainy", title: "Weather on your activities", text: "Temperature, wind, humidity and more weather conditions added to names and descriptions.", link: "/feature/weather"},
+    {icon: "mdi-bike-fast", title: "Commutes and other tags", text: "Tag your activities as commute, race or workout according to your automation rules.", link: "/feature/commute"},
+    {icon: "mdi-wrench-clock", title: "GearWear", text: "Track kilometers and hours on shoes, chains, tires and other bike components, and get alerted before they get worn out.", link: "/feature/gearwear"},
+    {icon: "mdi-battery-charging-80", title: "Battery tracker", text: "Never get caught by a dead sensor: track the battery level of your Garmin and Wahoo devices.", link: "/feature/battery-tracker", pro: true},
+    {icon: "mdi-spotify", title: "Spotify & Last.fm", text: "Add the tracks, or even the lyrics, that were playing during your workouts.", link: "/feature/spotify"},
+    {icon: "mdi-heart-flash", title: "FTP auto update", text: "Estimate your FTP from your recent efforts and keeps it up to date on Strava.", link: "/feature/ftp", pro: true},
+    {icon: "mdi-calendar-export", title: "Calendar export", text: "Your past activities and upcoming club events, in the calendar app of your choice.", link: "/feature/calendar"},
+    {icon: "mdi-map-marker-radius", title: "Upcoming events map", text: "Upcoming club events shown on a map, with weather forecasts and traffic overlays.", link: "/feature/upcoming-events-map"},
+    {icon: "mdi-trophy-outline", title: "Personal records", text: "Keep track of your best efforts across sports, and celebrate every new PR.", link: "/feature/records"},
+    {icon: "mdi-counter", title: "Activity counter", text: 'Auto-incrementing numbers for your names: "Cake Ride #12", "Hill repeats #47", "11907KM this year"...', link: "/feature/counter"},
+    {icon: "mdi-eye-off-outline", title: "Auto-mute", text: "Keep the trainer sessions and short commutes out of your followers' feed.", link: "/feature/mute"},
+    {icon: "mdi-map-outline", title: "Map styles", text: "Choose the default map style for your activities, based on the sport.", link: "/feature/mapstyles"},
+    {icon: "mdi-connection", title: "MCP access", text: "Connect Cursor, Claude and other agents to your account, and manage everything by chatting.", link: "/feature/mcp", pro: true}
+]
 
 export default {
     layout: "landing",
-    components: {FeatureLinks, FreeProTable},
+    mixins: [subscriptionMixin],
+    components: {ConnectStrava},
     head() {
         return {
-            title: "Automate your Strava"
+            title: "Your Strava, on autopilot"
+        }
+    },
+    // Randomized here so the server and client render the exact same content when hydrating.
+    asyncData() {
+        return {
+            samples: _.sampleSize(allSamples, 4),
+            features: _.shuffle(allFeatures)
         }
     },
     data() {
-        const allSamples = [
-            {
-                condition: "ride starts at Alexanderplatz, ends at Potsdam",
-                action: "mark it as commute and set bike to 'Cityrad'"
-            },
-            {
-                condition: "run is recorded with a Polar device",
-                action: "mark it as commute and set name to 'Run2work'"
-            },
-            {
-                condition: "avg. power is higher than 300 watts",
-                action: "name the activity 'Suffer test'"
-            },
-            {
-                condition: "avg. speed higher than 35kph on Monday",
-                action: "set bike to 'Aero', activity name to 'Fast Mondays'"
-            },
-            {
-                condition: "activity starts before 6AM",
-                action: "set the activity name to 'Early bird'"
-            },
-            {
-                condition: "ride is recorded with a Garmin Edge 130",
-                action: "mark it as commute and name it 'B2W'"
-            },
-            {
-                condition: "ride distance is around 300km",
-                action: "set the activity name to 'Audax 300'"
-            },
-            {
-                condition: "ride ends at the beach house",
-                action: "set the activity name to 'Beach time!'"
-            },
-            {
-                condition: "ride passes on Central Park and has more than 20km",
-                action: "set the activity name to 'Central Park loops'"
-            },
-            {
-                condition: "temperature is under 0°C and avg. speed under 20kph",
-                action: "set the activity name to 'Frosty commute'"
-            },
-            {
-                condition: "wind speed higher than 20 m/s",
-                action: "set the description to 'Windy as hell'"
-            },
-            {
-                condition: "activity is a bike ride",
-                action: "add weather data to activity descriptions"
-            },
-            {
-                condition: "activity passes on a specific location",
-                action: "append a link on the activity description"
-            },
-            {
-                condition: "bike chain reaches 4000km",
-                action: "alert me to swap it via email"
-            },
-            {
-                condition: "bike tires reaches 8500km",
-                action: "alert me to swap it via email"
-            },
-            {
-                condition: "bike cassette reaches 12000km",
-                action: "alert me to swap it via email"
-            },
-            {
-                condition: "temperature is over 30°C",
-                action: "append a weather icon to the activity name"
-            },
-            {
-                condition: "activity is a virtual ride",
-                action: "prepend the weather details to the activity name"
-            },
-            {
-                condition: "bike chain has over 5000km",
-                action: "alert me via email"
-            },
-            {
-                condition: "bike chain has over 5000km",
-                action: "alert me via email"
-            },
-            {
-                condition: "bike tires were used for longer than 2 years",
-                action: "alert me via email"
-            },
-            {
-                condition: "activity passes on my favourite bakery",
-                action: "name it Cake Ride with an auto-incrementing counter"
-            },
-            {
-                condition: "short rides to work",
-                action: "mark as commute and add a counter to the activity name"
-            },
-            {
-                condition: "no hard efforts during the past weeks",
-                action: "decrease my FTP setting on Strava"
-            },
-            {
-                condition: "virtual rides using Zwift",
-                action: "add my Spotify playlist to the activity description"
-            },
-            {
-                condition: "sport type is ride or gravel ride",
-                action: "generate the activity name using AI"
-            },
-            {
-                condition: "sport type is run or hike",
-                action: "generate the activity description using AI"
-            }
-        ]
-
         let displayCookieConsent = true
         try {
             displayCookieConsent = !(this.$cookies.get("cookie-consent", {parseJSON: false}) || false)
@@ -258,41 +248,74 @@ export default {
 
         return {
             showCookieConsent: displayCookieConsent,
+            logos: [
+                {name: "Garmin", src: "/images/integrations/garmin.png", height: 22},
+                {name: "Wahoo", src: "/images/integrations/wahoo.png", height: 36},
+                {name: "Spotify", src: "/images/integrations/spotify.png", height: 36},
+                {name: "Last.fm", src: "/images/integrations/lastfm.svg", height: 30},
+                {name: "OpenAI", src: "/images/integrations/openai.svg", height: 30},
+                {name: "Claude", src: "/images/integrations/anthropic.svg", height: 30},
+                {name: "Gemini", src: "/images/integrations/gemini.svg", height: 30},
+                {name: "Mistral", src: "/images/integrations/mistral.svg", height: 30},
+                {name: "DeepSeek", src: "/images/integrations/deepseek.svg", height: 30}
+            ],
             allSamples: allSamples,
-            samples: _.sampleSize(allSamples, 6),
+            samples: allSamples.slice(0, 4),
+            samplesRound: 0,
             timerSamples: null,
-            screenshot: 0
+            features: allFeatures,
+            spotlights: [
+                {
+                    kicker: "AI powered",
+                    title: "Activities with a personality",
+                    text: "Let AI turn every workout into something worth reading. Fun, unique names and descriptions, plus private insights about your training that only you can see.",
+                    points: ["Choose the tone: from serious coach to sarcastic friend", "Insights based on your real activity data", "Works for any activity type"],
+                    link: "/feature/ai",
+                    image: "/images/feature/action-auto-generate.png"
+                },
+                {
+                    kicker: "GearWear",
+                    title: "Know your gear before it fails",
+                    text: "Stop guessing when the chain is worn out or the shoes have seen enough. Strautomator counts every kilometer and hour and alerts you at the right time.",
+                    points: ["Automatically assigns the right gear and components to each activity", "Bikes, shoes and every single component", "Alerts by email as the limits get close"],
+                    link: "/feature/gearwear",
+                    image: "/images/feature/gearwear-list.png"
+                },
+                {
+                    kicker: "Battery tracker",
+                    title: "Sensors that never die on you",
+                    text: "Keep an eye on the batteries of your power meter, shifters and heart rate straps, using the data of your Garmin and Wahoo devices.",
+                    points: ["Garmin and Wahoo support", "Know exactly when a battery is running low", "One place for all of your devices"],
+                    link: "/feature/battery-tracker",
+                    image: "/images/feature/battery-tracking.png"
+                }
+            ]
+        }
+    },
+    computed: {
+        freePlanDetails() {
+            return this.$store.state.freePlanDetails || {}
+        },
+        proPlanDetails() {
+            return this.$store.state.proPlanDetails || {}
+        },
+        yearlyPrice() {
+            return this.$store.state.proPlanDetails?.price?.yearly?.toFixed(2) || "-"
+        },
+        lifetimePrice() {
+            return this.$store.state.proPlanDetails?.price?.lifetime?.toFixed(2) || "-"
         }
     },
     mounted() {
-        const domRef = document.getElementsByClassName("fade-out-in")[0]
-        const refreshSamples = () => {
-            const hide = () => domRef.classList.add("hidden")
-            const show = () => {
-                this.samples = _.sampleSize(this.allSamples, 6)
-                domRef.classList.remove("hidden")
-            }
-            hide()
-            setTimeout(show, 1000)
-        }
-        this.timerSamples = setInterval(refreshSamples, 8000)
+        this.timerSamples = setInterval(() => {
+            this.samples = _.sampleSize(this.allSamples, 4)
+            this.samplesRound++
+        }, 6000)
     },
-    unmounted() {
+    beforeDestroy() {
         clearInterval(this.timerSamples)
     },
     methods: {
-        login() {
-            this.$login()
-        },
-        sampleAlignClass(index) {
-            if (index % 3 == 0) {
-                return "float-left text-left"
-            }
-            if (index % 3 == 1) {
-                return "float-right text-right"
-            }
-            return "text-center"
-        },
         acceptCookies() {
             try {
                 this.$cookies.set("cookie-consent", true, {
@@ -302,13 +325,372 @@ export default {
 
                 this.showCookieConsent = false
             } catch (ex) {}
-        },
-        nextScreenshot() {
-            this.screenshot = this.screenshot + 1 === this.length ? 0 : this.screenshot + 1
-        },
-        prevScreenshot() {
-            this.screenshot = this.screenshot - 1 < 0 ? this.length - 1 : this.screenshot - 1
         }
     }
 }
 </script>
+
+<style scoped>
+.hp {
+    overflow-x: hidden;
+}
+
+.hp section {
+    position: relative;
+}
+
+.hp-hero {
+    padding: 64px 0 72px 0;
+}
+
+.hp-hero-container {
+    max-width: 1140px;
+}
+
+.hp-rules {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px -20px rgba(252, 76, 2, 0.35);
+    min-height: 380px;
+    padding: 20px;
+    text-align: left;
+}
+
+.hp-rules-title {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.hp-rule {
+    background: rgba(0, 0, 0, 0.45);
+    border-left: 3px solid #ffa000;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+}
+
+.hp-tag {
+    background: rgba(255, 160, 0, 0.18);
+    border-radius: 4px;
+    color: #ffb300;
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-right: 8px;
+    padding: 1px 6px;
+}
+
+.hp-tag-then {
+    background: rgba(252, 76, 2, 0.2);
+    color: #ff7043;
+}
+
+/* Old and new sets share the same grid cell, so they cross-fade in place without overflowing the panel. */
+.hp-rules-list {
+    display: grid;
+}
+
+.hp-rules-set {
+    grid-area: 1 / 1;
+}
+
+.hp-fade-enter-active {
+    transition: opacity 0.9s ease 0.3s;
+}
+
+.hp-fade-leave-active {
+    transition: opacity 0.4s ease;
+}
+
+.hp-fade-enter,
+.hp-fade-leave-to {
+    opacity: 0;
+}
+
+.hp-fade-enter-active .hp-rule {
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: calc(0.3s + var(--index) * 90ms);
+}
+
+.hp-fade-enter .hp-rule {
+    transform: translateY(14px);
+}
+
+.hp-fade-leave-active .hp-rule {
+    transition: transform 0.4s ease;
+}
+
+.hp-fade-leave-to .hp-rule {
+    transform: translateY(-8px);
+}
+
+.hp-strip {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 22px 0;
+}
+
+.hp-strip-title {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.hp-strip-items {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 48px;
+    justify-content: center;
+}
+
+.hp-strip-items img {
+    opacity: 0.6;
+    transition: opacity 200ms;
+}
+
+.hp-strip-items img:hover {
+    opacity: 1;
+}
+
+.hp-section {
+    padding: 44px 0;
+}
+
+.hp-section-alt {
+    background: #101013;
+}
+
+.hp-narrow {
+    max-width: 800px;
+}
+
+.hp-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-align: center;
+}
+
+.hp-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.1rem;
+    margin: 10px auto 0 auto;
+    max-width: 640px;
+    text-align: center;
+}
+
+.hp-feature p {
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 0;
+}
+
+.hp-link {
+    color: inherit !important;
+    display: block;
+    height: 100%;
+}
+
+.hp-feature h3 {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.hp-feature:hover {
+    border-color: rgba(255, 160, 0, 0.6);
+    box-shadow: 0 10px 40px -15px rgba(255, 160, 0, 0.5);
+    transform: translateY(-4px);
+}
+
+.hp-icon {
+    align-items: center;
+    background: rgba(255, 160, 0, 0.12);
+    border-radius: 12px;
+    display: inline-flex;
+    height: 52px;
+    justify-content: center;
+    margin-bottom: 14px;
+    width: 52px;
+}
+
+.hp-pro-chip {
+    position: absolute;
+    right: 20px;
+    top: 22px;
+}
+
+.hp-more {
+    color: #ffa000;
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-top: 12px;
+}
+
+.hp-spot {
+    margin-bottom: 48px;
+    margin-top: 48px;
+}
+
+.hp-kicker {
+    color: #ff7043;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.hp-spot-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+}
+
+.hp-spot-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.hp-checks {
+    list-style: none;
+    margin-bottom: 22px;
+    padding-left: 0;
+}
+
+.hp-checks li {
+    margin-bottom: 8px;
+}
+
+.hp-phones {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding: 10px 20px 30px 20px;
+    scroll-snap-type: x mandatory;
+}
+
+.hp-phone {
+    background: #000000;
+    border: 6px solid #2a2a2e;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.9);
+    flex: 0 0 auto;
+    overflow: hidden;
+    scroll-snap-align: center;
+    width: 250px;
+}
+
+.hp-phone:first-child {
+    margin-left: auto;
+}
+
+.hp-phone:last-child {
+    margin-right: auto;
+}
+
+.hp-phone img {
+    display: block;
+    width: 100%;
+}
+
+.hp-plan {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+}
+
+.hp-plan-pro {
+    background: linear-gradient(160deg, rgba(255, 160, 0, 0.14) 0%, rgba(252, 76, 2, 0.1) 100%);
+    border-color: #ffa000;
+    box-shadow: 0 20px 60px -25px rgba(255, 160, 0, 0.6);
+}
+
+.hp-plan-badge {
+    background: linear-gradient(90deg, #ffa000, #fc4c02);
+    border-radius: 20px;
+    color: #000000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    left: 50%;
+    letter-spacing: 1px;
+    padding: 3px 14px;
+    position: absolute;
+    text-transform: uppercase;
+    top: -12px;
+    transform: translateX(-50%);
+}
+
+.hp-plan-name {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.hp-plan-price {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.hp-plan-note {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+.hp-plan .hp-checks {
+    flex-grow: 1;
+}
+
+.hp-oss {
+    align-items: center;
+    display: flex;
+    gap: 28px;
+    padding: 36px;
+}
+
+.hp-oss-icon {
+    flex: 0 0 auto;
+}
+
+.hp-oss .hp-spot-text {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 959px) {
+    .hp-hero {
+        padding-top: 40px;
+    }
+
+    .hp-rules {
+        min-height: 0;
+    }
+
+    .hp-oss {
+        flex-direction: column;
+        padding: 28px;
+        text-align: center;
+    }
+
+    .hp-title {
+        font-size: 1.9rem;
+    }
+
+    .hp-section {
+        padding: 26px 0;
+    }
+}
+</style>

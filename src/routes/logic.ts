@@ -1,6 +1,6 @@
 // Shared handlers used by the HTTP API and the MCP tools.
 
-import {fitparser, gearwear, logHelper, recipes, strava, users, ActivityDebug, FitFileActivity, RecipeData, RecipeStatsData, StravaActivity, StravaEstimatedFtp, StravaProcessedActivity, UserData} from "strautomator-core"
+import {fitparser, gearwear, logHelper, recipes, strava, users, ActivityDebug, FitFileActivity, GearWearConfig, RecipeData, RecipeStatsData, StravaActivity, StravaEstimatedFtp, StravaProcessedActivity, UserData} from "strautomator-core"
 import {validateRecipeWebhookActions} from "../utils/urls"
 import dayjs from "../dayjs"
 import _ from "lodash"
@@ -331,4 +331,45 @@ export const getGearwearById = async (user: UserData, gearId: string): Promise<a
     }
 
     return {config: config, gear: gear}
+}
+
+/**
+ * Enable or disable one component on an existing GearWear configuration.
+ */
+export const toggleGearwearComponent = async (user: UserData, gearId: string, componentName: string, enabled: boolean): Promise<GearWearConfig> => {
+    if (typeof enabled != "boolean") {
+        throw Object.assign(new Error("enabled must be a boolean"), {status: 400})
+    }
+
+    const name = (componentName || "").trim()
+    if (!gearId || !name) {
+        throw Object.assign(new Error("Missing gear ID or component name"), {status: 400})
+    }
+
+    const config = await gearwear.getById(gearId)
+    if (!config) {
+        throw Object.assign(new Error(`GearWear ${gearId} does not exist`), {status: 404})
+    }
+    if (config.userId != user.id) {
+        throw Object.assign(new Error(`${logHelper.user(user)} has no access to GearWear ${gearId}`), {status: 403})
+    }
+
+    const component = _.find(config.components, {name})
+    if (!component) {
+        throw Object.assign(new Error(`Component "${name}" not found on GearWear ${gearId}`), {status: 404})
+    }
+
+    // Already in the requested state.
+    if (!!component.disabled == !enabled) {
+        return config
+    }
+
+    if (enabled) {
+        delete component.disabled
+    } else {
+        component.disabled = true
+    }
+    gearwear.sortComponents(config)
+
+    return gearwear.upsert(user, config, [component])
 }

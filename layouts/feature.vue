@@ -1,7 +1,7 @@
 <template>
-    <v-app class="feature">
+    <v-app class="feature site-page">
         <v-main fluid>
-            <div class="stripe"></div>
+            <div class="site-glow site-glow-top"></div>
             <div class="py-2"></div>
             <v-container class="text-center" fluid>
                 <div class="home-wrapper">
@@ -11,9 +11,11 @@
             </v-container>
         </v-main>
 
-        <div class="mt-6 mb-2" v-if="$route.path != '/feature'">
+        <section class="feature-cta site-cta" v-if="$route.path != '/feature'">
+            <h2 class="site-headline site-headline-cta">Turbocharge <span class="gradient-text">your Strava experience</span></h2>
+            <p class="site-lead mx-auto">Connect your Strava account today!</p>
             <btn-automations />
-        </div>
+        </section>
 
         <footer-section />
     </v-app>

@@ -10,7 +10,7 @@
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
-                        <h4 class="mt-2 mb-6">Policy effective as of May 24th, 2025</h4>
+                        <h4 class="mt-2 mb-6">Policy effective as of October 1st, 2026</h4>
                         <h2 class="mt-2 mb-4">About Strautomator</h2>
                         <p>
                             Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the Strautomator website (the "Service"), available at https://strautomator.com, and operated by Igor Ramadas Leite Nogueira ("us",
@@ -40,7 +40,9 @@
                             <li>Activity metadata from Strava</li>
                             <li>Activity metadata from Garmin</li>
                             <li>Activity metadata from Wahoo</li>
+                            <li>FIT activity files you upload</li>
                             <li>Soundtracks played at Spotify</li>
+                            <li>Soundtracks played at Last.fm</li>
                         </ul>
 
                         <h3 class="mt-1 mb-2">Security of your personal information</h3>
@@ -63,7 +65,19 @@
                         <h3 class="mt-6 mb-4">Disclosure of information to third parties</h3>
                         <p>We do not disclose any of your personal information to unauthorized third parties or individuals, except when required by the EU law.</p>
                         <p>If you subscribe to Strautomator PRO, some of your personal details will be exchanged with our Merchant of Record, Paddle.com.</p>
-                        <p>If you wish to use AI features, some of your activity metadata will be sent out to an external AI provider (Anthropic, Google, Mistral, OpenAI, xAI) for processing.</p>
+                        <p>
+                            If you wish to use AI features, some of your activity metadata will be sent to OpenRouter for processing. OpenRouter routes that request to the provider you select: Anthropic, DeepSeek, Google (Gemini), Mistral, OpenAI,
+                            SpaceXAI (Grok) or Z.ai. If OpenRouter cannot complete the request, the same metadata may be sent directly to Google (Gemini). AI insights, available on PRO accounts, can also include recent training context, weather and a
+                            custom prompt that you write.
+                        </p>
+
+                        <h3 class="mt-6 mb-4">MCP server</h3>
+                        <p>
+                            PRO accounts can connect third-party AI clients to the Service through our MCP server. Connecting a client is optional. You review a consent screen and authorize the client yourself. After you authorize it, the client can
+                            read and change some of the account data you can already access in the Service, including your profile, processed activities, automations and gear, and it can run your automations on an activity. The client receives an
+                            access token issued by Strautomator. Your Strava, Garmin, Wahoo and Spotify tokens are not shared with the client. Once the client has the data, that client's own provider may process it under that client's terms, which we
+                            do not control. You can revoke a client's access from that client.
+                        </p>
 
                         <h3 class="mt-6 mb-4">Controlling your personal information</h3>
                         <p>You always retain the right to withhold personal information from us, with the understanding that your experience of the Service may be affected.</p>
@@ -99,12 +113,13 @@
 
                         <h2 class="mt-6 mb-4">Subscriptions</h2>
                         <p>
-                            Some of our services are available only via a subscription plan named Strautomator PRO (the "Subscription"), billed on a monthly or yearly basis, or bought with a single payment that is valid for the lifetime of the
-                            Service. The Subscription might also be acquired via affiliate campaigns.
+                            Some of our services are available only via a subscription plan named Strautomator PRO (the "Subscription"). New subscriptions are billed as a recurring yearly payment, or bought with a single payment that is valid for the
+                            lifetime of the Service. A recurring monthly GitHub sponsorship of at least 1 USD can also be used to get a PRO account. The Subscription might also be acquired via affiliate campaigns. Subscriptions started before
+                            September 14th, 2024, and still billed by PayPal, may renew monthly or yearly until they are cancelled.
                         </p>
                         <p>
-                            The monthly or yearly price of the Subscription varies per country and date. The accepted payment currencies are CHF, EUR, GBP and USD. The Subscription will automatically renew at the end of the billing cycle. Users will
-                            be reminded of the Subscription renewal on a scheduled basis.
+                            The price of a new Subscription is shown before you pay and varies per country and date. The accepted payment currencies for Paddle and PayPal are CHF, EUR, GBP and USD. GitHub sponsorships are billed in USD. A yearly
+                            Subscription renews automatically at the end of each billing cycle, and users are reminded of that renewal on a scheduled basis. A lifetime payment does not need renewals.
                         </p>
 
                         <h3 class="mt-4 mb-2">Merchant of Record</h3>
