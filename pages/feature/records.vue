@@ -18,7 +18,7 @@ vue
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-records />
+            <btn-personal-records />
         </div>
     </v-main>
 </template>

@@ -1,107 +1,75 @@
 <template>
     <v-main fluid>
-        <h2 class="display-2 font-weight-bold mb-4">Strautomator features</h2>
+        <div class="feature-title">
+            <div class="site-brand mb-6">
+                <a href="/home" title="Home">
+                    <img src="/images/logo.svg" width="22" height="22" class="strautologo mt-n1" />
+                    <span>Strautomator</span>
+                </a>
+            </div>
+            <h1 class="site-headline">Everything your activities were missing</h1>
+            <p class="site-lead mx-auto">Automations, AI, gear tracking, weather, music and a lot more. Pick a feature and see how it works.</p>
+        </div>
 
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-ai-insights />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-ai-insights />
-            </v-card-text>
-        </v-card>
+        <section class="feature-block">
+            <feature-ai />
+        </section>
 
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-battery-tracker />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-ai />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-calendar />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-battery-tracker />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-commute />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-calendar />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-counter />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-commute />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-ftp />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-counter />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-gearwear />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-ftp />
-            </v-card-text>
-        </v-card>
+        <section class="feature-block">
+            <feature-mapstyles />
+        </section>
 
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-mcp />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-gearwear />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-mute />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-mapstyles />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-records />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-mute />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-spotify />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-records />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
+        <section class="feature-block">
+            <feature-upcoming-events-map />
+        </section>
 
-        <v-card>
-            <v-card-text>
-                <feature-spotify />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
-
-        <v-card>
-            <v-card-text>
-                <feature-upcoming-events-map />
-            </v-card-text>
-        </v-card>
-        <v-divider class="mt-6 mb-6"></v-divider>
-
-        <v-card>
-            <v-card-text>
-                <feature-weather />
-            </v-card-text>
-        </v-card>
+        <section class="feature-block">
+            <feature-weather />
+        </section>
     </v-main>
 </template>
 
@@ -112,9 +80,10 @@ import FeatureBatteryTracker from "./battery-tracker.vue"
 import FeatureCalendar from "./calendar.vue"
 import FeatureCommute from "./commute.vue"
 import FeatureCounter from "./counter.vue"
-import FeatureFTP from "./ftp.vue"
+import FeatureFtp from "./ftp.vue"
 import FeatureGearwear from "./gearwear.vue"
 import FeatureMapstyles from "./mapstyles.vue"
+import FeatureMcp from "./mcp.vue"
 import FeatureMute from "./mute.vue"
 import FeatureRecords from "./records.vue"
 import FeatureSpotify from "./spotify.vue"
@@ -130,9 +99,10 @@ export default {
         FeatureCalendar,
         FeatureCommute,
         FeatureCounter,
-        FeatureFTP,
+        FeatureFtp,
         FeatureGearwear,
         FeatureMapstyles,
+        FeatureMcp,
         FeatureMute,
         FeatureRecords,
         FeatureSpotify,

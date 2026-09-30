@@ -1,16 +1,25 @@
 <template>
-    <div>
-        <br v-if="$route.path == '/feature'" />
-        <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">{{ header }}</h1>
-        <template v-if="$route.path != '/feature'">
-            <div>with</div>
-            <h2 class="display-2 font-weight-bold mb-4">Strautomator</h2>
+    <div class="feature-title" :class="{'feature-title-section': isIndex}">
+        <template v-if="!isIndex">
+            <div class="site-brand mb-6">
+                <a href="/home" title="Home">
+                    <img src="/images/logo.svg" width="22" height="22" class="strautologo mt-n1" />
+                    <span>Strautomator</span>
+                </a>
+            </div>
+            <h1 class="site-headline">{{ header }}</h1>
         </template>
+        <h2 v-else class="feature-section-title">{{ header }}</h2>
     </div>
 </template>
 
 <script>
 export default {
-    props: ["header"]
+    props: ["header"],
+    computed: {
+        isIndex() {
+            return this.$route.path == "/feature"
+        }
+    }
 }
 </script>

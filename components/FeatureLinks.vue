@@ -1,26 +1,38 @@
 <template>
-    <div class="mt-8 mb-4 text-left">
-        <v-card color="black" class="mb-4 home-panel">
-            <v-card-text>
-                <h2 class="mb-4 text-center text-md-left">Strautomator features</h2>
-                <ul class="text-body-1 ml-n1">
-                    <li><n-link to="/feature/ai" nuxt>Let AI name your activities</n-link></li>
-                    <li><n-link to="/feature/ai-insights" nuxt>Private AI insights on your activities</n-link></li>
-                    <li><n-link to="/feature/weather" nuxt>Weather data on your activities</n-link></li>
-                    <li><n-link to="/feature/spotify" nuxt>Spotify tracks on your activities</n-link></li>
-                    <li><n-link to="/feature/lastfm" nuxt>Last.fm tracks on your activities</n-link></li>
-                    <li><n-link to="/feature/commute" nuxt>Automatically tag your commutes</n-link></li>
-                    <li><n-link to="/feature/mute" nuxt>Automatically mute your activities</n-link></li>
-                    <li><n-link to="/feature/counter" nuxt>Auto-incrementing activity counter</n-link></li>
-                    <li><n-link to="/feature/ftp" nuxt>Auto-update your FTP</n-link></li>
-                    <li><n-link to="/feature/mapstyles" nuxt>Set a default map style for activities</n-link></li>
-                    <li><n-link to="/feature/gearwear" nuxt>Track your equipment mileage</n-link></li>
-                    <li><n-link to="/feature/battery-tracker" nuxt>Track your sensor batteries</n-link></li>
-                    <li><n-link to="/feature/calendar" nuxt>Export your Strava calendar</n-link></li>
-                    <li><n-link to="/feature/upcoming-events-map" nuxt>View your upcoming events map</n-link></li>
-                    <li><n-link to="/feature/records" nuxt>Track your personal records</n-link></li>
-                </ul>
-            </v-card-text>
-        </v-card>
+    <div class="feature-links mt-12 mb-4 text-left">
+        <h2 class="feature-links-title text-center">More Strautomator features</h2>
+        <div class="feature-links-grid">
+            <n-link v-for="link in links" :key="link.to" :to="link.to" class="feature-link" nuxt>
+                <v-icon small color="primary" left>{{ link.icon }}</v-icon>
+                <span>{{ link.text }}</span>
+            </n-link>
+        </div>
     </div>
 </template>
+
+<script>
+export default {
+    data() {
+        return {
+            links: [
+                {to: "/feature/ai", icon: "mdi-robot-happy-outline", text: "Let AI name your activities"},
+                {to: "/feature/ai-insights", icon: "mdi-brain", text: "Private AI insights on your activities"},
+                {to: "/feature/mcp", icon: "mdi-connection", text: "Connect AI clients to your account"},
+                {to: "/feature/weather", icon: "mdi-weather-partly-rainy", text: "Weather data on your activities"},
+                {to: "/feature/spotify", icon: "mdi-spotify", text: "Spotify tracks on your activities"},
+                {to: "/feature/lastfm", icon: "mdi-headphones", text: "Last.fm tracks on your activities"},
+                {to: "/feature/commute", icon: "mdi-bike-fast", text: "Automatically tag your commutes"},
+                {to: "/feature/mute", icon: "mdi-eye-off-outline", text: "Automatically mute your activities"},
+                {to: "/feature/counter", icon: "mdi-counter", text: "Auto-incrementing activity counter"},
+                {to: "/feature/ftp", icon: "mdi-heart-flash", text: "Auto-update your FTP"},
+                {to: "/feature/mapstyles", icon: "mdi-map-outline", text: "Set a default map style for activities"},
+                {to: "/feature/gearwear", icon: "mdi-wrench-clock", text: "Track your equipment mileage"},
+                {to: "/feature/battery-tracker", icon: "mdi-battery-charging-80", text: "Track your sensor batteries"},
+                {to: "/feature/calendar", icon: "mdi-calendar-export", text: "Export your Strava calendar"},
+                {to: "/feature/upcoming-events-map", icon: "mdi-map-marker-radius", text: "View your upcoming events map"},
+                {to: "/feature/records", icon: "mdi-trophy-outline", text: "Track your personal records"}
+            ]
+        }
+    }
+}
+</script>

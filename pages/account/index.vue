@@ -97,6 +97,7 @@
                 <v-card-title class="accent">MCP{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
                 <v-card-text class="pt-4">
                     <div class="body-2">Connect Cursor, Claude or other MCP clients to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
+                    <div class="mt-2"><n-link to="/feature/mcp" title="MCP server" nuxt>Learn more about the MCP server</n-link></div>
                     <template v-if="user.isPro">
                         <div class="mt-3 text-caption">Server URL</div>
                         <code class="d-inline-block mt-1 pa-2">{{ mcpUrl }}</code>
