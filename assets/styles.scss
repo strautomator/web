@@ -449,7 +449,8 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     font-size: 3rem;
 }
 
-.site-lead {
+.site-lead,
+.feature .home-wrapper .site-lead {
     color: rgba(255, 255, 255, 0.75);
     font-size: 1.2rem;
     line-height: 1.6;
@@ -495,6 +496,47 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     .site-lead {
         margin-left: auto;
         margin-right: auto;
+    }
+}
+
+/* Feature links (feature and help pages) */
+
+.feature-links-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 18px;
+}
+
+.feature-links-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.feature-link {
+    @include site-surface;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
+}
+
+.feature-link:hover,
+.feature-link.nuxt-link-exact-active {
+    border-color: rgba(255, 160, 0, 0.6);
+    box-shadow: 0 10px 30px -15px rgba(255, 160, 0, 0.5);
+}
+
+.feature-link:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 959px) {
+    .feature-links-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -594,45 +636,6 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     width: 8px;
 }
 
-.feature .feature-links-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    margin-bottom: 18px;
-}
-
-.feature .feature-links-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.feature .feature-link {
-    @include site-surface;
-    align-items: center;
-    color: rgba(255, 255, 255, 0.85);
-    display: flex;
-    font-size: 0.95rem;
-    padding: 12px 14px;
-    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
-}
-
-.feature .feature-link:hover,
-.feature .feature-link.nuxt-link-exact-active {
-    border-color: rgba(255, 160, 0, 0.6);
-    box-shadow: 0 10px 30px -15px rgba(255, 160, 0, 0.5);
-}
-
-.feature .feature-link:hover {
-    transform: translateY(-2px);
-}
-
 .feature .feature-cta {
     margin-top: 40px;
-}
-
-@media (max-width: 959px) {
-    .feature .feature-links-grid {
-        grid-template-columns: 1fr;
-    }
 }
