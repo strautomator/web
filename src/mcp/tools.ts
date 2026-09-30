@@ -153,7 +153,7 @@ const tools: ToolDef[] = [
                 title: {type: "string", description: "Short name shown in the automations list."},
                 conditions: {
                     type: "array",
-                    description: "Conditions that must match before the actions run. Required unless defaultFor is set. Cleared when defaultFor is set.",
+                    description: "Conditions that must match before the actions run. Required unless defaultFor is set.",
                     items: {
                         type: "object",
                         properties: {
