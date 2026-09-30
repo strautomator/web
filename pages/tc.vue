@@ -74,9 +74,9 @@
                         <h3 class="mt-6 mb-4">MCP server</h3>
                         <p>
                             PRO accounts can connect third-party AI clients to the Service through our MCP server. Connecting a client is optional. You review a consent screen and authorize the client yourself. After you authorize it, the client can
-                            read and change the same account data you can already access in the Service, including your profile, processed activities, automations, gear and records, and it can run your automations on an activity. The client receives
-                            an access token issued by Strautomator. Your Strava, Garmin, Wahoo and Spotify tokens are not shared with the client. Once the client has the data, that client's own provider may process it under that client's terms, which
-                            we do not control. You can revoke a client's access from that client.
+                            read and change some of the account data you can already access in the Service, including your profile, processed activities, automations and gear, and it can run your automations on an activity. The client receives an
+                            access token issued by Strautomator. Your Strava, Garmin, Wahoo and Spotify tokens are not shared with the client. Once the client has the data, that client's own provider may process it under that client's terms, which we
+                            do not control. You can revoke a client's access from that client.
                         </p>
 
                         <h3 class="mt-6 mb-4">Controlling your personal information</h3>
