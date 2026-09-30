@@ -189,7 +189,6 @@
 <script>
 import _ from "lodash"
 import ConnectStrava from "~/components/buttons/ConnectStrava.vue"
-import FreeProTable from "~/components/FreeProTable.vue"
 import subscriptionMixin from "~/mixins/subscriptionMixin.js"
 
 const allSamples = [
@@ -228,7 +227,7 @@ const allFeatures = [
 export default {
     layout: "landing",
     mixins: [subscriptionMixin],
-    components: {ConnectStrava, FreeProTable},
+    components: {ConnectStrava},
     head() {
         return {
             title: "Your Strava, on autopilot"

@@ -1,15 +1,6 @@
 <template>
     <v-main fluid>
-        <div class="feature-title">
-            <div class="site-brand mb-6">
-                <a href="/home" title="Home">
-                    <img src="/images/logo.svg" width="22" height="22" class="strautologo mt-n1" />
-                    <span>Strautomator</span>
-                </a>
-            </div>
-            <h1 class="site-headline">Everything your activities were missing</h1>
-            <p class="site-lead mx-auto">Automations, AI, gear tracking, weather, music and a lot more. Pick a feature and see how it works.</p>
-        </div>
+        <site-header header="Everything your activities were missing" lead="Automations, AI, gear tracking, weather, music and a lot more. Pick a feature and see how it works." />
 
         <section class="feature-block">
             <feature-ai-insights />
@@ -74,6 +65,7 @@
 </template>
 
 <script>
+import SiteHeader from "~/components/SiteHeader.vue"
 import FeatureAi from "./ai.vue"
 import FeatureAiInsights from "./ai-insights.vue"
 import FeatureBatteryTracker from "./battery-tracker.vue"
@@ -93,6 +85,7 @@ import FeatureWeather from "./weather.vue"
 export default {
     layout: "feature",
     components: {
+        SiteHeader,
         FeatureAi,
         FeatureAiInsights,
         FeatureBatteryTracker,

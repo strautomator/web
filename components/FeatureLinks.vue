@@ -1,6 +1,6 @@
 <template>
     <div class="feature-links mt-12 mb-4 text-left">
-        <h2 class="feature-links-title text-center">More Strautomator features</h2>
+        <h2 class="feature-links-title text-center">Strautomator features</h2>
         <div class="feature-links-grid">
             <n-link v-for="link in links" :key="link.to" :to="link.to" class="feature-link" nuxt>
                 <v-icon small color="primary" left>{{ link.icon }}</v-icon>

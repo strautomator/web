@@ -382,7 +382,7 @@ a {
     }
 }
 
-/* Shared site design (home and feature pages) */
+/* Shared site design (home, feature and help pages) */
 
 $site-bg: #0b0b0d;
 $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(11, 11, 13, 0) 55%), radial-gradient(ellipse at 90% 25%, rgba(255, 160, 0, 0.15) 0%, rgba(11, 11, 13, 0) 50%);
@@ -391,6 +391,15 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     background-color: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 18px;
+}
+
+@mixin site-subheading {
+    border-left: 3px solid #ffa000;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    padding-left: 12px;
 }
 
 @mixin site-shot($radius) {
@@ -406,6 +415,19 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 
 .site-glow {
     background: $site-glow;
+}
+
+.site-glow-top {
+    height: 520px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.site-header {
+    margin: 30px 0 34px 0;
 }
 
 .gradient-text {
@@ -455,6 +477,24 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     font-size: 1.2rem;
     line-height: 1.6;
     max-width: 620px;
+}
+
+.site-subheading {
+    @include site-subheading;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel {
+    @include site-surface;
+    border-radius: 12px !important;
+    margin-top: 8px;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel::before {
+    box-shadow: none;
+}
+
+.site-page .v-expansion-panels .v-expansion-panel::after {
+    border-top: none !important;
 }
 
 .site-card {
@@ -514,7 +554,7 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     grid-template-columns: repeat(2, 1fr);
 }
 
-.feature-link {
+.v-application .feature-link {
     @include site-surface;
     align-items: center;
     color: rgba(255, 255, 255, 0.85);
@@ -542,25 +582,8 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 
 /* Feature pages */
 
-.feature .feature-glow {
-    height: 520px;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-.feature .home-wrapper {
+.site-page .home-wrapper {
     max-width: 820px;
-}
-
-.feature .feature-title {
-    margin: 30px 0 34px 0;
-}
-
-.feature .feature-title-section {
-    margin: 0 0 14px 0;
 }
 
 .feature .feature-section-title {
@@ -594,13 +617,8 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 }
 
 .feature .home-panel h2 {
-    border-left: 3px solid #ffa000;
-    color: #ffffff;
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: -0.2px;
+    @include site-subheading;
     margin-top: 8px;
-    padding-left: 12px;
 }
 
 .feature .home-panel .v-image {
@@ -638,4 +656,24 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 
 .feature .feature-cta {
     margin-top: 40px;
+}
+
+/* Help pages */
+
+.v-expansion-panel-header {
+    line-height: 22px;
+}
+
+.v-expansion-panel-header--active {
+    color: #fff8e1;
+    font-weight: bold;
+}
+
+.v-expansion-panel-content {
+    padding-top: 8px;
+}
+
+.search-highlight {
+    color: #ffe082;
+    text-decoration: underline;
 }

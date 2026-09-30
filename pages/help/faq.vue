@@ -1,16 +1,17 @@
 <template>
-    <v-layout column>
-        <div class="stripe" v-if="!loggedIn"></div>
-        <v-container class="text-center" :class="{'faq-wrapper': !loggedIn}" fluid>
-            <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
-                <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "FAQ" : "Strautomator FAQ" }}</h1>
+    <v-layout column :class="{'site-page': !loggedIn}">
+        <div class="site-glow site-glow-top" v-if="!loggedIn"></div>
+        <v-container class="text-center" fluid>
+            <div class="text-left" :class="{'home-wrapper': !loggedIn}">
+                <site-header v-if="!loggedIn" header="FAQ" />
+                <h1 v-else>FAQ</h1>
 
-                <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Keyword search" class="mt-2" rounded outlined></v-text-field>
+                <v-text-field v-model="searchValue" :loading="loading" @input="debounceSearch" label="Strautomator FAQ search" class="mt-2" rounded outlined></v-text-field>
 
                 <div class="text-center text-caption mt-n4">Use the field above to search by keywords.</div>
                 <div class="text-center text-caption mb-6">If you're interested you can also view the <n-link to="/changelog" title="Strautomator updates" nuxt>changelog</n-link>.</div>
                 <div v-for="group in groupedQuestions" :key="group.title">
-                    <h2 class="mb-1 ml-1">{{ group.title }}</h2>
+                    <h2 :class="loggedIn ? 'mb-1 ml-1' : 'site-subheading mt-6 mb-2'">{{ group.title }}</h2>
                     <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0">No results found.</v-alert>
                     <v-expansion-panels class="mb-4" :value="expandedPanels" multiple hover>
                         <v-expansion-panel v-for="(item, index) in group.questions" :key="'faq-' + index">
@@ -42,34 +43,14 @@
     </v-layout>
 </template>
 
-<style>
-.faq-wrapper {
-    position: relative;
-    z-index: 99;
-}
-.v-expansion-panel-header {
-    line-height: 22px;
-}
-.v-expansion-panel-header--active {
-    color: #fff8e1;
-    font-weight: bold;
-}
-.v-expansion-panel-content {
-    padding-top: 8px;
-}
-.search-highlight {
-    color: #ffe082;
-    text-decoration: underline;
-}
-</style>
-
 <script>
 import _ from "lodash"
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import SiteHeader from "~/components/SiteHeader.vue"
 
 export default {
     authenticated: false,
-    components: {FeatureLinks},
+    components: {FeatureLinks, SiteHeader},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"

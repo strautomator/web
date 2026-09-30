@@ -1,7 +1,7 @@
 <template>
     <v-app class="feature site-page">
         <v-main fluid>
-            <div class="feature-glow site-glow"></div>
+            <div class="site-glow site-glow-top"></div>
             <div class="py-2"></div>
             <v-container class="text-center" fluid>
                 <div class="home-wrapper">

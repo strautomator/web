@@ -1,11 +1,14 @@
 <template>
-    <v-layout column>
-        <div class="stripe" v-if="!loggedIn"></div>
-        <v-container class="text-center" :class="{'help-wrapper': !loggedIn}" fluid>
-            <div :class="{'width-wrapper': !loggedIn, 'text-left': loggedIn}">
-                <h1 :class="{'mt-10': !loggedIn, 'text-center': !loggedIn}">{{ loggedIn ? "Help" : "Strautomator Help" }}</h1>
+    <v-layout column :class="{'site-page': !loggedIn}">
+        <div class="site-glow site-glow-top" v-if="!loggedIn"></div>
+        <v-container class="text-center" fluid>
+            <div :class="{'home-wrapper': !loggedIn, 'text-left': loggedIn}">
+                <site-header v-if="!loggedIn" header=" Help" lead="Ask our AI assistant anything about Strautomator, or browse the FAQ." />
+                <h1 v-else>Help</h1>
 
-                <iframe frameborder="0" src="https://www.chatbase.co/neTz5lyyofpBTh8BNF1kf/help" style="width: 100%; min-height: 650px"></iframe>
+                <div :class="{'site-card pa-0 overflow-hidden': !loggedIn}">
+                    <iframe frameborder="0" src="https://www.chatbase.co/neTz5lyyofpBTh8BNF1kf/help" style="display: block; width: 100%; min-height: 650px"></iframe>
+                </div>
 
                 <feature-links />
             </div>
@@ -13,20 +16,14 @@
     </v-layout>
 </template>
 
-<style>
-.help-wrapper {
-    position: relative;
-    z-index: 99;
-}
-</style>
-
 <script>
 import _ from "lodash"
 import FeatureLinks from "~/components/FeatureLinks.vue"
+import SiteHeader from "~/components/SiteHeader.vue"
 
 export default {
     authenticated: false,
-    components: {FeatureLinks},
+    components: {FeatureLinks, SiteHeader},
     layout({store}) {
         if (!store.state.oauth || !store.state.user) {
             return "landing"
