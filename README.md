@@ -6,11 +6,11 @@ This is Strautomator's web frontend, built with NuxtJS + Vuetify. It depends on 
 
 Strautomator is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its docs. The settings are split as follows:
 
--   **settings.json** - settings shared by all environments, targeting production by default
--   **settings.development.json** - development settings, mostly when running on your dev machine
--   **settings.production.json** - production-only settings, except credentials and secrets (optional)
--   **settings.secret.json** - private credentials and secrets, excluded from the GIT repo
--   **settings.local.json** - private local-only settings, excluded from the GIT repo
+- **settings.json** - settings shared by all environments, targeting production by default
+- **settings.development.json** - development settings, mostly when running on your dev machine
+- **settings.production.json** - production-only settings, except credentials and secrets (optional)
+- **settings.secret.json** - private credentials and secrets, excluded from the GIT repo
+- **settings.local.json** - private local-only settings, excluded from the GIT repo
 
 Please note that the [Core](https://github.com/strautomator/core) also has its own collection of settings files as well. If the same setting is define on the Core and on the Web, the Web settings has the higher priority.
 
@@ -36,11 +36,11 @@ If for whatever reason you want to split the Strautomator API from the frontend,
 
 The web app also hosts a remote MCP server at `/mcp` for PRO members. MCP clients (Cursor, Claude, etc.) authenticate with OAuth 2.1:
 
--   Protected resource metadata: `/.well-known/oauth-protected-resource`
--   Authorization server metadata: `/.well-known/oauth-authorization-server`
--   Dynamic client registration: `/mcp/oauth/register`
--   Authorization (Strava login + consent): `/mcp/oauth/authorize`
--   Token + PKCE: `/mcp/oauth/token`
+- Protected resource metadata: `/.well-known/oauth-protected-resource`
+- Authorization server metadata: `/.well-known/oauth-authorization-server`
+- Dynamic client registration: `/mcp/oauth/register`
+- Authorization (Strava login + consent): `/mcp/oauth/authorize`
+- Token + PKCE: `/mcp/oauth/token`
 
 Users stay on Strava for identity. The MCP authorization server issues its own tokens (audience-bound to `/mcp`) and never accepts or forwards Strava access tokens. Connect from an MCP client using the server URL `https://strautomator.com/mcp`.
 
@@ -56,9 +56,9 @@ To disable the tunnel execution, set the `app.tunnel` setting to false on the `s
 
 When starting up, the service will look for the `strautomator.cert` and `strautomator.key` files on the application root. If found, it will create a HTTPS server with those certificate files, otherwise it will create a regular HTTP server. The default ports:
 
--   Development: 3000
--   Production (HTTP): 8080
--   Production (HTTPS): 8443
+- Development: 3000
+- Production (HTTP): 8080
+- Production (HTTPS): 8443
 
 Please note that the actual port can be overwritten either via the PORT environment variable, or via `settings.app.port` setting.
 
@@ -78,9 +78,9 @@ Also note that even thou this project is open source, you might need to adapt so
 
 Basic deployment samples are provided:
 
--   App Engine: [app.yaml](https://github.com/strautomator/web/blob/master/app.yaml.sample) (not tested in production).
--   VM or VPS: see the systemd and Docker instructions on [SETUP.md](SETUP.md).
--   Cloud Run: create a [Cloud Build trigger](https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers) to update your service whenever there's a new version pushed to your GIT fork.
+- App Engine: [app.yaml](https://github.com/strautomator/web/blob/master/app.yaml.sample) (not tested in production).
+- VM or VPS: see the systemd and Docker instructions on [SETUP.md](SETUP.md).
+- Cloud Run: create a [Cloud Build trigger](https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers) to update your service whenever there's a new version pushed to your GIT fork.
 
 ### Scheduled functions
 
