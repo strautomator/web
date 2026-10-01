@@ -1,6 +1,7 @@
 // Strautomator MCP HTTP routes
 
 import * as oauth from "./oauth"
+import {consentPage} from "./html"
 import {handleMcp} from "./protocol"
 import {getMcpConfig, setCorsHeaders} from "./utils"
 import express from "express"
@@ -22,6 +23,10 @@ const corsPreflight = (req: express.Request, res: express.Response, next: expres
  * Register MCP and OAuth endpoints on the Express app. Must run before the Nuxt renderer.
  */
 const setup = (app: express.Express): void => {
+    app.get("/mcp-consent-page", (_req, res) => {
+        res.send(consentPage({clientName: "Sample MCP client", userName: "Sample user", redirectTarget: "strautomator.com", requestId: "", consentToken: "", preview: true}))
+    })
+
     // RFC 9728 / RFC 8414 metadata at the site root (expected by MCP clients).
     const wellKnown = express.Router()
     wellKnown.use(corsPreflight)
@@ -62,7 +67,7 @@ const setup = (app: express.Express): void => {
     app.post("/mcp", corsPreflight, handleMcp)
     app.delete("/mcp", corsPreflight, handleMcp)
 
-    logger.info("Mcp.setup", "MCP server routes registered at /mcp")
+    logger.info("MCP.setup", "MCP server routes registered at /mcp")
 }
 
 export = {setup}

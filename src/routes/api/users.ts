@@ -3,6 +3,7 @@
 import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
 import {getPublicUser, getRecipeStats, upsertUserRecipe} from "../logic"
+import mcpStore from "../../mcp/store"
 import auth from "../auth"
 import dayjs from "../../dayjs"
 import _ from "lodash"
@@ -131,6 +132,39 @@ router.delete("/:userId", async (req: express.Request, res: express.Response) =>
         // Delete the user from the database.
         await users.delete(user)
         webserver.renderJson(req, res, {deleted: true})
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+// MCP SESSIONS
+// --------------------------------------------------------------------------
+
+/**
+ * List the user's active MCP client sessions.
+ */
+router.get("/:userId/mcp/sessions", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const sessions = await mcpStore.getUserSessions(user.id)
+        webserver.renderJson(req, res, sessions)
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
+ * Revoke all MCP tokens issued to the specified client for the user.
+ */
+router.delete("/:userId/mcp/sessions/:clientId", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const count = await mcpStore.revokeUserClient(user.id, req.params.clientId as string)
+        webserver.renderJson(req, res, {revoked: count})
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

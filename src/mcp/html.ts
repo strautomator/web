@@ -14,28 +14,28 @@ const layout = (title: string, body: string): string => {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)} - Strautomator</title>
     <style>
-        body { margin: 0; font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; background: #121212; color: #eee; }
-        .stripe { height: 6px; background: #ff8f00; }
-        .wrap { max-width: 560px; margin: 48px auto; padding: 0 20px; }
-        h1 { font-weight: 300; font-size: 1.6rem; margin: 0 0 8px; }
-        h2 { font-weight: 700; font-size: 1.9rem; margin: 0 0 24px; color: #ffb74d; }
-        p { line-height: 1.5; color: #ccc; }
-        .card { background: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 24px; }
-        .row { margin: 16px 0; }
+        body { margin: 0; font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; background: #0b0b0d; color: #fff; }
+        .wrap { max-width: 560px; margin: 0 auto; padding: 64px 20px 40px; }
+        .brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 36px; font-size: 20px; font-weight: 500; }
+        h2 { margin: 0 0 24px; font-size: 2.02rem; font-weight: 800; line-height: 1.1; text-align: center; }
+        p { line-height: 1.6; color: rgba(255, 255, 255, 0.75); }
+        .card { background: rgba(255, 255, 255, 0.055); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 26px; }
+        .card p:first-child { margin-top: 0; }
         .actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-        button, .btn { appearance: none; border: 0; border-radius: 24px; padding: 10px 20px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
-        .primary { background: #ff8f00; color: #111; font-weight: 600; }
-        .ghost { background: transparent; color: #bbb; border: 1px solid #555; }
-        .muted { color: #999; font-size: 13px; }
-        a { color: #ffb74d; }
+        button, .btn { appearance: none; border: 1px solid transparent; border-radius: 24px; padding: 10px 20px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .primary { background: #ffa000; color: #111; font-weight: 600; }
+        .ghost { background: transparent; color: #ffa000; border-color: #ffa000; }
+        button:disabled { opacity: 0.6; cursor: default; }
+        .muted { margin-top: 28px; color: rgba(255, 255, 255, 0.55); font-size: 13px; text-align: center; overflow-wrap: anywhere; }
+        a { color: #ffa000; }
+        @media (max-width: 600px) { .wrap { padding-top: 40px; } h2 { font-size: 1.8rem; } .card { padding: 20px; } }
     </style>
 </head>
 <body>
-    <div class="stripe"></div>
     <div class="wrap">
-        <h1>Strautomator</h1>
+        <div class="brand"><img src="/images/logo.svg" alt="" width="22" height="33" />Strautomator</div>
         ${body}
-        <p class="muted">MCP endpoint: ${escapeHtml(config.resource)}</p>
+        <div class="muted">${escapeHtml(config.resource)}</div>
     </div>
 </body>
 </html>`
@@ -44,27 +44,29 @@ const layout = (title: string, body: string): string => {
 /**
  * OAuth consent page shown to logged-in PRO users before issuing an authorization code.
  */
-export const consentPage = (options: {clientName: string; userName: string; redirectTarget: string; requestId: string; consentToken: string}): string => {
+export const consentPage = (options: {clientName: string; userName: string; redirectTarget: string; requestId: string; consentToken: string; preview?: boolean}): string => {
     const clientName = escapeHtml(options.clientName || "An MCP client")
     const userName = escapeHtml(options.userName || "your account")
     const redirectTarget = escapeHtml(options.redirectTarget)
 
     return layout(
         "Authorize MCP access",
-        `<h2>Authorize access</h2>
+        `
+        <h2>Authorize MCP access</h2>
         <div class="card">
             <p><strong>${clientName}</strong> wants to access Strautomator as <strong>${userName}</strong>.</p>
-            <p>This lets the client read your activities, automations and GearWear, and make changes that you already can make in the Strautomator app. Access is limited to PRO members.</p>
-            <p>After authorizing, you'll be sent back to <strong>${redirectTarget}</strong>. Only continue if you recognize it and you started this request.</p>
+            <p>This lets the client read your processed activities, automations, bikes and shoes, and make changes to some of your Strautomator data.</p>
+            <p>After authorizing, you'll be sent back to <strong>${redirectTarget}</strong>. Only continue if you recognize it and if you started this request yourself.</p>
             <form method="post" action="/mcp/oauth/authorize">
                 <input type="hidden" name="request_id" value="${escapeHtml(options.requestId)}" />
                 <input type="hidden" name="consent_token" value="${escapeHtml(options.consentToken)}" />
                 <div class="actions">
-                    <button class="ghost" type="submit" name="decision" value="deny">Deny</button>
-                    <button class="primary" type="submit" name="decision" value="approve">Authorize</button>
+                    <button class="ghost" title="Deny access" type="submit" name="decision" value="deny"${options.preview ? " disabled" : ""}>Deny</button>
+                    <button class="primary" title="Authorize access" type="submit" name="decision" value="approve"${options.preview ? " disabled" : ""}>Authorize</button>
                 </div>
             </form>
-        </div>`
+        </div>
+        `
     )
 }
 

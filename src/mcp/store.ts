@@ -4,6 +4,7 @@ import {database} from "strautomator-core"
 import {McpAuthCode, McpAuthRequest, McpOAuthClient, McpToken} from "./types"
 import {getMcpConfig, hashToken, randomToken} from "./utils"
 import dayjs from "../dayjs"
+import _ from "lodash"
 import logger from "anyhow"
 
 /** Firestore collection for dynamically registered OAuth clients. */
@@ -43,7 +44,7 @@ export class McpStore {
      */
     saveClient = async (client: McpOAuthClient): Promise<void> => {
         await database.set(COL_CLIENTS, client, client.id)
-        logger.info("McpStore.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
+        logger.info("MCP.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
     }
 
     /**
@@ -79,7 +80,7 @@ export class McpStore {
         client.dateActivated = now.toDate()
         client.dateExpiry = now.add(config.clientDays, "days").toDate()
         await database.merge(COL_CLIENTS, {id: client.id, dateActivated: client.dateActivated, dateExpiry: client.dateExpiry})
-        logger.info("McpStore.activateClient", client.id, client.clientName || "unnamed")
+        logger.info("MCP.activateClient", client.id, client.clientName || "unnamed")
     }
 
     // AUTH REQUESTS
@@ -119,7 +120,7 @@ export class McpStore {
         try {
             await database.delete(COL_REQUESTS, id)
         } catch (ex) {
-            logger.warn("McpStore.deleteAuthRequest", id, ex)
+            logger.warn("MCP.deleteAuthRequest", id, ex)
         }
     }
 
@@ -316,9 +317,49 @@ export class McpStore {
             try {
                 await database.delete(COL_TOKENS, pairedId)
             } catch (ex) {
-                logger.warn("McpStore.revokeToken", "Failed to delete paired token", ex)
+                logger.warn("MCP.revokeToken", "Failed to delete paired token", ex)
             }
         }
+    }
+
+    // USER SESSIONS
+    // --------------------------------------------------------------------------
+
+    /**
+     * List the active MCP sessions (one per non-expired refresh token) for the specified user.
+     */
+    getUserSessions = async (userId: string): Promise<{clientId: string; clientName: string; dateLastAuth: Date; dateExpiry: Date}[]> => {
+        const config = getMcpConfig()
+        const tokens: McpToken[] = await database.search(COL_TOKENS, [
+            ["userId", "==", userId],
+            ["type", "==", "refresh"]
+        ])
+        const active = tokens.filter((t) => !isExpired(t))
+        const clients = await Promise.all(_.uniq(active.map((t) => t.clientId)).map((id) => this.getClient(id)))
+
+        return Object.entries(_.groupBy(active, "clientId")).map(([clientId, clientTokens]) => {
+            const client = clients.find((c) => c?.id == clientId)
+            const latest = _.maxBy(clientTokens, (t) => dayjs(t.dateExpiry).valueOf())
+            return {
+                clientId: clientId,
+                clientName: client?.clientName || "Unnamed client",
+                // Refresh tokens rotate on every refresh, so issue date = expiry minus lifetime.
+                dateLastAuth: dayjs(latest.dateExpiry).subtract(config.refreshTokenDays, "days").toDate(),
+                dateExpiry: latest.dateExpiry
+            }
+        })
+    }
+
+    /**
+     * Revoke all tokens issued to the specified client for the user.
+     */
+    revokeUserClient = async (userId: string, clientId: string): Promise<number> => {
+        const count = await database.delete(COL_TOKENS, [
+            ["userId", "==", userId],
+            ["clientId", "==", clientId]
+        ])
+        logger.info("MCP.revokeUserClient", `User ${userId}`, `Client ${clientId}`, `Deleted ${count} tokens`)
+        return count
     }
 }
 

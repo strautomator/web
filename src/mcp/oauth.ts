@@ -131,7 +131,7 @@ const getLoggedUser = async (req: express.Request): Promise<UserData> => {
     try {
         return await users.getById(userId)
     } catch (ex) {
-        logger.warn("McpOAuth.getLoggedUser", userId, ex)
+        logger.warn("MCP.getLoggedUser", userId, ex)
         return null
     }
 }
@@ -255,10 +255,10 @@ export const registerClient = async (req: express.Request, res: express.Response
             result.client_secret = clientSecret
         }
 
-        logger.info("McpOAuth.registerClient", client.id, client.clientName || "unnamed", `${redirectUris.length} redirect URIs`)
+        logger.info("MCP.registerClient", client.id, client.clientName || "unnamed", `${redirectUris.length} redirect URIs`)
         res.status(201).json(result)
     } catch (ex) {
-        logger.error("McpOAuth.registerClient", ex)
+        logger.error("MCP.registerClient", ex)
         oauthErrorJson(res, 500, "server_error", "Failed to register client")
     }
 }
@@ -382,7 +382,7 @@ export const authorize = withSession(async (req: express.Request, res: express.R
                 dateExpiry: dayjs().add(config.authCodeMinutes, "minutes").toDate()
             })
 
-            logger.info("McpOAuth.authorize", `User ${user.id}`, `Client ${request.clientId}`, "Authorized")
+            logger.info("MCP.authorize", `User ${user.id}`, `Client ${request.clientId}`, "Authorized")
             oauthRedirect(res, request.redirectUri, {code, state: request.state, iss: config.issuer})
             return
         }
@@ -392,7 +392,7 @@ export const authorize = withSession(async (req: express.Request, res: express.R
         const redirectTarget = redirectUrl.host ? `${redirectUrl.protocol}//${redirectUrl.host}` : redirectUrl.protocol
         res.send(consentPage({clientName: client?.clientName || "MCP client", userName: user.displayName || user.id, redirectTarget, requestId: request.id, consentToken: request.consentToken}))
     } catch (ex) {
-        logger.error("McpOAuth.authorize", ex)
+        logger.error("MCP.authorize", ex)
         res.status(500).send(errorPage("Server error", "Could not complete the authorization request."))
     }
 })
@@ -447,7 +447,7 @@ export const token = async (req: express.Request, res: express.Response): Promis
             }
 
             const tokens = await store.issueTokens({clientId: auth.client.id, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
-            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "authorization_code")
+            logger.info("MCP.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "authorization_code")
             res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
@@ -474,14 +474,14 @@ export const token = async (req: express.Request, res: express.Response): Promis
             }
 
             const tokens = await store.issueTokens({clientId: consumed.clientId, userId: consumed.userId, resource: consumed.resource, scope: consumed.scope})
-            logger.info("McpOAuth.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "refresh_token")
+            logger.info("MCP.token", `User ${consumed.userId}`, `Client ${auth.client.id}`, "refresh_token")
             res.json({access_token: tokens.accessToken, token_type: "Bearer", expires_in: tokens.expiresIn, refresh_token: tokens.refreshToken, scope: consumed.scope})
             return
         }
 
         oauthErrorJson(res, 400, "unsupported_grant_type", "Only authorization_code and refresh_token are supported")
     } catch (ex) {
-        logger.error("McpOAuth.token", ex)
+        logger.error("MCP.token", ex)
         oauthErrorJson(res, 500, "server_error", "Token request failed")
     }
 }
@@ -502,7 +502,7 @@ export const revoke = async (req: express.Request, res: express.Response): Promi
         await store.revokeToken(tokenValue)
         res.status(200).send()
     } catch (ex) {
-        logger.error("McpOAuth.revoke", ex)
+        logger.error("MCP.revoke", ex)
         res.status(200).send()
     }
 }
