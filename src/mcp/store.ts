@@ -4,16 +4,25 @@ import {database} from "strautomator-core"
 import {McpAuthCode, McpAuthRequest, McpOAuthClient, McpToken} from "./types"
 import {getMcpConfig, hashToken, randomToken} from "./utils"
 import dayjs from "../dayjs"
+import _ from "lodash"
 import logger from "anyhow"
 
-/** Firestore collection for dynamically registered OAuth clients. */
-const COL_CLIENTS = "mcp-clients"
-/** Firestore collection for pending authorization requests (consent flow). */
-const COL_REQUESTS = "mcp-auth-requests"
-/** Firestore collection for single-use authorization codes. */
-const COL_CODES = "mcp-auth-codes"
-/** Firestore collection for issued access and refresh tokens (stored hashed). */
-const COL_TOKENS = "mcp-tokens"
+type McpDocType = "client" | "request" | "code" | "token"
+
+/**
+ * Firestore document ID for the specified data type and ID.
+ */
+const docId = (type: McpDocType, id: string): string => `${type}-${id}`
+
+/**
+ * Strip the data type prefix from the ID of a loaded document.
+ */
+const fromDoc = <T extends {id: string}>(type: McpDocType, doc: T): T => {
+    if (doc) {
+        doc.id = doc.id.substring(type.length + 1)
+    }
+    return doc
+}
 
 /**
  * Whether a persisted document has passed its dateExpiry.
@@ -42,8 +51,8 @@ export class McpStore {
      * Persist a dynamically registered OAuth client.
      */
     saveClient = async (client: McpOAuthClient): Promise<void> => {
-        await database.set(COL_CLIENTS, client, client.id)
-        logger.info("McpStore.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
+        await database.set("mcp", client, docId("client", client.id))
+        logger.info("MCP.saveClient", client.id, client.clientName || "unnamed", client.tokenEndpointAuthMethod)
     }
 
     /**
@@ -54,12 +63,12 @@ export class McpStore {
             return null
         }
 
-        const client: McpOAuthClient = await database.get(COL_CLIENTS, clientId)
+        const client: McpOAuthClient = fromDoc("client", await database.get("mcp", docId("client", clientId)))
         if (!client) {
             return null
         }
         if (isExpired(client)) {
-            await database.delete(COL_CLIENTS, clientId)
+            await database.delete("mcp", docId("client", clientId))
             return null
         }
 
@@ -78,8 +87,8 @@ export class McpStore {
         const config = getMcpConfig()
         client.dateActivated = now.toDate()
         client.dateExpiry = now.add(config.clientDays, "days").toDate()
-        await database.merge(COL_CLIENTS, {id: client.id, dateActivated: client.dateActivated, dateExpiry: client.dateExpiry})
-        logger.info("McpStore.activateClient", client.id, client.clientName || "unnamed")
+        await database.merge("mcp", {dateActivated: client.dateActivated, dateExpiry: client.dateExpiry}, database.doc("mcp", docId("client", client.id)))
+        logger.info("MCP.activateClient", client.id, client.clientName || "unnamed")
     }
 
     // AUTH REQUESTS
@@ -89,7 +98,7 @@ export class McpStore {
      * Save a pending authorization request while the user signs in or reviews consent.
      */
     saveAuthRequest = async (request: McpAuthRequest): Promise<void> => {
-        await database.set(COL_REQUESTS, request, request.id)
+        await database.set("mcp", request, docId("request", request.id))
     }
 
     /**
@@ -100,12 +109,12 @@ export class McpStore {
             return null
         }
 
-        const request: McpAuthRequest = await database.get(COL_REQUESTS, id)
+        const request: McpAuthRequest = fromDoc("request", await database.get("mcp", docId("request", id)))
         if (!request) {
             return null
         }
         if (isExpired(request)) {
-            await database.delete(COL_REQUESTS, id)
+            await database.delete("mcp", docId("request", id))
             return null
         }
 
@@ -117,9 +126,9 @@ export class McpStore {
      */
     deleteAuthRequest = async (id: string): Promise<void> => {
         try {
-            await database.delete(COL_REQUESTS, id)
+            await database.delete("mcp", docId("request", id))
         } catch (ex) {
-            logger.warn("McpStore.deleteAuthRequest", id, ex)
+            logger.warn("MCP.deleteAuthRequest", id, ex)
         }
     }
 
@@ -132,7 +141,7 @@ export class McpStore {
     issueAuthCode = async (data: Omit<McpAuthCode, "id">): Promise<string> => {
         const code = randomToken(32)
         const doc: McpAuthCode = {id: hashToken(code), ...data}
-        await database.set(COL_CODES, doc, doc.id)
+        await database.set("mcp", doc, docId("code", doc.id))
         return code
     }
 
@@ -145,12 +154,12 @@ export class McpStore {
         }
 
         const id = hashToken(code)
-        const doc: McpAuthCode = await database.get(COL_CODES, id)
+        const doc: McpAuthCode = fromDoc("code", await database.get("mcp", docId("code", id)))
         if (!doc) {
             return null
         }
         if (isExpired(doc)) {
-            await database.delete(COL_CODES, id)
+            await database.delete("mcp", docId("code", id))
             return null
         }
 
@@ -169,12 +178,12 @@ export class McpStore {
         const id = hashToken(code)
 
         return database.runTransaction(async (tx) => {
-            const doc: McpAuthCode = await tx.get(COL_CODES, id)
+            const doc: McpAuthCode = fromDoc("code", await tx.get("mcp", docId("code", id)))
             if (!doc) {
                 return null
             }
 
-            tx.delete(COL_CODES, id)
+            tx.delete("mcp", docId("code", id))
             if (isExpired(doc)) {
                 return null
             }
@@ -219,8 +228,8 @@ export class McpStore {
             dateExpiry: now.add(config.refreshTokenDays, "days").toDate()
         }
 
-        await database.set(COL_TOKENS, access, access.id)
-        await database.set(COL_TOKENS, refresh, refresh.id)
+        await database.set("mcp", access, docId("token", access.id))
+        await database.set("mcp", refresh, docId("token", refresh.id))
 
         return {accessToken, refreshToken, expiresIn: config.accessTokenHours * 3600}
     }
@@ -234,12 +243,12 @@ export class McpStore {
         }
 
         const id = hashToken(accessToken)
-        const doc: McpToken = await database.get(COL_TOKENS, id)
+        const doc: McpToken = fromDoc("token", await database.get("mcp", docId("token", id)))
         if (!doc || doc.type != "access") {
             return null
         }
         if (isExpired(doc)) {
-            await database.delete(COL_TOKENS, id)
+            await database.delete("mcp", docId("token", id))
             return null
         }
 
@@ -255,12 +264,12 @@ export class McpStore {
         }
 
         const id = hashToken(refreshToken)
-        const doc: McpToken = await database.get(COL_TOKENS, id)
+        const doc: McpToken = fromDoc("token", await database.get("mcp", docId("token", id)))
         if (!doc || doc.type != "refresh") {
             return null
         }
         if (isExpired(doc)) {
-            await database.delete(COL_TOKENS, id)
+            await database.delete("mcp", docId("token", id))
             return null
         }
 
@@ -279,14 +288,14 @@ export class McpStore {
         const id = hashToken(refreshToken)
 
         return database.runTransaction(async (tx) => {
-            const doc: McpToken = await tx.get(COL_TOKENS, id)
+            const doc: McpToken = fromDoc("token", await tx.get("mcp", docId("token", id)))
             if (!doc || doc.type != "refresh") {
                 return null
             }
 
-            tx.delete(COL_TOKENS, id)
+            tx.delete("mcp", docId("token", id))
             if (doc.accessId) {
-                tx.delete(COL_TOKENS, doc.accessId)
+                tx.delete("mcp", docId("token", doc.accessId))
             }
             if (isExpired(doc)) {
                 return null
@@ -305,20 +314,68 @@ export class McpStore {
         }
 
         const id = hashToken(token)
-        const doc: McpToken = await database.get(COL_TOKENS, id)
+        const doc: McpToken = await database.get("mcp", docId("token", id))
         if (!doc) {
             return
         }
 
-        await database.delete(COL_TOKENS, id)
+        await database.delete("mcp", docId("token", id))
         const pairedId = doc.type == "access" ? doc.refreshId : doc.accessId
         if (pairedId) {
             try {
-                await database.delete(COL_TOKENS, pairedId)
+                await database.delete("mcp", docId("token", pairedId))
             } catch (ex) {
-                logger.warn("McpStore.revokeToken", "Failed to delete paired token", ex)
+                logger.warn("MCP.revokeToken", "Failed to delete paired token", ex)
             }
         }
+    }
+
+    // USER SESSIONS
+    // --------------------------------------------------------------------------
+
+    /**
+     * List the active MCP sessions (one per non-expired refresh token) for the specified user.
+     */
+    getUserSessions = async (userId: string): Promise<{clientId: string; clientName: string; dateLastAuth: Date; dateExpiry: Date}[]> => {
+        const config = getMcpConfig()
+        const tokens: McpToken[] = await database.search("mcp", [
+            ["userId", "==", userId],
+            ["type", "==", "refresh"]
+        ])
+        const active = tokens.filter((t) => !isExpired(t))
+        const clients = await Promise.all(_.uniq(active.map((t) => t.clientId)).map((id) => this.getClient(id)))
+
+        return Object.entries(_.groupBy(active, "clientId")).map(([clientId, clientTokens]) => {
+            const client = clients.find((c) => c?.id == clientId)
+            const latest = _.maxBy(clientTokens, (t) => dayjs(t.dateExpiry).valueOf())
+            return {
+                clientId: clientId,
+                clientName: client?.clientName || "Unnamed client",
+                // Refresh tokens rotate on every refresh, so issue date = expiry minus lifetime.
+                dateLastAuth: dayjs(latest.dateExpiry).subtract(config.refreshTokenDays, "days").toDate(),
+                dateExpiry: latest.dateExpiry
+            }
+        })
+    }
+
+    /**
+     * Revoke all tokens and codes issued to the specified client for the user.
+     */
+    revokeUserClient = async (userId: string, clientId: string): Promise<number> => {
+        const count = await database.delete("mcp", [
+            ["userId", "==", userId],
+            ["clientId", "==", clientId]
+        ])
+        logger.info("MCP.revokeUserClient", `User ${userId}`, `Client ${clientId}`, `Deleted ${count} grants`)
+        return count
+    }
+
+    /*
+     * Revoke all MCP grants for a user who is no longer PRO or who has been deleted.
+     */
+    revokeUser = async (userId: string): Promise<void> => {
+        await database.delete("mcp", ["userId", "==", userId])
+        logger.info("MCP.revokeUser", `User ${userId}`, "Revoked all MCP grants")
     }
 }
 
