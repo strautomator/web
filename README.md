@@ -16,25 +16,11 @@ Please note that the [Core](https://github.com/strautomator/core) also has its o
 
 ## Local setup
 
-Before you try to get an instance running locally, make sure you have followed the [Getting started](https://github.com/strautomator/core#getting-started) instructions to have all the required 3rd party dependencies ready.
-
-### Cloning the code
-
-First, create a folder on your machine that will server as the root all the Strautomator related components. Then proceed to clone this and the [core](https://github.com/strautomator/core) repo and install all the necessary dependencies:
-
-    $ mkdir ~/strautomator
-    $ cd ~/strautomator
-    $ git clone git@github.com:strautomator/web.git
-    $ git clone git@github.com:strautomator/core.git
-    $ cd core
-    $ make update
-    $ cd ../
-    $ cd web
-    $ make update
+For a complete step-by-step self-hosting guide, please read [SETUP.md](SETUP.md).
 
 ### Local settings
 
-Make a copy of the [settings.secret.json.sample](https://github.com/strautomator/web/blob/master/settings.secret.json.sample) and name it `settings.secret.json`. This is where you'll store all the credentials and sensitive keys. This file is encrypted automatically whenever the application starts up. You can also encrypt and decrypt on demand by using the `$ make encrypt` and `$ make decrypt` commands.
+Make a copy of the [settings.secret.json.sample](https://github.com/strautomator/web/blob/master/settings.secret.json.sample) and name it `settings.secret.json`. This is where you'll store all the credentials and sensitive keys. The file stays in plain text unless you encrypt it with `$ npx setmeup encrypt settings.secret.json` (see [SETUP.md](SETUP.md) for details).
 
 For other non-sensitive data, you can create a `settings.local.json`. This file is kept in clear text on your local machine.
 
@@ -42,7 +28,7 @@ For other non-sensitive data, you can create a `settings.local.json`. This file 
 
 The default URL in development is `http://localhost:3000`, which should be manually set on your HOSTS file. This is fine if you only want to work on the web frontend and some of the API calls, but please note that Strava (and other 3rd party webhooks) won't be able to push data to the service using that URL. Authentication with Strava might also fail.
 
-To properly test all APIs and webhooks from Strava and PayPal, you'll need to change the `app.url` setting on your `settings.local.json` file or preferably via the `$SMU_app_url` environment variable, to a publicly accessible URL. It's recommended to use a tunnel to avoid port forwarding on your router.
+To properly test all APIs and webhooks from Strava and PayPal, you'll need to set `app.url` to a publicly accessible URL, on your `settings.secret.json` file or via the `$SMU_app_url` environment variable. It's recommended to use a tunnel to avoid port forwarding on your router.
 
 If for whatever reason you want to split the Strautomator API from the frontend, you can use the `api.url` setting to specify the base path for the API. By default, it runs on the `/api/` path under the same URL set on the `app.url`.
 
@@ -50,15 +36,15 @@ If for whatever reason you want to split the Strautomator API from the frontend,
 
 The web app also hosts a remote MCP server at `/mcp` for PRO members. MCP clients (Cursor, Claude, etc.) authenticate with OAuth 2.1:
 
-- Protected resource metadata: `/.well-known/oauth-protected-resource`
-- Authorization server metadata: `/.well-known/oauth-authorization-server`
-- Dynamic client registration: `/mcp/oauth/register`
-- Authorization (Strava login + consent): `/mcp/oauth/authorize`
-- Token + PKCE: `/mcp/oauth/token`
+-   Protected resource metadata: `/.well-known/oauth-protected-resource`
+-   Authorization server metadata: `/.well-known/oauth-authorization-server`
+-   Dynamic client registration: `/mcp/oauth/register`
+-   Authorization (Strava login + consent): `/mcp/oauth/authorize`
+-   Token + PKCE: `/mcp/oauth/token`
 
 Users stay on Strava for identity. The MCP authorization server issues its own tokens (audience-bound to `/mcp`) and never accepts or forwards Strava access tokens. Connect from an MCP client using the server URL `https://strautomator.com/mcp`.
 
-If you plan to deploy the instance to production and build the nuxt app beforehand, it's mandatory to set the app URL via the environment variable `$SMU_app_url`.
+The frontend resolves the API URL at runtime from the `app.url` setting (or the `$SMU_app_url` environment variable, which sets the same thing), so there's no need to bake it into the Nuxt build.
 
 ### Cloudflare Tunnel
 
@@ -93,7 +79,7 @@ Also note that even thou this project is open source, you might need to adapt so
 Basic deployment samples are provided:
 
 -   App Engine: [app.yaml](https://github.com/strautomator/web/blob/master/app.yaml.sample) (not tested in production).
--   VM in Google Cloud Compute: [docker-compose.yml](https://github.com/strautomator/web/blob/master/docker-compose.yml.sample) (not tested in production).
+-   VM or VPS: see the systemd and Docker instructions on [SETUP.md](SETUP.md).
 -   Cloud Run: create a [Cloud Build trigger](https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers) to update your service whenever there's a new version pushed to your GIT fork.
 
 ### Scheduled functions
