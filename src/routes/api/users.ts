@@ -3,9 +3,9 @@
 import {logHelper, gdpr, mailer, paddle, paypal, recipes, subscriptions, strava, users, UserData, UserPreferences} from "strautomator-core"
 import {FieldValue} from "@google-cloud/firestore"
 import {getPublicUser, getRecipeStats, upsertUserRecipe} from "../logic"
-import mcpStore from "../../mcp/store"
 import auth from "../auth"
 import dayjs from "../../dayjs"
+import mcpStore from "../../mcp/store"
 import _ from "lodash"
 import express from "express"
 import logger from "anyhow"
@@ -89,6 +89,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             await paypal.subscriptions.cancelSubscription(paypalSubscription)
             message = "Your subscription was cancelled on PayPal, and you will not be charged in the future."
         } else {
+            await mcpStore.revokeUser(user.id)
             const data: Partial<UserData> = {
                 id: user.id,
                 displayName: user.displayName,

@@ -221,13 +221,21 @@ export const registerClient = async (req: express.Request, res: express.Response
 
         const config = getMcpConfig()
         const now = dayjs()
-        const clientId = `st_${crypto.randomBytes(16).toString("hex")}`
+        const clientName = firstString(body.client_name).substring(0, 120)
+        const clientSlug = clientName
+            .normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+
+        const clientId = `${clientSlug || "client"}-${crypto.randomBytes(8).toString("hex")}`
         const confidential = tokenEndpointAuthMethod != "none"
         const clientSecret = confidential ? randomToken(32) : null
 
         const client: McpOAuthClient = {
             id: clientId,
-            clientName: firstString(body.client_name).substring(0, 120) || undefined,
+            clientName: clientName || undefined,
             clientSecretHash: clientSecret ? hashToken(clientSecret) : undefined,
             tokenEndpointAuthMethod: tokenEndpointAuthMethod as McpOAuthClient["tokenEndpointAuthMethod"],
             redirectUris,
@@ -437,6 +445,11 @@ export const token = async (req: express.Request, res: express.Response): Promis
             if (!resourceMatches(resource, authCode.resource)) {
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
             }
+            const codeUser = await users.getById(authCode.userId)
+            if (!codeUser?.isPro) {
+                await store.revokeUser(authCode.userId)
+                return oauthErrorJson(res, 400, "invalid_grant", "User is not a PRO member")
+            }
 
             // Activate the client before consuming the code, so a failed write can be retried by the client.
             await store.activateClient(auth.client)
@@ -466,6 +479,11 @@ export const token = async (req: express.Request, res: express.Response): Promis
             }
             if (!resourceMatches(resource, existing.resource)) {
                 return oauthErrorJson(res, 400, "invalid_target", "resource parameter is required and must match the MCP server")
+            }
+            const refreshUser = await users.getById(existing.userId)
+            if (!refreshUser?.isPro) {
+                await store.revokeUser(existing.userId)
+                return oauthErrorJson(res, 400, "invalid_grant", "User is not a PRO member")
             }
 
             const consumed = await store.consumeRefreshToken(refreshToken)
