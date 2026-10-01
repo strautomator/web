@@ -94,24 +94,6 @@
                 </v-alert>
             </div>
             <v-card class="mt-5" outlined>
-                <v-card-title class="accent">MCP{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
-                <v-card-text class="pt-4">
-                    <div class="body-2">Connect Cursor, Claude or other MCP clients to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
-                    <div class="mt-2"><n-link to="/feature/mcp" title="MCP server" nuxt>Learn more about the MCP server</n-link></div>
-                    <template v-if="user.isPro">
-                        <div class="mt-3 text-caption">Server URL</div>
-                        <code class="d-inline-block mt-1 pa-2">{{ mcpUrl }}</code>
-                        <div class="mt-3">
-                            <v-btn color="primary" title="Copy MCP URL" @click="copyMcpUrl" outlined rounded small>
-                                <v-icon left>mdi-content-copy</v-icon>
-                                {{ mcpCopied ? "Copied" : "Copy URL" }}
-                            </v-btn>
-                        </div>
-                    </template>
-                    <div class="mt-3" v-else><n-link to="/billing" title="Upgrade to PRO" nuxt>Upgrade to PRO</n-link> to enable the MCP server.</div>
-                </v-card-text>
-            </v-card>
-            <v-card class="mt-5" outlined>
                 <v-card-title class="accent">My preferences</v-card-title>
                 <v-card-text>
                     <h3 class="mb-2 mt-5">Weather settings</h3>
@@ -265,6 +247,45 @@
                     </div>
                 </v-card-text>
             </v-card>
+
+            <v-card class="mt-5" outlined>
+                <v-card-title class="accent">MCP Server{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
+                <v-card-text class="pa-0">
+                    <div class="pa-4">
+                        <div class="body-2">Connect your AI clients and bots to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
+                        <template v-if="user.isPro">
+                            <div class="mt-2">
+                                Server URL: <span class="font-weight-bold">{{ mcpUrl }}</span>
+                            </div>
+                        </template>
+                        <div v-else><n-link to="/billing" title="Upgrade to PRO" nuxt>Upgrade to PRO</n-link> to get access to our MCP server.</div>
+                    </div>
+                    <v-simple-table>
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Last Authorized</th>
+                                <th class="text-right"></th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="mcpSessions.length > 0">
+                            <tr v-for="session in mcpSessions" :key="session.clientId">
+                                <td>{{ session.clientName }}</td>
+                                <td class="text-caption">Last authorized {{ $dayjs(session.dateLastAuth).format("lll") }}</td>
+                                <td class="text-right">
+                                    <v-btn color="removal" title="Revoke access for this client" :loading="mcpRevoking == session.clientId" @click="revokeMcpSession(session)" text rounded x-small>Revoke</v-btn>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td colspan="3">You have no clients connected to the MCP server yet.</td>
+                            </tr>
+                        </tbody>
+                    </v-simple-table>
+                </v-card-text>
+            </v-card>
+
             <template v-if="!user.isPro">
                 <h3 class="mt-5 mb-3">Free vs. PRO</h3>
                 <free-pro-table />
@@ -659,7 +680,8 @@ export default {
                 {value: "se", text: "Svenska"},
                 {value: "sk", text: "Slovenčina"}
             ],
-            mcpCopied: false
+            mcpSessions: [],
+            mcpRevoking: null
         }
     },
     computed: {
@@ -748,6 +770,14 @@ export default {
         } catch (ex) {
             this.$webError(this, "Account.fetch", ex)
         }
+
+        if (this.$store.state.user.isPro) {
+            try {
+                this.mcpSessions = await this.$axios.$get(`/api/users/${this.$store.state.user.id}/mcp/sessions`)
+            } catch (ex) {
+                this.$webError(this, "Account.fetchMcpSessions", ex)
+            }
+        }
     },
     async beforeRouteLeave(to, from, next) {
         if (this.savePending) {
@@ -763,15 +793,15 @@ export default {
                 this.delaySavePreferences()
             }
         },
-        async copyMcpUrl() {
+        async revokeMcpSession(session) {
             try {
-                await navigator.clipboard.writeText(this.mcpUrl)
-                this.mcpCopied = true
-                setTimeout(() => {
-                    this.mcpCopied = false
-                }, 2500)
+                this.mcpRevoking = session.clientId
+                await this.$axios.$delete(`/api/users/${this.user.id}/mcp/sessions/${encodeURIComponent(session.clientId)}`)
+                this.mcpSessions = this.mcpSessions.filter((s) => s.clientId != session.clientId)
             } catch (ex) {
-                this.$webError(this, "Account.copyMcpUrl", ex)
+                this.$webError(this, "Account.revokeMcpSession", ex)
+            } finally {
+                this.mcpRevoking = null
             }
         },
         hideEmailDialog(emailSaved) {

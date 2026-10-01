@@ -5,6 +5,7 @@ import {FieldValue} from "@google-cloud/firestore"
 import {getPublicUser, getRecipeStats, upsertUserRecipe} from "../logic"
 import auth from "../auth"
 import dayjs from "../../dayjs"
+import mcpStore from "../../mcp/store"
 import _ from "lodash"
 import express from "express"
 import logger from "anyhow"
@@ -95,6 +96,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
                 subscriptionId: FieldValue.delete() as any
             }
             await users.update(data)
+            await mcpStore.revokeUser(user.id)
 
             if (subscription.source == "github") {
                 message = "Your subscription is managed via GitHub. Please go to https://github.com/sponsors/accounts to manually cancel your sponsorship."
@@ -131,6 +133,39 @@ router.delete("/:userId", async (req: express.Request, res: express.Response) =>
         // Delete the user from the database.
         await users.delete(user)
         webserver.renderJson(req, res, {deleted: true})
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+// MCP SESSIONS
+// --------------------------------------------------------------------------
+
+/**
+ * List the user's active MCP client sessions.
+ */
+router.get("/:userId/mcp/sessions", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const sessions = await mcpStore.getUserSessions(user.id)
+        webserver.renderJson(req, res, sessions)
+    } catch (ex) {
+        webserver.renderError(req, res, ex)
+    }
+})
+
+/**
+ * Revoke all MCP tokens issued to the specified client for the user.
+ */
+router.delete("/:userId/mcp/sessions/:clientId", async (req: express.Request, res: express.Response) => {
+    try {
+        const user: UserData = (await auth.requestValidator(req, res)) as UserData
+        if (!user) return
+
+        const count = await mcpStore.revokeUserClient(user.id, req.params.clientId as string)
+        webserver.renderJson(req, res, {revoked: count})
     } catch (ex) {
         webserver.renderError(req, res, ex)
     }

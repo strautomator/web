@@ -343,7 +343,7 @@ export const callTool = async (user: UserData, name: string, args: any) => {
         const result = await tool.handler(user, args || {})
         return toolResult(result)
     } catch (ex) {
-        logger.error("McpTools.callTool", user.id, name, ex)
+        logger.error("MCP.callTool", user.id, name, ex)
         return toolError(ex.message || ex.toString())
     }
 }
