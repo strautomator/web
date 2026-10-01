@@ -89,7 +89,6 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
             await paypal.subscriptions.cancelSubscription(paypalSubscription)
             message = "Your subscription was cancelled on PayPal, and you will not be charged in the future."
         } else {
-            await mcpStore.revokeUser(user.id)
             const data: Partial<UserData> = {
                 id: user.id,
                 displayName: user.displayName,
@@ -97,6 +96,7 @@ router.post("/:userId/unsubscribe", async (req: express.Request, res: express.Re
                 subscriptionId: FieldValue.delete() as any
             }
             await users.update(data)
+            await mcpStore.revokeUser(user.id)
 
             if (subscription.source == "github") {
                 message = "Your subscription is managed via GitHub. Please go to https://github.com/sponsors/accounts to manually cancel your sponsorship."

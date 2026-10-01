@@ -680,7 +680,6 @@ export default {
                 {value: "se", text: "Svenska"},
                 {value: "sk", text: "Slovenčina"}
             ],
-            mcpCopied: false,
             mcpSessions: [],
             mcpRevoking: null
         }
