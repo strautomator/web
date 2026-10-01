@@ -15,7 +15,7 @@ router.get("/:userId/geocode", async (req: express.Request, res: express.Respons
         if (!user) return
 
         const region: string = req.headers["cf-ipcountry"] as string
-        const provider = user.isPro || Math.random() > 0.4 ? "google" : "locationiq"
+        const provider = user.isPro || Math.random() > 0.7 ? "google" : "locationiq"
         const results = await maps.getGeocode(req.query.address as string, region || "", provider)
 
         webserver.renderJson(req, res, results)
@@ -35,7 +35,7 @@ router.get("/:userId/reverse-geocode", async (req: express.Request, res: express
 
         const query = req.query.c.toString()
         const coordinates = query.split(",").map((c) => parseFloat(c))
-        const provider = user.isPro || Math.random() > 0.4 ? "google" : "locationiq"
+        const provider = user.isPro || Math.random() > 0.7 ? "google" : "locationiq"
         const result = await maps.getReverseGeocode(coordinates as [number, number], provider)
 
         webserver.renderJson(req, res, result)
