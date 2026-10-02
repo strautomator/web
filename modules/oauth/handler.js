@@ -59,6 +59,12 @@ Handler.prototype.getSafeRedirectUrl = function getSafeRedirectUrl(redirectUrl, 
         }
     }
 
+    // Reject protocol-relative results from same-origin absolute URLs
+    // (e.g. https://app.example//evil.com → pathname "//evil.com").
+    if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("/\\") || path.includes("\\") || /[\r\n\t]/.test(path)) {
+        return defaultRedirect
+    }
+
     // Make sure we never redirect back to home or error pages.
     const redirectPath = path.replace("/", "").substring(0, 4)
     if (redirectPath == "home" || redirectPath == "erro" || redirectPath == "auth") {
