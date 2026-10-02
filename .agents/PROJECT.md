@@ -1,6 +1,6 @@
 # Strautomator: Web
 
-Web frontend and API of Strautomator. Depends on the strautomator-core to work.
+Web frontend and API of Strautomator. Depends on the `strautomator-core` to work.
 
 ## Stack
 
@@ -15,4 +15,4 @@ Web frontend and API of Strautomator. Depends on the strautomator-core to work.
 
 ## Notes and known issues
 
-- Currently running on Nuxt 2, which is deprecated. No need to point it out.
+- Currently running on Nuxt 2, which is deprecated. No need to point it out, an upgrade to Nuxt 4 is planned in the future.

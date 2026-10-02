@@ -33,9 +33,9 @@ Browser ──HTTPS──► Cloudflare (tunnel or proxy) ──► Strautomator
                                                         └──► optional: weather, music, email, AI, Garmin, Wahoo...
 ```
 
--   **[strautomator/web](https://github.com/strautomator/web)** (this repo) is the website and API.
--   **[strautomator/core](https://github.com/strautomator/core)** has most of the business logic and its own default settings. It is installed as an npm dependency of the web.
--   **[strautomator/functions](https://github.com/strautomator/functions)** has scheduled jobs for production. You don't need them for a local setup. See [section 9](#scheduled-jobs) for details.
+- **[strautomator/web](https://github.com/strautomator/web)** (this repo) is the website and API.
+- **[strautomator/core](https://github.com/strautomator/core)** has most of the business logic and its own default settings. It is installed as an npm dependency of the web.
+- **[strautomator/functions](https://github.com/strautomator/functions)** has scheduled jobs for production. You don't need them for a local setup. See [section 9](#scheduled-jobs) for details.
 
 The database is always **Google Cloud Firestore**, even if you run the app on a VPS somewhere else. You need a Google Cloud project, but the free tier is enough for personal use.
 
@@ -94,23 +94,23 @@ This option gives you a stable URL on your own domain. You don't need to open po
 
 1. Add your domain to Cloudflare. The free plan is fine.
 2. Authenticate cloudflared, create the tunnel, and add a DNS record for it:
-    ```sh
-    cloudflared tunnel login
-    cloudflared tunnel create strautomator
-    cloudflared tunnel route dns strautomator strautomator.example.com
-    ```
+   ```sh
+   cloudflared tunnel login
+   cloudflared tunnel create strautomator
+   cloudflared tunnel route dns strautomator strautomator.example.com
+   ```
 3. The `create` command prints a tunnel ID and writes a credentials file to `~/.cloudflared/<TUNNEL-ID>.json`. Copy the file into the web repo:
-    ```sh
-    mkdir -p ~/strautomator/web/.cloudflared
-    cp ~/.cloudflared/<TUNNEL-ID>.json ~/strautomator/web/.cloudflared/credentials.json
-    ```
+   ```sh
+   mkdir -p ~/strautomator/web/.cloudflared
+   cp ~/.cloudflared/<TUNNEL-ID>.json ~/strautomator/web/.cloudflared/credentials.json
+   ```
 4. Create `~/strautomator/web/.cloudflared/config.yml`:
-    ```yaml
-    tunnel: <TUNNEL-ID>
-    credentials-file: .cloudflared/credentials.json
-    noTLSVerify: true
-    ingress: [{service: http://localhost:3000}]
-    ```
+   ```yaml
+   tunnel: <TUNNEL-ID>
+   credentials-file: .cloudflared/credentials.json
+   noTLSVerify: true
+   ingress: [{service: http://localhost:3000}]
+   ```
 5. Set `app.url` to `https://strautomator.example.com/`.
 
 The `.cloudflared` folder is git-ignored, so the tunnel credentials won't be committed. For more details, see [Create a locally-managed tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/local-management/create-local-tunnel/).
@@ -160,20 +160,20 @@ The app creates its collections automatically. In development they get a `-dev` 
 
 Open each link and click **Enable**:
 
--   Cloud Firestore API: https://console.cloud.google.com/apis/library/firestore.googleapis.com
--   Cloud Storage API: https://console.cloud.google.com/apis/library/storage.googleapis.com
--   Geocoding API: https://console.cloud.google.com/apis/library/geocoding-backend.googleapis.com
--   Maps Static API: https://console.cloud.google.com/apis/library/static-maps-backend.googleapis.com
--   (Optional, for Gemini AI features) Vertex AI API: https://console.cloud.google.com/apis/library/aiplatform.googleapis.com
+- Cloud Firestore API: https://console.cloud.google.com/apis/library/firestore.googleapis.com
+- Cloud Storage API: https://console.cloud.google.com/apis/library/storage.googleapis.com
+- Geocoding API: https://console.cloud.google.com/apis/library/geocoding-backend.googleapis.com
+- Maps Static API: https://console.cloud.google.com/apis/library/static-maps-backend.googleapis.com
+- (Optional, for Gemini AI features) Vertex AI API: https://console.cloud.google.com/apis/library/aiplatform.googleapis.com
 
 **d) Create a service account and download its key**
 
 1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts/create.
 2. Enter a name, for example `strautomator`.
 3. Grant it these roles:
-    - **Cloud Datastore User**, to read and write Firestore.
-    - **Storage Admin**, because the app creates buckets and sets lifecycle rules at startup.
-    - (Optional) **Vertex AI User**, for Gemini.
+   - **Cloud Datastore User**, to read and write Firestore.
+   - **Storage Admin**, because the app creates buckets and sets lifecycle rules at startup.
+   - (Optional) **Vertex AI User**, for Gemini.
 4. Open the service account, go to **Keys**, then click **Add key** > **Create new key** > **JSON**.
 5. Save the file as **`~/gcp-strautomator.json`** in your home folder. In development the app looks for this path automatically. Anywhere else, set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json`.
 
@@ -191,30 +191,30 @@ Open each link and click **Enable**:
 1. Log in to Strava and open **https://www.strava.com/settings/api**.
 2. Fill in the form:
 
-    | Field                             | What to enter                                                                                                                                               |
-    | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | Application Name                  | Anything, for example `My Strautomator`. Don't use "Strava" in the name.                                                                                    |
-    | Category                          | `Other` or `Data Importer`                                                                                                                                  |
-    | Club                              | Leave empty                                                                                                                                                 |
-    | Website                           | Your `app.url`, for example `https://strautomator.example.com`                                                                                              |
-    | Application Description           | Anything                                                                                                                                                    |
-    | **Authorization Callback Domain** | **Only the host name** of your `app.url`, with no scheme, path or port. For example `strautomator.example.com`, `abc-def.trycloudflare.com` or `localhost`. |
+   | Field                             | What to enter                                                                                                                                               |
+   | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | Application Name                  | Anything, for example `My Strautomator`. Don't use "Strava" in the name.                                                                                    |
+   | Category                          | `Other` or `Data Importer`                                                                                                                                  |
+   | Club                              | Leave empty                                                                                                                                                 |
+   | Website                           | Your `app.url`, for example `https://strautomator.example.com`                                                                                              |
+   | Application Description           | Anything                                                                                                                                                    |
+   | **Authorization Callback Domain** | **Only the host name** of your `app.url`, with no scheme, path or port. For example `strautomator.example.com`, `abc-def.trycloudflare.com` or `localhost`. |
 
 3. Accept the terms and create the app. Strava then asks you to upload an icon. Any square image works.
 4. Copy the **Client ID** and **Client Secret**. You'll use them for `strava.api.clientId` and `strava.api.clientSecret`.
 
 Good to know:
 
--   New Strava apps are in **single-player mode**: only the athlete who owns the app can connect. That's fine for personal use. To let friends log in, submit the app for review from the same page.
--   Each Strava app can have **only one webhook subscription**. Strautomator creates and cancels it automatically. **Use a separate Strava app for each instance you run**, for example one for local and one for the VPS. Otherwise the instances keep replacing each other's webhook.
--   Strava's official walkthrough, with screenshots: https://developers.strava.com/docs/getting-started/. Webhook docs: https://developers.strava.com/docs/webhooks/.
+- New Strava apps are in **single-player mode**: only the athlete who owns the app can connect. That's fine for personal use. To let friends log in, submit the app for review from the same page.
+- Each Strava app can have **only one webhook subscription**. Strautomator creates and cancels it automatically. **Use a separate Strava app for each instance you run**, for example one for local and one for the VPS. Otherwise the instances keep replacing each other's webhook.
+- Strava's official walkthrough, with screenshots: https://developers.strava.com/docs/getting-started/. Webhook docs: https://developers.strava.com/docs/webhooks/.
 
 ## 6. Register on optional services
 
 All of these services are optional. **Many of them stop the app at startup if they're enabled but their keys are missing**, so you have two choices for each one:
 
--   Register with the service and set its keys, or
--   disable it with `"<module>": {"disabled": true}`, as shown in [section 7](#7-create-your-settings-files).
+- Register with the service and set its keys, or
+- disable it with `"<module>": {"disabled": true}`, as shown in [section 7](#7-create-your-settings-files).
 
 | Service                         | Used for                                                        | Sign-up URL                                                     | Settings keys                                                                       | Startup check?          |
 | ------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------- |
@@ -237,9 +237,9 @@ All of these services are optional. **Many of them stop the app at startup if th
 
 If you enable an OAuth-based integration, register these callback URLs with the provider. Replace `https://strautomator.example.com/` with your `app.url`:
 
--   Spotify: `https://strautomator.example.com/api/spotify/auth/callback`
--   Wahoo: `https://strautomator.example.com/api/wahoo/auth/callback`
--   Garmin: `https://strautomator.example.com/api/garmin/auth/callback`
+- Spotify: `https://strautomator.example.com/api/spotify/auth/callback`
+- Wahoo: `https://strautomator.example.com/api/wahoo/auth/callback`
+- Garmin: `https://strautomator.example.com/api/garmin/auth/callback`
 
 > On a personal instance you probably don't need PayPal or Paddle. To give yourself PRO features without payments, set your user's `isPro` field to `true` directly in Firestore (collection `users-dev` in development, `users` in production).
 
@@ -256,8 +256,8 @@ Strautomator uses [SetMeUp](https://github.com/igoramadas/setmeup) for settings.
 
 > **Important:**
 >
-> -   `gcp.projectId` and `app.url` are validated **before** `settings.local.json` is loaded, so put them in `settings.secret.json` or in environment variables.
-> -   In production, `settings.local.json` is **never loaded**. Put everything in `settings.secret.json` or in environment variables.
+> - `gcp.projectId` and `app.url` are validated **before** `settings.local.json` is loaded, so put them in `settings.secret.json` or in environment variables.
+> - In production, `settings.local.json` is **never loaded**. Put everything in `settings.secret.json` or in environment variables.
 
 ### 7.1 Generate your secret tokens
 
@@ -269,8 +269,8 @@ openssl rand -hex 8    # 16 chars: use for database.crypto.iv
 openssl rand -hex 12   # alphanumeric: use for strava.api.urlToken and strava.api.verifyToken
 ```
 
--   `database.crypto.key` must be **exactly 32 characters** and `database.crypto.iv` **exactly 16 characters**, because they're used as AES-256-CBC key and IV. The app uses them to encrypt stored OAuth tokens. **Keep them forever**: if you change them later, every stored token becomes unreadable and all users have to log in again.
--   URL tokens become part of the webhook URLs, so use only letters and numbers.
+- `database.crypto.key` must be **exactly 32 characters** and `database.crypto.iv` **exactly 16 characters**, because they're used as AES-256-CBC key and IV. The app uses them to encrypt stored OAuth tokens. **Keep them forever**: if you change them later, every stored token becomes unreadable and all users have to log in again.
+- URL tokens become part of the webhook URLs, so use only letters and numbers.
 
 ### 7.2 `web/settings.secret.json`
 
@@ -285,73 +285,73 @@ Then replace its contents with the **minimal working configuration** below. It e
 
 ```jsonc
 {
-    "app": {
-        // Your public URL, including the trailing slash!
-        "url": "https://strautomator.example.com/"
-    },
-    "api": {
-        // Keep true when behind Cloudflare (tunnel or proxied DNS). Set to false otherwise.
-        "requireCloudflare": true
-    },
-    "cookie": {
-        "secret": "REPLACE-WITH-openssl-rand-hex-16"
-    },
-    "database": {
-        "crypto": {
-            "key": "REPLACE-WITH-32-CHARACTERS-KEY!!",
-            "iv": "REPLACE-16-CHARS"
-        }
-    },
-    "gcp": {
-        "projectId": "my-strautomator"
-    },
-    "maps": {
-        "api": {
-            "key": "YOUR-GOOGLE-MAPS-API-KEY"
-        }
-    },
-    "strava": {
-        "api": {
-            "clientId": "12345",
-            "clientSecret": "your-strava-client-secret",
-            "urlToken": "REPLACEalnumToken1",
-            "verifyToken": "REPLACEalnumToken2"
-        }
-    },
-    // Bucket names are GLOBAL across all of Google Cloud. The defaults are already taken
-    // by strautomator.com, so you MUST use your own unique names, in every environment
-    // (development mode only renames the calendar and gdpr buckets).
-    "storage": {
-        "cname": false,
-        "buckets": {
-            "ai": {"name": "my-strautomator-ai"},
-            "cache": {"name": "my-strautomator-cache"},
-            "calendar": {"name": "my-strautomator-calendar"},
-            "gdpr": {"name": "my-strautomator-gdpr"}
-        }
-    },
-    // Skip the affiliate links server (strautomator.com only).
-    "affiliates": {
-        "server": {"url": null}
-    },
-    // Disable optional modules that stop startup when their keys are missing.
-    // Remove a line once you have configured that service.
-    "paypal": {"disabled": true},
-    "paddlewrapper": {"disabled": true},
-    "spotify": {"disabled": true},
-    "lastfm": {"disabled": true},
-    "wahoo": {"disabled": true},
-    // Optional modules that don't stop startup but log errors without keys.
-    "garmin": {"disabled": true},
-    "mailer": {"disabled": true},
-    "openrouter": {"disabled": true},
-    "chatbase": {"disabled": true},
-    "weather": {
-        "weatherapi": {"disabled": true},
-        "tomorrow": {"disabled": true},
-        "openweathermap": {"disabled": true},
-        "visualcrossing": {"disabled": true}
+  "app": {
+    // Your public URL, including the trailing slash!
+    "url": "https://strautomator.example.com/"
+  },
+  "api": {
+    // Keep true when behind Cloudflare (tunnel or proxied DNS). Set to false otherwise.
+    "requireCloudflare": true
+  },
+  "cookie": {
+    "secret": "REPLACE-WITH-openssl-rand-hex-16"
+  },
+  "database": {
+    "crypto": {
+      "key": "REPLACE-WITH-32-CHARACTERS-KEY!!",
+      "iv": "REPLACE-16-CHARS"
     }
+  },
+  "gcp": {
+    "projectId": "my-strautomator"
+  },
+  "maps": {
+    "api": {
+      "key": "YOUR-GOOGLE-MAPS-API-KEY"
+    }
+  },
+  "strava": {
+    "api": {
+      "clientId": "12345",
+      "clientSecret": "your-strava-client-secret",
+      "urlToken": "REPLACEalnumToken1",
+      "verifyToken": "REPLACEalnumToken2"
+    }
+  },
+  // Bucket names are GLOBAL across all of Google Cloud. The defaults are already taken
+  // by strautomator.com, so you MUST use your own unique names, in every environment
+  // (development mode only renames the calendar and gdpr buckets).
+  "storage": {
+    "cname": false,
+    "buckets": {
+      "ai": {"name": "my-strautomator-ai"},
+      "cache": {"name": "my-strautomator-cache"},
+      "calendar": {"name": "my-strautomator-calendar"},
+      "gdpr": {"name": "my-strautomator-gdpr"}
+    }
+  },
+  // Skip the affiliate links server (strautomator.com only).
+  "affiliates": {
+    "server": {"url": null}
+  },
+  // Disable optional modules that stop startup when their keys are missing.
+  // Remove a line once you have configured that service.
+  "paypal": {"disabled": true},
+  "paddlewrapper": {"disabled": true},
+  "spotify": {"disabled": true},
+  "lastfm": {"disabled": true},
+  "wahoo": {"disabled": true},
+  // Optional modules that don't stop startup but log errors without keys.
+  "garmin": {"disabled": true},
+  "mailer": {"disabled": true},
+  "openrouter": {"disabled": true},
+  "chatbase": {"disabled": true},
+  "weather": {
+    "weatherapi": {"disabled": true},
+    "tomorrow": {"disabled": true},
+    "openweathermap": {"disabled": true},
+    "visualcrossing": {"disabled": true}
+  }
 }
 ```
 
@@ -379,16 +379,16 @@ Use this file for non-sensitive local tweaks:
 
 ```jsonc
 {
-    "app": {
-        // Set to false if you run the tunnel yourself or don't use Cloudflare.
-        "tunnel": true,
-        // Verbose debug logging.
-        "debug": false
-    },
-    "strava": {
-        // true = don't write activity changes back to Strava, they're logged to the console instead. Great for testing recipes. (The FTP auto-update still writes.)
-        "testMode": false
-    }
+  "app": {
+    // Set to false if you run the tunnel yourself or don't use Cloudflare.
+    "tunnel": true,
+    // Verbose debug logging.
+    "debug": false
+  },
+  "strava": {
+    // true = don't write activity changes back to Strava, they're logged to the console instead. Great for testing recipes. (The FTP auto-update still writes.)
+    "testMode": false
+  }
 }
 ```
 
@@ -523,11 +523,11 @@ The app URL comes from `app.url` in `settings.secret.json` (or pass it as `-e SM
 
 Development mode runs several jobs inside the app: delayed activity processing (about every 2 minutes), calendar regeneration (about every 3 minutes), plus GearWear and cache cleanup once at startup. They only run when the `STRAUTOMATOR_CRON` environment variable is set, which the `npm` scripts behind `make run` do for you. **Production mode runs none of them.** The official site runs them as Cloud Run jobs from [strautomator/functions](https://github.com/strautomator/functions). On a VPS you have two options:
 
--   Deploy the functions repo on your own infrastructure. Or,
--   at minimum, process delayed activities on a schedule with a cron entry. The request must go through your public Cloudflare URL, so it gets past `requireCloudflare`:
-    ```cron
-    */5 * * * * curl -fsS "https://strautomator.example.com/api/strava/webhook/<strava.api.urlToken>/process-activity-queue" > /dev/null
-    ```
+- Deploy the functions repo on your own infrastructure. Or,
+- at minimum, process delayed activities on a schedule with a cron entry. The request must go through your public Cloudflare URL, so it gets past `requireCloudflare`:
+  ```cron
+  */5 * * * * curl -fsS "https://strautomator.example.com/api/strava/webhook/<strava.api.urlToken>/process-activity-queue" > /dev/null
+  ```
 
 ## 10. Troubleshooting
 
