@@ -1,4 +1,3 @@
-vue
 <template>
     <v-main fluid>
         <feature-title header="Weather data on your activities" />

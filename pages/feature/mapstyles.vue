@@ -1,4 +1,3 @@
-vue
 <template>
     <v-main fluid>
         <feature-title header="Set a default map style for activities" />
