@@ -228,7 +228,20 @@
                             <v-select v-model="counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
                         </v-col>
                         <v-col v-if="counterProp == 'segments'" :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
-                            <v-combobox v-model="counterSegmentIds" label="Segment IDs" hint="Type an ID and press Enter to add it" multiple chips deletable-chips hide-selected persistent-hint dense outlined rounded></v-combobox>
+                            <v-combobox
+                                v-model="counterSegmentIds"
+                                label="Segment IDs"
+                                hint="Type an ID and press Enter to add it"
+                                :error-messages="counterSegmentErrors"
+                                multiple
+                                chips
+                                deletable-chips
+                                hide-selected
+                                persistent-hint
+                                dense
+                                outlined
+                                rounded
+                            ></v-combobox>
                         </v-col>
                         <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
@@ -339,6 +352,7 @@ export default {
             counterProp: null,
             counterProps: counterProps,
             counterSegmentIds: [],
+            counterSegmentValidationAttempted: false,
             currentCounter: 0,
             valid: false,
             disabledActions: [],
@@ -368,6 +382,9 @@ export default {
         },
         changedCounter() {
             return this.recipeStats.counter != this.currentCounter
+        },
+        counterSegmentErrors() {
+            return this.counterSegmentValidationAttempted && this.counterProp == "segments" && !this.getCounterProp() ? ["Add at least one segment ID"] : []
         },
         groupedConditions() {
             if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
@@ -609,15 +626,20 @@ export default {
                     delete this.recipe.asJson
                 }
 
-                this.hasChanges = false
-
                 if (this.$refs.form.validate()) {
+                    const counterProp = this.getCounterProp()
+                    if (!this.asJson && this.counterProp == "segments" && !counterProp) {
+                        this.counterSegmentValidationAttempted = true
+                        return
+                    }
+
+                    this.hasChanges = false
                     if (this.changedCounter) {
                         this.setCounter()
                     }
 
                     // Set the right counter prop.
-                    this.recipe.counterProp = this.getCounterProp()
+                    this.recipe.counterProp = counterProp
 
                     // Remove unnecessary props.
                     if (this.recipe.defaultFor == null) {
