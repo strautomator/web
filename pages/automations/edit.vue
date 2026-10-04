@@ -333,7 +333,7 @@ export default {
             {text: "Any segment KOM count", value: "segments.kom"}
         ]
         const counterPropLabels = {
-            segments: "Segment ID"
+            segments: "Segment IDs (comma-separated)"
         }
 
         return {
