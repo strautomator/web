@@ -227,8 +227,21 @@
                         <v-col :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
                             <v-select v-model="counterProp" label="Activity metadata" class="flex-shrink" :items="counterProps" dense outlined rounded></v-select>
                         </v-col>
-                        <v-col v-if="counterPropLabel" :cols="$breakpoint.mdAndUp ? 3 : 12" class="mr-md-4">
-                            <v-text-field v-model="counterPropValue" :label="counterPropLabel" class="flex-shrink" dense outlined rounded></v-text-field>
+                        <v-col v-if="counterProp == 'segments'" :cols="$breakpoint.mdAndUp ? 4 : 12" class="mr-md-4">
+                            <v-combobox
+                                v-model="counterSegmentIds"
+                                label="Segment IDs"
+                                hint="Type an ID and press Enter to add it"
+                                :error-messages="counterSegmentErrors"
+                                multiple
+                                chips
+                                deletable-chips
+                                hide-selected
+                                persistent-hint
+                                dense
+                                outlined
+                                rounded
+                            ></v-combobox>
                         </v-col>
                         <v-col :cols="$breakpoint.mdAndUp ? 2 : 12">
                             <v-text-field v-model="recipeStats.counter" type="number" label="Current value" min="0" max="999999" dense outlined rounded></v-text-field>
@@ -332,18 +345,14 @@ export default {
             {text: "Any segment PR count", value: "segments.pr"},
             {text: "Any segment KOM count", value: "segments.kom"}
         ]
-        const counterPropLabels = {
-            segments: "Segment ID"
-        }
-
         return {
             recipe: null,
             recipeStats: {counter: 0},
             recipePropertiesActions: [],
             counterProp: null,
             counterProps: counterProps,
-            counterPropLabels: counterPropLabels,
-            counterPropValue: null,
+            counterSegmentIds: [],
+            counterSegmentValidationAttempted: false,
             currentCounter: 0,
             valid: false,
             disabledActions: [],
@@ -374,13 +383,12 @@ export default {
         changedCounter() {
             return this.recipeStats.counter != this.currentCounter
         },
+        counterSegmentErrors() {
+            return this.counterSegmentValidationAttempted && this.counterProp == "segments" && !this.getCounterProp() ? ["Add at least one segment ID"] : []
+        },
         groupedConditions() {
             if (!this.recipe || !this.recipe.conditions || this.recipe.conditions.length == 0) return null
             return _.groupBy(this.recipe.conditions, "property")
-        },
-        counterPropLabel() {
-            if (!this.recipe || !this.counterProp || !this.counterPropLabels[this.counterProp]) return null
-            return this.counterPropLabels[this.counterProp] || null
         }
     },
     watch: {
@@ -471,9 +479,7 @@ export default {
 
         // Counter has its own state.
         if (this.recipe.counterProp) {
-            const arrPropValue = this.recipe.counterProp.split(".")
-            this.counterProp = arrPropValue[0]
-            this.counterPropValue = arrPropValue.length > 1 ? arrPropValue[1] : null
+            this.setCounterProp(this.recipe.counterProp)
         }
     },
     beforeRouteLeave(to, from, next) {
@@ -517,16 +523,7 @@ export default {
                         if (jsonData.samePropertyOp) {
                             this.recipe.samePropertyOp = jsonData.samePropertyOp
                         }
-                        if (jsonData.counterProp) {
-                            if (jsonData.counterProp.toString().includes(".")) {
-                                const arrPropValue = jsonData.counterProp.split(".")
-                                this.counterProp = arrPropValue[0]
-                                this.counterPropValue = arrPropValue[1]
-                            } else {
-                                this.counterProp = jsonData.counterProp
-                                this.counterPropValue = null
-                            }
-                        }
+                        this.setCounterProp(jsonData.counterProp)
                         if (jsonData.counterNoReset) {
                             this.recipe.counterNoReset = jsonData.counterNoReset
                         }
@@ -546,8 +543,9 @@ export default {
                     if (this.recipe.samePropertyOp) {
                         jsonData.samePropertyOp = this.recipe.samePropertyOp
                     }
-                    if (this.counterProp || this.counterPropValue) {
-                        jsonData.counterProp = this.counterPropValue ? `${this.counterProp}.${this.counterPropValue}` : this.counterProp
+                    const counterProp = this.getCounterProp()
+                    if (counterProp) {
+                        jsonData.counterProp = counterProp
                     }
                     if (this.recipe.counterNoReset) {
                         jsonData.counterNoReset = this.recipe.counterNoReset
@@ -607,8 +605,8 @@ export default {
                     vErrors.push({message: `Logical operator "samePropertyOp" must be either "AND" or "OR"`, path: ["samePropertyOp"]})
                 }
 
-                if (this.counterPropLabel && !this.counterPropValue) {
-                    vErrors.push({message: `Counter ${this.recipe.counterProp} must have an identifier specified`, path: ["counterProp"]})
+                if (this.counterProp == "segments" && !this.getCounterProp()) {
+                    vErrors.push({message: "Counter needs at least one segment ID", path: ["counterProp"]})
                 }
             } catch (ex) {
                 vErrors.push(ex.toString())
@@ -628,17 +626,20 @@ export default {
                     delete this.recipe.asJson
                 }
 
-                this.hasChanges = false
-
                 if (this.$refs.form.validate()) {
+                    const counterProp = this.getCounterProp()
+                    if (!this.asJson && this.counterProp == "segments" && !counterProp) {
+                        this.counterSegmentValidationAttempted = true
+                        return
+                    }
+
+                    this.hasChanges = false
                     if (this.changedCounter) {
                         this.setCounter()
                     }
 
                     // Set the right counter prop.
-                    if (this.counterProp) {
-                        this.recipe.counterProp = this.counterPropValue ? `${this.counterProp}.${this.counterPropValue}` : this.counterProp
-                    }
+                    this.recipe.counterProp = counterProp
 
                     // Remove unnecessary props.
                     if (this.recipe.defaultFor == null) {
@@ -685,6 +686,31 @@ export default {
                 await this.$axios.$post(url, body)
             } catch (ex) {
                 this.$webError(this, "AutomationEdit.setCounter", ex)
+            }
+        },
+        /** Return the persisted counter setting from the form state. */
+        getCounterProp() {
+            if (this.counterProp != "segments") return this.counterProp
+
+            const segmentIds = [...new Set(this.counterSegmentIds.map((value) => value.toString().trim()).filter(Boolean))]
+            return segmentIds.length > 0 ? `segments.${segmentIds.join(",")}` : null
+        },
+        /** Populate counter form state from a saved counter setting. */
+        setCounterProp(counterProp) {
+            this.counterProp = counterProp || null
+            this.counterSegmentIds = []
+
+            if (counterProp?.startsWith("segments.") && !["segments.pr", "segments.kom"].includes(counterProp)) {
+                this.counterProp = "segments"
+                this.counterSegmentIds = [
+                    ...new Set(
+                        counterProp
+                            .substring("segments.".length)
+                            .split(",")
+                            .map((value) => value.trim())
+                            .filter(Boolean)
+                    )
+                ]
             }
         },
         checkValid() {
