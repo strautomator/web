@@ -18,7 +18,7 @@ export const useGearwear = () => {
     const getComponentIcon = (comp: any): string => {
         const name = comp?.name.toLowerCase().replace(/ /g, "") || ""
         if (name.includes("battery")) return "mdi-battery-70"
-        if (name.includes("bearing") || name.includes("headset") || name.includes("bottom bracket")) return "mdi-dots-circle"
+        if (name.includes("bearing") || name.includes("headset") || name.includes("bottombracket")) return "mdi-dots-circle"
         if (name.includes("brake")) return "mdi-car-brake-worn-linings"
         if (name.includes("cassette") || name.includes("drivetrain")) return "mdi-cog-outline"
         if (name.includes("chain")) return "mdi-link"
