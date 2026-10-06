@@ -9,9 +9,9 @@
         "url": "https://github.com/strautomator/web.git"
     },
     "scripts": {
-        "dev": "nuxt dev --port 3000",
+        "dev": "cross-env STRAUTOMATOR_CRON=true nuxt dev --port 3000",
         "build": "nuxt build",
-        "start": "cross-env NODE_ENV=production node .output/server/index.mjs",
+        "start": "cross-env NODE_ENV=production node start.mjs",
         "preview": "nuxt preview",
         "typecheck": "nuxt prepare && tsc --noEmit -p .nuxt/tsconfig.server.json",
         "postinstall": "nuxt prepare"
