@@ -7,7 +7,7 @@
                 <v-btn icon="mdi-close" @click="cancel"></v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-title class="text-headline-small">If the activity...</v-card-title>
+        <v-card-title class="text-h5">If the activity...</v-card-title>
         <v-card-text>
             <v-form v-model="valid" ref="form">
                 <v-container class="ma-0 pa-0" fluid>
@@ -30,7 +30,7 @@
                                     v-model="selectedOperator"
                                     label="Operator"
                                     :hint="selectedOperator?.description"
-                                    :items="selectedProperty.operators"
+                                    :items="selectedProperty?.operators"
                                     :item-title="operatorTitle"
                                     density="compact"
                                     variant="outlined"
@@ -84,7 +84,7 @@
                             </div>
                             <div class="text-center mb-6" v-if="isDefaultFor">
                                 <v-icon color="grey" size="small">mdi-information-outline</v-icon>
-                                <span>This automation will run on <strong>all</strong> future "{{ selectedDefaultFor.value }}" activities!</span>
+                                <span>This automation will run on <strong>all</strong> future "{{ selectedDefaultFor?.value }}" activities!</span>
                             </div>
                         </v-col>
                         <v-col cols="12" :sm="12" :md="5" v-if="isLocationImg">
@@ -133,10 +133,10 @@ const weekdays = ref<SelectItem[]>([])
 const selectedSportTypes = ref<SelectItem[]>([])
 const selectedGear = ref<SelectItem[]>([])
 const selectedWeekdays = ref<SelectItem[]>([])
-const selectedBoolean = ref<SelectItem>({})
-const selectedProperty = ref<SelectItem>({value: ""})
-const selectedOperator = ref<SelectItem>({})
-const selectedDefaultFor = ref<SelectItem>({})
+const selectedBoolean = ref<SelectItem | null>(null)
+const selectedProperty = ref<SelectItem | null>(null)
+const selectedOperator = ref<SelectItem | null>(null)
+const selectedDefaultFor = ref<SelectItem | null>(null)
 const valueInput = ref("")
 const valueDateFrom = ref("")
 const valueDateTo = ref("")
@@ -146,10 +146,10 @@ const locations = ref<SelectItem[]>([])
 let searchTimerId: number | null = null
 
 const selectedSuffix = computed(() => {
-    if (!selectedProperty.value || selectedProperty.value.type == "time") return ""
-    if (user.value.preferences.weatherUnit == "f" && selectedProperty.value.fSuffix) return selectedProperty.value.fSuffix
-    if (user.value.profile.units == "imperial" && selectedProperty.value.impSuffix) return selectedProperty.value.impSuffix
-    return selectedProperty.value.suffix
+    if (!selectedProperty.value || selectedProperty.value?.type == "time") return ""
+    if (user.value.preferences.weatherUnit == "f" && selectedProperty.value?.fSuffix) return selectedProperty.value?.fSuffix
+    if (user.value.profile.units == "imperial" && selectedProperty.value?.impSuffix) return selectedProperty.value?.impSuffix
+    return selectedProperty.value?.suffix
 })
 const inputPlaceholder = computed(() => {
     if (selectedProperty.value?.type == "time") return "00:00"
@@ -175,16 +175,16 @@ const locationImageSrc = computed(() => {
 })
 const sportInputRules = computed(() => (isSportType.value ? [recipeRules.required, () => selectedSportTypes.value.length > 0] : []))
 const gearInputRules = computed(() => (isGear.value ? [recipeRules.required, () => selectedGear.value.length > 0] : []))
-const booleanInputRules = computed(() => (isBoolean.value ? [recipeRules.required, () => selectedBoolean.value.value === false || selectedBoolean.value.value === true] : []))
+const booleanInputRules = computed(() => (isBoolean.value ? [recipeRules.required, () => selectedBoolean.value?.value === false || selectedBoolean.value?.value === true] : []))
 const weekdayInputRules = computed(() => (isWeekday.value ? [recipeRules.required, () => selectedWeekdays.value.length > 0] : []))
 const locationInputRules = computed(() => (isLocation.value ? [recipeRules.required, () => (locationInput.value && locationInput.value.value.length > 0 ? true : false)] : []))
 const valueInputRules = computed(() => {
     if (!selectedProperty.value) return [recipeRules.required]
     if (isDefaultFor.value) return []
-    if (selectedProperty.value.type == "date") return [recipeRules.required, recipeRules.date]
-    if (["dateStart", "dateEnd"].includes(selectedProperty.value.value)) return [recipeRules.required, recipeRules.time]
-    if (["movingTime", "totalTime", "lapTime"].includes(selectedProperty.value.value)) return [recipeRules.required, recipeRules.timer]
-    if (recipeRules[selectedProperty.value.type]) return [recipeRules.required, recipeRules[selectedProperty.value.type]]
+    if (selectedProperty.value?.type == "date") return [recipeRules.required, recipeRules.date]
+    if (["dateStart", "dateEnd"].includes(selectedProperty.value?.value)) return [recipeRules.required, recipeRules.time]
+    if (["movingTime", "totalTime", "lapTime"].includes(selectedProperty.value?.value)) return [recipeRules.required, recipeRules.timer]
+    if (recipeRules[selectedProperty.value?.type]) return [recipeRules.required, recipeRules[selectedProperty.value?.type]]
     return [recipeRules.required]
 })
 
@@ -293,10 +293,10 @@ const resetData = () => {
     selectedSportTypes.value = []
     selectedGear.value = []
     selectedWeekdays.value = []
-    selectedBoolean.value = {}
-    selectedProperty.value = {value: ""}
-    selectedOperator.value = {}
-    selectedDefaultFor.value = {}
+    selectedBoolean.value = null
+    selectedProperty.value = null
+    selectedOperator.value = null
+    selectedDefaultFor.value = null
     valueInput.value = ""
     valueDateFrom.value = ""
     valueDateTo.value = ""
@@ -330,20 +330,20 @@ const save = async () => {
     let result: any
 
     if (isDefaultFor.value) {
-        result = {defaultFor: selectedDefaultFor.value.value}
+        result = {defaultFor: selectedDefaultFor.value?.value}
     } else if (!hasOperators.value) {
         result = {property: selectedProperty.value?.value}
     } else {
         result = {
             property: selectedProperty.value?.value,
-            operator: selectedOperator.value.value,
+            operator: selectedOperator.value?.value,
             value: valueInput.value
         }
 
         if (isBoolean.value) {
             result.operator = "="
-            result.value = selectedBoolean.value.value
-            result.friendlyValue = selectedBoolean.value.text
+            result.value = selectedBoolean.value?.value
+            result.friendlyValue = selectedBoolean.value?.text
         } else if (isAny.value) {
             result.value = true
             result.friendlyValue = "set"
@@ -365,7 +365,7 @@ const save = async () => {
             const fromDate = valueDateFrom.value.length == 5 ? dayjs(`${year}-${valueDateFrom.value}`).format("MMM D") : dayjs(valueDateFrom.value).format("MMM D, YYYY")
             const toDate = valueDateTo.value.length == 5 ? dayjs(`${year}-${valueDateTo.value}`).format("MMM D") : dayjs(valueDateTo.value).format("MMM D, YYYY")
             result.friendlyValue = `From ${fromDate} to ${toDate}`
-        } else if (selectedProperty.value.type == "time") {
+        } else if (selectedProperty.value?.type == "time") {
             const arrTime = result.value.split(":")
             if (isPace.value) {
                 result.value = parseInt(arrTime[0]) * 60 + parseInt(arrTime[1])
@@ -388,9 +388,9 @@ const propertyChanged = () => {
         selectedOperator.value = {value: "=", text: "is"}
         selectedBoolean.value = {value: true, text: "Yes"}
     } else if (selectedProperty.value?.operators.length == 1) {
-        selectedOperator.value = selectedProperty.value.operators[0]
+        selectedOperator.value = selectedProperty.value?.operators?.[0] || null
     } else {
-        selectedOperator.value = {}
+        selectedOperator.value = null
     }
 }
 

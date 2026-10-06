@@ -8,7 +8,7 @@
                 <div class="flex-grow-0">
                     <v-menu v-model="dateMenu" :close-on-content-click="false" transition="scale-transition" min-width="290px" location="bottom">
                         <template #activator="{props: menuProps}">
-                            <v-text-field v-model="dateSince" v-bind="menuProps" width="200px" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" variant="outlined" readonly rounded density="compact"></v-text-field>
+                            <v-text-field v-model="dateSince" v-bind="menuProps" width="248" label="Since date" type="text" prepend-icon="mdi-calendar" :loading="pastLoading" variant="outlined" readonly rounded density="compact"></v-text-field>
                         </template>
                         <v-date-picker v-model="dateSincePicker" :min="dateSinceMin" :max="dateSinceMax" @update:model-value="updateDateSince" hide-header></v-date-picker>
                     </v-menu>

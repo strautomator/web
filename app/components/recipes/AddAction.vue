@@ -7,7 +7,7 @@
                 <v-btn icon="mdi-close" @click="cancel"></v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-title class="text-headline-small">Do the following...</v-card-title>
+        <v-card-title class="text-h5">Do the following...</v-card-title>
         <v-card-text>
             <v-form v-model="valid" ref="form">
                 <v-container class="ma-0 pa-0" fluid>
@@ -15,30 +15,30 @@
                         <v-col cols="12">
                             <v-autocomplete v-model="selectedAction" label="Select an action" :items="recipeActions" item-title="text" @update:model-value="actionOnChange" density="compact" variant="outlined" rounded return-object></v-autocomplete>
                             <template v-if="selectedAction">
-                                <div v-if="selectedAction.value == 'commute'">
+                                <div v-if="selectedAction?.value == 'commute'">
                                     <v-select label="Commute tag" v-model="selectedCommute" item-value="id" item-title="name" :items="booleanFlags" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'trainer'">
+                                <div v-else-if="selectedAction?.value == 'trainer'">
                                     <v-select label="Trainer tag" v-model="selectedTrainer" item-value="id" item-title="name" :items="booleanFlags" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'gear'">
+                                <div v-else-if="selectedAction?.value == 'gear'">
                                     <v-select label="Select a gear" v-model="selectedGear" item-value="id" item-title="name" :items="gears" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value?.includes('GearComponent')">
+                                <div v-else-if="selectedAction?.value?.includes('GearComponent')">
                                     <v-select label="Select a component" v-model="selectedGearComponent" item-value="id" item-title="name" :items="gearComponents" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'sportType'">
+                                <div v-else-if="selectedAction?.value == 'sportType'">
                                     <v-select label="Select a sport" v-model="selectedSportType" item-value="value" item-title="text" :items="sportTypes" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'workoutType'">
+                                <div v-else-if="selectedAction?.value == 'workoutType'">
                                     <v-select label="Select a workout type" v-model="selectedWorkoutType" item-value="value" item-title="title" :items="workoutTypes" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'mapStyle'">
+                                <div v-else-if="selectedAction?.value == 'mapStyle'">
                                     <v-select label="Select a map style" v-model="selectedMapStyle" item-value="value" item-title="title" :items="mapStyles" density="compact" variant="outlined" rounded return-object></v-select>
                                 </div>
                                 <div v-else-if="actionIsAI">
                                     <v-checkbox
-                                        v-if="!insightsCustomPrompt && selectedAction.value == 'generateInsights'"
+                                        v-if="!insightsCustomPrompt && selectedAction?.value == 'generateInsights'"
                                         title="Use a custom prompt"
                                         class="mt-0 pt-0"
                                         label="Use a custom prompt"
@@ -46,7 +46,7 @@
                                         color="primary"
                                     ></v-checkbox>
                                     <v-select
-                                        v-if="selectedAction.value != 'generateInsights'"
+                                        v-if="selectedAction?.value != 'generateInsights'"
                                         label="Select a humour"
                                         v-model="selectedAiHumour"
                                         item-value="value"
@@ -58,7 +58,7 @@
                                         return-object
                                     ></v-select>
                                     <v-textarea
-                                        v-if="(insightsCustomPrompt && selectedAction.value == 'generateInsights') || selectedAiHumour.value == 'custom'"
+                                        v-if="(insightsCustomPrompt && selectedAction?.value == 'generateInsights') || selectedAiHumour?.value == 'custom'"
                                         v-model="valueInput"
                                         height="100"
                                         label="Custom AI prompt to be appended"
@@ -70,7 +70,7 @@
                                         no-resize
                                     ></v-textarea>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'aiProcess'">
+                                <div v-else-if="selectedAction?.value == 'aiProcess'">
                                     <v-textarea
                                         v-model="valueInput"
                                         height="100"
@@ -84,9 +84,9 @@
                                         rounded
                                         no-resize
                                     ></v-textarea>
-                                    <div class="mt-n1 text-body-small text-center">The AI will process the activity data based on your prompt. It can update any existing activity field (name, description, commute, map, tags, sport type,...)</div>
+                                    <div class="mt-n1 text-caption text-center">The AI will process the activity data based on your prompt. It can update any existing activity field (name, description, commute, map, tags, sport type,...)</div>
                                 </div>
-                                <div v-else-if="selectedAction.value == 'webhook'">
+                                <div v-else-if="selectedAction?.value == 'webhook'">
                                     <div>
                                         <v-select label="HTTP method" v-model="webhookMethod" :items="['POST', 'GET']" density="compact" variant="outlined" rounded></v-select>
                                     </div>
@@ -94,14 +94,14 @@
                                         <v-text-field label="Webhook URL" placeholder="https://" v-model="webhookUrl" :rules="webhookActionRules" density="compact" variant="outlined" rounded></v-text-field>
                                     </div>
                                 </div>
-                                <div v-else-if="selectedAction.value && !booleanActions.includes(selectedAction.value)">
+                                <div v-else-if="selectedAction?.value && !booleanActions.includes(selectedAction?.value)">
                                     <tag-autocomplete
                                         v-model="valueInput"
                                         textarea
                                         :items="activityTags"
                                         :style="actionIsDescription ? '' : 'overflow: hidden'"
                                         :height="actionIsDescription ? 160 : 30"
-                                        :label="actionIsDescription ? 'Notes...' : selectedAction.text"
+                                        :label="actionIsDescription ? 'Notes...' : selectedAction?.text"
                                         :rules="actionRules"
                                         :maxlength="recipeMaxLength.actionValue"
                                         @keydown="inputKeyDown"
@@ -116,7 +116,7 @@
                                         </template>
                                     </tag-autocomplete>
                                 </div>
-                                <div v-if="actionIsText" class="mt-n1 text-body-small text-center text-md-left">
+                                <div v-if="actionIsText" class="mt-n1 text-caption text-center text-md-left">
                                     Type $ to display the available activity tags, then keep typing to search for the desired tag.
                                     <br />
                                     Example: ${distance} ${speedAvg} ${totalTime}
@@ -178,15 +178,15 @@ const recipeMaxLength = computed(() => store.recipeMaxLength || {})
 const form = ref<any>(null)
 const valid = ref(true)
 const recipeActions = ref<SelectItem[]>([])
-const selectedAction = ref<SelectItem>({})
-const selectedCommute = ref<SelectItem>({})
-const selectedTrainer = ref<SelectItem>({})
-const selectedGear = ref<SelectItem>({})
-const selectedGearComponent = ref<SelectItem>({})
-const selectedSportType = ref<SelectItem>({})
-const selectedWorkoutType = ref<SelectItem>({})
-const selectedMapStyle = ref<SelectItem>({})
-const selectedAiHumour = ref<SelectItem>({})
+const selectedAction = ref<SelectItem | null>(null)
+const selectedCommute = ref<SelectItem | null>(null)
+const selectedTrainer = ref<SelectItem | null>(null)
+const selectedGear = ref<SelectItem | null>(null)
+const selectedGearComponent = ref<SelectItem | null>(null)
+const selectedSportType = ref<SelectItem | null>(null)
+const selectedWorkoutType = ref<SelectItem | null>(null)
+const selectedMapStyle = ref<SelectItem | null>(null)
+const selectedAiHumour = ref<SelectItem | null>(null)
 const insightsCustomPrompt = ref(false)
 const webhookMethod = ref("POST")
 const webhookUrl = ref("")
@@ -203,11 +203,11 @@ const valueInput = ref("")
 const activityTags = computed(() => (mainActivityTags ? _.concat(mainActivityTags, extraActivityTags) : []))
 const actionRules = computed(() => (selectedAction.value?.value != "webhook" ? [recipeRules.required] : []))
 const webhookActionRules = computed(() => (selectedAction.value?.value == "webhook" ? [recipeRules.required, recipeRules.url] : []))
-const actionIsDescription = computed(() => selectedAction.value && ["description", "prependDescription", "appendDescription", "privateNote"].includes(selectedAction.value.value))
+const actionIsDescription = computed(() => selectedAction.value && ["description", "prependDescription", "appendDescription", "privateNote"].includes(selectedAction.value?.value))
 const actionIsText = computed(
-    () => selectedAction.value && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote", "prependPrivateNote", "appendPrivateNote"].includes(selectedAction.value.value)
+    () => selectedAction.value && ["name", "prependName", "appendName", "description", "prependDescription", "appendDescription", "privateNote", "prependPrivateNote", "appendPrivateNote"].includes(selectedAction.value?.value)
 )
-const actionIsAI = computed(() => selectedAction.value && ["generateName", "generateDescription", "generateInsights"].includes(selectedAction.value.value))
+const actionIsAI = computed(() => selectedAction.value && ["generateName", "generateDescription", "generateInsights"].includes(selectedAction.value?.value))
 
 watch(
     () => props.disabledActions,
@@ -288,14 +288,14 @@ const resetData = () => {
     humours.push({value: "custom", text: `Use a custom prompt${!store.user.isPro ? " (PRO only)" : ""}`, disabled: !store.user.isPro})
 
     valid.value = true
-    selectedAction.value = {}
+    selectedAction.value = null
     selectedCommute.value = flags[0]
     selectedTrainer.value = flags[0]
-    selectedGear.value = {}
-    selectedGearComponent.value = {}
-    selectedSportType.value = {}
-    selectedWorkoutType.value = {}
-    selectedMapStyle.value = {}
+    selectedGear.value = null
+    selectedGearComponent.value = null
+    selectedSportType.value = null
+    selectedWorkoutType.value = null
+    selectedMapStyle.value = null
     selectedAiHumour.value = humours[0]
     insightsCustomPrompt.value = false
     webhookMethod.value = "POST"
@@ -357,41 +357,41 @@ const validateForm = async (): Promise<boolean> => {
 const save = async () => {
     if (!(await validateForm())) return
 
-    const result: any = {type: selectedAction.value.value}
+    const result: any = {type: selectedAction.value?.value}
 
     if (result.type == "commute") {
-        result.value = selectedCommute.value.id
-        result.friendlyValue = selectedCommute.value.id ? "yes" : "no"
+        result.value = selectedCommute.value?.id
+        result.friendlyValue = selectedCommute.value?.id ? "yes" : "no"
     } else if (result.type == "trainer") {
-        result.value = selectedTrainer.value.id
-        result.friendlyValue = selectedTrainer.value.id ? "yes" : "no"
+        result.value = selectedTrainer.value?.id
+        result.friendlyValue = selectedTrainer.value?.id ? "yes" : "no"
     } else if (result.type == "gear") {
-        result.value = selectedGear.value.id
-        result.friendlyValue = selectedGear.value.name
+        result.value = selectedGear.value?.id
+        result.friendlyValue = selectedGear.value?.name
     } else if (result.type.includes("GearComponent")) {
-        result.value = selectedGearComponent.value.id
-        result.friendlyValue = selectedGearComponent.value.name
+        result.value = selectedGearComponent.value?.id
+        result.friendlyValue = selectedGearComponent.value?.name
     } else if (result.type == "sportType") {
-        result.value = selectedSportType.value.value
-        result.friendlyValue = selectedSportType.value.text
+        result.value = selectedSportType.value?.value
+        result.friendlyValue = selectedSportType.value?.text
     } else if (result.type == "workoutType") {
-        result.value = selectedWorkoutType.value.value
-        result.friendlyValue = selectedWorkoutType.value.text || selectedWorkoutType.value.title
+        result.value = selectedWorkoutType.value?.value
+        result.friendlyValue = selectedWorkoutType.value?.text || selectedWorkoutType.value?.title
     } else if (result.type == "mapStyle") {
-        result.value = selectedMapStyle.value.value
-        result.friendlyValue = selectedMapStyle.value.text || selectedMapStyle.value.title
+        result.value = selectedMapStyle.value?.value
+        result.friendlyValue = selectedMapStyle.value?.text || selectedMapStyle.value?.title
     } else if (result.type == "webhook") {
         const webhookValue = `${webhookMethod.value} ${webhookUrl.value}`
         result.value = webhookValue
         result.friendlyValue = webhookValue
-    } else if (actionIsAI.value && (!selectedAiHumour.value || selectedAiHumour.value.value != "random")) {
-        if (valueInput.value && (result.type == "generateInsights" || selectedAiHumour.value.value == "custom")) {
+    } else if (actionIsAI.value && (!selectedAiHumour.value || selectedAiHumour.value?.value != "random")) {
+        if (valueInput.value && (result.type == "generateInsights" || selectedAiHumour.value?.value == "custom")) {
             const prompt = valueInput.value.trim()
             result.value = "custom:" + prompt
             result.friendlyValue = "custom prompt: " + prompt
         } else {
-            result.value = selectedAiHumour.value.value
-            result.friendlyValue = result.type == "generateInsights" ? "Default" : selectedAiHumour.value.text
+            result.value = selectedAiHumour.value?.value
+            result.friendlyValue = result.type == "generateInsights" ? "Default" : selectedAiHumour.value?.text
         }
     } else if (result.type == "aiProcess") {
         if (!valueInput.value?.trim()) return

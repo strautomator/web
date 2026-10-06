@@ -3,20 +3,20 @@
         <v-container fluid>
             <h1>
                 Charts
-                <v-btn class="float-right mt-3 text-headline-small font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" icon="mdi-history" size="x-small" rounded></v-btn>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" size="32" icon><v-icon size="small">mdi-history</v-icon></v-btn>
             </h1>
 
             <v-card variant="outlined">
                 <v-card-text>
                     <div class="d-flex" :class="{'flex-column': !mdAndUp}">
                         <div class="flex-grow-0">
-                            <v-select label="Charts" v-model="chartSource" :items="chartSourceList" :class="{'mr-2': mdAndUp}" variant="outlined" rounded density="compact" item-title="text"></v-select>
+                            <v-select label="Charts" v-model="chartSource" :items="chartSourceList" :class="{'mr-2': mdAndUp}" :min-width="mdAndUp ? 304 : undefined" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                         <div class="flex-grow-0">
-                            <v-select label="Period" v-model="period" :items="periodList" :class="{'mr-2': mdAndUp}" variant="outlined" rounded density="compact" item-title="text"></v-select>
+                            <v-select label="Period" v-model="period" :items="periodList" :class="{'mr-2': mdAndUp}" :min-width="mdAndUp ? 304 : undefined" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                         <div class="flex-grow-0">
-                            <v-select label="Chart style" v-model="chartType" :items="chartTypeList" variant="outlined" rounded density="compact" item-title="text"></v-select>
+                            <v-select label="Chart style" :min-width="mdAndUp ? 252 : undefined" v-model="chartType" :items="chartTypeList" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                     </div>
                     <div class="mt-4 pl-4 pr-4" v-if="loading">
@@ -42,8 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import Chart from "chart.js/auto"
-import "chartjs-adapter-dayjs-4"
+import type {Chart as ChartType} from "chart.js"
 import dayjs from "dayjs"
 import _ from "lodash"
 
@@ -74,7 +73,8 @@ const periodList = [
 const chartType = ref("bar")
 const suggestedMax = ref(1)
 const processedActivities = ref<any[]>(null)
-let chart: Chart = null
+let Chart: typeof ChartType = null
+let chart: ChartType = null
 
 watch([chartSource, period, chartType], () => createChart())
 
@@ -97,7 +97,7 @@ const createChart = () => {
         loading.value = false
     }
 
-    if (!mainChart.value || !processedActivities.value || processedActivities.value.length == 0) {
+    if (!Chart || !mainChart.value || !processedActivities.value || processedActivities.value.length == 0) {
         return
     }
 
@@ -212,7 +212,7 @@ const populateDatapoints = (datasets: any[], activities: any[], maxMoment: any) 
     const periodActivities = _.remove(activities, getActivityDateFilter(maxMoment))
 
     for (let ds of datasets) {
-        const counter = _.filter(periodActivities, (a) => a.recipes[ds.uid]).length
+        const counter = _.filter(periodActivities, (a) => a.recipes?.[ds.uid]).length
 
         if (counter >= suggestedMax.value) {
             suggestedMax.value = counter + 1
@@ -223,6 +223,9 @@ const populateDatapoints = (datasets: any[], activities: any[], maxMoment: any) 
 }
 
 onMounted(async () => {
+    // Chart.js and its date adapter are browser-only, so load them on the client.
+    Chart = (await import("chart.js/auto")).default
+    await import("chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm.js")
     await loadData()
     await nextTick()
     setTimeout(createChart, 1500)

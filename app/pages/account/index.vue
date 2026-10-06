@@ -88,7 +88,7 @@
                         {{ user.lastfm ? "Change Last.fm account" : "Link Last.fm account" }}
                     </v-btn>
                 </div>
-                <v-alert class="text-body-medium mt-2 text-left" color="warning" v-if="relinkAccounts.length > 0" density="compact" variant="outlined" rounded>
+                <v-alert class="text-body-2 mt-2 text-left" color="warning" v-if="relinkAccounts.length > 0" density="compact" variant="outlined" rounded>
                     <v-icon class="mr-1 mt-n1" color="warning" size="small">mdi-alert-outline</v-icon>
                     Your {{ relinkAccounts.join(" and ") }} authentication is about to expire, please link {{ relinkAccounts.length > 1 ? "these accounts" : "it" }} again to avoid interruptions.
                 </v-alert>
@@ -121,7 +121,7 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-n1">
                         <h3 class="mb-2">FTP auto update{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="text-body-medium">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
+                        <div class="text-body-2">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
                     <div class="mb-8 mt-n2 text-center text-md-left">
@@ -134,20 +134,18 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Delayed processing</h3>
-                        <div class="text-body-medium">
+                        <div class="text-body-2">
                             Do you want Strautomator to wait a few minutes before processing your activities? Useful if you have other services updating your Strava as well, or if you want to have some time to change details / add photos before your
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
-                        <v-alert color="accent" class="text-body-medium" v-if="user.isPro && (user.garmin || user.wahoo)" density="compact"
-                            >Delayed processing is recommended if you're having issues with Garmin or Wahoo automation conditions.</v-alert
-                        >
+                        <v-alert color="accent" class="text-body-2" v-if="user.isPro && (user.garmin || user.wahoo)" density="compact">Delayed processing is recommended if you're having issues with Garmin or Wahoo automation conditions.</v-alert>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Yearly counter reset</h3>
-                        <div class="text-body-medium">Do you want to have your automation counters automatically reset every year?</div>
+                        <div class="text-body-2">Do you want to have your automation counters automatically reset every year?</div>
                         <v-switch class="mt-2" title="Yearly automation counter reset" v-model="resetCounter" :label="resetCounter ? 'Yes, reset counters every year' : 'No, do not reset counters'"></v-switch>
                         <v-row no-gutters>
                             <v-col cols="12" md="3" v-if="resetCounter">
@@ -164,14 +162,14 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Omit tag suffixes</h3>
-                        <div class="text-body-medium">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
+                        <div class="text-body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
                         <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Privacy mode</h3>
-                        <div class="text-body-medium">
+                        <div class="text-body-2">
                             Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
                             <nuxt-link to="/help/faq?q=privacy mode" title="More details about the privacy mode">More details...</nuxt-link>
                         </div>
@@ -188,7 +186,7 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Gear tracking preferences</h3>
-                        <div class="text-body-medium">
+                        <div class="text-body-2">
                             <template v-if="user.isPro">
                                 Gear tracking is done almost instantly for the majority of processed activities, but you can still set the maximum delay you want Strautomator to wait before tracking the gear usage from your activities.
                             </template>
@@ -202,7 +200,7 @@
                             <v-radio label="3 days" :value="3"></v-radio>
                         </v-radio-group>
                         <template v-if="user.garmin || user.wahoo">
-                            <div class="text-body-medium">Do you want to be notified when a connected sensor has low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
+                            <div class="text-body-2">Do you want to be notified when a connected sensor has low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
                             <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I don\'t want the notifications'"></v-switch>
                         </template>
                     </div>
@@ -210,7 +208,7 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Backlink preferences</h3>
-                        <div class="text-body-medium">
+                        <div class="text-body-2">
                             <span v-if="linksOn == 1">A backlink will be added to all activities processed by Strautomator.</span>
                             <span v-else-if="linksOn > 0">A backlink {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
                             <span v-else>A backlink won't be added to your activities.</span>
@@ -225,16 +223,16 @@
 
                     <div class="mt-4" v-if="linksOn > 0">
                         <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="text-body-medium">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for backlinks?</div>
+                        <div class="text-body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for backlinks?</div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="text-body-medium mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
+                        <div class="text-body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
-                        <div class="text-body-medium mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
+                        <div class="text-body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
                         <div class="mt-6 d-flex" :class="{'flex-column': !mdAndUp}">
                             <div class="flex-grow-1">
                                 <v-select label="Provider" v-model="aiProvider" :items="listAiProviders" :disabled="!user.isPro" variant="outlined" rounded></v-select>
@@ -254,7 +252,7 @@
                 <v-card-title class="bg-accent">MCP Server{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
                 <v-card-text class="pa-0">
                     <div class="pa-4">
-                        <div class="text-body-medium">Connect your AI clients and bots to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
+                        <div class="text-body-2">Connect your AI clients and bots to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
                         <template v-if="user.isPro">
                             <div class="mt-2">
                                 Server URL: <span class="font-weight-bold">{{ mcpUrl }}</span>
@@ -273,7 +271,7 @@
                         <tbody v-if="mcpSessions.length > 0">
                             <tr v-for="session in mcpSessions" :key="session.clientId">
                                 <td>{{ session.clientName }}</td>
-                                <td class="text-body-small">Last authorized {{ $dayjs(session.dateLastAuth).format("lll") }}</td>
+                                <td class="text-caption">Last authorized {{ $dayjs(session.dateLastAuth).format("lll") }}</td>
                                 <td class="text-right">
                                     <v-btn color="removal" title="Revoke access for this client" :loading="mcpRevoking == session.clientId" @click="revokeMcpSession(session)" variant="text" rounded size="x-small">Revoke</v-btn>
                                 </td>
@@ -313,7 +311,7 @@
                 </v-btn>
             </div>
 
-            <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
+            <account-email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
             <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Please open your inbox and confirm your email address.
                 <template #actions>
@@ -465,13 +463,13 @@
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <p class="mt-4" v-if="ftpResult === null">
+                    <div class="mt-4 mb-4" v-if="ftpResult === null">
                         <v-progress-circular class="mr-1" size="16" width="2" indeterminate></v-progress-circular>
                         Estimating your FTP, please wait, this can take up to 2 minutes...
-                    </p>
+                    </div>
                     <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
-                        <p class="mt-4 text-body-large font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
+                        <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
                         <p>
                             Estimation based on {{ ftpResult.activityCount }} activities.<br />
                             Best effort of {{ ftpResult.bestWatts }} watts:
@@ -680,7 +678,8 @@ const dateResetCounterPicker = computed({
         if (value) dateResetCounter.value = dayjs(value).format(dateFormat)
     }
 })
-const mcpUrl = computed(() => (import.meta.client ? `${window.location.origin}/mcp` : "/mcp"))
+const requestUrl = useRequestURL({xForwardedProto: true})
+const mcpUrl = computed(() => `${requestUrl.origin}/mcp`)
 
 const delaySavePreferences = _.debounce(() => savePreferences(), 1000)
 

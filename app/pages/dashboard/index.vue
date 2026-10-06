@@ -3,7 +3,7 @@
         <v-container fluid>
             <h1 class="mb-4">
                 Hi {{ user && !user.preferences.privacyMode && user.profile.firstName.length < 13 ? user.profile.firstName : "there" }}!
-                <v-btn class="float-right mt-3" color="primary" to="/dashboard/charts" title="View charts" icon="mdi-poll" size="small"></v-btn>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="View charts" size="32" icon><v-icon size="small">mdi-poll</v-icon></v-btn>
             </h1>
             <v-alert v-if="stravaStatus" color="error" border="top" class="mb-4">
                 <div class="font-weight-bold">Strava status: {{ stravaStatus }}</div>
@@ -46,10 +46,10 @@
                     <v-card-title class="bg-accent">Last automated activities</v-card-title>
                     <v-card-text class="pl-0 pr-0">
                         <div class="mt-4 pl-4 pr-4" v-if="!activities">
-                            <p>
+                            <div class="mb-4">
                                 <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
                                 Loading recent activities...
-                            </p>
+                            </div>
                         </div>
                         <div class="mt-4 pl-4 pr-4" v-else-if="activities.length == 0">
                             <p>
