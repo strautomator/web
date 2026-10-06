@@ -416,8 +416,6 @@ make run
 2. Starts the Nuxt dev server (`npm run dev`) on **port 3000**, with the scheduled jobs running in the same process. Both the frontend (`app/`) and the Nitro server (`server/`) reload automatically when you change their sources.
 3. If `app.tunnel` is `true`, opens the Cloudflare tunnel.
 
-> The Makefile also tries to copy an optional `country-linkify` package from a maintainer-only folder. **You can ignore the resulting "No such file or directory" messages.**
-
 The first page load takes a few seconds, because Nuxt builds the frontend on demand. Watch the logs for these messages:
 
 ```

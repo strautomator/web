@@ -41,7 +41,7 @@ export default defineNuxtConfig({
         preset: "node-server",
         // The core settings files are loaded relative to the package folder, so it must
         // be fully copied to the output instead of having only the traced files.
-        traceDeps: ["strautomator-core*", "country-linkify*", "setmeup", "anyhow", "express"]
+        traceDeps: ["strautomator-core*", "setmeup", "anyhow"]
     },
 
     // The Vite / Vue build options.

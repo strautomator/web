@@ -3,8 +3,6 @@
 import {paypal, startup, strava} from "strautomator-core"
 import {spawn} from "node:child_process"
 import _ from "lodash"
-import express from "express"
-import countryLinkify from "country-linkify"
 import logger from "anyhow"
 import setmeup from "setmeup"
 const settings = setmeup.settings
@@ -15,8 +13,6 @@ const settings = setmeup.settings
 interface StartupState {
     /** Core startup promise. */
     ready?: Promise<void>
-    /** Express app handling the affiliate links. */
-    affiliatesApp?: express.Express
     /** Tunnel was started? */
     tunnel?: boolean
 }
@@ -34,11 +30,6 @@ export const coreStartup = (): Promise<void> => {
 }
 
 /**
- * Get the affiliate links app (if enabled).
- */
-export const getAffiliatesApp = (): express.Express => state.affiliatesApp
-
-/**
  * Startup routine.
  */
 const run = async (): Promise<void> => {
@@ -48,11 +39,6 @@ const run = async (): Promise<void> => {
         // Enable logging unhandled exceptions and rejections.
         logger.setOptions({uncaughtExceptions: true, unhandledRejections: true})
 
-        // Static files are now served from the public folder.
-        if (settings.affiliates?.images?.path?.includes("./static/")) {
-            settings.affiliates.images.path = settings.affiliates.images.path.replace("./static/", "./public/")
-        }
-
         // Execute the tunnel file?
         if (settings.app.tunnel && !state.tunnel) {
             state.tunnel = true
@@ -60,15 +46,6 @@ const run = async (): Promise<void> => {
             tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString()))
             tunnel.on("error", (err) => logger.error("Tunnel", err))
             tunnel.on("close", (code) => logger.warn("Tunnel", `Closed with code ${code}`))
-        }
-
-        // Setup affiliate links.
-        if (settings.affiliates?.server?.url) {
-            const app = express()
-            app.set("trust proxy", settings.app.trustProxy)
-            await countryLinkify(settings.affiliates, app)
-            state.affiliatesApp = app
-            logger.info("Startup", `Affiliate links available at ${settings.affiliates.server.url}`)
         }
 
         // Setup webhooks in the background.

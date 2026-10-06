@@ -14,7 +14,7 @@ Web frontend and API of Strautomator. Depends on the `strautomator-core` to work
 - `app/`: Nuxt frontend (pages, layouts, components, composables, Pinia store in `app/stores`).
 - `server/api/`: API routes, one file per route and method, mounted at `/api/`.
 - `server/routes/`: auth, MCP OAuth and well-known routes.
-- `server/middleware/`: startup, security headers, rate limiting / Cloudflare, affiliates, redirects and sessions (run in filename order).
+- `server/middleware/`: startup, security headers, rate limiting / Cloudflare, redirects and sessions (run in filename order).
 - `server/utils/`: shared server helpers (auth, sessions, request / response helpers, business logic shared by the API and MCP).
 - `server/mcp/`: MCP server logic.
 
