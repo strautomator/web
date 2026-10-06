@@ -1,13 +1,13 @@
 <template>
     <div class="mt-6 mb-2 text-center" v-if="!hidden">
         <v-card class="mr-3 ml-3">
-            <v-card-title class="bg-accent pt-1 text-body-large">Partner stores and services</v-card-title>
+            <v-card-title class="bg-accent pt-1 text-body-1">Partner stores and services</v-card-title>
             <v-card-text class="bg-grey-lighten-2">
                 <v-row>
                     <v-col :cols="12 / links.length" v-for="link in links" :key="`affiliate-${link.id}`">
                         <a :href="link.url" :target="link.id" :title="link.title">
                             <v-img :src="'https://links.strautomator.com/images/' + link.id + '.png'" max-height="64px" class="mt-1" :alt="link.title" @error="adFailed" v-if="failCount < links.length" />
-                            <span class="font-weight-bold text-md-display-medium" v-else>{{ link.title }}</span>
+                            <span class="font-weight-bold text-md-h3" v-else>{{ link.title }}</span>
                         </a>
                     </v-col>
                 </v-row>

@@ -2,7 +2,7 @@
     <div>
         <v-container fluid>
             <h1>1 year of PRO</h1>
-            <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)">
+            <v-alert border="top" border-color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)">
                 <p>You have a PRO account already! But of course I won't mind if you keep it active and still use the links below.</p>
             </v-alert>
 

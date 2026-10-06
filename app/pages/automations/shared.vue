@@ -50,7 +50,7 @@
                     <p>To share an automation with other users, please use the <v-icon color="primary" size="small">mdi-share-variant</v-icon> icon on the bottom right of the automation panel.</p>
                 </template>
                 <template v-else>
-                    <v-alert class="text-center text-md-left" border="top" border-color="primary" color="primary">
+                    <v-alert class="text-center text-md-left" border="top" border-color="primary">
                         <p>Automation sharing is available to PRO users only.</p>
                         <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded>
                             <v-icon start>mdi-credit-card</v-icon>

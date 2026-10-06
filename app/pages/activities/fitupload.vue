@@ -3,7 +3,7 @@
         <v-container fluid>
             <h1>Upload FIT files</h1>
 
-            <v-alert class="mt-4" border="top" color="error" v-if="!user.isPro" border-color="error">
+            <v-alert class="mt-4" border="top" v-if="!user.isPro" border-color="error">
                 <div class="mt-1">Uploading FIT files is a PRO feature.</div>
                 <v-btn class="mt-3" color="primary" title="Subscribe to PRO" to="/billing" size="small" rounded>
                     <v-icon start>mdi-star</v-icon>
@@ -54,7 +54,7 @@
                         <div class="mb-2">{{ progressText }}</div>
                         <v-progress-linear :model-value="progressValue" color="primary" height="12" rounded striped></v-progress-linear>
                         <div class="mt-4" v-if="results.length > 0">
-                            <div class="text-body-small" v-for="(result, index) in latestResults" :key="`processing-${index}`">
+                            <div class="text-caption" v-for="(result, index) in latestResults" :key="`processing-${index}`">
                                 <v-icon class="mr-1" size="small">{{ getSourceIcon(result) }}</v-icon>
                                 {{ result.filename }}
                             </div>

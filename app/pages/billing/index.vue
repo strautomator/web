@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-container fluid>
-            <div v-if="unsubscribed" class="mt-4 mb-8 text-center text-display-large font-weight-black"><v-icon size="x-large">mdi-emoticon-sad</v-icon></div>
+            <div v-if="unsubscribed" class="mt-4 mb-8 text-center text-h2 font-weight-black"><v-icon size="x-large">mdi-emoticon-sad</v-icon></div>
             <h1 v-else>{{ user.isPro ? "My PRO subscription" : "Get PRO" }}</h1>
             <p>Hi {{ user.profile.firstName }}!</p>
 

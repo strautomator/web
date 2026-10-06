@@ -3,7 +3,7 @@
         <v-container v-if="recipe" fluid>
             <h1>
                 {{ recipe.id ? "Edit" : "New" }} automation
-                <v-btn v-if="recipe.id || templateId" class="float-right mt-3 text-headline-small font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" size="small" icon rounded>
+                <v-btn v-if="recipe.id || templateId" class="float-right mt-3 text-h6 font-weight-bold" color="primary" :title="asJson ? 'Switch to form' : 'Switch to JSON'" @click="toggleMode()" size="32" icon>
                     <v-icon size="small">{{ asJson ? "mdi-form-select" : "mdi-code-json" }}</v-icon>
                 </v-btn>
             </h1>
@@ -63,15 +63,15 @@
                                         ></v-autocomplete>
 
                                         <v-alert color="accent" v-if="jsonSpecsItem" class="mt-n2">
-                                            <div v-if="jsonSpecsItem.value == 'defaultFor'" class="text-body-large font-weight-bold">
+                                            <div v-if="jsonSpecsItem.value == 'defaultFor'" class="text-subtitle-1 font-weight-bold">
                                                 {{ jsonSpecsItem.text }}
                                             </div>
                                             <div v-else-if="jsonSpecsItem.operators">
-                                                <div class="text-body-large">
+                                                <div class="text-subtitle-1">
                                                     Property:
                                                     <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
                                                 </div>
-                                                <div class="text-body-large">
+                                                <div class="text-subtitle-1">
                                                     Value type:
                                                     <span class="font-weight-bold">{{ jsonSpecsItem.type }}</span>
                                                     <span v-if="jsonSpecsItem.type == 'time'">(HH:MM)</span>
@@ -84,7 +84,7 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <div class="text-body-large" v-else>
+                                            <div class="text-subtitle-1" v-else>
                                                 Action: <span class="font-weight-bold">{{ jsonSpecsItem.text }}</span>
                                             </div>
                                             <v-select
@@ -148,7 +148,7 @@
                                 </div>
                             </template>
                         </template>
-                        <v-alert class="mt-3 mb-2 text-body-medium" color="accent" density="compact" v-if="needsDelay(recipe)">Some of these conditions might work best if the "Delayed processing" is enabled on your Account.</v-alert>
+                        <v-alert class="mt-3 mb-2 text-body-2" color="accent" density="compact" v-if="needsDelay(recipe)">Some of these conditions might work best if the "Delayed processing" is enabled on your Account.</v-alert>
                         <div>
                             <v-btn class="ml-n3 mt-2" color="primary" title="Add a new condition" :disabled="!!recipe.defaultFor" @click.stop="showConditionDialog" rounded variant="text" size="small">
                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
@@ -254,7 +254,7 @@
                     </v-row>
                     <template v-if="user.preferences.dateResetCounter">
                         <div class="mt-1">By default counters will auto reset every year on {{ $dayjs(user.preferences.dateResetCounter).format("MMM DD") }}, if you prefer you can disable it.</div>
-                        <div class="mt-1 text-body-small">This setting affects only this counter!</div>
+                        <div class="mt-1 text-caption">This setting affects only this counter!</div>
                         <div class="mt-1 ml-n1">
                             <v-checkbox v-model="recipe.counterNoReset" label="Please do not it reset yearly" title="Disable the counter auto reset" density="compact" color="primary" />
                         </div>

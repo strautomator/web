@@ -177,7 +177,7 @@
             </v-container>
         </section>
 
-        <v-snackbar v-model="showCookieConsent" color="accent" class="text-body-small" :timeout="600000" min-height="68" location="bottom">
+        <v-snackbar v-model="showCookieConsent" color="accent" class="text-caption" :timeout="600000" min-height="68" location="bottom">
             This website is using cookies!
             <template #actions>
                 <v-btn @click="acceptCookies" title="Alright, sir!">Accept</v-btn>

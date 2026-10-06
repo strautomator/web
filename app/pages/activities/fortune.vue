@@ -77,7 +77,7 @@
                             </div>
                         </v-card-text>
                     </v-card>
-                    <v-alert v-if="!user.isPro" class="mt-2" border="top" color="primary" border-color="primary">
+                    <v-alert v-if="!user.isPro" class="mt-2" border="top" border-color="primary">
                         <p>
                             Activity poems auto generated with AI are available to PRO users only.
                             <br v-if="mdAndUp" />
@@ -89,7 +89,7 @@
                         </v-btn>
                     </v-alert>
                 </template>
-                <div class="text-body-small mt-2" v-if="activity">
+                <div class="text-caption mt-2" v-if="activity">
                     AI features are available via the "Generate the activity name" and "Generate a poem" automation actions. PRO users also have the option to get activity analysis on their private notes with AI.
                 </div>
             </template>

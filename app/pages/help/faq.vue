@@ -8,8 +8,8 @@
 
                 <v-text-field v-model="searchValue" :loading="loading" @update:model-value="debounceSearch" label="Strautomator FAQ search" class="mt-2" rounded variant="outlined"></v-text-field>
 
-                <div class="text-center text-body-small mt-n4">Use the field above to search by keywords.</div>
-                <div class="text-center text-body-small mb-6">If you're interested you can also view the <nuxt-link to="/changelog" title="Strautomator updates">changelog</nuxt-link>.</div>
+                <div class="text-center text-caption mt-n4">Use the field above to search by keywords.</div>
+                <div class="text-center text-caption mb-6">If you're interested you can also view the <nuxt-link to="/changelog" title="Strautomator updates">changelog</nuxt-link>.</div>
                 <div v-for="group in groupedQuestions" :key="group.title">
                     <h2 :class="loggedIn ? 'mb-1 ml-1' : 'site-subheading mt-6 mb-2'">{{ group.title }}</h2>
                     <v-alert class="ma-0" v-if="groupedQuestions[0].questions.length == 0">No results found.</v-alert>

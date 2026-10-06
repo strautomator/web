@@ -20,7 +20,9 @@
                         <div class="mt-2 mb-2" v-if="recipe.killSwitch">
                             <v-chip class="mb-0 ml-1" color="removal" title="Stop processing further automations if this one is triggered" variant="outlined" size="small">STOP HERE</v-chip>
                         </div>
-                        <v-btn v-if="user.isPro" class="font-weight-bold float-right mr-n1" color="primary" title="Share this automation" @click="shareRecipe(recipe)" size="small" icon="mdi-share-variant" rounded></v-btn>
+                        <v-btn v-if="user.isPro" class="font-weight-bold float-right mr-n1" color="primary" title="Share this automation" @click="shareRecipe(recipe)" size="small" variant="text" icon
+                            ><v-icon size="small">mdi-share-variant</v-icon></v-btn
+                        >
                         <div class="mt-2 mb-2 mb-md-0" v-if="recipeStats[recipe.id] && recipeStats[recipe.id].dateLastTrigger">
                             <v-chip class="mb-0 ml-1" disabled variant="outlined" size="small">Executed {{ recipeStats[recipe.id].activityCount }}+ times, last: {{ recipeStats[recipe.id].dateLastTrigger }}</v-chip>
                             <v-chip class="mb-0 ml-1 mt-1 mt-md-0" v-if="hasCounter(recipe)" disabled variant="outlined" size="small">Counter: {{ recipe.counterProp ? recipe.counterProp : "" }} {{ recipeStats[recipe.id].counter.toFixed(1) }}</v-chip>
@@ -38,7 +40,7 @@
                 Create new automation
             </v-btn>
             <div v-else-if="recipesRemaining == 0">
-                <v-alert border="top" border-color="primary" color="primary">
+                <v-alert border="top" border-color="primary">
                     <p>
                         You have reached the limit of {{ recipesMaxAllowed }} automations on your free account.
                         <br v-if="mdAndUp" />
@@ -51,7 +53,7 @@
                 </v-alert>
             </div>
             <div v-else-if="recipesRemaining < 0">
-                <v-alert border="top" border-color="error" color="error">
+                <v-alert border="top" border-color="error">
                     <p>
                         You are over the limit of {{ recipesMaxAllowed }} automations on the free account.
                         <br v-if="mdAndUp" />

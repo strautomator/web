@@ -61,7 +61,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <v-alert color="accent" class="mt-4 text-body-small text-center text-md-left pa-2 mb-0" v-if="hasWeather">Weather conditions and tags might not be available for activities older than 1 week.</v-alert>
+                            <v-alert color="accent" class="mt-4 text-caption text-center text-md-left pa-2 mb-0" v-if="hasWeather">Weather conditions and tags might not be available for activities older than 1 week.</v-alert>
                         </v-card-text>
                     </v-card>
                     <div class="mt-4 text-center text-md-left">

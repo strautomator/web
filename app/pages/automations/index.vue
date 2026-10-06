@@ -3,8 +3,8 @@
         <v-container fluid>
             <h1>
                 Automations
-                <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-3 text-headline-small font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" icon="mdi-plus" size="small" rounded></v-btn>
-                <v-btn class="float-right mt-3 text-headline-small font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" icon="mdi-history" size="small" rounded></v-btn>
+                <v-btn v-if="recipesRemaining > 0" class="float-right mt-3 ml-3 text-h6 font-weight-bold" color="primary" to="/automations/edit" title="Create a new automation" size="32" icon>+</v-btn>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" size="32" icon><v-icon size="small">mdi-history</v-icon></v-btn>
             </h1>
             <v-snackbar v-if="route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 New automation "{{ user.recipes[route.query.new as string]?.title || "" }}" created!

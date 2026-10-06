@@ -49,13 +49,13 @@
 
                 <div v-else>
                     <p class="mt-4 mb-6">We welcome all users who have subscribed using PayPal to migrate their PRO subscriptions to <a href="https://paddle.com/about" title="Paddle.com" target="paddle">Paddle.com</a>.</p>
-                    <h4 class="mb-1 text-title-large">Why is Strautomator switching to Paddle?</h4>
+                    <h4 class="mb-1 text-md-h6">Why is Strautomator switching to Paddle?</h4>
                     <p>Paddle is a well established billing platform that supports more payment methods compared to PayPal. Additionally, it acts as a Merchant of Record for Strautomator, taking care of all our billing and payment related tasks.</p>
 
-                    <h4 class="mb-1 text-title-large">Do I need to migrate?</h4>
+                    <h4 class="mb-1 text-md-h6">Do I need to migrate?</h4>
                     <p>No, the PRO subscription migration from PayPal to Paddle is optional.</p>
 
-                    <h4 class="mb-1 text-title-large">What is the migration process?</h4>
+                    <h4 class="mb-1 text-md-h6">What is the migration process?</h4>
                     <p>First, you'll need to proceed and subscribe again using the new Paddle checkout process. Once the new subscription is activated, your previous PayPal subscription will be automatically cancelled.</p>
                     <p>For this migration you'll have the option to keep doing yearly payments, or switch to a lifetime subscription. A partial refund will be issued to your PayPal account in case you decide to stay on the yearly payments option.</p>
                     <v-alert class="bg-accent" v-if="discountLifetime || discountYearly" variant="outlined">

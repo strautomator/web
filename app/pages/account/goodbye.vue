@@ -22,10 +22,10 @@
                         </div>
                     </div>
                     <div v-else>
-                        <p class="text-title-large mb-2">Sad to see you go &#x1F615;</p>
+                        <p class="text-h6 mb-2">Sad to see you go &#x1F615;</p>
                         <p>If you change your mind in the future you can always come back and connect Strautomator to your Strava account again.</p>
                         <p class="mt-12">
-                            <nuxt-link to="/home" title="Back to the homepage..." class="text-body-small">Back to the homepage...</nuxt-link>
+                            <nuxt-link to="/home" title="Back to the homepage..." class="text-caption">Back to the homepage...</nuxt-link>
                         </p>
                     </div>
                 </v-card-text>

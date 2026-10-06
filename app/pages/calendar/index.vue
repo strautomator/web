@@ -40,13 +40,13 @@
                             <v-col cols="5" md="2">
                                 <v-text-field v-model="daysFrom" label="Past" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysFrom" hide-details variant="outlined" rounded density="compact"></v-text-field>
                             </v-col>
-                            <v-col cols="5" class="ml-1 mt-3 text-body-small text-error" v-if="daysFrom > maxDaysFrom">max {{ maxDaysFrom }}</v-col>
+                            <v-col cols="5" class="ml-1 mt-3 text-caption text-error" v-if="daysFrom > maxDaysFrom">max {{ maxDaysFrom }}</v-col>
                         </v-row>
                         <v-row class="mt-3" no-gutters>
                             <v-col cols="5" md="2">
                                 <v-text-field v-model="daysTo" label="Future" class="ml-n1" type="number" suffix="days" min="1" :max="maxDaysTo" hide-details variant="outlined" rounded density="compact"></v-text-field>
                             </v-col>
-                            <v-col cols="5" class="ml-1 mt-3 text-body-small text-error" v-if="daysTo > maxDaysTo">max {{ maxDaysTo }}</v-col>
+                            <v-col cols="5" class="ml-1 mt-3 text-caption text-error" v-if="daysTo > maxDaysTo">max {{ maxDaysTo }}</v-col>
                         </v-row>
                     </div>
 
@@ -69,7 +69,7 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <v-alert v-if="user && !user.isPro" border="top" border-color="primary" color="primary" class="mt-4">
+            <v-alert v-if="user && !user.isPro" border="top" border-color="primary" class="mt-4">
                 <div class="mt-1 text-center text-md-left">
                     Free accounts are limited to activities from the past {{ store.freePlanDetails.pastCalendarDays }} and club events for the next {{ store.freePlanDetails.futureCalendarDays }} days, using the default template.
                     <br v-if="!mdAndUp" />

@@ -60,7 +60,7 @@
                                                     <template v-for="icon in ed.weatherIcons">
                                                         {{ icon }}
                                                     </template>
-                                                    <div class="text-body-small">
+                                                    <div class="text-caption">
                                                         <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
                                                         <template v-else>{{ ed.minTemperature }} / {{ ed.maxTemperature }}</template>
                                                     </div>
@@ -86,7 +86,7 @@
                                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate v-if="loadingWeather"></v-progress-circular>
                                     <div class="ml-1 float-right text-right" v-else>
                                         <div>{{ user.isPro ? ed.weatherIcons.join(" ") : "" }}</div>
-                                        <div class="text-body-small">
+                                        <div class="text-caption">
                                             <template v-if="ed.minTemperature == ed.maxTemperature">{{ ed.minTemperature }}</template>
                                             <template v-else>{{ ed.minTemperature }} / {{ ed.maxTemperature }}</template>
                                         </div>
@@ -100,7 +100,7 @@
                                     <v-divider class="mt-3 mb-1"></v-divider>
                                 </div>
                             </div>
-                            <div class="text-body-small text-md-right" v-if="!user.isPro">* Weather forecast is available to PRO users</div>
+                            <div class="text-caption text-md-right" v-if="!user.isPro">* Weather forecast is available to PRO users</div>
                             <div class="text-center text-md-left mt-4 mt-md-3">
                                 <v-btn color="primary" title="Download routes" @click.stop="showDownloadDialog" :disabled="!routeIds || !user.isPro" size="small" rounded>
                                     <v-icon start>mdi-folder-download</v-icon>
@@ -121,7 +121,7 @@
                     </div>
                 </v-card-text>
             </v-card>
-            <v-alert v-if="user && !user.isPro" border="top" color="primary" class="mt-4">
+            <v-alert v-if="user && !user.isPro" border="top" border-color="primary" class="mt-4">
                 <div class="mt-1 text-center text-md-left">
                     Free accounts do not support Komoot, detailed weather reports or downloads.
                     <br />

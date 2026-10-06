@@ -37,7 +37,7 @@
                                         </v-btn>
                                     </div>
 
-                                    <div class="text-body-small">
+                                    <div class="text-caption">
                                         {{ getDate(activity.dateStart).format("lll") }}
                                         <br />
                                         <template v-if="activity.distance">{{ activity.distance }} {{ user.profile.units == "imperial" ? "mi" : "km" }}</template>
@@ -75,7 +75,7 @@
                         <td :colspan="mdAndUp ? 5 : 2" class="pt-4 pb-4 pb-md-2">
                             <v-row no-gutters>
                                 <v-col :cols="mdAndUp ? 8 : 12">
-                                    <div class="text-body-small ml-4 mb-1">Another activity?</div>
+                                    <div class="text-caption ml-4 mb-1">Another activity?</div>
                                     <div>
                                         <v-text-field v-model="activityId" label="ID or URL" variant="outlined" rounded density="compact"></v-text-field>
                                     </div>

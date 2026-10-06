@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-container fluid>
-            <div class="mt-4 mb-8 text-center text-display-large font-weight-black">Thank you!</div>
+            <div class="mt-4 mb-8 text-center text-h2 font-weight-black">Thank you!</div>
             <v-card>
                 <v-card-text>
                     <p>Hi {{ user.profile.firstName }}!</p>

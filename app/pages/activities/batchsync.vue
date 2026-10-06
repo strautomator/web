@@ -78,7 +78,7 @@
                     </v-card-text>
                 </v-card>
                 <div v-else>
-                    <v-alert color="error" border="top" border-color="error">
+                    <v-alert border="top" border-color="error">
                         <div class="mt-1">You have triggered a batch sync {{ $dayjs(user.dateLastBatchProcessing).fromNow() }}. Please wait at least 24 hours before executing a batch sync again.</div>
                     </v-alert>
                     <v-btn class="mt-1" color="primary" title="Go to my automations history" to="/automations/history" size="small" rounded>

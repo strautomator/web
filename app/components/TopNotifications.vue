@@ -5,8 +5,8 @@
         </v-badge>
         <v-snackbar v-model="visible" color="accent" elevation="5" timeout="-1" :max-width="960" :width="960" min-height="68" location="top" vertical rounded>
             <template v-if="currentNotification">
-                <div class="text-body-large font-weight-bold text-secondary">{{ currentNotification.title }}</div>
-                <div class="text-body-small">{{ $dayjs(currentNotification.dateCreated).format("lll") }}</div>
+                <div class="text-body-1 font-weight-bold text-secondary">{{ currentNotification.title }}</div>
+                <div class="text-caption">{{ $dayjs(currentNotification.dateCreated).format("lll") }}</div>
                 <div class="mt-2">
                     {{ currentNotification.body }}
                     <nuxt-link v-if="currentNotification.href" :to="currentNotification.href" title="Open notification" @click="hidePanel()"><v-icon color="secondary" size="small">mdi-open-in-new</v-icon></nuxt-link>

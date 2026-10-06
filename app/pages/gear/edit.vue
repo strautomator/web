@@ -52,7 +52,7 @@
                                             <span>{{ comp.name }}</span>
                                             <v-icon class="ml-2" v-show="isHovering" size="small">mdi-pencil-outline</v-icon>
                                             <v-spacer></v-spacer>
-                                            <span class="text-grey text-body-small" v-if="comp.disabled">DISABLED</span>
+                                            <span class="text-grey text-caption" v-if="comp.disabled">DISABLED</span>
                                         </v-card-title>
                                     </a>
                                 </v-hover>

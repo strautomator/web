@@ -28,7 +28,7 @@
             </template>
             <template v-else>
                 <div>Which weather provider has the most accurate readings on your location?</div>
-                <div class="text-body-small">Coordinates {{ coordinates.join(" - ") }}, timezone offset {{ tzOffset }}min</div>
+                <div class="text-caption">Coordinates {{ coordinates.join(" - ") }}, timezone offset {{ tzOffset }}min</div>
                 <v-radio-group v-model="weatherProvider">
                     <v-table v-if="mdAndUp">
                         <thead>
@@ -45,7 +45,7 @@
                         <tbody>
                             <tr :class="{'text-white': weatherProvider != summary.id, 'text-primary': weatherProvider == summary.id}" v-for="summary in weatherSummaries" :key="summary.id">
                                 <td @click="setProvider(summary.id)">{{ summary.name }}</td>
-                                <td class="text-headline-medium">{{ summary.icon }}</td>
+                                <td class="text-h5">{{ summary.icon }}</td>
                                 <td>{{ summary.temperature }} (feels {{ summary.feelsLike }})</td>
                                 <td>{{ summary.humidity }}</td>
                                 <td>{{ summary.precipitation || "-" }}</td>
@@ -57,7 +57,7 @@
                     <div v-else>
                         <v-card class="mb-2" v-for="summary in weatherSummaries" :key="summary.id">
                             <v-card-text>
-                                <div class="text-body-large">
+                                <div class="text-subtitle-1">
                                     <span :class="{'text-white': weatherProvider != summary.id, 'text-primary': weatherProvider == summary.id}" @click="setProvider(summary.id)">{{ summary.name }}</span>
                                     <div class="float-right mt-1 mr-n2">
                                         <v-radio :value="summary.id"></v-radio>

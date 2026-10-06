@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-table class="activity-table" :density="mdAndUp ? 'default' : 'compact'">
-            <thead :class="{accent: header}" v-if="mdAndUp">
+            <thead :class="{'bg-accent': header}" v-if="mdAndUp">
                 <tr>
                     <th></th>
                     <th>Original activity</th>
@@ -16,7 +16,7 @@
                     </td>
                     <td class="pt-2 pb-2 table-align-top" :class="{'text-no-wrap': mdAndUp}">
                         <template v-if="!mdAndUp">
-                            <div class="text-body-small float-right text-right ml-2">
+                            <div class="text-caption float-right text-right ml-2">
                                 {{ getDate(activity).format("ll") }}<br />
                                 {{ getDate(activity).format("LT") }}
                                 {{ activity.totalTime ? "- " + getDate(activity).add(activity.totalTime, "seconds").format("LT") : "" }}
@@ -58,7 +58,7 @@
             <br v-if="!mdAndUp" />
             Try the <nuxt-link to="/activities/recent" title="Try your automations with a specific activity">manual activity sync</nuxt-link>.
         </div>
-        <v-alert color="accent" class="text-body-small mt-4 text-center text-md-left ma-4 pa-2" v-if="user?.preferences.privacyMode">Privacy mode is enabled, some details about your processed activities and personal records won't be saved!</v-alert>
+        <v-alert color="accent" class="text-caption mt-4 text-center text-md-left ma-4 pa-2" v-if="user?.preferences.privacyMode">Privacy mode is enabled, some details about your processed activities and personal records won't be saved!</v-alert>
     </div>
 </template>
 

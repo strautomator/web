@@ -3,7 +3,7 @@
         <v-container fluid>
             <h1>
                 Automation history
-                <v-btn class="float-right mt-3 text-headline-small font-weight-bold" color="primary" to="/dashboard/charts" title="Go to automations chart" icon="mdi-poll" size="small" rounded></v-btn>
+                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/dashboard/charts" title="Go to automations chart" size="32" icon><v-icon size="small">mdi-poll</v-icon></v-btn>
             </h1>
 
             <v-card variant="outlined">

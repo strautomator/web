@@ -93,7 +93,7 @@
                             </div>
                         </v-card-text>
                     </v-card>
-                    <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="!user.isPro" border-color="primary">
+                    <v-alert class="mt-5 text-center text-md-left" border="top" v-if="!user.isPro" border-color="primary">
                         <p v-if="gearwearRemaining == 0">
                             You have reached the limit of {{ store.freePlanDetails.maxGearWear }}
                             GearWear configurations on your free account.
@@ -114,7 +114,7 @@
                             account, and you'll see a list of all your device sensors here.
                         </div>
                     </v-alert>
-                    <v-alert class="mt-4 text-center text-md-left text-body-small" v-if="!noGear">
+                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
                         <template v-if="user.isPro">
                             Gear tracking happens instantly for the vast majority of activities processed by Strautomator PRO, but can have a delay of up to {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} to get triggered.
                             <br v-if="mdAndUp" />
@@ -130,7 +130,7 @@
                     </v-alert>
                 </template>
 
-                <v-alert class="mt-5 text-center text-md-left" border="top" color="error" v-if="gearwearRemaining < 0" border-color="error">
+                <v-alert class="mt-5 text-center text-md-left" border="top" v-if="gearwearRemaining < 0" border-color="error">
                     <p>
                         You are over the limit of {{ store.freePlanDetails.maxGearWear }}
                         GearWear configurations on your free account.

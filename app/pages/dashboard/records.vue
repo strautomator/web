@@ -79,7 +79,7 @@
                                 <tr class="mb-1" v-for="recordField in getRecordFields(recordEntry[1])" :key="'td-' + recordField">
                                     <td class="text-capitalize">
                                         <v-icon class="mr-1" :size="!mdAndUp ? 'small' : undefined">{{ getRecordIcon(recordField) }}</v-icon>
-                                        <span :class="!mdAndUp ? 'text-body-small' : ''">{{ camelCaseName(recordField) }}</span>
+                                        <span :class="!mdAndUp ? 'text-caption' : ''">{{ camelCaseName(recordField) }}</span>
                                     </td>
                                     <td>
                                         <a @click="showEditDialog(recordEntry, recordField)">{{ getRecordValue(recordEntry[1], recordField) }}</a>
