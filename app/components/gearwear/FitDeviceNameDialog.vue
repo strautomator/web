@@ -66,6 +66,15 @@ watch(
     {immediate: true}
 )
 
+watch(
+    () => props.showDialog,
+    (open) => {
+        if (!open) return
+        deviceNameModel.value = props.deviceName || ""
+        serverError.value = []
+    }
+)
+
 /**
  * Hide the dialog and report the final action to the parent.
  */

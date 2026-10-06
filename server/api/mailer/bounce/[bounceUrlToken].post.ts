@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
                 .digest()
         const bounceUrlToken = getRouterParam(event, "bounceUrlToken", {decode: true}) as string
         if (!crypto.timingSafeEqual(tokenHash(bounceUrlToken), tokenHash(settings.mailer.bounceUrlToken))) {
-            return renderError(event, "Invalid URL bounce token", 401)
+            return renderError(event, "Invalid URL bounce token", 404)
         }
 
         let body: any = await event.req.text()

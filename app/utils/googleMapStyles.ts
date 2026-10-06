@@ -1,9 +1,18 @@
 // Strautomator Web: Custom Google Maps styles
 
 /**
+ * A single Google Maps style rule.
+ */
+export interface GoogleMapStyle {
+    featureType: string
+    elementType: string
+    stylers: {[key: string]: string | number}[]
+}
+
+/**
  * Custom Google Maps styles used on the map page.
  */
-export const googleMapStyles: Record<string, any[]> = {
+export const googleMapStyles: Record<string, GoogleMapStyle[]> = {
     bikeLight: [
         {
             featureType: "administrative",

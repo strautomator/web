@@ -98,8 +98,8 @@ const saveEmail = async () => {
     } catch (ex: any) {
         saving.value = false
 
-        if (ex.response && ex.response.data?.message) {
-            serverError.value = [ex.response.data.message]
+        if (ex.data?.message || ex.response?._data?.message || ex.response?.data?.message) {
+            serverError.value = [ex.data?.message || ex.response?._data?.message || ex.response?.data?.message]
         } else {
             webError("EmailDialog.saveEmail", ex)
         }

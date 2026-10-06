@@ -1,6 +1,7 @@
 // Strautomator Web: Request and response helpers
 
 import {getQuery, getRequestHeader, getRequestHeaders, getRequestIP, getRouterParam, getRouterParams, readBody, type RequestEvent} from "nuxt/server"
+import {Buffer} from "node:buffer"
 import _ from "lodash"
 import logger from "anyhow"
 import setmeup from "setmeup"
@@ -87,13 +88,52 @@ export const validateUrlToken = (event: RequestEvent, urlToken: string): void =>
 
 /**
  * Read the request body (cached, so it can be read multiple times and logged on errors).
+ * GET and HEAD are skipped unless allowGet is set, because those methods normally have no body.
  * @param event The request event.
+ * @param options.allowGet Also read the body of GET and HEAD requests.
  */
-export const getBody = async <T = any>(event: RequestEvent): Promise<T> => {
+export const getBody = async <T = any>(event: RequestEvent, options?: {allowGet?: boolean}): Promise<T> => {
     if (!("requestBody" in event.context)) {
-        event.context.requestBody = event.req.body && !["GET", "HEAD"].includes(event.req.method) ? await readBody(event) : undefined
+        const skipBody = !options?.allowGet && ["GET", "HEAD"].includes(event.req.method)
+        event.context.requestBody = event.req.body && !skipBody ? await readBody(event) : undefined
     }
     return event.context.requestBody as T
+}
+
+/** Default raw body limit, matching body-parser's 100kb default. */
+const defaultRawBodyLimit = 100 * 1024
+
+/**
+ * Read the raw request body, rejecting payloads over the limit (including chunked requests).
+ * @param event The request event.
+ * @param limit Maximum number of bytes, defaults to 100kb.
+ */
+export const readRawBody = async (event: RequestEvent, limit: number = defaultRawBodyLimit): Promise<Buffer> => {
+    const declared = parseInt(getRequestHeader(event, "content-length") || "")
+    if (Number.isFinite(declared) && declared > limit) {
+        throw new WebError("Payload too large", 413)
+    }
+
+    if (!event.req.body) {
+        return Buffer.alloc(0)
+    }
+
+    const reader = event.req.body.getReader()
+    const chunks: Uint8Array[] = []
+    let total = 0
+
+    while (true) {
+        const {done, value} = await reader.read()
+        if (done) break
+        total += value.byteLength
+        if (total > limit) {
+            await reader.cancel()
+            throw new WebError("Payload too large", 413)
+        }
+        chunks.push(value)
+    }
+
+    return Buffer.concat(chunks)
 }
 
 /**

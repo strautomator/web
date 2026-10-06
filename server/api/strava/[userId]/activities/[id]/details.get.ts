@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
         const activity = await strava.activities.getActivity(user, activityId.toString())
         return renderJson(event, activity)
     } catch (ex) {
-        const errorMessage = ex.message || ex.toString().toLowerCase()
-        const status = errorMessage.includes("not found") ? 404 : 500
-        return renderError(event, errorMessage, status)
+        const errorMessage = (ex.message || ex.toString()).toLowerCase()
+        const status = errorMessage.includes("not found") ? 404 : ex.status || ex.statusCode
+        return renderError(event, ex, status)
     }
 })

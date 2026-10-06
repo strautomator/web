@@ -8,6 +8,13 @@ import setmeup from "setmeup"
 const settings = setmeup.settings
 
 /**
+ * Escape text inserted into the HTML notification body.
+ */
+const escapeHtml = (value: string): string => {
+    return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+}
+
+/**
  * Cancel an existing Friend subscription.
  */
 export default defineEventHandler(async (event) => {
@@ -22,7 +29,7 @@ export default defineEventHandler(async (event) => {
             mailer.send({
                 to: settings.mailer.from,
                 subject: `Strautomator friend subscription cancelled: ${user.id}`,
-                body: `User ${user.displayName} (${user.email || "no email"}) unsubscribed.<br>Reason: ${body.reason.toString()}`
+                body: `User ${escapeHtml(user.displayName || "")} (${escapeHtml(user.email || "no email")}) unsubscribed.<br>Reason: ${escapeHtml(body.reason.toString())}`
             })
         }
 

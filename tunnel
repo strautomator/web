@@ -2,7 +2,24 @@
 
 cloudflared tunnel --config .cloudflared/config.yml run &
 TUNNEL=$!
-trap 'kill $TUNNEL 2>/dev/null' EXIT INT TERM HUP
 
 # Stop the tunnel once stdin is closed (when the parent server process is gone).
-cat > /dev/null
+cat > /dev/null &
+WAIT_STDIN=$!
+
+trap 'kill $TUNNEL $WAIT_STDIN 2>/dev/null' EXIT INT TERM HUP
+
+# Exit when cloudflared exits so the parent can warn that the public URL is down.
+# Also exit when stdin closes, which means the parent server is gone.
+while kill -0 "$TUNNEL" 2>/dev/null && kill -0 "$WAIT_STDIN" 2>/dev/null; do
+    sleep 1
+done
+
+if kill -0 "$TUNNEL" 2>/dev/null; then
+    kill "$TUNNEL" 2>/dev/null
+    wait "$TUNNEL" 2>/dev/null
+    exit 0
+fi
+
+wait "$TUNNEL"
+exit $?

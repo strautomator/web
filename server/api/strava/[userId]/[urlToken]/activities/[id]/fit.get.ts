@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         const userId = getRouterParam(event, "userId", {decode: true})
         const urlToken = getRouterParam(event, "urlToken", {decode: true})
         const user = await users.getById(userId as string)
-        if (!user) return
+        if (!user) throw new Error("User not found")
         if (!user.isPro) throw new Error("FIT file downloads are available to PRO users only")
         if (user.urlToken != urlToken) throw new Error(`Download not found`)
         const activityId = getRequiredParam(event, "id", "Missing activity ID")

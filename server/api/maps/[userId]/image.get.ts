@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
             longitude: latlong[1] as any
         }
 
-        const style: any = query.sttyle
+        const style: any = query.style || query.sttyle
         const size: any = query.size
         const zoom: any = query.zoom
         const circle: any = query.circle

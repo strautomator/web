@@ -17,6 +17,6 @@ export default defineEventHandler(async (event) => {
         return renderJson(event, processedActivity || {processed: false})
     } catch (ex) {
         const errorMessage = ex.toString()
-        return renderError(event, ex, errorMessage.includes("not found") ? 404 : 500)
+        return renderError(event, ex, errorMessage.includes("not found") ? 404 : ex.status || ex.statusCode)
     }
 })

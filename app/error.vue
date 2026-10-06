@@ -48,7 +48,7 @@ const {login} = useAuth()
 const status = computed(() => {
     const errMessage = props.error?.message || ""
     if (errMessage.includes("status code 401")) return 401
-    return props.error?.status || 500
+    return props.error?.status || props.error?.statusCode || 500
 })
 
 const errorDetails = computed(() => {

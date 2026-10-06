@@ -2,7 +2,7 @@
 
 import {paddle, users} from "strautomator-core"
 import type {UserData} from "strautomator-core"
-import {defineEventHandler, getRouterParam} from "nuxt/server"
+import {defineEventHandler} from "nuxt/server"
 import {requestValidator} from "../../../utils/auth"
 import {getBody, renderError, renderJson} from "../../../utils/web"
 import logger from "anyhow"
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
             throw new Error("Missing Paddle ID")
         }
 
-        if (getRouterParam(event, "migration") == "1") {
+        if (event.url.searchParams.get("migration") == "1") {
             logger.info("Routes.paddle", `User ${user.id} started migration of PayPal ${user.subscriptionId} to Paddle`)
         }
 

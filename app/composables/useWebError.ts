@@ -49,6 +49,7 @@ export const useWebError = () => {
 
             console.error(method, ex)
 
+            if (typeof title != "string") title = String(title ?? "")
             if (title.endsWith(".")) {
                 title = title.substring(0, title.length - 1)
             }

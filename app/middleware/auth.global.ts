@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware((to) => {
     }
 
     const store = useMainStore()
-    if (!store.oauth?.accessToken) {
+    if (!store.isLoggedIn) {
         return navigateTo(`/auth/login?redirect-url=${encodeURIComponent(to.fullPath)}`, {external: true, redirectCode: 302})
     }
 })

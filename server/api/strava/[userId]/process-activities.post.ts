@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
         const filterType = body.filterType ? body.filterType : "all"
 
         if (!dateFrom || !dateFrom.isValid()) throw new Error(`Invalid "from" date`)
-        if (dateTo && !dateTo.isValid()) throw new Error(`Invalid "to" date`)
+        if (!dateTo || !dateTo.isValid()) throw new Error(`Invalid "to" date`)
 
         if (user.dateLastBatchProcessing && dayjs().subtract(settings.strava.processingQueue.batchPerHours, "hours").isBefore(user.dateLastBatchProcessing)) {
             throw new Error(`Only a single batch operation allowed every ${settings.strava.processingQueue.batchPerHours} hour(s)`)
@@ -36,6 +36,8 @@ export default defineEventHandler(async (event) => {
         else if (filterPrivacy == "public") filter.private = false
         if (filterType == "commute") filter.commute = true
         else if (filterType == "notCommute") filter.commute = false
+        else if (filterType == "race") filter.race = true
+        else if (filterType == "notRace") filter.race = false
         if (filterSport != "all") filter.sportType = filterSport
 
         const activityCount = await strava.activityProcessing.batchProcessActivities(user, dateFrom.startOf("day"), dateTo.endOf("day"), filter)

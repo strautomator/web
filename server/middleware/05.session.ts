@@ -6,9 +6,10 @@ import {commitSession} from "../utils/session"
 import {getAppInitState} from "../utils/appinit"
 
 /**
- * Paths that are not handled by the session middleware.
+ * Paths and static files that are not handled by the session middleware.
  */
-const skipPaths = ["/api/", "/auth/", "/mcp", "/.well-known/", "/_"]
+const skipPaths = ["/api/", "/auth/", "/mcp", "/.well-known/", "/_", "/images/", "/fonts/"]
+const staticAsset = /\.(?:svg|png|jpe?g|gif|webp|ico|css|js|map|woff2?|ttf|txt|xml|webmanifest)$/i
 
 /**
  * On page requests, check the session and refresh the Strava token when necessary,
@@ -16,7 +17,7 @@ const skipPaths = ["/api/", "/auth/", "/mcp", "/.well-known/", "/_"]
  */
 export default defineEventHandler(async (event) => {
     const path = event.url.pathname
-    if (skipPaths.some((p) => path.startsWith(p))) {
+    if (skipPaths.some((p) => path.startsWith(p)) || staticAsset.test(path)) {
         return
     }
 

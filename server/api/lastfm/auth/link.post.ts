@@ -30,6 +30,6 @@ export default defineEventHandler(async (event) => {
         if (ex.response?.status == 404) {
             return renderError(event, "User not found", 404)
         }
-        return renderError(event, ex, 400)
+        return renderError(event, ex, ex?.status || ex?.statusCode || 400)
     }
 })

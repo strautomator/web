@@ -296,7 +296,7 @@ export const emptyResponse = (event: RequestEvent, status: number = 200, cors: b
  */
 export const setWwwAuthenticate = (event: RequestEvent, response?: Response, extra?: string): void => {
     const config = getMcpConfig()
-    const parts = [`******"Strautomator"`, `resource_metadata="${config.issuer}/.well-known/oauth-protected-resource"`, `scope="${config.scope}"`]
+    const parts = [`Bearer realm="Strautomator"`, `resource_metadata="${config.issuer}/.well-known/oauth-protected-resource"`, `scope="${config.scope}"`]
     if (extra) {
         parts.push(extra)
     }

@@ -56,6 +56,15 @@ export default defineEventHandler((event) => {
         entry.count++
 
         const remaining = Math.max(rateLimit.max - entry.count, 0)
+
+        // express-rate-limit sends X-RateLimit-* unless legacyHeaders is turned off.
+        const legacyHeaders = rateLimit.headers ?? rateLimit.legacyHeaders ?? true
+        if (legacyHeaders) {
+            event.res.headers.set("X-RateLimit-Limit", rateLimit.max.toString())
+            event.res.headers.set("X-RateLimit-Remaining", remaining.toString())
+            event.res.headers.set("X-RateLimit-Reset", Math.ceil(entry.resetAt / 1000).toString())
+            event.res.headers.set("Date", new Date().toUTCString())
+        }
         if (rateLimit.standardHeaders) {
             event.res.headers.set("RateLimit-Policy", `${rateLimit.max};w=${Math.ceil(windowMs / 1000)}`)
             event.res.headers.set("RateLimit-Limit", rateLimit.max.toString())

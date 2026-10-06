@@ -27,8 +27,13 @@ export default defineEventHandler(async (event) => {
             return renderError(event, `${logHelper.user(user)} reached limit of ${max} GearWear on free accounts`, 400)
         }
 
-        if (body.disabled === false && existingConfig.disabled) {
-            await gearwear.reEnable(user, existingConfig)
+        if (body?.disabled === false) {
+            if (!existingConfig) {
+                return renderError(event, `No configuration found for gear ${gearId}`, 404)
+            }
+            if (existingConfig.disabled) {
+                await gearwear.reEnable(user, existingConfig)
+            }
             return renderJson(event, {ok: true})
         }
 

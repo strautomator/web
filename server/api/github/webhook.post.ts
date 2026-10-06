@@ -4,7 +4,7 @@ import {github} from "strautomator-core"
 import {defineEventHandler, getRequestHeader} from "nuxt/server"
 import {Buffer} from "node:buffer"
 import crypto from "node:crypto"
-import {renderError, renderJson, toCoreRequest} from "../../utils/web"
+import {readRawBody, renderError, renderJson, toCoreRequest} from "../../utils/web"
 import setmeup from "setmeup"
 const settings = setmeup.settings
 
@@ -47,8 +47,15 @@ const validateWebhook = (body: any, rawBody: Buffer, sig256?: string, sigLegacy?
  */
 export default defineEventHandler(async (event) => {
     try {
-        const rawBody = Buffer.from(await event.req.arrayBuffer())
-        const body = rawBody.length > 0 ? JSON.parse(rawBody.toString("utf8")) : null
+        const rawBody = await readRawBody(event)
+        let body: any = null
+        if (rawBody.length > 0) {
+            try {
+                body = JSON.parse(rawBody.toString("utf8"))
+            } catch {
+                return renderError(event, "Invalid JSON", 400)
+            }
+        }
         const sig256 = getRequestHeader(event, "x-hub-signature-256")
         const sigLegacy = getRequestHeader(event, "x-hub-signature")
 

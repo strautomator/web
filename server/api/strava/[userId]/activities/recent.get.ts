@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
         const query = getQuery(event)
 
         let limit: number = query.limit ? parseInt(query.limit as string) : 10
+        if (!Number.isFinite(limit) || limit < 1) limit = 10
         if (limit > 50) limit = 50
 
         let dateFrom = query.since ? dayjs.unix(parseInt(query.since as string)) : dayjs().subtract(30, "days")

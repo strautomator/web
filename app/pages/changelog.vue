@@ -48,33 +48,27 @@ const api = useApi()
 const webError = useWebError()
 const {mdAndUp} = useDisplay()
 
-const releases = ref<Record<string, any[]>>(null)
 const limit = ref(20)
-const loading = ref(true)
 const backTarget = computed(() => (store.user ? "to the Dashboard" : "home"))
 
-/**
- * Load GitHub releases and group them by publication date.
- */
-const getReleases = async () => {
-    loading.value = true
-    try {
-        const data: any[] = await api("/api/github/changelog", {query: {limit: limit.value}})
-        releases.value = _.groupBy(data, (r) => r.datePublished.split("T")[0])
-    } catch (ex) {
-        webError("Changelog.fetch", ex)
-    }
-    loading.value = false
-}
+const {data, pending: loading, error} = await useAsyncData("github-changelog", () => api("/api/github/changelog", {query: {limit: limit.value}}), {watch: [limit]})
 
-const loadMore = async () => {
+watch(
+    error,
+    (ex) => {
+        if (ex) webError("Changelog.fetch", ex)
+    },
+    {immediate: true}
+)
+
+const releases = computed(() => _.groupBy((data.value || []) as any[], (r) => r.datePublished.split("T")[0]))
+
+const loadMore = () => {
     limit.value = 0
-    await getReleases()
 }
 
 const goBack = () => {
     document.location.href = store.user ? "/dashboard" : "/home"
 }
 
-onMounted(getReleases)
 </script>

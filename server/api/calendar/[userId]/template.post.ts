@@ -21,6 +21,6 @@ export default defineEventHandler(async (event) => {
         await users.setCalendarTemplate(user, template)
         return renderJson(event, {ok: true})
     } catch (ex) {
-        return renderError(event, ex, 400)
+        return renderError(event, ex, ex?.status || ex?.statusCode || 400)
     }
 })

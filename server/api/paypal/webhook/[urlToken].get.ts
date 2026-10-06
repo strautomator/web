@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
             return renderError(event, "Invalid URL token", 401)
         }
 
-        const data = await getBody(event)
+        const data = await getBody(event, {allowGet: true})
         if (!data) {
             return renderError(event, "Missing request body", 400)
         }

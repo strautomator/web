@@ -3,7 +3,7 @@
 import {notifications} from "strautomator-core"
 import {defineEventHandler} from "nuxt/server"
 import {requestValidator} from "../../../utils/auth"
-import {getBody, renderJson} from "../../../utils/web"
+import {getBody, renderError, renderJson, WebError} from "../../../utils/web"
 import _ from "lodash"
 import logger from "anyhow"
 
@@ -23,6 +23,9 @@ export default defineEventHandler(async (event) => {
             if (read) result.push(id)
         }
     } catch (ex) {
+        if (ex instanceof WebError) {
+            return renderError(event, ex)
+        }
         logger.error("Routes.notifications", event.req.method, event.url.pathname + event.url.search, ex)
     }
 
