@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="AI insights for your activities" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -29,27 +29,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-automations />
+            <buttons-automations />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAutomations from "~/components/buttons/Automations.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAutomations},
-    head() {
-        return {
-            title: "Better (and private) AI insights for your Strava activities"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Better (and private) AI insights for your Strava activities"})
 </script>

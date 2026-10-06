@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Track your equipment mileage" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -37,27 +37,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-gear />
+            <buttons-gear />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnGear from "~/components/buttons/Gear.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnGear},
-    head() {
-        return {
-            title: "Track your Strava equipment mileage"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Track your Strava equipment mileage"})
 </script>

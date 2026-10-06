@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Weather data on your activities" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -30,40 +30,15 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-automations />
+            <buttons-automations />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAutomations from "~/components/buttons/Automations.vue"
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Weather data on your Strava activities"})
 
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAutomations},
-    head() {
-        return {
-            title: "Weather data on your Strava activities"
-        }
-    },
-    data() {
-        const providers = []
-
-        for (let p of this.$store.state.weatherProviders) {
-            if (p.value != null) {
-                providers.push(p.text)
-            }
-        }
-
-        return {
-            providers: providers
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+const store = useMainStore()
+const providers = computed(() => store.weatherProviders.filter((p) => p.value != null).map((p) => p.title))
 </script>

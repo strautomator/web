@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Track your sensor batteries" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -20,7 +20,7 @@
 
                     <h2 class="mb-2">Calendar and notifications</h2>
                     <p>
-                        The battery tracking is integrated with exported <n-link to="/feature/calendar" nuxt>calendars</n-link>, so you will see an event whenever a sensor battery status is low or critical. Users might also opt-in to get an email
+                        The battery tracking is integrated with exported <nuxt-link to="/feature/calendar">calendars</nuxt-link>, so you will see an event whenever a sensor battery status is low or critical. Users might also opt-in to get an email
                         with a reminder to recharge or replace affected batteries.
                     </p>
                 </div>
@@ -28,27 +28,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-gear />
+            <buttons-gear />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnGear from "~/components/buttons/Gear.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnGear},
-    head() {
-        return {
-            title: "Track your sensor batteries from Strava activities"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Track your sensor batteries from Strava activities"})
 </script>

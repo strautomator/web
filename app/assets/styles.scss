@@ -46,7 +46,7 @@ a {
     max-width: 960px !important;
 }
 
-.v-dialog .headline {
+.v-dialog .text-headline-small {
     margin-bottom: 16px;
 }
 
@@ -54,7 +54,7 @@ a {
     background: Transparent !important;
 }
 
-.v-chip:before {
+.v-chip .v-chip__overlay {
     background: transparent !important;
 }
 
@@ -107,7 +107,9 @@ a {
 }
 
 .home-wrapper .fade-out-in {
-    transition: visibility 0s, opacity 1s linear;
+    transition:
+        visibility 0s,
+        opacity 1s linear;
 }
 .home-wrapper .fade-out-in.hidden {
     opacity: 0;
@@ -283,7 +285,9 @@ a {
 .tooltip[aria-hidden="true"] {
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.15s, visibility 0.15s;
+    transition:
+        opacity 0.15s,
+        visibility 0.15s;
 }
 .tooltip[aria-hidden="false"] {
     visibility: visible;
@@ -423,11 +427,14 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 @mixin site-shot($radius) {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: $radius;
-    box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.9), 0 0 60px -20px rgba(255, 160, 0, 0.4);
+    box-shadow:
+        0 25px 60px -20px rgba(0, 0, 0, 0.9),
+        0 0 60px -20px rgba(255, 160, 0, 0.4);
 }
 
 .site-page,
-.theme--dark.v-application.site-page {
+.v-application.site-page,
+.v-theme--dark.v-application.site-page {
     background: $site-bg;
 }
 
@@ -507,7 +514,7 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     margin-top: 8px;
 }
 
-.site-page .v-expansion-panels .v-expansion-panel::before {
+.site-page .v-expansion-panels .v-expansion-panel__shadow {
     box-shadow: none;
 }
 
@@ -520,7 +527,10 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     height: 100%;
     padding: 26px;
     position: relative;
-    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
+    transition:
+        transform 200ms,
+        border-color 200ms,
+        box-shadow 200ms;
 }
 
 .site-shot {
@@ -579,11 +589,15 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     display: flex;
     font-size: 0.95rem;
     padding: 12px 14px;
-    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
+    transition:
+        transform 200ms,
+        border-color 200ms,
+        box-shadow 200ms;
 }
 
 .feature-link:hover,
-.feature-link.nuxt-link-exact-active {
+.feature-link.nuxt-link-exact-active,
+.feature-link.router-link-exact-active {
     border-color: rgba(255, 160, 0, 0.6);
     box-shadow: 0 10px 30px -15px rgba(255, 160, 0, 0.5);
 }
@@ -616,7 +630,7 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     margin-bottom: 64px;
 }
 
-.feature .v-card.home-panel.black {
+.feature .v-card.home-panel {
     @include site-surface;
     background-color: rgba(255, 255, 255, 0.035) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
@@ -639,7 +653,7 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
     margin-top: 8px;
 }
 
-.feature .home-panel .v-image {
+.feature .home-panel .v-img {
     @include site-shot(12px);
 }
 
@@ -678,16 +692,16 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 
 /* Help pages */
 
-.v-expansion-panel-header {
+.v-expansion-panel-title {
     line-height: 22px;
 }
 
-.v-expansion-panel-header--active {
+.v-expansion-panel-title--active {
     color: #fff8e1;
     font-weight: bold;
 }
 
-.v-expansion-panel-content {
+.v-expansion-panel-text {
     padding-top: 8px;
 }
 

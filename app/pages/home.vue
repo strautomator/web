@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid class="site-page hp">
+    <div class="site-page hp">
         <section class="hp-hero site-glow">
             <div class="hp-hero-glow"></div>
             <v-container class="hp-hero-container">
@@ -18,7 +18,7 @@
 
                     <v-col cols="12" md="5">
                         <div class="hp-rules">
-                            <div class="hp-rules-title"><v-icon small color="primary" left>mdi-lightning-bolt</v-icon>Automations at work</div>
+                            <div class="hp-rules-title"><v-icon size="small" color="primary" start>mdi-lightning-bolt</v-icon>Automations at work</div>
                             <div class="hp-rules-list">
                                 <transition name="hp-fade">
                                     <div :key="samplesRound" class="hp-rules-set">
@@ -34,7 +34,7 @@
                 </v-row>
             </v-container>
 
-            <div class="text-center pt-10"><connect-strava /></div>
+            <div class="text-center pt-10"><buttons-connect-strava /></div>
         </section>
 
         <section class="hp-section hp-section-alt">
@@ -44,17 +44,17 @@
 
                 <v-row class="mt-6">
                     <v-col v-for="feature in features" :key="feature.title" cols="12" sm="6" md="4">
-                        <n-link :to="feature.link" class="hp-link" nuxt>
+                        <nuxt-link :to="feature.link" class="hp-link">
                             <div class="site-card hp-feature">
                                 <div class="hp-icon">
                                     <v-icon size="28" color="primary">{{ feature.icon }}</v-icon>
                                 </div>
-                                <v-chip v-if="feature.pro" class="hp-pro-chip" color="primary" x-small outlined>PRO</v-chip>
+                                <v-chip v-if="feature.pro" class="hp-pro-chip" color="primary" size="x-small" variant="outlined">PRO</v-chip>
                                 <h3>{{ feature.title }}</h3>
                                 <p>{{ feature.text }}</p>
-                                <span class="hp-more">Learn more <v-icon small color="primary">mdi-arrow-right</v-icon></span>
+                                <span class="hp-more">Learn more <v-icon size="small" color="primary">mdi-arrow-right</v-icon></span>
                             </div>
-                        </n-link>
+                        </nuxt-link>
                     </v-col>
                 </v-row>
             </v-container>
@@ -68,11 +68,11 @@
                         <h2 class="hp-spot-title">{{ spot.title }}</h2>
                         <p class="hp-spot-text">{{ spot.text }}</p>
                         <ul class="hp-checks">
-                            <li v-for="point in spot.points" :key="point"><v-icon small color="primary" left>mdi-check-circle</v-icon>{{ point }}</li>
+                            <li v-for="point in spot.points" :key="point"><v-icon size="small" color="primary" start>mdi-check-circle</v-icon>{{ point }}</li>
                         </ul>
-                        <v-btn :to="spot.link" color="primary" outlined rounded nuxt>
+                        <v-btn :to="spot.link" color="primary" variant="outlined" rounded>
                             Explore
-                            <v-icon right>mdi-arrow-right</v-icon>
+                            <v-icon end>mdi-arrow-right</v-icon>
                         </v-btn>
                     </v-col>
                     <v-col cols="12" md="6" class="text-center">
@@ -106,12 +106,12 @@
                             <div class="hp-plan-price">{{ currencySymbol }}0</div>
                             <div class="hp-plan-note">forever</div>
                             <ul class="hp-checks">
-                                <li><v-icon small left>mdi-check</v-icon>{{ freePlanDetails.maxRecipes }} automations</li>
-                                <li><v-icon small left>mdi-check</v-icon>{{ freePlanDetails.maxGearWear }} GearWear configurations</li>
-                                <li><v-icon small left>mdi-check</v-icon>Single weather provider</li>
-                                <li><v-icon small left>mdi-check</v-icon>Limited AI features</li>
-                                <li><v-icon small left>mdi-check</v-icon>Calendar export ({{ freePlanDetails.pastCalendarDays }} to {{ freePlanDetails.futureCalendarDays }} days)</li>
-                                <li><v-icon small left>mdi-check</v-icon>Personal records for bike and run</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>{{ freePlanDetails.maxRecipes }} automations</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>{{ freePlanDetails.maxGearWear }} GearWear configurations</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>Single weather provider</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>Limited AI features</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>Calendar export ({{ freePlanDetails.pastCalendarDays }} to {{ freePlanDetails.futureCalendarDays }} days)</li>
+                                <li><v-icon size="small" start>mdi-check</v-icon>Personal records for bike and run</li>
                             </ul>
                         </div>
                     </v-col>
@@ -122,17 +122,17 @@
                             <div class="hp-plan-price">{{ currencySymbol }}{{ yearlyPrice }} / year</div>
                             <div class="hp-plan-note">or {{ currencySymbol }}{{ lifetimePrice }} once for lifetime access</div>
                             <ul class="hp-checks">
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Unlimited automations and GearWear</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Shared automations</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Multiple weather providers</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Extended AI features, multiple AI providers</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Extended calendar export</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Personal records for all sports</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Garmin and Wahoo sensors and battery tracking</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Spotify lyrics and track list</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>Automatic FTP estimation and update</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>MCP server</li>
-                                <li><v-icon small left color="primary">mdi-check-all</v-icon>No ads, no backlinks</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Unlimited automations and GearWear</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Shared automations</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Multiple weather providers</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Extended AI features, multiple AI providers</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Extended calendar export</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Personal records for all sports</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Garmin and Wahoo sensors and battery tracking</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Spotify lyrics and track list</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>Automatic FTP estimation and update</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>MCP server</li>
+                                <li><v-icon size="small" start color="primary">mdi-check-all</v-icon>No ads, no backlinks</li>
                             </ul>
                         </div>
                     </v-col>
@@ -160,8 +160,8 @@
                             Strautomator is fully open source, licensed under the AGPL-3.0. Everyone is welcome to view, edit and contribute. And if you are well versed in tech, you can self-host your own instance of the service! PRO features, for
                             free.
                         </p>
-                        <v-btn href="https://github.com/strautomator" target="github" color="primary" outlined rounded>
-                            <v-icon left>mdi-github</v-icon>
+                        <v-btn href="https://github.com/strautomator" target="github" color="primary" variant="outlined" rounded>
+                            <v-icon start>mdi-github</v-icon>
                             View on GitHub
                         </v-btn>
                     </div>
@@ -173,23 +173,34 @@
             <v-container class="text-center">
                 <h2 class="site-headline site-headline-cta">Turbocharge <span class="gradient-text">your Strava experience</span></h2>
                 <p class="site-lead mx-auto">Connect your Strava account today!</p>
-                <div class="mt-6"><connect-strava /></div>
+                <div class="mt-6"><buttons-connect-strava /></div>
             </v-container>
         </section>
 
-        <v-snackbar v-model="showCookieConsent" color="accent" class="caption" :timeout="600000" multi-line bottom>
+        <v-snackbar v-model="showCookieConsent" color="accent" class="text-body-small" :timeout="600000" min-height="68" location="bottom">
             This website is using cookies!
-            <template v-slot:action="{attrs}">
-                <v-btn v-bind="attrs" @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
+            <template #actions>
+                <v-btn @click="acceptCookies" title="Alright, sir!">Accept</v-btn>
             </template>
         </v-snackbar>
-    </v-main>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
-import ConnectStrava from "~/components/buttons/ConnectStrava.vue"
-import subscriptionMixin from "~/mixins/subscriptionMixin.js"
+
+interface SampleRule {
+    condition: string
+    action: string
+}
+
+interface HomeFeature {
+    icon: string
+    title: string
+    text: string
+    link: string
+    pro?: boolean
+}
 
 const allSamples = [
     {condition: "ride starts at home and ends at the office", action: "mark it as commute and set bike to 'Cityrad'"},
@@ -224,110 +235,85 @@ const allFeatures = [
     {icon: "mdi-connection", title: "MCP access", text: "Connect Cursor, Claude and other agents to your account, and manage everything by chatting.", link: "/feature/mcp", pro: true}
 ]
 
-export default {
-    layout: "landing",
-    mixins: [subscriptionMixin],
-    components: {ConnectStrava},
-    head() {
-        return {
-            title: "Your Strava, on autopilot"
-        }
-    },
-    // Randomized here so the server and client render the exact same content when hydrating.
-    asyncData() {
-        return {
-            samples: _.sampleSize(allSamples, 4),
-            features: _.shuffle(allFeatures)
-        }
-    },
-    data() {
-        let displayCookieConsent = true
-        try {
-            displayCookieConsent = !(this.$cookies.get("cookie-consent", {parseJSON: false}) || false)
-        } catch (ex) {}
+const logos = [
+    {name: "Garmin", src: "/images/integrations/garmin.png", height: 22},
+    {name: "Wahoo", src: "/images/integrations/wahoo.png", height: 36},
+    {name: "Spotify", src: "/images/integrations/spotify.png", height: 36},
+    {name: "Last.fm", src: "/images/integrations/lastfm.svg", height: 30},
+    {name: "OpenAI", src: "/images/integrations/openai.svg", height: 30},
+    {name: "Claude", src: "/images/integrations/anthropic.svg", height: 30},
+    {name: "Gemini", src: "/images/integrations/gemini.svg", height: 30},
+    {name: "Mistral", src: "/images/integrations/mistral.svg", height: 30},
+    {name: "DeepSeek", src: "/images/integrations/deepseek.svg", height: 30}
+]
 
-        return {
-            showCookieConsent: displayCookieConsent,
-            logos: [
-                {name: "Garmin", src: "/images/integrations/garmin.png", height: 22},
-                {name: "Wahoo", src: "/images/integrations/wahoo.png", height: 36},
-                {name: "Spotify", src: "/images/integrations/spotify.png", height: 36},
-                {name: "Last.fm", src: "/images/integrations/lastfm.svg", height: 30},
-                {name: "OpenAI", src: "/images/integrations/openai.svg", height: 30},
-                {name: "Claude", src: "/images/integrations/anthropic.svg", height: 30},
-                {name: "Gemini", src: "/images/integrations/gemini.svg", height: 30},
-                {name: "Mistral", src: "/images/integrations/mistral.svg", height: 30},
-                {name: "DeepSeek", src: "/images/integrations/deepseek.svg", height: 30}
-            ],
-            allSamples: allSamples,
-            samples: allSamples.slice(0, 4),
-            samplesRound: 0,
-            timerSamples: null,
-            features: allFeatures,
-            spotlights: [
-                {
-                    kicker: "AI powered",
-                    title: "Activities with a personality",
-                    text: "Let AI turn every workout into something worth reading. Fun, unique names and descriptions, plus private insights about your training that only you can see.",
-                    points: ["Choose the tone: from serious coach to sarcastic friend", "Insights based on your real activity data", "Works for any activity type"],
-                    link: "/feature/ai",
-                    image: "/images/feature/action-auto-generate.png"
-                },
-                {
-                    kicker: "GearWear",
-                    title: "Know your gear before it fails",
-                    text: "Stop guessing when the chain is worn out or the shoes have seen enough. Strautomator counts every kilometer and hour and alerts you at the right time.",
-                    points: ["Automatically assigns the right gear and components to each activity", "Bikes, shoes and every single component", "Alerts by email as the limits get close"],
-                    link: "/feature/gearwear",
-                    image: "/images/feature/gearwear-list.png"
-                },
-                {
-                    kicker: "Battery tracker",
-                    title: "Sensors that never die on you",
-                    text: "Keep an eye on the batteries of your power meter, shifters and heart rate straps, using the data of your Garmin and Wahoo devices.",
-                    points: ["Garmin and Wahoo support", "Know exactly when a battery is running low", "One place for all of your devices"],
-                    link: "/feature/battery-tracker",
-                    image: "/images/feature/battery-tracking.png"
-                }
-            ]
-        }
+const spotlights = [
+    {
+        kicker: "AI powered",
+        title: "Activities with a personality",
+        text: "Let AI turn every workout into something worth reading. Fun, unique names and descriptions, plus private insights about your training that only you can see.",
+        points: ["Choose the tone: from serious coach to sarcastic friend", "Insights based on your real activity data", "Works for any activity type"],
+        link: "/feature/ai",
+        image: "/images/feature/action-auto-generate.png"
     },
-    computed: {
-        freePlanDetails() {
-            return this.$store.state.freePlanDetails || {}
-        },
-        proPlanDetails() {
-            return this.$store.state.proPlanDetails || {}
-        },
-        yearlyPrice() {
-            return this.$store.state.proPlanDetails?.price?.yearly?.toFixed(2) || "-"
-        },
-        lifetimePrice() {
-            return this.$store.state.proPlanDetails?.price?.lifetime?.toFixed(2) || "-"
-        }
+    {
+        kicker: "GearWear",
+        title: "Know your gear before it fails",
+        text: "Stop guessing when the chain is worn out or the shoes have seen enough. Strautomator counts every kilometer and hour and alerts you at the right time.",
+        points: ["Automatically assigns the right gear and components to each activity", "Bikes, shoes and every single component", "Alerts by email as the limits get close"],
+        link: "/feature/gearwear",
+        image: "/images/feature/gearwear-list.png"
     },
-    mounted() {
-        this.timerSamples = setInterval(() => {
-            this.samples = _.sampleSize(this.allSamples, 4)
-            this.samplesRound++
-        }, 6000)
-    },
-    beforeDestroy() {
-        clearInterval(this.timerSamples)
-    },
-    methods: {
-        acceptCookies() {
-            try {
-                this.$cookies.set("cookie-consent", true, {
-                    path: "/",
-                    maxAge: 60 * 60 * 24 * 365 * 10
-                })
-
-                this.showCookieConsent = false
-            } catch (ex) {}
-        }
+    {
+        kicker: "Battery tracker",
+        title: "Sensors that never die on you",
+        text: "Keep an eye on the batteries of your power meter, shifters and heart rate straps, using the data of your Garmin and Wahoo devices.",
+        points: ["Garmin and Wahoo support", "Know exactly when a battery is running low", "One place for all of your devices"],
+        link: "/feature/battery-tracker",
+        image: "/images/feature/battery-tracking.png"
     }
+]
+
+definePageMeta({layout: "landing"})
+useHead({title: "Your Strava, on autopilot"})
+
+const store = useMainStore()
+const {currencySymbol} = useSubscription()
+const cookieConsent = useCookie<boolean>("cookie-consent", {path: "/", maxAge: 60 * 60 * 24 * 365 * 10})
+
+const showCookieConsent = ref(!cookieConsent.value)
+const samples = useState<SampleRule[]>("home-samples", () => _.sampleSize(allSamples, 4))
+const features = useState<HomeFeature[]>("home-features", () => _.shuffle(allFeatures))
+const samplesRound = ref(0)
+const timerSamples = ref<ReturnType<typeof setInterval> | null>(null)
+
+const freePlanDetails = computed(() => store.freePlanDetails || {})
+const proPlanDetails = computed(() => store.proPlanDetails || {})
+const yearlyPrice = computed(() => proPlanDetails.value?.price?.yearly?.toFixed(2) || "-")
+const lifetimePrice = computed(() => proPlanDetails.value?.price?.lifetime?.toFixed(2) || "-")
+
+/**
+ * Accept the cookie consent banner.
+ */
+const acceptCookies = () => {
+    try {
+        cookieConsent.value = true
+        showCookieConsent.value = false
+    } catch (ex) {}
 }
+
+onMounted(() => {
+    timerSamples.value = setInterval(() => {
+        samples.value = _.sampleSize(allSamples, 4)
+        samplesRound.value++
+    }, 6000)
+})
+
+onBeforeUnmount(() => {
+    if (timerSamples.value) {
+        clearInterval(timerSamples.value)
+    }
+})
 </script>
 
 <style scoped>
@@ -408,7 +394,7 @@ export default {
     transition: opacity 0.4s ease;
 }
 
-.hp-fade-enter,
+.hp-fade-enter-from,
 .hp-fade-leave-to {
     opacity: 0;
 }
@@ -418,7 +404,7 @@ export default {
     transition-delay: calc(0.3s + var(--index) * 90ms);
 }
 
-.hp-fade-enter .hp-rule {
+.hp-fade-enter-from .hp-rule {
     transform: translateY(14px);
 }
 

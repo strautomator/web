@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Let AI name your activities" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -34,27 +34,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-automations />
+            <buttons-automations />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAutomations from "~/components/buttons/Automations.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAutomations},
-    head() {
-        return {
-            title: "Strava activities names and descriptions with AI"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Strava activities names and descriptions with AI"})
 </script>

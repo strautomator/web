@@ -1,12 +1,12 @@
 <template>
-    <v-main fluid>
+    <div>
         <div class="stripe"></div>
         <div class="py-2"></div>
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Strautomator</h1>
-                <h2 class="display-2 font-weight-bold mb-4">Terms and Conditions</h2>
+                <h1 class="font-weight-light mt-1 mb-2" :class="mdAndUp ? 'text-headline-large' : 'text-headline-small'">Strautomator</h1>
+                <h2 class="text-display-small font-weight-bold mb-4">Terms and Conditions</h2>
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
@@ -221,36 +221,19 @@
                 </v-card>
             </div>
         </v-container>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import _ from "lodash"
-import FreeProTable from "~/components/FreeProTable.vue"
+<script setup lang="ts">
+definePageMeta({layout: "landing"})
+useHead({title: "Terms and Conditions"})
 
-export default {
-    authenticated: false,
-    layout: "landing",
-    components: {FreeProTable},
-    head() {
-        return {
-            title: "Terms and Conditions"
-        }
-    },
-    data() {
-        return {
-            backTarget: this.$store.state.user ? "to the Dashboard" : "home",
-            releases: null
-        }
-    },
-    methods: {
-        goBack() {
-            if (this.$store.state.user) {
-                document.location.href = "/dashboard"
-            } else {
-                document.location.href = "/home"
-            }
-        }
-    }
+const store = useMainStore()
+const {mdAndUp} = useDisplay()
+
+const backTarget = computed(() => (store.user ? "to the Dashboard" : "home"))
+
+const goBack = () => {
+    document.location.href = store.user ? "/dashboard" : "/home"
 }
 </script>

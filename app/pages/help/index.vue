@@ -1,5 +1,5 @@
 <template>
-    <v-layout column :class="{'site-page': !loggedIn}">
+    <div :class="{'site-page': !loggedIn}">
         <div class="site-glow site-glow-top" v-if="!loggedIn"></div>
         <v-container class="text-center" fluid>
             <div :class="{'home-wrapper': !loggedIn, 'text-left': loggedIn}">
@@ -13,93 +13,64 @@
                 <feature-links />
             </div>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
-import _ from "lodash"
-import FeatureLinks from "~/components/FeatureLinks.vue"
-import SiteHeader from "~/components/SiteHeader.vue"
+<script setup lang="ts">
+definePageMeta({layout: "landing"})
+useHead({title: "Help"})
 
-export default {
-    authenticated: false,
-    components: {FeatureLinks, SiteHeader},
-    layout({store}) {
-        if (!store.state.oauth || !store.state.user) {
-            return "landing"
-        } else {
-            return "default"
-        }
-    },
-    head() {
-        return {
-            title: "Help"
-        }
-    },
-    data() {
-        return {
-            loading: false,
-            streaming: false,
-            message: "",
-            answer: null,
-            loggedIn: this.$store.state.oauth && this.$store.state.user
-        }
-    },
-    async fetch() {
-        try {
-            if (this.$route.query?.q) {
-                this.message = decodeURIComponent(this.$route.query.q)
-                this.getAnswer()
-            }
-        } catch (ex) {
-            this.$webError(this, "Help.fetch", ex)
-        }
-    },
-    mounted() {
-        let parent = this.$parent.$parent
+const store = useMainStore()
+const route = useRoute()
+const webError = useWebError()
 
-        while (parent && !parent.$data.activeNavBtn) {
-            parent = parent.$parent
-        }
+const loading = ref(false)
+const streaming = ref(false)
+const message = ref("")
+const answer = ref<string>(null)
+const loggedIn = computed(() => !!(store.oauth && store.user))
 
-        if (parent && parent.$data.activeNavBtn) {
-            parent.$data.activeNavBtn = "/help"
-        }
-    },
-    methods: {
-        backHome() {
-            document.location.href = "/home"
-        },
-        login() {
-            this.$login()
-        },
-        async getAnswer() {
-            try {
-                this.loading = true
+watch(loggedIn, (value) => setPageLayout(value ? "default" : "landing"), {immediate: true})
 
-                const body = JSON.stringify({message: this.message}, null, 0)
-                const response = await fetch("/api/help/chat", {body, method: "POST", headers: {"Content-Type": "application/json"}})
-                const reader = response.body.getReader()
-                const decoder = new TextDecoder()
+/**
+ * Get the chat answer for the current message.
+ */
+const getAnswer = async () => {
+    try {
+        loading.value = true
 
-                this.answer = ""
+        const body = JSON.stringify({message: message.value}, null, 0)
+        const response = await fetch("/api/help/chat", {body, method: "POST", headers: {"Content-Type": "application/json"}})
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
 
-                this.streaming = true
-                while (this.streaming) {
-                    const {done, value} = await reader.read()
-                    if (done) {
-                        this.streaming = false
-                    } else {
-                        this.answer += decoder.decode(value)
-                    }
-                }
-            } catch (ex) {
-                this.$webError(this, "Help.getAnswer", ex)
-            } finally {
-                this.loading = false
-                this.streaming = false
+        answer.value = ""
+
+        streaming.value = true
+        while (streaming.value) {
+            const {done, value} = await reader.read()
+            if (done) {
+                streaming.value = false
+            } else {
+                answer.value += decoder.decode(value)
             }
         }
+    } catch (ex) {
+        webError("Help.getAnswer", ex)
+    } finally {
+        loading.value = false
+        streaming.value = false
     }
 }
+
+onMounted(() => {
+    try {
+        if (route.query?.q) {
+            message.value = decodeURIComponent(route.query.q.toString())
+            getAnswer()
+        }
+    } catch (ex) {
+        webError("Help.fetch", ex)
+    }
+})
 </script>

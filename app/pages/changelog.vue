@@ -1,12 +1,12 @@
 <template>
-    <v-main fluid>
+    <div>
         <div class="stripe"></div>
         <div class="py-2"></div>
 
         <v-container class="text-center" fluid>
             <div class="home-wrapper">
-                <h1 class="font-weight-light mt-1 mb-2" :class="$breakpoint.mdAndUp ? 'display-1' : 'headline'">Strautomator</h1>
-                <h2 class="display-2 font-weight-bold mb-4">Changelog</h2>
+                <h1 class="font-weight-light mt-1 mb-2" :class="mdAndUp ? 'text-headline-large' : 'text-headline-small'">Strautomator</h1>
+                <h2 class="text-display-small font-weight-bold mb-4">Changelog</h2>
 
                 <v-card color="black" class="mb-2 text-left">
                     <v-card-text>
@@ -25,7 +25,7 @@
                             Loading...
                         </div>
                         <div class="text-center mt-2 mb-2" v-if="limit > 0">
-                            <v-btn color="primary" @click="loadMore" outlined rounded>Load more</v-btn>
+                            <v-btn color="primary" @click="loadMore" variant="outlined" rounded>Load more</v-btn>
                         </div>
                         <div class="text-center mt-2">
                             <v-btn color="primary" @click="goBack" rounded>Back {{ backTarget }}</v-btn>
@@ -34,53 +34,47 @@
                 </v-card>
             </div>
         </v-container>
-    </v-main>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
 
-export default {
-    authenticated: false,
-    layout: "landing",
-    head() {
-        return {
-            title: "Changelog"
-        }
-    },
-    data() {
-        return {
-            backTarget: this.$store.state.user ? "to the Dashboard" : "home",
-            releases: null,
-            limit: 20,
-            loading: true
-        }
-    },
-    async fetch() {
-        await this.getReleases()
-    },
-    methods: {
-        async getReleases() {
-            this.loading = true
-            try {
-                const releases = await this.$axios.$get(`/api/github/changelog?limit=${this.limit}`)
-                this.releases = _.groupBy(releases, (r) => r.datePublished.split("T")[0])
-            } catch (ex) {
-                this.$webError(this, "Changelog.fetch", ex)
-            }
-            this.loading = false
-        },
-        async loadMore() {
-            this.limit = 0
-            await this.getReleases()
-        },
-        goBack() {
-            if (this.$store.state.user) {
-                document.location.href = "/dashboard"
-            } else {
-                document.location.href = "/home"
-            }
-        }
+definePageMeta({layout: "landing"})
+useHead({title: "Changelog"})
+
+const store = useMainStore()
+const api = useApi()
+const webError = useWebError()
+const {mdAndUp} = useDisplay()
+
+const releases = ref<Record<string, any[]>>(null)
+const limit = ref(20)
+const loading = ref(true)
+const backTarget = computed(() => (store.user ? "to the Dashboard" : "home"))
+
+/**
+ * Load GitHub releases and group them by publication date.
+ */
+const getReleases = async () => {
+    loading.value = true
+    try {
+        const data: any[] = await api("/api/github/changelog", {query: {limit: limit.value}})
+        releases.value = _.groupBy(data, (r) => r.datePublished.split("T")[0])
+    } catch (ex) {
+        webError("Changelog.fetch", ex)
     }
+    loading.value = false
 }
+
+const loadMore = async () => {
+    limit.value = 0
+    await getReleases()
+}
+
+const goBack = () => {
+    document.location.href = store.user ? "/dashboard" : "/home"
+}
+
+onMounted(getReleases)
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Automatically tag your commutes" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -33,27 +33,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-automations />
+            <buttons-automations />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAutomations from "~/components/buttons/Automations.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAutomations},
-    head() {
-        return {
-            title: "Automatically tag your Strava commutes"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Automatically tag your Strava commutes"})
 </script>

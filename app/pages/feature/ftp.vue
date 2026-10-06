@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Auto-update your Strava FTP" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -12,7 +12,7 @@
                         <v-alert class="font-weight-bold">eFTP = (C<sup>+30%</sup> + H) / 2</v-alert>
                         <ul class="mt-n1 ml-n2">
                             <li>C = current FTP on Strava, weighted to 130%</li>
-                            <li>H = estimated FTP for your highest power effort during the past {{ $store.state.ftpWeeks }} weeks</li>
+                            <li>H = estimated FTP for your highest power effort during the past {{ store.ftpWeeks }} weeks</li>
                         </ul>
                         <div class="mt-4 mb-2">For each recent activity, Strautomator will derive a FTP estimation based on well known formulas.</div>
                         <ul class="ml-n2">
@@ -49,27 +49,14 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-account />
+            <buttons-account />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAccount from "~/components/buttons/Account.vue"
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Estimate and update your Strava FTP"})
 
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAccount},
-    head() {
-        return {
-            title: "Estimate and update your Strava FTP"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+const store = useMainStore()
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Upcoming club events map" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -16,27 +16,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-map />
+            <buttons-map />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnMap from "~/components/buttons/Map.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnMap},
-    head() {
-        return {
-            title: "View your upcoming Strava club events on a map"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "View your upcoming Strava club events on a map"})
 </script>

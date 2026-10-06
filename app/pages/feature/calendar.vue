@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Export your Strava calendar" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -25,27 +25,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-calendar />
+            <buttons-calendar />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnCalendar from "~/components/buttons/Calendar.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnCalendar},
-    head() {
-        return {
-            title: "Export your Strava activities and club events to your calendar"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Export your Strava activities and club events to your calendar"})
 </script>

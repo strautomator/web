@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Connect AI clients to your account" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -33,27 +33,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-account />
+            <buttons-account />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnAccount from "~/components/buttons/Account.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnAccount},
-    head() {
-        return {
-            title: "Connect Cursor, Claude and other AI clients to Strautomator"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Connect Cursor, Claude and other AI clients to Strautomator"})
 </script>

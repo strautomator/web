@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <site-header header="Everything your activities were missing" lead="Automations, AI, gear tracking, weather, music and a lot more. Pick a feature and see how it works." />
 
         <section class="feature-block">
@@ -61,11 +61,10 @@
         <section class="feature-block">
             <feature-weather />
         </section>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import SiteHeader from "~/components/SiteHeader.vue"
+<script setup lang="ts">
 import FeatureAi from "./ai.vue"
 import FeatureAiInsights from "./ai-insights.vue"
 import FeatureBatteryTracker from "./battery-tracker.vue"
@@ -82,35 +81,6 @@ import FeatureSpotify from "./spotify.vue"
 import FeatureUpcomingEventsMap from "./upcoming-events-map.vue"
 import FeatureWeather from "./weather.vue"
 
-export default {
-    layout: "feature",
-    components: {
-        SiteHeader,
-        FeatureAi,
-        FeatureAiInsights,
-        FeatureBatteryTracker,
-        FeatureCalendar,
-        FeatureCommute,
-        FeatureCounter,
-        FeatureFtp,
-        FeatureGearwear,
-        FeatureMapstyles,
-        FeatureMcp,
-        FeatureMute,
-        FeatureRecords,
-        FeatureSpotify,
-        FeatureUpcomingEventsMap,
-        FeatureWeather
-    },
-    head() {
-        return {
-            title: "Strautomator features"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+definePageMeta({layout: "feature"})
+useHead({title: "Strautomator features"})
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <v-main fluid>
+    <div>
         <feature-title header="Track your personal records" />
 
         <v-card color="black" class="mb-4 home-panel">
@@ -17,27 +17,12 @@
         </v-card>
 
         <div class="mt-6 mb-2">
-            <btn-personal-records />
+            <buttons-personal-records />
         </div>
-    </v-main>
+    </div>
 </template>
 
-<script>
-import FeatureTitle from "~/components/FeatureTitle.vue"
-import BtnPersonalRecords from "~/components/buttons/PersonalRecords.vue"
-
-export default {
-    layout: "feature",
-    components: {FeatureTitle, BtnPersonalRecords},
-    head() {
-        return {
-            title: "Track your personal Strava records"
-        }
-    },
-    methods: {
-        login() {
-            this.$login()
-        }
-    }
-}
+<script setup lang="ts">
+definePageMeta({layout: "feature"})
+useHead({title: "Track your personal Strava records"})
 </script>
