@@ -16,7 +16,7 @@ export interface MainState {
     athleteRecords: any
     recipeProperties: any[]
     recipeActions: any[]
-    recipeMaxLength: number
+    recipeMaxLength: Record<string, number>
     weatherProviders: {title: string; value: string}[]
     linksOnPercent: number
     ftpWeeks: number

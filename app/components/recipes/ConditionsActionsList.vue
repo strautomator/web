@@ -5,10 +5,10 @@
             <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ALL'" class="if-then">If <strong>ALL</strong> these conditions are met:</li>
             <li v-else-if="recipe.conditions.length > 1 && codeLogicalOperator(recipe) == 'ANY'" class="if-then">If <strong>ANY</strong> of these conditions are met:</li>
             <li v-else-if="recipe.conditions.length > 2" class="if-then">If these conditions are met:</li>
-            <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions">
-                <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && groupIndex > 0" class="ml-n1 mt-1 mb-1" small outlined>{{ recipe.op }}</v-chip>
-                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: index > 0 && codeLogicalOperator(recipe) == 'SOME'}">
-                    <span v-if="codeLogicalOperator(recipe) == 'SOME' && index > 0">{{ recipe.samePropertyOp.toLowerCase() }}</span>
+            <template v-for="(conditions, property, groupIndex) in recipe.groupedConditions" :key="property">
+                <v-chip v-if="codeLogicalOperator(recipe) == 'SOME' && Number(groupIndex) > 0" class="ml-n1 mt-1 mb-1" size="small" variant="outlined">{{ recipe.op }}</v-chip>
+                <li v-for="(condition, index) in conditions" :key="`${property}-c-${index}`" :class="{or: Number(index) > 0 && codeLogicalOperator(recipe) == 'SOME'}">
+                    <span v-if="codeLogicalOperator(recipe) == 'SOME' && Number(index) > 0">{{ recipe.samePropertyOp.toLowerCase() }}</span>
                     {{ conditionSummary(condition) }}
                 </li>
             </template>
@@ -38,15 +38,9 @@ li.if-then {
 }
 </style>
 
-<script>
-import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import recipeMixin from "~/mixins/recipeMixin.js"
-import stravaMixin from "~/mixins/stravaMixin.js"
+<script setup lang="ts">
+defineProps<{recipe: any}>()
 
-export default {
-    authenticated: true,
-    mixins: [userMixin, recipeMixin, stravaMixin],
-    props: ["recipe"]
-}
+const {actionSummary, conditionSummary, codeLogicalOperator} = useRecipe()
+const {getSportName} = useStrava()
 </script>
