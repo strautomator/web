@@ -73,7 +73,15 @@ const categories: FaqCategory[] = [
     {tag: "issues", title: "Common issues"}
 ]
 
-definePageMeta({layout: "landing"})
+definePageMeta({
+    layout: "landing",
+    middleware: [
+        () => {
+            const store = useMainStore()
+            setPageLayout(store.oauth && store.user ? "default" : "landing")
+        }
+    ]
+})
 useHead({title: "Help"})
 
 const store = useMainStore()
@@ -87,8 +95,6 @@ const expandedPanels = ref<number[]>([])
 const searchValue = ref("")
 const searchQuery = ref("")
 const loggedIn = computed(() => !!(store.oauth && store.user))
-
-watch(loggedIn, (value) => setPageLayout(value ? "default" : "landing"), {immediate: true})
 
 const groupedQuestions = computed(() => {
     const results: {title: string; questions: FaqItem[]}[] = []

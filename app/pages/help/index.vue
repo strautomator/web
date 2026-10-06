@@ -17,7 +17,15 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({layout: "landing"})
+definePageMeta({
+    layout: "landing",
+    middleware: [
+        () => {
+            const store = useMainStore()
+            setPageLayout(store.oauth && store.user ? "default" : "landing")
+        }
+    ]
+})
 useHead({title: "Help"})
 
 const store = useMainStore()
@@ -29,8 +37,6 @@ const streaming = ref(false)
 const message = ref("")
 const answer = ref<string>(null)
 const loggedIn = computed(() => !!(store.oauth && store.user))
-
-watch(loggedIn, (value) => setPageLayout(value ? "default" : "landing"), {immediate: true})
 
 /**
  * Get the chat answer for the current message.
