@@ -1,47 +1,47 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>My Account</h1>
-            <v-snackbar v-if="$route.query.garmin == 'linked' && user?.garmin" v-model="garminLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Garmin account "{{ this.user.garmin.id }}" linked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <v-snackbar v-if="route.query.garmin == 'linked' && user?.garmin" v-model="garminLinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
+                Garmin account "{{ user.garmin.id }}" linked successfully!
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-if="$route.query.wahoo == 'linked' && user?.wahoo" v-model="wahooLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Wahoo account "{{ this.user.wahoo.id }}" linked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <v-snackbar v-if="route.query.wahoo == 'linked' && user?.wahoo" v-model="wahooLinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
+                Wahoo account "{{ user.wahoo.id }}" linked successfully!
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-else-if="user && !user.wahoo" v-model="wahooUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-else-if="user && !user.wahoo" v-model="wahooUnlinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Wahoo account unlinked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-if="$route.query.spotify == 'linked' && user?.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Spotify account "{{ this.user.spotify.email }}" linked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <v-snackbar v-if="route.query.spotify == 'linked' && user?.spotify" v-model="spotifyLinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
+                Spotify account "{{ user.spotify.email }}" linked successfully!
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-else-if="user && !user.spotify" v-model="spotifyUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-else-if="user && !user.spotify" v-model="spotifyUnlinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Spotify account unlinked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-if="lastfmLinked" v-model="lastfmLinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-if="lastfmLinked" v-model="lastfmLinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Last.fm account "{{ user.lastfm.username }}" linked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-else-if="lastfmUnlinked" v-model="lastfmUnlinked" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-else-if="lastfmUnlinked" v-model="lastfmUnlinked" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Last.fm account unlinked successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+                <template #actions>
+                    <v-icon @click="closeAlert">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
             <div>
@@ -50,83 +50,83 @@
                     <span v-if="user.preferences.privacyMode">(anonymized)</span>
                 </div>
                 <div class="mb-3">
-                    <span class="mr-1" v-if="user.confirmEmail">{{ user.confirmEmail }} <v-icon color="secondary" small>mdi-alert-circle</v-icon></span>
+                    <span class="mr-1" v-if="user.confirmEmail">{{ user.confirmEmail }} <v-icon color="secondary" size="small">mdi-alert-circle</v-icon></span>
                     <span class="mr-1" v-else-if="user.email">{{ user.email }}</span>
-                    <br v-if="(user.email || user.confirmEmail) && $breakpoint.mdAndDown" />
-                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded x-small>{{
+                    <br v-if="(user.email || user.confirmEmail) && mdAndDown" />
+                    <v-btn class="ml-n1 ml-md-0" title="Set your email address" :color="user.email ? '' : 'primary'" @click="emailDialog = true" rounded size="x-small">{{
                         user.confirmEmail ? "pending confirmation" : user.email ? "change email" : "set email address"
                     }}</v-btn>
                 </div>
 
                 <div>
                     Account ID {{ user.id }}
-                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" class="ml-1 mt-n1" small>mdi-open-in-new</v-icon></a>
+                    <a :href="stravaProfileUrl" target="strava" title="Go to my profile on Strava..."><v-icon color="primary" class="ml-1 mt-n1" size="small">mdi-open-in-new</v-icon></a>
                 </div>
                 <div v-if="user.fitnessLevel">
-                    Fitness level: {{ user.fitnessLevel }}/5 ({{ $store.state.fitnessLevel[user.fitnessLevel] }})
-                    <n-link to="/help/faq?q=fitness level" title="Your estimated fitness from 1 (Untrained) to 5 (Elite)" nuxt><v-icon color="primary" class="ml-1 mt-n1" small>mdi-help-circle-outline</v-icon></n-link>
+                    Fitness level: {{ user.fitnessLevel }}/5 ({{ store.fitnessLevel[user.fitnessLevel] }})
+                    <nuxt-link to="/help/faq?q=fitness level" title="Your estimated fitness from 1 (Untrained) to 5 (Elite)"><v-icon color="primary" class="ml-1 mt-n1" size="small">mdi-help-circle-outline</v-icon></nuxt-link>
                 </div>
                 <div>Registered on {{ dateRegistered }}</div>
                 <div>Units on Strava: {{ user.profile.units }}</div>
                 <div v-if="user.spotify">Spotify ID: {{ user.spotify.email }}</div>
                 <div v-if="user.lastfm">Last.fm: {{ user.lastfm.username }}</div>
                 <div class="ml-n1 mt-3 text-left">
-                    <v-btn class="ma-1" color="primary" title="Garmin account" @click="garminDialog = true" :disabled="!user.isPro" nuxt small rounded>
-                        <v-icon left>mdi-triangle</v-icon>
+                    <v-btn class="ma-1" color="primary" title="Garmin account" @click="garminDialog = true" :disabled="!user.isPro" size="small" rounded>
+                        <v-icon start>mdi-triangle</v-icon>
                         {{ !user.isPro ? "Link Garmin account (PRO only)" : user.garmin ? "Unlink Garmin account" : "Link Garmin account" }}
                     </v-btn>
-                    <v-btn class="ma-1" color="primary" title="Wahoo account" @click="wahooDialog = true" :disabled="!user.isPro" nuxt small rounded>
-                        <v-icon left>mdi-alpha-w-circle</v-icon>
+                    <v-btn class="ma-1" color="primary" title="Wahoo account" @click="wahooDialog = true" :disabled="!user.isPro" size="small" rounded>
+                        <v-icon start>mdi-alpha-w-circle</v-icon>
                         {{ !user.isPro ? "Link Wahoo account (PRO only)" : user.wahoo ? "Unlink Wahoo account" : "Link Wahoo account" }}
                     </v-btn>
-                    <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" nuxt small rounded>
-                        <v-icon left>mdi-spotify</v-icon>
+                    <v-btn class="ma-1" color="primary" title="Spotify account" @click="spotifyDialog = true" size="small" rounded>
+                        <v-icon start>mdi-spotify</v-icon>
                         {{ user.spotify ? "Manage Spotify account" : "Link Spotify account" }}
                     </v-btn>
-                    <v-btn class="ma-1" color="primary" title="Last.fm account" @click="showLastfmDialog" nuxt small rounded>
-                        <v-icon left>mdi-music</v-icon>
+                    <v-btn class="ma-1" color="primary" title="Last.fm account" @click="showLastfmDialog" size="small" rounded>
+                        <v-icon start>mdi-music</v-icon>
                         {{ user.lastfm ? "Change Last.fm account" : "Link Last.fm account" }}
                     </v-btn>
                 </div>
-                <v-alert class="body-2 mt-2 text-left" color="warning" v-if="relinkAccounts.length > 0" dense outlined rounded>
-                    <v-icon class="mr-1 mt-n1" color="warning" small>mdi-alert-outline</v-icon>
+                <v-alert class="text-body-medium mt-2 text-left" color="warning" v-if="relinkAccounts.length > 0" density="compact" variant="outlined" rounded>
+                    <v-icon class="mr-1 mt-n1" color="warning" size="small">mdi-alert-outline</v-icon>
                     Your {{ relinkAccounts.join(" and ") }} authentication is about to expire, please link {{ relinkAccounts.length > 1 ? "these accounts" : "it" }} again to avoid interruptions.
                 </v-alert>
             </div>
-            <v-card class="mt-5" outlined>
-                <v-card-title class="accent">My preferences</v-card-title>
+            <v-card class="mt-5" variant="outlined">
+                <v-card-title class="bg-accent">My preferences</v-card-title>
                 <v-card-text>
                     <h3 class="mb-2 mt-5">Weather settings</h3>
-                    <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                    <div class="mt-6 d-flex" :class="{'flex-column': !mdAndUp}">
                         <div class="flex-grow-1">
-                            <v-select label="Provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Provider" v-model="weatherProvider" :items="listWeatherProviders" :class="{'mr-1': mdAndUp}" variant="outlined" rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
-                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Temperature unit" v-model="weatherUnit" :items="listWeatherUnits" :class="{'ml-1 mr-1': mdAndUp}" variant="outlined" rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
-                            <v-select label="Wind speed unit" v-model="windSpeedUnit" :items="listWindSpeedUnits" :class="{'ml-1 mr-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Wind speed unit" v-model="windSpeedUnit" :items="listWindSpeedUnits" :class="{'ml-1 mr-1': mdAndUp}" variant="outlined" rounded></v-select>
                         </div>
                         <div class="flex-grow-1">
-                            <v-select label="Language" v-model="language" :items="listLanguages" :class="{'ml-1': $breakpoint.mdAndUp}" outlined rounded></v-select>
+                            <v-select label="Language" v-model="language" :items="listLanguages" :class="{'ml-1': mdAndUp}" variant="outlined" rounded></v-select>
                         </div>
                     </div>
                     <div v-if="user.isPro" class="mt-n2 text-center text-md-left">
-                        <n-link title="Help me selecting a weather provider" to="/weather/select" nuxt router>
-                            <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
+                        <nuxt-link title="Help me selecting a weather provider" to="/weather/select">
+                            <v-icon color="primary" class="mt-n1" size="small">mdi-information-outline</v-icon>
                             Need help choosing a weather provider?
-                        </n-link>
+                        </nuxt-link>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-n1">
                         <h3 class="mb-2">FTP auto update{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="body-2">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
+                        <div class="text-body-medium">Strautomator can automatically update your cycling FTP and your estimated fitness level based on your recent activities.</div>
                         <v-switch class="mt-2" title="FTP auto-update" v-model="ftpAutoUpdate" :disabled="!user.isPro" :label="ftpAutoUpdate ? 'Yes, auto-update my Strava FTP' : 'No, leave my Strava FTP alone'"></v-switch>
                     </div>
                     <div class="mb-8 mt-n2 text-center text-md-left">
-                        <v-btn class="ma-1" color="primary" title="Estimate my FTP" @click="showFtpDialog" outlined rounded small>
-                            <v-icon left>mdi-flash</v-icon>
+                        <v-btn class="ma-1" color="primary" title="Estimate my FTP" @click="showFtpDialog" variant="outlined" rounded size="small">
+                            <v-icon start>mdi-flash</v-icon>
                             What's my estimated FTP?
                         </v-btn>
                     </div>
@@ -134,26 +134,28 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Delayed processing</h3>
-                        <div class="body-2">
+                        <div class="text-body-medium">
                             Do you want Strautomator to wait a few minutes before processing your activities? Useful if you have other services updating your Strava as well, or if you want to have some time to change details / add photos before your
                             automations are executed.
                         </div>
                         <v-switch class="mt-2" title="Delayed processing" v-model="delayedProcessing" :label="delayedProcessing ? 'Yes, delay the processing' : 'No, process activities ASAP'"></v-switch>
-                        <v-alert color="accent" class="body-2" v-if="user.isPro && (user.garmin || user.wahoo)" dense>Delayed processing is recommended if you're having issues with Garmin or Wahoo automation conditions.</v-alert>
+                        <v-alert color="accent" class="text-body-medium" v-if="user.isPro && (user.garmin || user.wahoo)" density="compact"
+                            >Delayed processing is recommended if you're having issues with Garmin or Wahoo automation conditions.</v-alert
+                        >
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Yearly counter reset</h3>
-                        <div class="body-2">Do you want to have your automation counters automatically reset every year?</div>
+                        <div class="text-body-medium">Do you want to have your automation counters automatically reset every year?</div>
                         <v-switch class="mt-2" title="Yearly automation counter reset" v-model="resetCounter" :label="resetCounter ? 'Yes, reset counters every year' : 'No, do not reset counters'"></v-switch>
                         <v-row no-gutters>
-                            <v-col xs="12" md="3" v-if="resetCounter">
-                                <v-menu v-model="dateMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" min-width="290px" offset-y>
-                                    <template v-slot:activator="{on, attrs}">
-                                        <v-text-field v-model="dateResetCounterFormatted" v-bind="attrs" v-on="on" label="Reset date" type="text" prepend-icon="mdi-calendar" outlined readonly rounded dense></v-text-field>
+                            <v-col cols="12" md="3" v-if="resetCounter">
+                                <v-menu v-model="dateMenu" :close-on-content-click="false" transition="scale-transition" min-width="320px" location="bottom">
+                                    <template #activator="{props}">
+                                        <v-text-field :model-value="dateResetCounterFormatted" v-bind="props" label="Reset date" type="text" prepend-icon="mdi-calendar" variant="outlined" readonly rounded density="compact"></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="dateResetCounter" @input="dateMenu = false" :min="minDateReset" :max="maxDateReset" no-title></v-date-picker>
+                                    <v-date-picker v-model="dateResetCounterPicker" @update:model-value="dateMenu = false" :min="minDateReset" :max="maxDateReset" hide-header></v-date-picker>
                                 </v-menu>
                             </v-col>
                         </v-row>
@@ -162,16 +164,16 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Omit tag suffixes</h3>
-                        <div class="body-2">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
+                        <div class="text-body-medium">Enable to hide suffixes (km/h, mph, etc) when replacing activity tags in your automations.</div>
                         <v-switch class="mt-2" title="Omit tag suffixes" v-model="noSuffixes" :label="noSuffixes ? 'Yes, omit tag suffixes' : 'Do not omit'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Privacy mode</h3>
-                        <div class="body-2">
+                        <div class="text-body-medium">
                             Opt-in to disable the personal records tracking, anonymize your name and save as little information about processed activities as possible. Some features will be disabled.
-                            <n-link to="/help/faq?q=privacy mode" title="More details about the privacy mode" nuxt>More details...</n-link>
+                            <nuxt-link to="/help/faq?q=privacy mode" title="More details about the privacy mode">More details...</nuxt-link>
                         </div>
                         <v-switch
                             class="mt-2"
@@ -186,7 +188,7 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Gear tracking preferences</h3>
-                        <div class="body-2">
+                        <div class="text-body-medium">
                             <template v-if="user.isPro">
                                 Gear tracking is done almost instantly for the majority of processed activities, but you can still set the maximum delay you want Strautomator to wait before tracking the gear usage from your activities.
                             </template>
@@ -194,13 +196,13 @@
                                 Gear tracking is done with a default of 2 days delay, so you have plenty of time to make sure your activities are set with the correct gear. You can decrease or increase that delay, according to your use case.
                             </template>
                         </div>
-                        <v-radio-group v-model="gearwearDelayDays" :row="$breakpoint.mdAndUp">
+                        <v-radio-group v-model="gearwearDelayDays" :inline="mdAndUp">
                             <v-radio label="1 day" :value="1"></v-radio>
                             <v-radio label="2 days" :value="2"></v-radio>
                             <v-radio label="3 days" :value="3"></v-radio>
                         </v-radio-group>
                         <template v-if="user.garmin || user.wahoo">
-                            <div class="body-2">Do you want to be notified when a connected sensor has low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
+                            <div class="text-body-medium">Do you want to be notified when a connected sensor has low battery?{{ user.isPro ? "" : " (PRO only)" }}</div>
                             <v-switch class="mt-2" title="Battery alerts" v-model="gearwearBatteryAlert" :disabled="!user.isPro" :label="gearwearBatteryAlert ? 'Yes, I want to get notified' : 'No, I don\'t want the notifications'"></v-switch>
                         </template>
                     </div>
@@ -208,11 +210,11 @@
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">Backlink preferences</h3>
-                        <div class="body-2">
+                        <div class="text-body-medium">
                             <span v-if="linksOn == 1">A backlink will be added to all activities processed by Strautomator.</span>
                             <span v-else-if="linksOn > 0">A backlink {{ user.isPro ? "can" : "will" }} be added to {{ 100 / linksOn }}% of the activities processed by Strautomator.</span>
                             <span v-else>A backlink won't be added to your activities.</span>
-                            <v-radio-group v-model="linksOn" :row="$breakpoint.mdAndUp">
+                            <v-radio-group v-model="linksOn" :inline="mdAndUp">
                                 <v-radio label="100%" :value="1"></v-radio>
                                 <v-radio label="50%" :value="2"></v-radio>
                                 <v-radio label="20%" :value="5"></v-radio>
@@ -223,44 +225,44 @@
 
                     <div class="mt-4" v-if="linksOn > 0">
                         <h3 class="mb-2">Hashtag preference</h3>
-                        <div class="body-2">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for backlinks?</div>
+                        <div class="text-body-medium">Do you prefer using hashtags on activity names instead of an URL on activity descriptions for backlinks?</div>
                         <v-switch class="mt-2" title="Hashtag preference" v-model="activityHashtag" :label="activityHashtag ? 'Yes, hashtag on activity names' : 'No, use a link on descriptions'"></v-switch>
                     </div>
 
                     <v-divider class="mt-6 mb-4" />
                     <div class="mt-4">
                         <h3 class="mb-2">AI preferences{{ user.isPro ? "" : " (PRO only)" }}</h3>
-                        <div class="body-2 mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
+                        <div class="text-body-medium mb-4">Allow Strautomator to save and process extra activity data so it can generate private AI insights.</div>
                         <v-switch class="mt-2" title="Enable AI insights (coming soon)" v-model="aiEnabled" :label="aiEnabled ? 'Yes, I want AI insights' : 'No AI insights for me'" :disabled="!user.isPro"></v-switch>
-                        <div class="body-2 mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
-                        <div class="mt-6 d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                        <div class="text-body-medium mb-4">You can select your preferred AI provider, used to generate activity names and descriptions.</div>
+                        <div class="mt-6 d-flex" :class="{'flex-column': !mdAndUp}">
                             <div class="flex-grow-1">
-                                <v-select label="Provider" v-model="aiProvider" :items="listAiProviders" :disabled="!user.isPro" outlined rounded></v-select>
+                                <v-select label="Provider" v-model="aiProvider" :items="listAiProviders" :disabled="!user.isPro" variant="outlined" rounded></v-select>
                             </div>
                         </div>
                     </div>
                     <div class="mt-n2 text-center text-md-left">
-                        <n-link title="Help me selecting a weather provider" to="/activities/fortune" nuxt router>
-                            <v-icon color="primary" class="mt-n1" small>mdi-information-outline</v-icon>
+                        <nuxt-link title="Help me selecting a weather provider" to="/activities/fortune">
+                            <v-icon color="primary" class="mt-n1" size="small">mdi-information-outline</v-icon>
                             Want to test the AI features?
-                        </n-link>
+                        </nuxt-link>
                     </div>
                 </v-card-text>
             </v-card>
 
-            <v-card class="mt-5" outlined>
-                <v-card-title class="accent">MCP Server{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
+            <v-card class="mt-5" variant="outlined">
+                <v-card-title class="bg-accent">MCP Server{{ user.isPro ? "" : " (PRO only)" }}</v-card-title>
                 <v-card-text class="pa-0">
                     <div class="pa-4">
-                        <div class="body-2">Connect your AI clients and bots to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
+                        <div class="text-body-medium">Connect your AI clients and bots to your Strautomator account. You will be asked to sign in with Strava and authorize the client.</div>
                         <template v-if="user.isPro">
                             <div class="mt-2">
                                 Server URL: <span class="font-weight-bold">{{ mcpUrl }}</span>
                             </div>
                         </template>
-                        <div v-else><n-link to="/billing" title="Upgrade to PRO" nuxt>Upgrade to PRO</n-link> to get access to our MCP server.</div>
+                        <div v-else><nuxt-link to="/billing" title="Upgrade to PRO">Upgrade to PRO</nuxt-link> to get access to our MCP server.</div>
                     </div>
-                    <v-simple-table>
+                    <v-table>
                         <thead>
                             <tr>
                                 <th>Client</th>
@@ -271,9 +273,9 @@
                         <tbody v-if="mcpSessions.length > 0">
                             <tr v-for="session in mcpSessions" :key="session.clientId">
                                 <td>{{ session.clientName }}</td>
-                                <td class="text-caption">Last authorized {{ $dayjs(session.dateLastAuth).format("lll") }}</td>
+                                <td class="text-body-small">Last authorized {{ $dayjs(session.dateLastAuth).format("lll") }}</td>
                                 <td class="text-right">
-                                    <v-btn color="removal" title="Revoke access for this client" :loading="mcpRevoking == session.clientId" @click="revokeMcpSession(session)" text rounded x-small>Revoke</v-btn>
+                                    <v-btn color="removal" title="Revoke access for this client" :loading="mcpRevoking == session.clientId" @click="revokeMcpSession(session)" variant="text" rounded size="x-small">Revoke</v-btn>
                                 </td>
                             </tr>
                         </tbody>
@@ -282,7 +284,7 @@
                                 <td colspan="3">You have no clients connected to the MCP server yet.</td>
                             </tr>
                         </tbody>
-                    </v-simple-table>
+                    </v-table>
                 </v-card-text>
             </v-card>
 
@@ -291,50 +293,48 @@
                 <free-pro-table />
             </template>
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="primary" to="/billing" title="PRO Subscription" rounded nuxt>
-                    <v-icon left>mdi-credit-card-outline</v-icon>
+                <v-btn color="primary" to="/billing" title="PRO Subscription" rounded>
+                    <v-icon start>mdi-credit-card-outline</v-icon>
                     {{ user.isPro ? "View my subscription" : "Subscribe to PRO" }}
                 </v-btn>
             </div>
             <div class="mt-6 text-center text-md-left">
-                <v-btn color="primary" class="mr-md-2" title="My notifications" to="/account/notifications" small outlined rounded nuxt>
-                    <v-icon left>mdi-bell</v-icon>
+                <v-btn color="primary" class="mr-md-2" title="My notifications" to="/account/notifications" size="small" variant="outlined" rounded>
+                    <v-icon start>mdi-bell</v-icon>
                     My notifications
                 </v-btn>
-                <v-btn color="primary" class="mt-3 mt-md-0 mr-md-2" title="Download my data" to="/account/download" small outlined rounded nuxt>
-                    <v-icon left>mdi-archive-arrow-down</v-icon>
+                <v-btn color="primary" class="mt-3 mt-md-0 mr-md-2" title="Download my data" to="/account/download" size="small" variant="outlined" rounded>
+                    <v-icon start>mdi-archive-arrow-down</v-icon>
                     Download my data
                 </v-btn>
-                <v-btn color="removal" class="mt-3 mt-md-0" title="Time to say goodbye?" to="/account/goodbye" small outlined rounded nuxt>
-                    <v-icon left>mdi-cancel</v-icon>
+                <v-btn color="removal" class="mt-3 mt-md-0" title="Time to say goodbye?" to="/account/goodbye" size="small" variant="outlined" rounded>
+                    <v-icon start>mdi-cancel</v-icon>
                     Close my account
                 </v-btn>
             </div>
 
             <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
-            <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
+            <v-snackbar v-model="emailSaved" class="text-left" color="success" :timeout="5000" rounded location="bottom">
                 Please open your inbox and confirm your email address.
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="emailSaved = false">mdi-close-circle</v-icon>
+                <template #actions>
+                    <v-icon @click="emailSaved = false">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
-            <v-snackbar v-model="emailConfirmed" class="text-left" color="success" :timeout="5000" rounded bottom>
-                Your email {{ $store.state.user.email }} was confirmed successfully!
-                <template v-slot:action="{attrs}">
-                    <v-icon v-bind="attrs" @click="emailConfirmed = false">mdi-close-circle</v-icon>
+            <v-snackbar v-model="emailConfirmed" class="text-left" color="success" :timeout="5000" rounded location="bottom">
+                Your email {{ store.user.email }} was confirmed successfully!
+                <template #actions>
+                    <v-icon @click="emailConfirmed = false">mdi-close-circle</v-icon>
                 </template>
             </v-snackbar>
         </v-container>
 
-        <v-dialog v-model="garminDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="garminDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Garmin account</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideGarminDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="hideGarminDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
@@ -342,16 +342,16 @@
                     <p class="mt-4" v-else>You have linked the Garmin account {{ user.garmin.id }} to your profile. If you unlink it, existing automations having Garmin related properties will stop working.</p>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideGarminDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideGarminDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn color="primary" title="Proceed to authentication with Garmin" @click="linkGarmin" v-if="!user.garmin" rounded>
-                            <v-icon left>mdi-link</v-icon>
+                            <v-icon start>mdi-link</v-icon>
                             Go to Garmin
                         </v-btn>
                         <v-btn color="removal" title="Unlink my Garmin account" @click="unlinkGarmin" v-else rounded>
-                            <v-icon left>mdi-link-off</v-icon>
+                            <v-icon start>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
                     </div>
@@ -359,15 +359,13 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="wahooDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="wahooDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Wahoo account</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideWahooDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="hideWahooDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
@@ -375,16 +373,16 @@
                     <p class="mt-4" v-else>You have linked the Wahoo account {{ user.wahoo.id }} to your profile. If you unlink it, existing automations having Wahoo related properties will stop working.</p>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideWahooDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideWahooDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn color="primary" title="Proceed to authentication with Wahoo" @click="linkWahoo" v-if="!user.wahoo" rounded>
-                            <v-icon left>mdi-link</v-icon>
+                            <v-icon start>mdi-link</v-icon>
                             Go to Wahoo
                         </v-btn>
                         <v-btn color="removal" title="Unlink my Wahoo account" @click="unlinkWahoo" v-else rounded>
-                            <v-icon left>mdi-link-off</v-icon>
+                            <v-icon start>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
                     </div>
@@ -392,15 +390,13 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="spotifyDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="spotifyDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Spotify account</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideSpotifyDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="hideSpotifyDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
@@ -409,16 +405,16 @@
                     <p v-if="spotifyExpiryDate">Spotify requires you to authenticate again every few months, and your current authentication expires on {{ spotifyExpiryDate }}.</p>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideSpotifyDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideSpotifyDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn class="mr-2" color="removal" title="Unlink my Spotify account" @click="unlinkSpotify" v-if="user.spotify" rounded>
-                            <v-icon left>mdi-link-off</v-icon>
+                            <v-icon start>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
                         <v-btn color="primary" title="Proceed to authentication with Spotify" @click="linkSpotify" rounded>
-                            <v-icon left>mdi-link</v-icon>
+                            <v-icon start>mdi-link</v-icon>
                             {{ user.spotify ? "Reauthenticate" : "Go to Spotify" }}
                         </v-btn>
                     </div>
@@ -426,34 +422,32 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="lastfmDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="lastfmDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Last.fm account</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideLastfmDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="hideLastfmDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
                     <p class="mt-4" v-if="!user.lastfm">You can link your Last.fm account to your Strautomator profile to use scrobbled tracks as part of conditions or actions in your automations.</p>
                     <p class="mt-4" v-else>You have linked the Last.fm account "{{ user.lastfm.username }}" to your profile. If you unlink it, existing automations relying on Last.fm tracks might stop working.</p>
-                    <v-text-field v-model="lastfmUsernameInput" label="Last.fm username" placeholder="Your last.fm username" maxlength="64" prepend-inner-icon="mdi-account-music" @keyup.enter="linkLastfm" outlined rounded></v-text-field>
-                    <v-alert class="error mt-n4" dense round v-if="lastfmError">{{ lastfmError }}</v-alert>
+                    <v-text-field v-model="lastfmUsernameInput" label="Last.fm username" placeholder="Your last.fm username" maxlength="64" prepend-inner-icon="mdi-account-music" @keyup.enter="linkLastfm" variant="outlined" rounded></v-text-field>
+                    <v-alert class="mt-n4" color="error" density="compact" rounded v-if="lastfmError">{{ lastfmError }}</v-alert>
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideLastfmDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideLastfmDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn class="ml-2" color="removal" title="Unlink my Last.fm account" @click="unlinkLastfm" v-if="user.lastfm" rounded>
-                            <v-icon left>mdi-link-off</v-icon>
+                            <v-icon start>mdi-link-off</v-icon>
                             Unlink
                         </v-btn>
                         <v-btn color="primary" title="Save my Last.fm username" @click="linkLastfm" :disabled="!lastfmUsernameInput || lastfmUsernameInput.trim().length < 2" rounded>
-                            <v-icon left>mdi-link</v-icon>
+                            <v-icon start>mdi-link</v-icon>
                             {{ user.lastfm ? "Update" : "Link" }}
                         </v-btn>
                     </div>
@@ -461,15 +455,13 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="ftpDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="ftpDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Estimate my FTP</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="hideFtpDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="hideFtpDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
@@ -479,7 +471,7 @@
                     </p>
                     <p class="mt-4" v-else-if="ftpResult === false">Could not estimate your FTP. You need to have at least 1 recent cycling activity with power for the estimation to work.</p>
                     <template v-else>
-                        <p class="mt-4 text-body-1 font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
+                        <p class="mt-4 text-body-large font-weight-bold">Estimated FTP: {{ ftpResult.recentlyUpdated ? ftpResult.ftpCurrentWatts : ftpResult.ftpWatts }} watts</p>
                         <p>
                             Estimation based on {{ ftpResult.activityCount }} activities.<br />
                             Best effort of {{ ftpResult.bestWatts }} watts:
@@ -492,12 +484,12 @@
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideFtpDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="hideFtpDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Close
                         </v-btn>
                         <v-btn color="primary" title="Save the estimated FTP on Strava" :disabled="!ftpResult || ftpResult.recentlyUpdated || ftpResult.ftpWatts == ftpResult.ftpCurrentWatts" @click="saveEstimatedFtp" rounded>
-                            <v-icon left>mdi-cloud-upload</v-icon>
+                            <v-icon start>mdi-cloud-upload</v-icon>
                             Update
                         </v-btn>
                     </div>
@@ -505,15 +497,13 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="privacyDialog" width="540" overlay-opacity="0.95">
+        <v-dialog v-model="privacyDialog" width="540" opacity="0.95">
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title>Privacy mode</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn icon @click.stop="cancelPrivacyDialog">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <v-btn icon="mdi-close" @click.stop="cancelPrivacyDialog"></v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
@@ -525,486 +515,479 @@
 
                     <div class="text-right mt-1">
                         <v-spacer></v-spacer>
-                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="cancelPrivacyDialog" text rounded>
-                            <v-icon left>mdi-cancel</v-icon>
+                        <v-btn class="mr-2" color="grey" title="Close" @click.stop="cancelPrivacyDialog" variant="text" rounded>
+                            <v-icon start>mdi-cancel</v-icon>
                             Cancel
                         </v-btn>
                         <v-btn color="primary" title="Enable the privacy mode" @click="savePrivacyDialog" rounded>
-                            <v-icon left>mdi-shield-check</v-icon>
+                            <v-icon start>mdi-shield-check</v-icon>
                             Confirm
                         </v-btn>
                     </div>
                 </v-card-text>
             </v-card>
         </v-dialog>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import dayjs from "dayjs"
 import _ from "lodash"
-import EmailDialog from "~/components/account/EmailDialog.vue"
-import FreeProTable from "~/components/FreeProTable.vue"
-import userMixin from "~/mixins/userMixin.js"
+import {onBeforeRouteLeave} from "vue-router"
 
-export default {
-    authenticated: true,
-    components: {EmailDialog, FreeProTable},
-    mixins: [userMixin],
-    head() {
-        return {
-            title: "Account"
-        }
-    },
-    created() {
-        this.delaySavePreferences = _.debounce(this.savePreferences, 1000)
+useHead({title: "Account"})
 
-        if (this.$route.query.spotify) {
-            this.refreshUser()
-        }
-    },
-    data() {
-        const user = this.$store.state.user
-        const preferences = user.preferences
-        const defaultLinksOn = user.isPro ? 0 : this.$store.state.linksOnPercent
-        const linksOn = preferences.linksOn || defaultLinksOn
-        const delayedProcessing = preferences.delayedProcessing || false
-        const gearwearDelayDays = preferences.gearwearDelayDays || 2
-        const gearwearBatteryAlert = preferences.gearwearBatteryAlert || false
-        const hashtag = preferences.activityHashtag || false
-        const privacyMode = preferences.privacyMode || false
-        const noSuffixes = preferences.noSuffixes || false
-        const ftpAutoUpdate = preferences.ftpAutoUpdate || false
-        const language = preferences.language || "en"
-        const aiEnabled = preferences.aiEnabled || false
-        const aiProvider = preferences.aiProvider || ""
-        const weatherProvider = user.isPro ? preferences.weatherProvider || null : null
-        const weatherUnit = preferences.weatherUnit || "c"
-        const windSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : weatherUnit == "f" ? "mph" : "kph"
-        const listWeatherProviders = _.cloneDeep(this.$store.state.weatherProviders)
+const store = useMainStore()
+const route = useRoute()
+const api = useApi()
+const webError = useWebError()
+const {mdAndUp, mdAndDown} = useDisplay()
+const {user, refreshUser} = useUser()
 
-        const now = this.$dayjs()
-        const dateFormat = "YYYY-MM-DD"
-        let dateResetCounter = preferences.dateResetCounter || null
-        let resetCounter = dateResetCounter ? true : false
-        let arrDateReset = dateResetCounter ? dateResetCounter.split("-") : null
+const preferences = user.value.preferences
+const defaultLinksOn = user.value.isPro ? 0 : store.linksOnPercent
+const initialLinksOn = preferences.linksOn || defaultLinksOn
+const initialDelayedProcessing = preferences.delayedProcessing || false
+const initialGearwearDelayDays = preferences.gearwearDelayDays || 2
+const initialGearwearBatteryAlert = preferences.gearwearBatteryAlert || false
+const initialHashtag = preferences.activityHashtag || false
+const initialPrivacyMode = preferences.privacyMode || false
+const initialNoSuffixes = preferences.noSuffixes || false
+const initialFtpAutoUpdate = preferences.ftpAutoUpdate || false
+const initialLanguage = preferences.language || "en"
+const initialAiEnabled = preferences.aiEnabled || false
+const initialAiProvider = preferences.aiProvider || ""
+const initialWeatherProvider = user.value.isPro ? preferences.weatherProvider || null : null
+const initialWeatherUnit = preferences.weatherUnit || "c"
+const initialWindSpeedUnit = preferences.windSpeedUnit ? preferences.windSpeedUnit : initialWeatherUnit == "f" ? "mph" : "kph"
+const initialWeatherProviders = _.cloneDeep(store.weatherProviders)
 
-        if (dateResetCounter) {
-            dateResetCounter = now.month(parseInt(arrDateReset[0]) - 1).date(arrDateReset[1])
-            if (dateResetCounter.isBefore(now)) {
-                dateResetCounter = dateResetCounter.add(1, "year")
-            }
-        } else {
-            dateResetCounter = now.add(1, "year")
-        }
+const now = dayjs()
+const dateFormat = "YYYY-MM-DD"
+let initialDateResetCounter: any = preferences.dateResetCounter || null
+const initialResetCounter = initialDateResetCounter ? true : false
+const arrDateReset = initialDateResetCounter ? initialDateResetCounter.split("-") : null
 
-        if (!user.isPro) {
-            for (let wp of listWeatherProviders) {
-                if (wp.value) {
-                    wp.disabled = true
-                    wp.text += " (PRO only)"
-                }
-            }
-        }
+if (initialDateResetCounter) {
+    initialDateResetCounter = now.month(parseInt(arrDateReset[0]) - 1).date(arrDateReset[1])
+    if (initialDateResetCounter.isBefore(now)) {
+        initialDateResetCounter = initialDateResetCounter.add(1, "year")
+    }
+} else {
+    initialDateResetCounter = now.add(1, "year")
+}
 
-        return {
-            savePending: false,
-            emailDialog: false,
-            emailSaved: false,
-            emailConfirmed: false,
-            garminDialog: this.$route.query.garmin == "link" && !user.garmin,
-            garminLinked: this.$route.query.garmin == "linked",
-            garminUnlinked: this.$route.query.garmin == "unlinked",
-            wahooDialog: this.$route.query.wahoo == "link" && !user.wahoo,
-            wahooLinked: this.$route.query.wahoo == "linked",
-            wahooUnlinked: this.$route.query.wahoo == "unlinked",
-            spotifyDialog: this.$route.query.spotify == "link",
-            spotifyLinked: this.$route.query.spotify == "linked",
-            spotifyUnlinked: this.$route.query.spotify == "unlinked",
-            lastfmDialog: this.$route.query.lastfm == "link" && !user.lastfm,
-            lastfmLinked: false,
-            lastfmUnlinked: false,
-            lastfmUsernameInput: user.lastfm?.username || "",
-            lastfmError: null,
-            linksOn: linksOn || defaultLinksOn,
-            delayedProcessing: delayedProcessing,
-            gearwearDelayDays: gearwearDelayDays,
-            gearwearBatteryAlert: gearwearBatteryAlert,
-            activityHashtag: hashtag,
-            noSuffixes: noSuffixes,
-            privacyMode: privacyMode,
-            privacyDialog: false,
-            ftpAutoUpdate: ftpAutoUpdate,
-            ftpResult: null,
-            ftpDialog: false,
-            resetCounter: resetCounter,
-            dateResetCounter: dateResetCounter.format(dateFormat),
-            dateMenu: false,
-            minDateReset: this.$dayjs().format(dateFormat),
-            maxDateReset: this.$dayjs().add(1, "year").format(dateFormat),
-            language: language,
-            aiEnabled: aiEnabled,
-            aiProvider: aiProvider,
-            weatherProvider: weatherProvider,
-            weatherUnit: weatherUnit,
-            windSpeedUnit: windSpeedUnit,
-            listAiProviders: [
-                {value: "", text: "Auto"},
-                {value: "anthropic", text: "Anthropic"},
-                {value: "deepseek", text: "DeepSeek"},
-                {value: "gemini", text: "Gemini"},
-                {value: "mistral", text: "Mistral"},
-                {value: "openai", text: "OpenAI"},
-                {value: "spacexai", text: "SpaceX AI"},
-                {value: "zai", text: "Z.ai"}
-            ],
-            listWeatherProviders: listWeatherProviders,
-            listWeatherUnits: [
-                {value: "c", text: "Celsius"},
-                {value: "f", text: "Fahrenheit"}
-            ],
-            listWindSpeedUnits: [
-                {value: "m/s", text: "m/s"},
-                {value: "kph", text: "kph"},
-                {value: "mph", text: "mph"}
-            ],
-            listLanguages: [
-                {value: "en", text: "English"},
-                {value: "de", text: "Deutsch"},
-                {value: "es", text: "Español"},
-                {value: "fr", text: "Français"},
-                {value: "it", text: "Italiano"},
-                {value: "lt", text: "Lietuvių"},
-                {value: "nl", text: "Nederlands"},
-                {value: "pl", text: "Polski"},
-                {value: "pt", text: "Português"},
-                {value: "se", text: "Svenska"},
-                {value: "sk", text: "Slovenčina"}
-            ],
-            mcpSessions: [],
-            mcpRevoking: null
-        }
-    },
-    computed: {
-        dateRegistered() {
-            return this.$dayjs(this.user.dateRegistered).format("ll")
-        },
-        stravaProfileUrl() {
-            return `https://www.strava.com/athletes/${this.user.id}`
-        },
-        spotifyExpiryDate() {
-            return this.user.spotify?.dateRefreshExpiry ? this.$dayjs(this.user.spotify.dateRefreshExpiry).format("ll") : null
-        },
-        relinkAccounts() {
-            const result = []
-            if (this.user.spotify?.dateRefreshExpiry && this.$dayjs(this.user.spotify.dateRefreshExpiry).isBefore(this.$dayjs().add(14, "days"))) {
-                result.push("Spotify")
-            }
-            return result
-        },
-        dateResetCounterFormatted() {
-            const result = this.$dayjs(this.dateResetCounter)
-            return result.format("MMM DD")
-        },
-        mcpUrl() {
-            const base = (this.$axios.defaults.baseURL || "").replace(/\/+$/, "")
-            return `${base}/mcp`
-        }
-    },
-    watch: {
-        ftpAutoUpdate(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        linksOn(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        delayedProcessing(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        gearwearDelayDays(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        gearwearBatteryAlert(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        activityHashtag(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        weatherProvider(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        weatherUnit(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        windSpeedUnit(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        language(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        noSuffixes(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        privacyMode(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        resetCounter(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        dateResetCounter(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        aiEnabled(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        },
-        aiProvider(newValue, oldValue) {
-            this.preferenceChanged(newValue, oldValue)
-        }
-    },
-    async fetch() {
-        try {
-            if (this.$route.query?.email && this.$route.query?.token) {
-                await this.$axios.$post(`/api/users/${this.$store.state.user.id}/email/confirm`, {email: this.$route.query.email, token: this.$route.query.token})
-                this.$store.commit("setUserData", {email: this.$route.query.email, confirmEmail: null})
-                this.emailConfirmed = true
-            }
-        } catch (ex) {
-            this.$webError(this, "Account.fetch", ex)
-        }
-
-        if (this.$store.state.user.isPro) {
-            try {
-                this.mcpSessions = await this.$axios.$get(`/api/users/${this.$store.state.user.id}/mcp/sessions`)
-            } catch (ex) {
-                this.$webError(this, "Account.fetchMcpSessions", ex)
-            }
-        }
-    },
-    async beforeRouteLeave(to, from, next) {
-        if (this.savePending) {
-            await this.savePreferences()
-        }
-
-        next()
-    },
-    methods: {
-        preferenceChanged(newValue, oldValue) {
-            if (newValue != oldValue) {
-                this.savePending = true
-                this.delaySavePreferences()
-            }
-        },
-        async revokeMcpSession(session) {
-            try {
-                this.mcpRevoking = session.clientId
-                await this.$axios.$delete(`/api/users/${this.user.id}/mcp/sessions/${encodeURIComponent(session.clientId)}`)
-                this.mcpSessions = this.mcpSessions.filter((s) => s.clientId != session.clientId)
-            } catch (ex) {
-                this.$webError(this, "Account.revokeMcpSession", ex)
-            } finally {
-                this.mcpRevoking = null
-            }
-        },
-        hideEmailDialog(emailSaved) {
-            this.emailDialog = false
-            this.emailSaved = emailSaved
-        },
-        hideGarminDialog() {
-            this.garminDialog = false
-        },
-        async linkGarmin() {
-            try {
-                const result = await this.$axios.$get("/api/garmin/auth/url")
-                document.location.href = result.url
-            } catch (ex) {
-                this.$webError(this, "Account.linkGarmin", ex)
-            }
-        },
-        async unlinkGarmin(unlink) {
-            try {
-                await this.$axios.$get("/api/garmin/auth/unlink")
-                await this.refreshUser()
-
-                this.garminLinked = false
-                this.garminUnlinked = true
-                this.hideGarminDialog()
-            } catch (ex) {
-                this.$webError(this, "Account.unlinkGarmin", ex)
-            }
-        },
-        hideWahooDialog() {
-            this.wahooDialog = false
-        },
-        async linkWahoo() {
-            try {
-                const result = await this.$axios.$get("/api/wahoo/auth/url")
-                document.location.href = result.url
-            } catch (ex) {
-                this.$webError(this, "Account.linkWahoo", ex)
-            }
-        },
-        async unlinkWahoo(unlink) {
-            try {
-                await this.$axios.$get("/api/wahoo/auth/unlink")
-                await this.refreshUser()
-
-                this.wahooLinked = false
-                this.wahooUnlinked = true
-                this.hideWahooDialog()
-            } catch (ex) {
-                this.$webError(this, "Account.unlinkWahoo", ex)
-            }
-        },
-        hideSpotifyDialog() {
-            this.spotifyDialog = false
-        },
-        async linkSpotify() {
-            try {
-                const result = await this.$axios.$get("/api/spotify/auth/url")
-                document.location.href = result.url
-            } catch (ex) {
-                this.$webError(this, "Account.linkSpotify", ex)
-            }
-        },
-        async unlinkSpotify() {
-            try {
-                await this.$axios.$get("/api/spotify/auth/unlink")
-                await this.refreshUser()
-
-                this.spotifyLinked = false
-                this.spotifyUnlinked = true
-                this.hideSpotifyDialog()
-            } catch (ex) {
-                this.$webError(this, "Account.unlinkSpotify", ex)
-            }
-        },
-        showLastfmDialog() {
-            this.lastfmUsernameInput = this.user.lastfm?.username || ""
-            this.lastfmDialog = true
-        },
-        hideLastfmDialog() {
-            this.lastfmDialog = false
-        },
-        async linkLastfm() {
-            const username = (this.lastfmUsernameInput || "").trim().toLowerCase()
-            if (!username || username.length < 2) return
-
-            try {
-                this.lastfmError = null
-
-                await this.$axios.$post("/api/lastfm/auth/link", {username})
-                await this.refreshUser()
-
-                this.lastfmLinked = true
-                this.lastfmUnlinked = false
-                this.hideLastfmDialog()
-            } catch (ex) {
-                if (ex.response?.status == 404) {
-                    this.lastfmError = `User ${this.lastfmUsernameInput} not found`
-                } else {
-                    this.$webError(this, "Account.linkLastfm", ex)
-                }
-            }
-        },
-        async unlinkLastfm() {
-            try {
-                await this.$axios.$get("/api/lastfm/auth/unlink")
-                await this.refreshUser()
-
-                this.lastfmLinked = false
-                this.lastfmUnlinked = true
-                this.lastfmUsernameInput = ""
-                this.hideLastfmDialog()
-            } catch (ex) {
-                this.$webError(this, "Account.unlinkLastfm", ex)
-            }
-        },
-        confirmPrivacyDialog() {
-            if (!this.privacyMode) {
-                this.privacyDialog = true
-                return false
-            }
-        },
-        cancelPrivacyDialog() {
-            this.privacyDialog = false
-            this.privacyMode = false
-        },
-        savePrivacyDialog() {
-            this.privacyDialog = false
-            this.privacyMode = true
-        },
-        showFtpDialog() {
-            this.ftpDialog = true
-            this.estimateFtp()
-        },
-        hideFtpDialog() {
-            this.ftpDialog = false
-        },
-        async estimateFtp() {
-            if (this.ftpResult) return
-
-            try {
-                const result = await this.$axios.$get(`/api/strava/${this.user.id}/ftp/estimate`)
-
-                if (!result) {
-                    this.ftpResult = false
-                } else {
-                    this.ftpResult = result
-                }
-            } catch (ex) {
-                this.$webError(this, "Account.estimateFtp", ex)
-            }
-        },
-        async saveEstimatedFtp() {
-            try {
-                const result = await this.$axios.$post(`/api/strava/${this.user.id}/ftp/estimate`, {ftp: this.ftpResult.ftpWatts})
-
-                if (!result) {
-                    this.ftpResult.recentlyUpdated = true
-                } else {
-                    this.hideFtpDialog()
-                }
-            } catch (ex) {
-                this.$webError(this, "Account.saveFtp", ex)
-            }
-        },
-        async savePreferences() {
-            this.savePending = false
-
-            try {
-                const arrDate = this.dateResetCounter.split("-")
-                arrDate.shift()
-
-                const data = {
-                    ftpAutoUpdate: this.ftpAutoUpdate,
-                    linksOn: this.linksOn,
-                    delayedProcessing: this.delayedProcessing,
-                    gearwearDelayDays: this.gearwearDelayDays,
-                    gearwearBatteryAlert: this.gearwearBatteryAlert,
-                    activityHashtag: this.activityHashtag,
-                    noSuffixes: this.noSuffixes,
-                    privacyMode: this.privacyMode,
-                    weatherProvider: this.weatherProvider,
-                    weatherUnit: this.weatherUnit,
-                    windSpeedUnit: this.windSpeedUnit,
-                    language: this.language,
-                    aiEnabled: this.aiEnabled,
-                    aiProvider: this.aiProvider,
-                    dateResetCounter: this.resetCounter ? arrDate.join("-") : false
-                }
-
-                this.$store.commit("setUserPreferences", data)
-
-                await this.$axios.$post(`/api/users/${this.user.id}/preferences`, data)
-            } catch (ex) {
-                this.$webError(this, "Account.savePreferences", ex)
-            }
-        },
-        closeAlert() {
-            this.spotifyLinked = false
-            this.spotifyUnlinked = false
-            this.lastfmLinked = false
-            this.lastfmUnlinked = false
+if (!user.value.isPro) {
+    for (let wp of initialWeatherProviders) {
+        if (wp.value) {
+            const provider = wp as any
+            provider.disabled = true
+            provider.title = `${provider.title || provider.text} (PRO only)`
         }
     }
 }
+
+const savePending = ref(false)
+const emailDialog = ref(false)
+const emailSaved = ref(false)
+const emailConfirmed = ref(false)
+const garminDialog = ref(route.query.garmin == "link" && !user.value.garmin)
+const garminLinked = ref(route.query.garmin == "linked")
+const garminUnlinked = ref(route.query.garmin == "unlinked")
+const wahooDialog = ref(route.query.wahoo == "link" && !user.value.wahoo)
+const wahooLinked = ref(route.query.wahoo == "linked")
+const wahooUnlinked = ref(route.query.wahoo == "unlinked")
+const spotifyDialog = ref(route.query.spotify == "link")
+const spotifyLinked = ref(route.query.spotify == "linked")
+const spotifyUnlinked = ref(route.query.spotify == "unlinked")
+const lastfmDialog = ref(route.query.lastfm == "link" && !user.value.lastfm)
+const lastfmLinked = ref(false)
+const lastfmUnlinked = ref(false)
+const lastfmUsernameInput = ref(user.value.lastfm?.username || "")
+const lastfmError = ref<string>(null)
+const linksOn = ref(initialLinksOn || defaultLinksOn)
+const delayedProcessing = ref(initialDelayedProcessing)
+const gearwearDelayDays = ref(initialGearwearDelayDays)
+const gearwearBatteryAlert = ref(initialGearwearBatteryAlert)
+const activityHashtag = ref(initialHashtag)
+const noSuffixes = ref(initialNoSuffixes)
+const privacyMode = ref(initialPrivacyMode)
+const privacyDialog = ref(false)
+const ftpAutoUpdate = ref(initialFtpAutoUpdate)
+const ftpResult = ref<any>(null)
+const ftpDialog = ref(false)
+const resetCounter = ref(initialResetCounter)
+const dateResetCounter = ref(initialDateResetCounter.format(dateFormat))
+const dateMenu = ref(false)
+const minDateReset = dayjs().format(dateFormat)
+const maxDateReset = dayjs().add(1, "year").format(dateFormat)
+const language = ref(initialLanguage)
+const aiEnabled = ref(initialAiEnabled)
+const aiProvider = ref(initialAiProvider)
+const weatherProvider = ref(initialWeatherProvider)
+const weatherUnit = ref(initialWeatherUnit)
+const windSpeedUnit = ref(initialWindSpeedUnit)
+const listAiProviders = [
+    {value: "", title: "Auto"},
+    {value: "anthropic", title: "Anthropic"},
+    {value: "deepseek", title: "DeepSeek"},
+    {value: "gemini", title: "Gemini"},
+    {value: "mistral", title: "Mistral"},
+    {value: "openai", title: "OpenAI"},
+    {value: "spacexai", title: "SpaceX AI"},
+    {value: "zai", title: "Z.ai"}
+]
+const listWeatherProviders = initialWeatherProviders
+const listWeatherUnits = [
+    {value: "c", title: "Celsius"},
+    {value: "f", title: "Fahrenheit"}
+]
+const listWindSpeedUnits = [
+    {value: "m/s", title: "m/s"},
+    {value: "kph", title: "kph"},
+    {value: "mph", title: "mph"}
+]
+const listLanguages = [
+    {value: "en", title: "English"},
+    {value: "de", title: "Deutsch"},
+    {value: "es", title: "Español"},
+    {value: "fr", title: "Français"},
+    {value: "it", title: "Italiano"},
+    {value: "lt", title: "Lietuvių"},
+    {value: "nl", title: "Nederlands"},
+    {value: "pl", title: "Polski"},
+    {value: "pt", title: "Português"},
+    {value: "se", title: "Svenska"},
+    {value: "sk", title: "Slovenčina"}
+]
+const mcpSessions = ref<any[]>([])
+const mcpRevoking = ref<string>(null)
+
+const dateRegistered = computed(() => dayjs(user.value.dateRegistered).format("ll"))
+const stravaProfileUrl = computed(() => `https://www.strava.com/athletes/${user.value.id}`)
+const spotifyExpiryDate = computed(() => (user.value.spotify?.dateRefreshExpiry ? dayjs(user.value.spotify.dateRefreshExpiry).format("ll") : null))
+const relinkAccounts = computed(() => {
+    const result = []
+    if (user.value.spotify?.dateRefreshExpiry && dayjs(user.value.spotify.dateRefreshExpiry).isBefore(dayjs().add(14, "days"))) {
+        result.push("Spotify")
+    }
+    return result
+})
+const dateResetCounterFormatted = computed(() => dayjs(dateResetCounter.value).format("MMM DD"))
+const dateResetCounterPicker = computed({
+    get: () => dayjs(dateResetCounter.value).toDate(),
+    set: (value: Date) => {
+        if (value) dateResetCounter.value = dayjs(value).format(dateFormat)
+    }
+})
+const mcpUrl = computed(() => (import.meta.client ? `${window.location.origin}/mcp` : "/mcp"))
+
+const delaySavePreferences = _.debounce(() => savePreferences(), 1000)
+
+/**
+ * Mark preferences as changed and schedule saving.
+ */
+const preferenceChanged = (newValue: any, oldValue: any) => {
+    if (newValue != oldValue) {
+        savePending.value = true
+        delaySavePreferences()
+    }
+}
+
+watch(
+    [ftpAutoUpdate, linksOn, delayedProcessing, gearwearDelayDays, gearwearBatteryAlert, activityHashtag, weatherProvider, weatherUnit, windSpeedUnit, language, noSuffixes, privacyMode, resetCounter, dateResetCounter, aiEnabled, aiProvider],
+    (newValues, oldValues) => {
+        if (newValues.some((value, index) => value != oldValues[index])) {
+            preferenceChanged(true, false)
+        }
+    }
+)
+
+/**
+ * Revoke an MCP client session.
+ */
+const revokeMcpSession = async (session: any) => {
+    try {
+        mcpRevoking.value = session.clientId
+        await api(`/api/users/${user.value.id}/mcp/sessions/${encodeURIComponent(session.clientId)}`, {method: "DELETE"})
+        mcpSessions.value = mcpSessions.value.filter((s) => s.clientId != session.clientId)
+    } catch (ex) {
+        webError("Account.revokeMcpSession", ex)
+    } finally {
+        mcpRevoking.value = null
+    }
+}
+
+const hideEmailDialog = (wasEmailSaved: boolean) => {
+    emailDialog.value = false
+    emailSaved.value = wasEmailSaved
+}
+const hideGarminDialog = () => (garminDialog.value = false)
+const hideWahooDialog = () => (wahooDialog.value = false)
+const hideSpotifyDialog = () => (spotifyDialog.value = false)
+const hideLastfmDialog = () => (lastfmDialog.value = false)
+const hideFtpDialog = () => (ftpDialog.value = false)
+
+/**
+ * Navigate to Garmin authentication.
+ */
+const linkGarmin = async () => {
+    try {
+        const result: any = await api("/api/garmin/auth/url")
+        document.location.href = result.url
+    } catch (ex) {
+        webError("Account.linkGarmin", ex)
+    }
+}
+
+/**
+ * Unlink the Garmin account.
+ */
+const unlinkGarmin = async () => {
+    try {
+        await api("/api/garmin/auth/unlink")
+        await refreshUser()
+
+        garminLinked.value = false
+        garminUnlinked.value = true
+        hideGarminDialog()
+    } catch (ex) {
+        webError("Account.unlinkGarmin", ex)
+    }
+}
+
+/**
+ * Navigate to Wahoo authentication.
+ */
+const linkWahoo = async () => {
+    try {
+        const result: any = await api("/api/wahoo/auth/url")
+        document.location.href = result.url
+    } catch (ex) {
+        webError("Account.linkWahoo", ex)
+    }
+}
+
+/**
+ * Unlink the Wahoo account.
+ */
+const unlinkWahoo = async () => {
+    try {
+        await api("/api/wahoo/auth/unlink")
+        await refreshUser()
+
+        wahooLinked.value = false
+        wahooUnlinked.value = true
+        hideWahooDialog()
+    } catch (ex) {
+        webError("Account.unlinkWahoo", ex)
+    }
+}
+
+/**
+ * Navigate to Spotify authentication.
+ */
+const linkSpotify = async () => {
+    try {
+        const result: any = await api("/api/spotify/auth/url")
+        document.location.href = result.url
+    } catch (ex) {
+        webError("Account.linkSpotify", ex)
+    }
+}
+
+/**
+ * Unlink the Spotify account.
+ */
+const unlinkSpotify = async () => {
+    try {
+        await api("/api/spotify/auth/unlink")
+        await refreshUser()
+
+        spotifyLinked.value = false
+        spotifyUnlinked.value = true
+        hideSpotifyDialog()
+    } catch (ex) {
+        webError("Account.unlinkSpotify", ex)
+    }
+}
+
+const showLastfmDialog = () => {
+    lastfmUsernameInput.value = user.value.lastfm?.username || ""
+    lastfmDialog.value = true
+}
+
+/**
+ * Link or update the Last.fm username.
+ */
+const linkLastfm = async () => {
+    const username = (lastfmUsernameInput.value || "").trim().toLowerCase()
+    if (!username || username.length < 2) return
+
+    try {
+        lastfmError.value = null
+
+        await api("/api/lastfm/auth/link", {method: "POST", body: {username}})
+        await refreshUser()
+
+        lastfmLinked.value = true
+        lastfmUnlinked.value = false
+        hideLastfmDialog()
+    } catch (ex: any) {
+        if (ex.response?.status == 404 || ex.status == 404) {
+            lastfmError.value = `User ${lastfmUsernameInput.value} not found`
+        } else {
+            webError("Account.linkLastfm", ex)
+        }
+    }
+}
+
+/**
+ * Unlink the Last.fm account.
+ */
+const unlinkLastfm = async () => {
+    try {
+        await api("/api/lastfm/auth/unlink")
+        await refreshUser()
+
+        lastfmLinked.value = false
+        lastfmUnlinked.value = true
+        lastfmUsernameInput.value = ""
+        hideLastfmDialog()
+    } catch (ex) {
+        webError("Account.unlinkLastfm", ex)
+    }
+}
+
+const confirmPrivacyDialog = () => {
+    if (!privacyMode.value) {
+        privacyDialog.value = true
+        return false
+    }
+}
+const cancelPrivacyDialog = () => {
+    privacyDialog.value = false
+    privacyMode.value = false
+}
+const savePrivacyDialog = () => {
+    privacyDialog.value = false
+    privacyMode.value = true
+}
+const showFtpDialog = () => {
+    ftpDialog.value = true
+    estimateFtp()
+}
+
+/**
+ * Estimate the user's FTP.
+ */
+const estimateFtp = async () => {
+    if (ftpResult.value) return
+
+    try {
+        const result = await api(`/api/strava/${user.value.id}/ftp/estimate`)
+        ftpResult.value = result || false
+    } catch (ex) {
+        webError("Account.estimateFtp", ex)
+    }
+}
+
+/**
+ * Save the estimated FTP on Strava.
+ */
+const saveEstimatedFtp = async () => {
+    try {
+        const result = await api(`/api/strava/${user.value.id}/ftp/estimate`, {method: "POST", body: {ftp: ftpResult.value.ftpWatts}})
+
+        if (!result) {
+            ftpResult.value.recentlyUpdated = true
+        } else {
+            hideFtpDialog()
+        }
+    } catch (ex) {
+        webError("Account.saveFtp", ex)
+    }
+}
+
+/**
+ * Persist changed preferences to the server.
+ */
+const savePreferences = async () => {
+    savePending.value = false
+
+    try {
+        const arrDate = dateResetCounter.value.split("-")
+        arrDate.shift()
+
+        const data = {
+            ftpAutoUpdate: ftpAutoUpdate.value,
+            linksOn: linksOn.value,
+            delayedProcessing: delayedProcessing.value,
+            gearwearDelayDays: gearwearDelayDays.value,
+            gearwearBatteryAlert: gearwearBatteryAlert.value,
+            activityHashtag: activityHashtag.value,
+            noSuffixes: noSuffixes.value,
+            privacyMode: privacyMode.value,
+            weatherProvider: weatherProvider.value,
+            weatherUnit: weatherUnit.value,
+            windSpeedUnit: windSpeedUnit.value,
+            language: language.value,
+            aiEnabled: aiEnabled.value,
+            aiProvider: aiProvider.value,
+            dateResetCounter: resetCounter.value ? arrDate.join("-") : false
+        }
+
+        store.setUserPreferences(data)
+        await api(`/api/users/${user.value.id}/preferences`, {method: "POST", body: data})
+    } catch (ex) {
+        webError("Account.savePreferences", ex)
+    }
+}
+
+const closeAlert = () => {
+    garminLinked.value = false
+    garminUnlinked.value = false
+    wahooLinked.value = false
+    wahooUnlinked.value = false
+    spotifyLinked.value = false
+    spotifyUnlinked.value = false
+    lastfmLinked.value = false
+    lastfmUnlinked.value = false
+}
+
+/**
+ * Confirm email and load MCP sessions.
+ */
+const loadData = async () => {
+    try {
+        if (route.query?.email && route.query?.token) {
+            await api(`/api/users/${store.user.id}/email/confirm`, {method: "POST", body: {email: route.query.email, token: route.query.token}})
+            store.setUserData({email: route.query.email, confirmEmail: null})
+            emailConfirmed.value = true
+        }
+    } catch (ex) {
+        webError("Account.fetch", ex)
+    }
+
+    if (store.user.isPro) {
+        try {
+            mcpSessions.value = await api(`/api/users/${store.user.id}/mcp/sessions`)
+        } catch (ex) {
+            webError("Account.fetchMcpSessions", ex)
+        }
+    }
+}
+
+onMounted(() => {
+    if (route.query.spotify) {
+        refreshUser()
+    }
+    loadData()
+})
+
+onBeforeRouteLeave(async () => {
+    if (savePending.value) {
+        await savePreferences()
+    }
+})
 </script>

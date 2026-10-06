@@ -1,8 +1,8 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>1 year of PRO</h1>
-            <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)" colored-border>
+            <v-alert border="top" color="accent" class="pb-0" v-if="user.isPro && !['github', 'paypal'].includes(subscriptionSource)">
                 <p>You have a PRO account already! But of course I won't mind if you keep it active and still use the links below.</p>
             </v-alert>
 
@@ -18,8 +18,8 @@
             <p class="mt-4">Once you have completed the registration and everything is confirmed, your account will be switched to PRO.</p>
             <p>After 1 year, if you still wish to keep using PRO features, you'll need to purchase an yearly or the lifetime subscription.</p>
 
-            <v-card v-if="revolut" class="mt-5" outlined>
-                <v-card-title class="accent text-center text-md-left">
+            <v-card v-if="revolut" class="mt-5" variant="outlined">
+                <v-card-title class="bg-accent text-center text-md-left">
                     <a href="https://links.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><img src="https://links.strautomator.com/images/revolut.png" alt="Revolut" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
@@ -33,14 +33,14 @@
                             <li>Steps must be completed within 10 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://links.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><v-btn color="primary" rounded nuxt>Go to Revolut</v-btn></a>
+                            <a href="https://links.strautomator.com/l/revolut" title="Go to Revolut" target="revolut"><v-btn color="primary" rounded>Go to Revolut</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="tradeRepublic" class="mt-5" outlined>
-                <v-card-title class="accent text-center text-md-left">
+            <v-card v-if="tradeRepublic" class="mt-5" variant="outlined">
+                <v-card-title class="bg-accent text-center text-md-left">
                     <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="tr"><img src="https://links.strautomator.com/images/traderepublic.png" class="mx-auto mx-md-0 card-affiliate-logo color-invert" /></a>
                 </v-card-title>
                 <v-card-text>
@@ -52,14 +52,14 @@
                             <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><v-btn color="primary" rounded nuxt>Go to Trade Republic</v-btn></a>
+                            <a href="https://links.strautomator.com/l/traderepublic" title="Go to Trade Republic" target="traderepublic"><v-btn color="primary" rounded>Go to Trade Republic</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="amex" class="mt-5" outlined>
-                <v-card-title class="accent text-center text-md-left">
+            <v-card v-if="amex" class="mt-5" variant="outlined">
+                <v-card-title class="bg-accent text-center text-md-left">
                     <a href="https://links.strautomator.com/l/amex" title="Go to American Express" target="amex"><img src="https://links.strautomator.com/images/amex.png" class="mx-auto mx-md-0 card-affiliate-logo" /></a>
                 </v-card-title>
                 <v-card-text>
@@ -74,59 +74,48 @@
                             <li>Steps must be completed within 21 days</li>
                         </ul>
                         <div class="mt-5 text-center text-md-left">
-                            <a href="https://links.strautomator.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded nuxt>Go to American Express</v-btn></a>
+                            <a href="https://links.strautomator.com/l/amex" title="Go to American Express" target="amex"><v-btn color="primary" rounded>Go to American Express</v-btn></a>
                         </div>
                     </div>
                 </v-card-text>
             </v-card>
 
-            <v-alert border="top" color="mt-5 accent">
+            <v-alert border="top" color="accent" class="mt-5">
                 Please note that you <strong>must</strong> use the buttons above to open the correct referral links. If you register to any of these fintech services separately by going directly to their website, they will not be able to match the
                 referral code.
             </v-alert>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
-import _ from "lodash"
-import subscriptionMixin from "~/mixins/subscriptionMixin.js"
-import userMixin from "~/mixins/userMixin.js"
+<script setup lang="ts">
+useHead({title: "Subscription via affiliates"})
 
-export default {
-    authenticated: true,
-    mixins: [subscriptionMixin, userMixin],
-    head() {
-        return {
-            subscriptionSource: "...",
-            title: "Subscription via affiliates"
-        }
-    },
-    data() {
-        const country = this.$store.state.country
+const store = useMainStore()
+const api = useApi()
+const webError = useWebError()
+const {user} = useUser()
+const {getSubscriptionSource} = useSubscription()
 
-        return {
-            revolut: true,
-            tradeRepublic: ["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country),
-            amex: ["DE"].includes(country)
-        }
-    },
-    methods: {
-        startCase(value) {
-            return _.startCase(value)
-        }
-    },
-    async fetch() {
-        try {
-            if (this.user.isPro) {
-                const subscription = await this.$axios.$get(`/api/users/${this.user.id}/subscription`)
-                this.subscriptionSource = this.getSubscriptionSource(subscription)
-            }
-        } catch (ex) {
-            this.$webError(this, "Billing.fetch", ex)
-        }
+const country = store.country
+const revolut = ref(true)
+const tradeRepublic = ref(["AT", "BE", "DE", "ES", "FR", "IT", "PT"].includes(country))
+const amex = ref(["DE"].includes(country))
+const subscriptionSource = ref("...")
 
-        this.loading = false
+/**
+ * Load subscription details to show the existing PRO source.
+ */
+const loadSubscription = async () => {
+    try {
+        if (user.value.isPro) {
+            const subscription = await api(`/api/users/${user.value.id}/subscription`)
+            subscriptionSource.value = getSubscriptionSource(subscription)
+        }
+    } catch (ex) {
+        webError("Billing.fetch", ex)
     }
 }
+
+onMounted(loadSubscription)
 </script>

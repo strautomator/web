@@ -1,42 +1,42 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>Download my data</h1>
-            <v-card class="mt-3" outlined>
+            <v-card class="mt-3" variant="outlined">
                 <v-card-text class="pa-0">
                     <div class="pa-4">
                         Here you can download a ZIP file with all the data that Strautomator holds about you.
-                        <div v-if="user && user.dateLastArchiveGenerated">You can generate a new archive every {{ this.$store.state.archiveDownloadDays }} days.</div>
+                        <div v-if="user && user.dateLastArchiveGenerated">You can generate a new archive every {{ store.archiveDownloadDays }} days.</div>
                         <div v-if="user.dateLastArchiveGenerated">Your last archive was created at {{ $dayjs(user.dateLastArchiveGenerated).format("ll") }}.</div>
                     </div>
                     <h3 class="pl-4 pb-2">What's included?</h3>
                     <ul class="pl-8">
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">Activities</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">Activities</li>
                         <li>Processed activities</li>
                         <li>Activities queued for processing</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">FitActivities</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">FitActivities</li>
                         <li>Processed FIT summaries from Garmin</li>
                         <li>Processed FIT summaries from Wahoo</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">Automations</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">Automations</li>
                         <li>Automation statistics</li>
                         <li>Shared automations</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">AthleteRecords</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">AthleteRecords</li>
                         <li>Personal activity records</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">Calendars</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">Calendars</li>
                         <li>Calendar configurations</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">GearWear</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">GearWear</li>
                         <li>GearWear configurations</li>
                         <li>Battery tracker</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">Notifications</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">Notifications</li>
                         <li>Read and unread notifications</li>
                         <li>Read announcements</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">Subscription</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">Subscription</li>
                         <li>PRO subscription details</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">User</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">User</li>
                         <li>Account details and preferences</li>
                         <li>Strava profile</li>
                         <li>Automation configurations</li>
-                        <li class="font-weight-bold gdpr-list-header" v-if="$breakpoint.mdAndUp">*.ics</li>
+                        <li class="font-weight-bold gdpr-list-header" v-if="mdAndUp">*.ics</li>
                         <li>Cached exported calendars</li>
                     </ul>
 
@@ -49,48 +49,46 @@
 
                     <div class="pa-3 text-center text-md-left">
                         <v-btn class="ma-1" color="primary" title="Download my data" @click="downloadArchive" rounded>
-                            <v-icon left>mdi-archive-arrow-down</v-icon>
+                            <v-icon start>mdi-archive-arrow-down</v-icon>
                             {{ isNewArchive ? "Download new archive" : "Download existing archive" }}
                         </v-btn>
                     </div>
                 </v-card-text>
             </v-card>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
-import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
+<script setup lang="ts">
+import dayjs from "dayjs"
 
-export default {
-    authenticated: true,
-    mixins: [userMixin],
-    head() {
-        return {
-            title: "Download my data"
-        }
-    },
-    computed: {
-        isNewArchive() {
-            if (!this.user.dateLastArchiveGenerated) return true
-            return this.$dayjs().diff(this.user.dateLastArchiveGenerated, "days") >= this.$store.state.archiveDownloadDays
-        }
-    },
-    methods: {
-        async downloadArchive() {
-            try {
-                const result = await this.$axios.$get(`/api/users/${this.user.id}/archive-download`)
+useHead({title: "Download my data"})
 
-                if (!result || !result.url) {
-                    throw new Error("Failed to generated a download URL")
-                }
+const store = useMainStore()
+const api = useApi()
+const webError = useWebError()
+const {mdAndUp} = useDisplay()
+const {user} = useUser()
 
-                window.open(result.url, "strautomator-download")
-            } catch (ex) {
-                this.$webError(this, "Account.downloadArchive", ex)
-            }
+const isNewArchive = computed(() => {
+    if (!user.value.dateLastArchiveGenerated) return true
+    return dayjs().diff(user.value.dateLastArchiveGenerated, "days") >= store.archiveDownloadDays
+})
+
+/**
+ * Request an archive download URL and open it in a new window.
+ */
+const downloadArchive = async () => {
+    try {
+        const result: any = await api(`/api/users/${user.value.id}/archive-download`)
+
+        if (!result || !result.url) {
+            throw new Error("Failed to generated a download URL")
         }
+
+        window.open(result.url, "strautomator-download")
+    } catch (ex) {
+        webError("Account.downloadArchive", ex)
     }
 }
 </script>

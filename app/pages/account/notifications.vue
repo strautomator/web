@@ -1,11 +1,11 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>Notifications</h1>
             <div v-if="unreadNotifications.length > 0">
                 <v-alert class="mb-4" v-for="notification in unreadNotifications" :key="notification.id">
-                    <div class="text-body-1 font-weight-bold secondary--text">{{ notification.title }}</div>
-                    <div class="caption">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
+                    <div class="text-body-large font-weight-bold text-secondary">{{ notification.title }}</div>
+                    <div class="text-body-small">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
                     <div class="mt-2">{{ notification.body }}</div>
                 </v-alert>
             </div>
@@ -13,15 +13,15 @@
                 <v-alert class="mb-4" icon="mdi-bell-outline">You have no unread notifications!</v-alert>
             </div>
             <template v-if="readNotifications.length > 0">
-                <v-card class="mt-6" outlined>
-                    <v-card-title class="accent">Previous Notifications</v-card-title>
+                <v-card class="mt-6" variant="outlined">
+                    <v-card-title class="bg-accent">Previous Notifications</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             <p>These will be deleted automatically after some weeks.</p>
                             <div class="mt-4 mb-2" v-for="notification in readNotifications" :key="notification.id">
                                 <v-divider class="mb-2" />
-                                <div class="secondary--text">{{ notification.title }}</div>
-                                <div class="caption">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
+                                <div class="text-secondary">{{ notification.title }}</div>
+                                <div class="text-body-small">{{ $dayjs(notification.dateCreated).format("lll") }}</div>
                                 <div class="mt-2">{{ notification.body }}</div>
                             </div>
                         </div>
@@ -29,67 +29,76 @@
                 </v-card>
             </template>
             <div class="mt-4 text-center text-md-left">
-                <v-btn color="primary" to="/account" title="Back to my account" exact outlined rounded small nuxt>
-                    <v-icon left>mdi-arrow-left</v-icon>
+                <v-btn color="primary" to="/account" title="Back to my account" exact variant="outlined" rounded size="small">
+                    <v-icon start>mdi-arrow-left</v-icon>
                     Back to My Account
                 </v-btn>
             </div>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
 
-export default {
-    authenticated: true,
-    mixins: [userMixin],
-    head() {
-        return {
-            title: "Notifications"
-        }
-    },
-    data() {
-        return {
-            unreadNotifications: [],
-            readNotifications: [],
-            timerMarkAllRead: null
-        }
-    },
-    mounted() {
-        if (this.unreadNotifications.length > 0) {
-            const timeout = this.unreadNotifications.length * 3000
-            this.timerMarkAllRead = setTimeout(this.markAllRead, timeout)
-        }
-    },
-    beforeDestroy() {
-        if (this.timerMarkAllRead) {
-            clearTimeout(this.timerMarkAllRead)
-            this.timerMarkAllRead = null
-        }
-    },
-    async fetch() {
-        try {
-            const notifications = await this.$axios.$get(`/api/notifications/${this.user.id}/all`)
+interface NotificationItem {
+    id: string
+    title: string
+    body: string
+    read: boolean
+    dateCreated: string | Date
+}
 
-            this.unreadNotifications = _.remove(notifications, {read: false})
-            this.readNotifications = _.remove(notifications, {read: true})
-        } catch (ex) {
-            this.notifications = []
-            this.$webError(this, "NotificationHistory.fetch", ex)
-        }
-    },
-    methods: {
-        async markAllRead() {
-            const ids = _.map(this.unreadNotifications, "id")
+useHead({title: "Notifications"})
 
-            try {
-                await this.$axios.$post(`/api/notifications/${this.user.id}/read`, ids)
-            } catch (ex) {
-                this.$webError(this, "NotificationHistory.markAllRead", `Notifications: ${ids.join(", ")}`, ex)
-            }
+const api = useApi()
+const webError = useWebError()
+const {user} = useUser()
+
+const unreadNotifications = ref<NotificationItem[]>([])
+const readNotifications = ref<NotificationItem[]>([])
+let timerMarkAllRead: ReturnType<typeof setTimeout> = null
+
+/**
+ * Load all notifications and split them by read status.
+ */
+const loadNotifications = async () => {
+    try {
+        const notifications: NotificationItem[] = await api(`/api/notifications/${user.value.id}/all`)
+
+        unreadNotifications.value = _.remove(notifications, {read: false})
+        readNotifications.value = _.remove(notifications, {read: true})
+
+        if (unreadNotifications.value.length > 0) {
+            const timeout = unreadNotifications.value.length * 3000
+            timerMarkAllRead = setTimeout(markAllRead, timeout)
         }
+    } catch (ex) {
+        unreadNotifications.value = []
+        readNotifications.value = []
+        webError("NotificationHistory.fetch", ex)
     }
 }
+
+/**
+ * Mark all currently unread notifications as read.
+ */
+const markAllRead = async () => {
+    const ids = _.map(unreadNotifications.value, "id")
+
+    try {
+        await api(`/api/notifications/${user.value.id}/read`, {method: "POST", body: ids})
+    } catch (ex) {
+        webError("NotificationHistory.markAllRead", ex)
+    }
+}
+
+onMounted(loadNotifications)
+
+onBeforeUnmount(() => {
+    if (timerMarkAllRead) {
+        clearTimeout(timerMarkAllRead)
+        timerMarkAllRead = null
+    }
+})
 </script>

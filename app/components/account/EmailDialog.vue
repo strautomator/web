@@ -1,13 +1,11 @@
 <template>
-    <v-dialog v-model="visible" width="440" overlay-opacity="0.95" persistent>
+    <v-dialog v-model="visible" width="440" opacity="0.95" persistent>
         <v-card>
             <v-toolbar color="primary">
                 <v-toolbar-title>Change email address</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
-                    <v-btn icon @click.stop="hideDialog">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
+                    <v-btn icon="mdi-close" @click.stop="hideDialog"></v-btn>
                 </v-toolbar-items>
             </v-toolbar>
             <v-card-text>
@@ -17,17 +15,17 @@
                         You'll get a message with a link to confirm it.
                     </p>
                     <div>
-                        <v-text-field v-model="userEmail" label="Email" placeholder="@" maxlength="150" :loading="saving" :rules="inputRules" :error-messages="serverError" validate-on-blur outlined rounded></v-text-field>
+                        <v-text-field v-model="userEmail" label="Email" placeholder="@" maxlength="150" :loading="saving" :rules="inputRules" :error-messages="serverError" validate-on="blur" variant="outlined" rounded></v-text-field>
                     </div>
                 </v-form>
                 <div class="text-right">
                     <v-spacer></v-spacer>
-                    <v-btn class="mr-2" color="grey" title="Close dialog" @click.stop="hideDialog" text rounded>
-                        <v-icon left>mdi-cancel</v-icon>
+                    <v-btn class="mr-2" color="grey" title="Close dialog" @click.stop="hideDialog" variant="text" rounded>
+                        <v-icon start>mdi-cancel</v-icon>
                         Cancel
                     </v-btn>
                     <v-btn color="primary" title="Save email address" :disabled="userEmail.length < 6" @click="saveEmail" rounded>
-                        <v-icon left>mdi-check</v-icon>
+                        <v-icon start>mdi-check</v-icon>
                         Save email
                     </v-btn>
                 </div>
@@ -36,66 +34,74 @@
     </v-dialog>
 </template>
 
-<script>
-import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
+<script setup lang="ts">
+const props = defineProps<{showDialog: boolean}>()
+const emit = defineEmits<{closed: [emailSaved: boolean]}>()
 
-export default {
-    mixins: [userMixin],
-    props: ["show-dialog"],
-    data() {
-        return {
-            userEmail: this.$store.state.user.email || "",
-            emailValid: false,
-            emailSaved: false,
-            saving: false,
-            serverError: []
+const store = useMainStore()
+const api = useApi()
+const webError = useWebError()
+const {user} = useUser()
+
+const emailForm = useTemplateRef<any>("emailForm")
+const userEmail = ref(store.user?.email || "")
+const emailValid = ref(false)
+const emailSaved = ref(false)
+const saving = ref(false)
+const serverError = ref<string[]>([])
+
+const inputRules = computed(() => {
+    const rules = {
+        required: (value: string) => !!value || "Email is required",
+        email: (value: string) => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || "Invalid email address"
         }
-    },
-    computed: {
-        visible() {
-            return this.showDialog
-        },
-        inputRules() {
-            const rules = {
-                required: (value) => !!value || "Email is required",
-                email: (value) => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || "Invalid email address"
-                }
-            }
+    }
 
-            return [rules.required, rules.email]
+    return [rules.required, rules.email]
+})
+
+/**
+ * Hide the dialog and tell the parent if the email was saved.
+ */
+const hideDialog = () => {
+    emit("closed", emailSaved.value)
+    emailSaved.value = false
+}
+
+const visible = computed({
+    get: () => props.showDialog,
+    set: (value: boolean) => {
+        if (!value) hideDialog()
+    }
+})
+
+/**
+ * Save the user's email address and request confirmation.
+ */
+const saveEmail = async () => {
+    try {
+        const validation = await emailForm.value?.validate()
+        if (validation?.valid === false) return
+
+        if (userEmail.value != store.user?.email) {
+            saving.value = true
+            await api(`/api/users/${user.value.id}/email`, {method: "POST", body: {email: userEmail.value}})
+            saving.value = false
+
+            store.setUserData({email: userEmail.value})
+            emailSaved.value = true
         }
-    },
-    methods: {
-        hideDialog() {
-            this.$emit("closed", this.emailSaved)
-            this.emailSaved = false
-        },
-        async saveEmail() {
-            try {
-                if (this.$refs.emailForm.validate()) {
-                    if (this.userEmail != this.$store.state.user.email) {
-                        this.saving = true
-                        await this.$axios.$post(`/api/users/${this.user.id}/email`, {email: this.userEmail})
-                        this.saving = false
 
-                        this.$store.commit("setUserData", {email: this.userEmail})
-                        this.emailSaved = true
-                    }
+        hideDialog()
+    } catch (ex: any) {
+        saving.value = false
 
-                    this.hideDialog()
-                }
-            } catch (ex) {
-                this.saving = false
-
-                if (ex.response && ex.response.data?.message) {
-                    this.serverError = [ex.response.data.message]
-                } else {
-                    this.$webError(this, "EmailDialog.saveEmail", ex)
-                }
-            }
+        if (ex.response && ex.response.data?.message) {
+            serverError.value = [ex.response.data.message]
+        } else {
+            webError("EmailDialog.saveEmail", ex)
         }
     }
 }

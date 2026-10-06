@@ -1,8 +1,8 @@
 <template>
-    <v-card outlined>
+    <v-card variant="outlined">
         <v-card-text class="pa-0">
-            <v-simple-table>
-                <thead class="accent">
+            <v-table>
+                <thead class="bg-accent">
                     <tr>
                         <th>Features</th>
                         <th class="text-center">FREE</th>
@@ -12,12 +12,12 @@
                 <tbody>
                     <tr>
                         <td>Automations</td>
-                        <td class="text-center">{{ $store.state.freePlanDetails.maxRecipes }}</td>
+                        <td class="text-center">{{ store.freePlanDetails.maxRecipes }}</td>
                         <td class="text-center">Unlimited</td>
                     </tr>
                     <tr>
                         <td>GearWear</td>
-                        <td class="text-center">{{ $store.state.freePlanDetails.maxGearWear }}</td>
+                        <td class="text-center">{{ store.freePlanDetails.maxGearWear }}</td>
                         <td class="text-center">Unlimited</td>
                     </tr>
                     <tr>
@@ -32,18 +32,18 @@
                     </tr>
                     <tr>
                         <td>Batch processing</td>
-                        <td class="text-center">{{ $store.state.freePlanDetails.batchDays }} days</td>
-                        <td class="text-center">{{ $store.state.proPlanDetails.batchDays }} days</td>
+                        <td class="text-center">{{ store.freePlanDetails.batchDays }} days</td>
+                        <td class="text-center">{{ store.proPlanDetails.batchDays }} days</td>
                     </tr>
                     <tr>
                         <td>Calendar range</td>
                         <td class="text-center">
-                            -{{ $store.state.freePlanDetails.pastCalendarDays }}{{ dayText }}<br />
-                            +{{ $store.state.freePlanDetails.futureCalendarDays }}{{ dayText }}
+                            -{{ store.freePlanDetails.pastCalendarDays }}{{ dayText }}<br />
+                            +{{ store.freePlanDetails.futureCalendarDays }}{{ dayText }}
                         </td>
                         <td class="text-center">
-                            -{{ $store.state.proPlanDetails.pastCalendarDays }}{{ dayText }}<br />
-                            +{{ $store.state.proPlanDetails.futureCalendarDays }}{{ dayText }}
+                            -{{ store.proPlanDetails.pastCalendarDays }}{{ dayText }}<br />
+                            +{{ store.proPlanDetails.futureCalendarDays }}{{ dayText }}
                         </td>
                     </tr>
                     <tr>
@@ -107,24 +107,18 @@
                         <td class="text-center"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></td>
                     </tr>
                     <tr>
-                        <td colspan="3">PRO costs {{ currencySymbol }}{{ $store.state.proPlanDetails.price.yearly.toFixed(2) }} / year or {{ currencySymbol }}{{ $store.state.proPlanDetails.price.lifetime.toFixed(2) }} / lifetime</td>
+                        <td colspan="3">PRO costs {{ currencySymbol }}{{ store.proPlanDetails.price.yearly.toFixed(2) }} / year or {{ currencySymbol }}{{ store.proPlanDetails.price.lifetime.toFixed(2) }} / lifetime</td>
                     </tr>
                 </tbody>
-            </v-simple-table>
+            </v-table>
         </v-card-text>
     </v-card>
 </template>
 
-<script>
-import subscriptionMixin from "~/mixins/subscriptionMixin.js"
-import userMixin from "~/mixins/userMixin.js"
+<script setup lang="ts">
+const store = useMainStore()
+const {mdAndUp} = useDisplay()
+const {currencySymbol} = useSubscription()
 
-export default {
-    mixins: [subscriptionMixin, userMixin],
-    computed: {
-        dayText() {
-            return this.$breakpoint.mdAndUp ? " days" : "d"
-        }
-    }
-}
+const dayText = computed(() => (mdAndUp.value ? " days" : "d"))
 </script>

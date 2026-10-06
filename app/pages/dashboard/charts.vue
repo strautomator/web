@@ -1,24 +1,22 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>
                 Charts
-                <v-btn class="float-right mt-3 text-h6 font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" x-small fab rounded nuxt>
-                    <v-icon small>mdi-history</v-icon>
-                </v-btn>
+                <v-btn class="float-right mt-3 text-headline-small font-weight-bold" color="primary" to="/automations/history" title="Go to automation history" icon="mdi-history" size="x-small" rounded></v-btn>
             </h1>
 
-            <v-card outlined>
+            <v-card variant="outlined">
                 <v-card-text>
-                    <div class="d-flex" :class="{'flex-column': !$breakpoint.mdAndUp}">
+                    <div class="d-flex" :class="{'flex-column': !mdAndUp}">
                         <div class="flex-grow-0">
-                            <v-select label="Charts" v-model="chartSource" :items="chartSourceList" :class="{'mr-2': $breakpoint.mdAndUp}" outlined rounded dense return-object></v-select>
+                            <v-select label="Charts" v-model="chartSource" :items="chartSourceList" :class="{'mr-2': mdAndUp}" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                         <div class="flex-grow-0">
-                            <v-select label="Period" v-model="period" :items="periodList" :class="{'mr-2': $breakpoint.mdAndUp}" outlined rounded dense></v-select>
+                            <v-select label="Period" v-model="period" :items="periodList" :class="{'mr-2': mdAndUp}" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                         <div class="flex-grow-0">
-                            <v-select label="Chart style" v-model="chartType" :items="chartTypeList" outlined rounded dense></v-select>
+                            <v-select label="Chart style" v-model="chartType" :items="chartTypeList" variant="outlined" rounded density="compact" item-title="text"></v-select>
                         </div>
                     </div>
                     <div class="mt-4 pl-4 pr-4" v-if="loading">
@@ -28,229 +26,211 @@
                     <div v-else-if="!processedActivities || processedActivities.length == 0" class="mt-4 pl-4 pr-4">
                         <span>No processed activities found to display statistics.</span>
                     </div>
-                    <canvas id="main-chart" :height="$breakpoint.mdAndUp ? '' : '320'"></canvas>
+                    <canvas ref="mainChart" :height="mdAndUp ? undefined : '320'"></canvas>
                 </v-card-text>
             </v-card>
 
             <v-alert class="mt-4 text-center text-md-left">
                 <div class="mb-3 mb-md-0">
                     Thinking about the future instead?
-                    <br v-if="!$breakpoint.mdAndUp" />
-                    See your upcoming events on the <n-link to="/map" title="View your upcoming club events on the map" nuxt>Map</n-link>.
+                    <br v-if="!mdAndUp" />
+                    See your upcoming events on the <nuxt-link to="/map" title="View your upcoming club events on the map">Map</nuxt-link>.
                 </div>
             </v-alert>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Chart from "chart.js/auto"
-import "chartjs-adapter-dayjs-3"
+import "chartjs-adapter-dayjs-4"
+import dayjs from "dayjs"
 import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import recipeMixin from "~/mixins/recipeMixin.js"
 
-export default {
-    authenticated: true,
-    mixins: [userMixin, recipeMixin],
-    head() {
-        return {
-            title: "Charts"
-        }
-    },
-    data() {
-        const chartSourceList = [{value: "automations", text: "Automations"}]
+useHead({title: "Charts"})
 
-        const chartTypeList = [
-            {value: "bar", text: "Bars"},
-            {value: "line", text: "Lines"}
-        ]
+const store = useMainStore()
+const api = useApi()
+const webError = useWebError()
+const {mdAndUp} = useDisplay()
+const {user} = useUser()
 
-        const periodList = [
-            {value: 28, text: "Last 4 weeks"},
-            {value: 90, text: "Last 3 months"},
-            {value: 180, text: "Last 6 months"},
-            {value: 365, text: "Last year"}
-        ]
+const mainChart = useTemplateRef<HTMLCanvasElement>("mainChart")
+const loading = ref(true)
+const dayFormat = "MMM Do"
+const chartSource = ref("automations")
+const chartSourceList = [{value: "automations", text: "Automations"}]
+const chartTypeList = [
+    {value: "bar", text: "Bars"},
+    {value: "line", text: "Lines"}
+]
+const period = ref(28)
+const periodList = [
+    {value: 28, text: "Last 4 weeks"},
+    {value: 90, text: "Last 3 months"},
+    {value: 180, text: "Last 6 months"},
+    {value: 365, text: "Last year"}
+]
+const chartType = ref("bar")
+const suggestedMax = ref(1)
+const processedActivities = ref<any[]>(null)
+let chart: Chart = null
 
-        return {
-            loading: true,
-            dayFormat: "MMM Do",
-            monthFormat: "MMM YYYY",
-            chartSource: "automations",
-            chartSourceList: chartSourceList,
-            chartTypeList: chartTypeList,
-            period: 28,
-            periodList: periodList,
-            chartType: "bar",
-            suggestedMax: 1,
-            dataPoints: null,
-            processedActivities: null
-        }
-    },
-    watch: {
-        chartSource(newValue, oldValue) {
-            if (newValue != oldValue) this.createChart()
-        },
-        period(newValue, oldValue) {
-            if (newValue != oldValue) this.createChart()
-        },
-        chartType(newValue, oldValue) {
-            if (newValue != oldValue) this.createChart()
-        }
-    },
-    async fetch() {
-        try {
-            this.processedActivities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities`)
-        } catch (ex) {
-            this.$webError(this, "Charts.fetch", ex)
-        }
-    },
-    mounted() {
-        setTimeout(this.createChart, 1500)
-    },
-    beforeDestroy() {
-        if (this.$data.chart) {
-            this.$data.chart.destroy()
-        }
-    },
-    methods: {
-        createChart() {
-            if (this.loading) {
-                this.loading = false
-            }
+watch([chartSource, period, chartType], () => createChart())
 
-            if (!this.processedActivities || this.processedActivities.length == 0) {
-                return
-            }
-
-            let now = this.$dayjs()
-            const datasets = []
-
-            // Default colors.
-            const bgColors = ["#F44336AA", "#9C27B0AA", "#3F51B5AA", "#00BCD4AA", "#009688AA", "#CDDC39AA", "#795548AA", "#607D8BAA", "#4CAF50AA"]
-
-            // Duplicate downloaded activities so we can process them.
-            const activities = _.cloneDeep(this.processedActivities)
-
-            // Get time unit depending on selected period.
-            const timeUnit = this.period > 90 ? "month" : this.period > 28 ? "week" : "day"
-
-            // Iterate user recipes to build the individual datasets.
-            for (let recipe of Object.values(this.$store.state.user.recipes)) {
-                const dataset = {
-                    uid: recipe.id,
-                    label: recipe.title,
-                    data: []
-                }
-
-                if (this.chartType == "bar") {
-                    dataset.backgroundColor = bgColors.shift()
-                } else {
-                    dataset.borderColor = bgColors.shift()
-                }
-
-                datasets.push(dataset)
-            }
-
-            // Reset suggested max.
-            this.suggestedMax = 1
-
-            // Removed older activities.
-            now = now.subtract(this.period, "days")
-            _.remove(activities, this.getActivityDateFilter(now))
-
-            // Iterate to create the data points.
-            for (let i = this.period; i > 0; i--) {
-                if (this.period > 180) {
-                    i -= 14
-                    now = now.add(15, "days")
-                } else if (this.period > 90) {
-                    i -= 6
-                    now = now.add(7, "days")
-                } else {
-                    now = now.add(1, "days")
-                }
-
-                this.populateDatapoints(datasets, activities, now)
-            }
-
-            // Canvas object.
-            const ctx = document.getElementById("main-chart")
-
-            // Destroy existing chart.
-            if (this.$data.chart) {
-                this.$data.chart.destroy()
-                ctx.innerHTML = ""
-            }
-
-            // Create Chart.js on canvas.
-            this.$data.chart = new Chart(ctx, {
-                type: this.chartType,
-                options: {
-                    responsive: true,
-                    lineTension: 1,
-                    scales: {
-                        x: {
-                            axis: "x",
-                            type: "time",
-                            time: {
-                                unit: timeUnit,
-                                tooltipFormat: "YYYY-MM-DD"
-                            }
-                        },
-                        y: {
-                            axis: "y",
-                            suggestedMax: this.suggestedMax,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            title: (items, data) => {
-                                const tti = items[0]
-                                const tDate = tti.label.toString()
-
-                                if (this.period > 180) {
-                                    const fromDate = this.$dayjs(tDate).subtract(15, "days")
-                                    const toDate = this.$dayjs(tDate)
-                                    return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
-                                }
-
-                                if (this.period > 90) {
-                                    const fromDate = this.$dayjs(tDate).subtract(7, "days")
-                                    const toDate = this.$dayjs(tDate)
-                                    return `${fromDate.format(this.dayFormat)} to ${toDate.format(this.dayFormat)}`
-                                }
-
-                                return this.$dayjs(tti.label).format(this.dayFormat)
-                            }
-                        }
-                    }
-                },
-                data: {
-                    datasets: datasets
-                }
-            })
-        },
-        getActivityDateFilter(maxMoment) {
-            return (a) => this.$dayjs(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.utc().unix()
-        },
-        populateDatapoints(datasets, activities, maxMoment) {
-            const periodActivities = _.remove(activities, this.getActivityDateFilter(maxMoment))
-
-            for (let ds of datasets) {
-                const counter = _.filter(periodActivities, (a) => a.recipes[ds.uid]).length
-
-                if (counter >= this.suggestedMax) {
-                    this.suggestedMax = counter + 1
-                }
-
-                ds.data.push({x: maxMoment.toDate(), y: counter})
-            }
-        }
+/**
+ * Load processed activities used as chart data.
+ */
+const loadData = async () => {
+    try {
+        processedActivities.value = await api(`/api/strava/${user.value.id}/processed-activities`)
+    } catch (ex) {
+        webError("Charts.fetch", ex)
     }
 }
+
+/**
+ * Create or recreate the main chart.
+ */
+const createChart = () => {
+    if (loading.value) {
+        loading.value = false
+    }
+
+    if (!mainChart.value || !processedActivities.value || processedActivities.value.length == 0) {
+        return
+    }
+
+    let now = dayjs()
+    const datasets: any[] = []
+
+    const bgColors = ["#F44336AA", "#9C27B0AA", "#3F51B5AA", "#00BCD4AA", "#009688AA", "#CDDC39AA", "#795548AA", "#607D8BAA", "#4CAF50AA"]
+    const activities = _.cloneDeep(processedActivities.value)
+    const timeUnit = period.value > 90 ? "month" : period.value > 28 ? "week" : "day"
+
+    for (let recipe of Object.values(store.user.recipes) as any[]) {
+        const dataset: any = {
+            uid: recipe.id,
+            label: recipe.title,
+            data: []
+        }
+
+        if (chartType.value == "bar") {
+            dataset.backgroundColor = bgColors.shift()
+        } else {
+            dataset.borderColor = bgColors.shift()
+        }
+
+        datasets.push(dataset)
+    }
+
+    suggestedMax.value = 1
+    now = now.subtract(period.value, "days")
+    _.remove(activities, getActivityDateFilter(now))
+
+    for (let i = period.value; i > 0; i--) {
+        if (period.value > 180) {
+            i -= 14
+            now = now.add(15, "days")
+        } else if (period.value > 90) {
+            i -= 6
+            now = now.add(7, "days")
+        } else {
+            now = now.add(1, "days")
+        }
+
+        populateDatapoints(datasets, activities, now)
+    }
+
+    if (chart) {
+        chart.destroy()
+    }
+
+    chart = new Chart(mainChart.value, {
+        type: chartType.value as any,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    axis: "x",
+                    type: "time",
+                    time: {
+                        unit: timeUnit,
+                        tooltipFormat: "YYYY-MM-DD"
+                    }
+                },
+                y: {
+                    axis: "y",
+                    suggestedMax: suggestedMax.value,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: (items: any[]) => {
+                            const tti = items[0]
+                            const tDate = tti.label.toString()
+
+                            if (period.value > 180) {
+                                const fromDate = dayjs(tDate).subtract(15, "days")
+                                const toDate = dayjs(tDate)
+                                return `${fromDate.format(dayFormat)} to ${toDate.format(dayFormat)}`
+                            }
+
+                            if (period.value > 90) {
+                                const fromDate = dayjs(tDate).subtract(7, "days")
+                                const toDate = dayjs(tDate)
+                                return `${fromDate.format(dayFormat)} to ${toDate.format(dayFormat)}`
+                            }
+
+                            return dayjs(tti.label).format(dayFormat)
+                        }
+                    }
+                }
+            }
+        },
+        data: {
+            datasets: datasets
+        }
+    })
+}
+
+/**
+ * Build a filter that removes activities before a date.
+ */
+const getActivityDateFilter = (maxMoment: any) => {
+    return (a: any) => dayjs(a.dateStart).unix() + (a.utcStartOffset || 0) <= maxMoment.utc().unix()
+}
+
+/**
+ * Add data points for all datasets at a specific date.
+ */
+const populateDatapoints = (datasets: any[], activities: any[], maxMoment: any) => {
+    const periodActivities = _.remove(activities, getActivityDateFilter(maxMoment))
+
+    for (let ds of datasets) {
+        const counter = _.filter(periodActivities, (a) => a.recipes[ds.uid]).length
+
+        if (counter >= suggestedMax.value) {
+            suggestedMax.value = counter + 1
+        }
+
+        ds.data.push({x: maxMoment.toDate(), y: counter})
+    }
+}
+
+onMounted(async () => {
+    await loadData()
+    await nextTick()
+    setTimeout(createChart, 1500)
+})
+
+onBeforeUnmount(() => {
+    if (chart) {
+        chart.destroy()
+    }
+})
 </script>
