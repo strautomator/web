@@ -1,17 +1,17 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>Debug activity</h1>
-            <v-card class="mb-4" outlined>
+            <v-card class="mb-4" variant="outlined">
                 <v-card-text class="pb-2 pb-md-0">
                     <v-container class="ma-0 pa-0" fluid>
                         <v-row no-gutters>
                             <v-col cols="12" :sm="12" :md="10">
-                                <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
+                                <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" variant="outlined" rounded density="compact"></v-text-field>
                             </v-col>
                             <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
                                 <v-btn color="primary" class="mt-n6 mt-md-0" @click="setActivityRoute()" :loading="loading" :disabled="activityId.length < 5" rounded>
-                                    <v-icon left>mdi-bug</v-icon>
+                                    <v-icon start>mdi-bug</v-icon>
                                     Debug
                                 </v-btn>
                             </v-col>
@@ -29,12 +29,12 @@
                 <v-alert border="top" color="error" v-if="syncError">
                     {{ syncError }}
                 </v-alert>
-                <v-card v-else outlined>
-                    <v-card-title class="accent text-center text-md-left nobreak">Activity {{ activity.id }}</v-card-title>
+                <v-card v-else variant="outlined">
+                    <v-card-title class="bg-accent text-center text-md-left nobreak">Activity {{ activity.id }}</v-card-title>
                     <v-card-text>
                         <div class="mt-4">
                             <ul class="ml-0 pl-4">
-                                <li v-for="(value, key) in activity">
+                                <li v-for="(value, key) in activity" :key="key">
                                     <span class="font-weight-bold">{{ key }}</span>
                                     <span v-html="friendlyValue(value)"></span>
                                 </li>
@@ -43,7 +43,7 @@
                         <div v-if="garminActivity" class="mt-4">
                             <h3 class="mb-1">Garmin metadata:</h3>
                             <ul class="ml-0 pl-4">
-                                <li v-for="(value, key) in garminActivity">
+                                <li v-for="(value, key) in garminActivity" :key="key">
                                     <span class="font-weight-bold">garmin.{{ key }}</span>
                                     {{ friendlyValue(value) }}
                                 </li>
@@ -52,7 +52,7 @@
                         <div v-if="wahooActivity" class="mt-4">
                             <h3 class="mb-1">Wahoo metadata:</h3>
                             <ul class="ml-0 pl-4">
-                                <li v-for="(value, key) in wahooActivity">
+                                <li v-for="(value, key) in wahooActivity" :key="key">
                                     <span class="font-weight-bold">wahoo.{{ key }}</span>
                                     {{ friendlyValue(value) }}
                                 </li>
@@ -61,7 +61,7 @@
                         <div v-if="processedActivity?.recipes" class="mt-4">
                             <h3 class="mb-1">Executed automations:</h3>
                             <ul class="ml-0 pl-4">
-                                <li v-for="(value, key) in processedActivity.recipes">
+                                <li v-for="(value, key) in processedActivity.recipes" :key="key">
                                     <span class="font-weight-bold">{{ key }}</span>
                                     <br />
                                     {{ friendlyValue(value.actions) }}
@@ -76,153 +76,155 @@
                 </v-card>
             </template>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import recipeMixin from "~/mixins/recipeMixin.js"
-import stravaMixin from "~/mixins/stravaMixin.js"
 
-export default {
-    authenticated: true,
-    mixins: [userMixin, recipeMixin, stravaMixin],
-    head() {
-        return {
-            title: "Debug activity"
+useHead({title: "Debug activity"})
+
+const api = useApi()
+const route = useRoute()
+const webError = useWebError()
+const {user} = useUser()
+const {activityIdFromUrl} = useStrava()
+
+const loading = ref(false)
+const activityId = ref("")
+const activity = ref<any | false>(false)
+const garminActivity = ref<any | false>(false)
+const wahooActivity = ref<any | false>(false)
+const processedActivity = ref<any>(null)
+const syncError = ref<string>(null)
+
+/**
+ * Update the route query and load the selected activity.
+ */
+const setActivityRoute = async () => {
+    await navigateTo({query: {id: activityId.value}}, {replace: true})
+    await getActivity()
+}
+
+/**
+ * Load activity details and matching metadata.
+ */
+const getActivity = async () => {
+    const id = activityIdFromUrl(activityId.value)
+    if (!id) {
+        syncError.value = "Invalid activity ID or URL."
+        return
+    }
+
+    try {
+        loading.value = true
+        syncError.value = null
+        activity.value = null
+        garminActivity.value = null
+        wahooActivity.value = null
+
+        const loadedActivity: any = await api(`/api/strava/${user.value.id}/activities/${activityId.value}/details`)
+        if (!loadedActivity) {
+            syncError.value = "Activity not found."
+            return
         }
-    },
-    data() {
-        return {
-            loading: false,
-            activityId: "",
-            activity: false,
-            garminActivity: false,
-            garminError: null,
-            wahooActivity: false,
-            wahooError: null,
-            processedActivity: null,
-            syncError: null
-        }
-    },
-    async fetch() {
-        try {
-            if (this.$route.query?.id) {
-                this.activityId = this.$route.query.id
-                await this.getActivity()
-            }
-        } catch (ex) {
-            this.$webError(this, "ActivityDebug.fetch", ex)
-        }
-    },
-    methods: {
-        async setActivityRoute() {
-            this.$router.push({query: {id: this.activityId}})
-            await this.getActivity()
-        },
-        async getActivity() {
-            const id = this.activityIdFromUrl(this.activityId)
-            if (!id) {
-                this.syncError = "Invalid activity ID or URL."
-                return
-            }
 
-            try {
-                this.loading = true
-                this.syncError = null
-                this.activity = null
-                this.garminActivity = null
-                this.garminError = null
-                this.wahooActivity = null
-                this.wahooError = null
+        // Polyline string is useless here, so take it out before assigning the activity.
+        delete loadedActivity.polyline
+        activity.value = loadedActivity
 
-                const activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
-                if (!activity) {
-                    this.syncError = "Activity not found."
-                    return
-                }
-
-                // Polyline string is useless here, so take it out before assigning the activity.
-                delete activity.polyline
-                this.activity = activity
-
-                if (this.user.isPro) {
-                    if (activity.device?.includes("Garmin")) {
-                        try {
-                            const garminActivity = await this.$axios.$post(`/api/garmin/${this.user.id}/match-activity/${this.activityId}`)
-                            if (!garminActivity.notFound) {
-                                this.garminActivity = garminActivity
-                            }
-                        } catch (garminEx) {
-                            this.garminError = garminEx.response?.data?.message || garminEx.toString()
-                        }
-                    }
-                    if (activity.device?.includes("Wahoo")) {
-                        try {
-                            const wahooActivity = await this.$axios.$post(`/api/wahoo/${this.user.id}/match-activity/${this.activityId}`)
-                            if (!wahooActivity.notFound) {
-                                this.wahooActivity = wahooActivity
-                            }
-                        } catch (wahooEx) {
-                            this.wahooError = wahooEx.response?.data?.message || wahooEx.toString()
-                        }
-                    }
-                }
-
+        if (user.value.isPro) {
+            if (loadedActivity.device?.includes("Garmin")) {
                 try {
-                    const processedActivity = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities/${this.activityId}`)
-                    this.processedActivity = processedActivity?.id ? processedActivity : null
-                } catch (innerEx) {
-                    this.processedActivity = null
+                    const matchedGarminActivity: any = await api(`/api/garmin/${user.value.id}/match-activity/${activityId.value}`, {method: "POST"})
+                    if (!matchedGarminActivity.notFound) {
+                        garminActivity.value = matchedGarminActivity
+                    }
+                } catch (garminEx: any) {
+                    console.error("ActivityDebug.getActivity Garmin", garminEx)
                 }
-            } catch (ex) {
-                if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {
-                    this.syncError = "Activity not found."
-                } else {
-                    this.syncError = ex.response?.data?.error ? ex.response.data.error : ex.toString()
+            }
+            if (loadedActivity.device?.includes("Wahoo")) {
+                try {
+                    const matchedWahooActivity: any = await api(`/api/wahoo/${user.value.id}/match-activity/${activityId.value}`, {method: "POST"})
+                    if (!matchedWahooActivity.notFound) {
+                        wahooActivity.value = matchedWahooActivity
+                    }
+                } catch (wahooEx: any) {
+                    console.error("ActivityDebug.getActivity Wahoo", wahooEx)
                 }
-            } finally {
-                this.loading = false
             }
-        },
-        fitDownload() {
-            window.open(`/api/strava/${this.user.id}/${this.user.urlToken}/activities/${this.activity.id}/fit`, "_blank")
-        },
-        escapeHtml(value) {
-            if (value == null) {
-                return ""
-            }
-
-            return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;")
-        },
-        friendlyValue(value) {
-            if (_.isArray(value)) {
-                return this.escapeHtml(value.map((a) => (_.isObject(a) ? Object.values(a).join(": ") : a)).join(", "))
-            }
-            if (_.isObject(value)) {
-                const keys = Object.keys(value)
-                return (
-                    "<br />" +
-                    keys
-                        .map((k) => {
-                            const label = this.escapeHtml(k)
-                            if (_.isArray(value[k])) {
-                                return `${label}: [${this.escapeHtml(value[k].join(", "))}]`
-                            }
-                            if (_.isObject(value[k])) {
-                                return `${label}: ${Object.entries(value[k])
-                                    .map(([subK, subV]) => `${this.escapeHtml(subK)} = ${this.escapeHtml(subV)}`)
-                                    .join(", ")}`
-                            }
-                            return `${label}: ${this.escapeHtml(value[k])}`
-                        })
-                        .join("<br />")
-                )
-            }
-
-            return this.escapeHtml(value)
         }
+
+        try {
+            const loadedProcessedActivity: any = await api(`/api/strava/${user.value.id}/processed-activities/${activityId.value}`)
+            processedActivity.value = loadedProcessedActivity?.id ? loadedProcessedActivity : null
+        } catch (innerEx) {
+            processedActivity.value = null
+        }
+    } catch (ex: any) {
+        if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {
+            syncError.value = "Activity not found."
+        } else {
+            syncError.value = ex.data?.error || ex.response?._data?.error || ex.toString()
+        }
+    } finally {
+        loading.value = false
     }
 }
+
+const fitDownload = () => window.open(`/api/strava/${user.value.id}/${user.value.urlToken}/activities/${activity.value.id}/fit`, "_blank")
+
+/**
+ * Escape a debug value for HTML output.
+ */
+const escapeHtml = (value: any) => {
+    if (value == null) {
+        return ""
+    }
+
+    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;")
+}
+
+/**
+ * Convert debug values to compact readable strings.
+ */
+const friendlyValue = (value: any): string => {
+    if (_.isArray(value)) {
+        return escapeHtml(value.map((a) => (_.isObject(a) ? Object.values(a).join(": ") : a)).join(", "))
+    }
+    if (_.isObject(value)) {
+        const keys = Object.keys(value)
+        return (
+            "<br />" +
+            keys
+                .map((k) => {
+                    const label = escapeHtml(k)
+                    if (_.isArray(value[k])) {
+                        return `${label}: [${escapeHtml(value[k].join(", "))}]`
+                    }
+                    if (_.isObject(value[k])) {
+                        return `${label}: ${Object.entries(value[k])
+                            .map(([subK, subV]) => `${escapeHtml(subK)} = ${escapeHtml(subV)}`)
+                            .join(", ")}`
+                    }
+                    return `${label}: ${escapeHtml(value[k])}`
+                })
+                .join("<br />")
+        )
+    }
+
+    return escapeHtml(value)
+}
+
+onMounted(async () => {
+    try {
+        if (route.query?.id) {
+            activityId.value = route.query.id as string
+            await getActivity()
+        }
+    } catch (ex) {
+        webError("ActivityDebug.fetch", ex)
+    }
+})
 </script>

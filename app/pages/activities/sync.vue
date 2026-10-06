@@ -1,18 +1,18 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>Process activity</h1>
             <template v-if="recipes.length > 0">
-                <v-card class="mb-4" outlined>
+                <v-card class="mb-4" variant="outlined">
                     <v-card-text class="pb-2 pb-md-0">
                         <v-container class="ma-0 pa-0" fluid>
                             <v-row no-gutters>
                                 <v-col cols="12" :sm="12" :md="10">
-                                    <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
+                                    <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" variant="outlined" rounded density="compact"></v-text-field>
                                 </v-col>
                                 <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
                                     <v-btn color="primary" class="mt-n6 mt-md-0" @click="setActivityRoute()" :loading="loading" :disabled="activityId.length < 5" rounded>
-                                        <v-icon left>mdi-playlist-play</v-icon>
+                                        <v-icon start>mdi-playlist-play</v-icon>
                                         Process
                                     </v-btn>
                                 </v-col>
@@ -30,8 +30,8 @@
                     <v-alert border="top" color="error" v-if="syncError">
                         {{ syncError }}
                     </v-alert>
-                    <v-card v-else outlined>
-                        <v-card-title class="accent">Activity {{ activityId }}</v-card-title>
+                    <v-card v-else variant="outlined">
+                        <v-card-title class="bg-accent">Activity {{ activityId }}</v-card-title>
                         <v-card-text>
                             <div class="mt-4" v-if="!processedActivity || recipeKeys.length == 0">No automations were triggered for this activity.</div>
                             <div class="mt-4" v-else>
@@ -55,18 +55,18 @@
                                 <div class="mt-4">Triggered automations:</div>
                                 <ul class="mt-1 pl-4 action-list">
                                     <li class="font-weight-medium" v-for="recipeId in recipeKeys" :key="recipeId">
-                                        <n-link :to="'/automations/edit?id=' + recipeId" :title="processedActivity.recipes[recipeId].title">
+                                        <nuxt-link :to="'/automations/edit?id=' + recipeId" :title="processedActivity.recipes[recipeId].title">
                                             {{ processedActivity.recipes[recipeId].title }}
-                                        </n-link>
+                                        </nuxt-link>
                                     </li>
                                 </ul>
                             </div>
-                            <v-alert color="accent" class="mt-4 text-caption text-center text-md-left pa-2 mb-0" v-if="hasWeather">Weather conditions and tags might not be available for activities older than 1 week.</v-alert>
+                            <v-alert color="accent" class="mt-4 text-body-small text-center text-md-left pa-2 mb-0" v-if="hasWeather">Weather conditions and tags might not be available for activities older than 1 week.</v-alert>
                         </v-card-text>
                     </v-card>
                     <div class="mt-4 text-center text-md-left">
                         <v-btn color="primary" title="Debug this activity" @click="debugActivity" rounded>
-                            <v-icon left>mdi-text-search</v-icon>
+                            <v-icon start>mdi-text-search</v-icon>
                             Debug this activity
                         </v-btn>
                     </div>
@@ -74,117 +74,83 @@
             </template>
 
             <template v-else>
-                <create-first />
+                <recipes-create-first />
             </template>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
-import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import recipeMixin from "~/mixins/recipeMixin.js"
-import stravaMixin from "~/mixins/stravaMixin.js"
-import CreateFirst from "~/components/recipes/CreateFirst.vue"
+<script setup lang="ts">
+useHead({title: "Process activity"})
 
-export default {
-    authenticated: true,
-    components: {CreateFirst},
-    mixins: [userMixin, recipeMixin, stravaMixin],
-    head() {
-        return {
-            title: "Process activity"
-        }
-    },
-    data() {
-        return {
-            loading: true,
-            activityId: "",
-            processedActivity: false,
-            syncError: null
-        }
-    },
-    computed: {
-        recipes() {
-            return Object.values(this.user.recipes)
-        },
-        recipeKeys() {
-            if (!this.processedActivity || !this.processedActivity.recipes) {
-                return []
-            }
+const api = useApi()
+const route = useRoute()
+const {user} = useUser()
+const {activityIdFromUrl} = useStrava()
+const {$dayjs}: any = useNuxtApp()
 
-            return Object.keys(this.processedActivity.recipes)
-        },
-        updatedFieldsKeys() {
-            if (!this.processedActivity || !this.processedActivity.updatedFields) {
-                return []
-            }
+const loading = ref(true)
+const activityId = ref("")
+const processedActivity = ref<any | false>(false)
+const syncError = ref<string>(null)
 
-            return Object.keys(this.processedActivity.updatedFields)
-        },
-        hasWeather() {
-            if (!this.processedActivity || !this.processedActivity.recipes) return false
-            const recipeIds = Object.keys(this.processedActivity.recipes)
-            for (let r = 0; r < recipeIds.length; r++) {
-                const recipe = this.user.recipes[r]
-                if (recipe && JSON.stringify(recipe).includes("weather.")) {
-                    return true
-                }
-            }
-            return false
-        }
-    },
-    async fetch() {
-        try {
-            if (this.$route.query?.id) {
-                this.activityId = this.$route.query.id
-                await this.syncActivity(this.activityId)
-            }
-        } catch (ex) {
-            this.$webError(this, "ActivitySync.fetch", ex)
-        }
-    },
-    methods: {
-        async setActivityRoute() {
-            this.$router.push({query: {id: this.activityId}})
-            await this.syncActivity()
-        },
-        getDate(date) {
-            return this.$dayjs(date)
-        },
-        getDuration(seconds) {
-            const duration = this.$dayjs.duration(seconds, "seconds")
-            let hours = duration.hours()
-            let minutes = duration.minutes()
-            if (hours < 10) hours = `0${hours}`
-            if (minutes < 10) minutes = `0${minutes}`
-            return `${hours}:${minutes}`
-        },
-        async syncActivity() {
-            const id = this.activityIdFromUrl(this.activityId)
-            if (!id) {
-                this.syncError = "Invalid activity ID or URL."
-                return
-            }
-
-            try {
-                this.loading = true
-                this.syncError = null
-                this.processedActivity = null
-                this.loading = true
-
-                const processedActivity = await this.$axios.$get(`/api/strava/${this.user.id}/process-activity/${id}`)
-                this.processedActivity = processedActivity
-            } catch (ex) {
-                this.processedActivity = null
-                this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
-            } finally {
-                this.loading = false
-            }
-        },
-        debugActivity(activityId) {
-            this.$router.push({path: `/activities/debug?id=${activityId || this.activityId}`})
+const recipes = computed(() => Object.values(user.value.recipes))
+const recipeKeys = computed(() => (!processedActivity.value || !processedActivity.value.recipes ? [] : Object.keys(processedActivity.value.recipes)))
+const updatedFieldsKeys = computed(() => (!processedActivity.value || !processedActivity.value.updatedFields ? [] : Object.keys(processedActivity.value.updatedFields)))
+const hasWeather = computed(() => {
+    if (!processedActivity.value || !processedActivity.value.recipes) return false
+    const recipeIds = Object.keys(processedActivity.value.recipes)
+    for (let r = 0; r < recipeIds.length; r++) {
+        const recipe = user.value.recipes[r]
+        if (recipe && JSON.stringify(recipe).includes("weather.")) {
+            return true
         }
     }
+    return false
+})
+
+const getDate = (date: any) => $dayjs(date)
+
+/**
+ * Update the route query and process the selected activity.
+ */
+const setActivityRoute = async () => {
+    await navigateTo({query: {id: activityId.value}}, {replace: true})
+    await syncActivity()
 }
+
+/**
+ * Process the activity with the current automations.
+ */
+const syncActivity = async () => {
+    const id = activityIdFromUrl(activityId.value)
+    if (!id) {
+        syncError.value = "Invalid activity ID or URL."
+        loading.value = false
+        return
+    }
+
+    try {
+        loading.value = true
+        syncError.value = null
+        processedActivity.value = null
+
+        processedActivity.value = await api(`/api/strava/${user.value.id}/process-activity/${id}`)
+    } catch (ex: any) {
+        processedActivity.value = null
+        syncError.value = ex.data?.message || ex.response?._data?.message || ex.toString()
+    } finally {
+        loading.value = false
+    }
+}
+
+const debugActivity = () => navigateTo({path: "/activities/debug", query: {id: activityId.value}})
+
+onMounted(async () => {
+    loading.value = false
+    if (route.query?.id) {
+        activityId.value = route.query.id as string
+        await syncActivity()
+    }
+})
 </script>

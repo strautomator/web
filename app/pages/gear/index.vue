@@ -1,5 +1,5 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>My Gear</h1>
             <template v-if="!isLoading && gearWithConfig.length == 0">
@@ -11,7 +11,7 @@
                     <div class="mt-4">
                         <a href="https://www.strava.com/settings/gear" target="strava">
                             <v-btn color="primary" title="Manage my gear on Strava" rounded>
-                                <v-icon left>mdi-open-in-new</v-icon>
+                                <v-icon start>mdi-open-in-new</v-icon>
                                 Manage gear on Strava
                             </v-btn>
                         </a>
@@ -21,8 +21,8 @@
             <template v-else>
                 <v-alert class="text-center text-md-left" v-if="!user.email">
                     <p>To get GearWear distance alerts, Strautomator needs to know your email address first.</p>
-                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded small>Set my email address</v-btn>
-                    <email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
+                    <v-btn color="primary" title="Set your email address now" @click="emailDialog = true" rounded size="small">Set my email address</v-btn>
+                    <account-email-dialog :show-dialog="emailDialog" @closed="hideEmailDialog" />
                 </v-alert>
                 <div class="mt-5 mb-2" v-if="isLoading">
                     <v-progress-circular class="mr-1 mt-n1" size="16" width="2" indeterminate></v-progress-circular>
@@ -30,81 +30,79 @@
                 </div>
                 <template v-else>
                     <div v-for="gear in gearWithConfig" :key="gear.id">
-                        <gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
+                        <gearwear-gear-card :gear="gear" :gearwear-config="gearwearConfigs[gear.id]" />
                     </div>
 
                     <div v-if="batteryTracker?.devices?.length > 0">
-                        <v-card class="mb-5" outlined>
-                            <v-hover v-slot:default="{hover}">
-                                <v-card-title class="accent">
-                                    <v-icon class="ml-n1 mr-2">mdi-battery-charging-medium</v-icon>
-                                    <span>Device batteries</span>
-                                </v-card-title>
-                            </v-hover>
-                            <v-card-text class="pa-0 white--text">
-                                <v-simple-table class="mt-2">
+                        <v-card class="mb-5" variant="outlined">
+                            <v-card-title class="bg-accent">
+                                <v-icon class="ml-n1 mr-2">mdi-battery-charging-medium</v-icon>
+                                <span>Device batteries</span>
+                            </v-card-title>
+                            <v-card-text class="pa-0 text-white">
+                                <v-table class="mt-2">
                                     <tbody>
                                         <tr v-for="device in batteryTracker.devices" :key="device.id">
                                             <td class="pr-0 pl-4">
-                                                <v-hover v-slot:default="{hover}">
-                                                    <a title="Rename this device" @click="showFitDeviceNameDialog(device.id)" small rounded text>
+                                                <v-hover v-slot="{isHovering, props: hoverProps}">
+                                                    <a v-bind="hoverProps" title="Rename this device" @click="showFitDeviceNameDialog(device.id)">
                                                         {{ getFitDeviceName(device.id) || getDeviceIdName(device.id) }}
-                                                        <v-icon class="ml-1" v-show="hover" small>mdi-pencil-outline</v-icon>
+                                                        <v-icon class="ml-1" v-show="isHovering" size="small">mdi-pencil-outline</v-icon>
                                                     </a>
                                                 </v-hover>
                                             </td>
                                             <td class="text-right">
-                                                <v-chip class="text-uppercase" :color="getBatteryColor(device)" small>{{ device.status }}</v-chip>
+                                                <v-chip class="text-uppercase" :color="getBatteryColor(device)" size="small">{{ device.status }}</v-chip>
                                             </td>
-                                            <td width="1" class="nowrap pl-0 text-right">{{ $dayjs(device.dateUpdated).format($breakpoint.mdAndUp ? "lll" : "ll") }}</td>
+                                            <td width="1" class="nowrap pl-0 text-right">{{ $dayjs(device.dateUpdated).format(mdAndUp ? "lll" : "ll") }}</td>
                                         </tr>
                                     </tbody>
-                                </v-simple-table>
-                                <fit-device-name-dialog :device-id="fitDeviceId" :device-name="fitDeviceName" :show-dialog="fitDeviceNameDialog" @closed="hideFitDeviceNameDialog" />
+                                </v-table>
+                                <gearwear-fit-device-name-dialog :device-id="fitDeviceId" :device-name="fitDeviceName" :show-dialog="fitDeviceNameDialog" @closed="hideFitDeviceNameDialog" />
                             </v-card-text>
                         </v-card>
                     </div>
 
-                    <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" outlined>
+                    <v-card class="mt-2" v-if="gearWithoutConfig.length > 0" variant="outlined">
                         <v-card-title>
                             <span>{{ gearWithConfig.length > 0 ? "Gear with no configuration" : "Your Strava gear" }}</span>
                         </v-card-title>
-                        <v-card-text class="pa-0 white--text">
-                            <v-simple-table>
+                        <v-card-text class="pa-0 text-white">
+                            <v-table>
                                 <tbody>
                                     <tr v-for="gear in gearWithoutConfig" :key="gear.id">
                                         <td class="pl-0 pr-0">
-                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="gearwearRemaining < 1" nuxt text rounded small>
+                                            <v-btn color="primary" :to="'/gear/edit?id=' + gear.id" :title="`Create GearWear for ${gear.name}`" :disabled="gearwearRemaining < 1" variant="text" rounded size="small">
                                                 <v-icon class="mr-2">mdi-plus-circle</v-icon>
-                                                <v-icon class="mr-2" small>{{ getGearIcon(gear) }}</v-icon>
+                                                <v-icon class="mr-2" size="small">{{ getGearIcon(gear) }}</v-icon>
                                                 {{ gear.name }}
                                             </v-btn>
                                         </td>
-                                        <td v-if="$breakpoint.mdAndUp">
-                                            <v-chip class="text-lowercase" v-if="gear.primary" outlined small>Primary {{ getGearType(gear) }}</v-chip>
+                                        <td v-if="mdAndUp">
+                                            <v-chip class="text-lowercase" v-if="gear.primary" variant="outlined" size="small">Primary {{ getGearType(gear) }}</v-chip>
                                         </td>
                                         <td class="pl-0 text-right">{{ gear.distance }} {{ distanceUnits }}</td>
                                     </tr>
                                 </tbody>
-                            </v-simple-table>
+                            </v-table>
                             <div class="mt-4 mb-4 ml-md-4 text-center text-md-left">
-                                <v-btn color="primary" href="https://www.strava.com/settings/gear" target="strava" title="Manage my gear on Strava" small rounded>
-                                    <v-icon left>mdi-open-in-new</v-icon>
+                                <v-btn color="primary" href="https://www.strava.com/settings/gear" target="strava" title="Manage my gear on Strava" size="small" rounded>
+                                    <v-icon start>mdi-open-in-new</v-icon>
                                     Manage gear on Strava
                                 </v-btn>
                             </div>
                         </v-card-text>
                     </v-card>
-                    <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="!user.isPro" colored-border>
+                    <v-alert class="mt-5 text-center text-md-left" border="top" color="primary" v-if="!user.isPro" border-color="primary">
                         <p v-if="gearwearRemaining == 0">
-                            You have reached the limit of {{ $store.state.freePlanDetails.maxGearWear }}
+                            You have reached the limit of {{ store.freePlanDetails.maxGearWear }}
                             GearWear configurations on your free account.
-                            <br v-if="$breakpoint.mdAndUp" />
+                            <br v-if="mdAndUp" />
                             To use this feature with more bikes or shoes you'll need a PRO account.
                         </p>
                         <p>Want instant usage updates and additional tracking of your connected Garmin and Wahoo sensor batteries as well?</p>
-                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
-                            <v-icon left>mdi-credit-card</v-icon>
+                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded>
+                            <v-icon start>mdi-credit-card</v-icon>
                             Subscribe to PRO
                         </v-btn>
                     </v-alert>
@@ -112,200 +110,192 @@
                         <div class="mt-2 mt-md-0" v-if="user.isPro && !noGear">
                             Want to keep track of your connected sensor batteries as well?
                             <br />
-                            Simply link your <n-link to="/account?garmin=link" title="Link your Garmin account" nuxt>Garmin</n-link> or <n-link to="/account?wahoo=link" title="Link your Wahoo account" nuxt>Wahoo</n-link>
+                            Simply link your <nuxt-link to="/account?garmin=link" title="Link your Garmin account">Garmin</nuxt-link> or <nuxt-link to="/account?wahoo=link" title="Link your Wahoo account">Wahoo</nuxt-link>
                             account, and you'll see a list of all your device sensors here.
                         </div>
                     </v-alert>
-                    <v-alert class="mt-4 text-center text-md-left text-caption" v-if="!noGear">
+                    <v-alert class="mt-4 text-center text-md-left text-body-small" v-if="!noGear">
                         <template v-if="user.isPro">
                             Gear tracking happens instantly for the vast majority of activities processed by Strautomator PRO, but can have a delay of up to {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} to get triggered.
-                            <br v-if="$breakpoint.mdAndUp" />
-                            You can change this setting on your <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
+                            <br v-if="mdAndUp" />
+                            You can change this setting on your <nuxt-link to="/account" title="My account">account preferences</nuxt-link>.
                         </template>
                         <template v-else>
                             Gear tracking happens with a {{ delayDays == 1 ? "1 day" : `${delayDays} days` }} delay, so you have plenty of time to set the correct bike or shoes on your recent activities.
-                            <br v-if="$breakpoint.mdAndUp" />
+                            <br v-if="mdAndUp" />
                             You can change the delay on your
-                            <n-link to="/account" title="My account" nuxt>account preferences</n-link>.
+                            <nuxt-link to="/account" title="My account">account preferences</nuxt-link>.
                             <div class="mt-1">Today's activities will be processed on {{ trackingDay }}.</div>
                         </template>
                     </v-alert>
                 </template>
 
-                <v-alert class="mt-5 text-center text-md-left" border="top" color="error" v-if="gearwearRemaining < 0" colored-border>
+                <v-alert class="mt-5 text-center text-md-left" border="top" color="error" v-if="gearwearRemaining < 0" border-color="error">
                     <p>
-                        You are over the limit of {{ $store.state.freePlanDetails.maxGearWear }}
+                        You are over the limit of {{ store.freePlanDetails.maxGearWear }}
                         GearWear configurations on your free account.
-                        <br v-if="$breakpoint.mdAndUp" />
-                        Please upgrade your account, or remove the exceeding configurations to keep a maximum of {{ $store.state.freePlanDetails.maxGearWear }}, as some might not be updated.
+                        <br v-if="mdAndUp" />
+                        Please upgrade your account, or remove the exceeding configurations to keep a maximum of {{ store.freePlanDetails.maxGearWear }}, as some might not be updated.
                     </p>
-                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
-                        <v-icon left>mdi-credit-card</v-icon>
+                    <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded>
+                        <v-icon start>mdi-credit-card</v-icon>
                         Subscribe to PRO
                     </v-btn>
                 </v-alert>
             </template>
         </v-container>
-        <v-snackbar v-model="alertEmailSaved" class="text-left" color="success" :timeout="5000" rounded bottom>
-            Your email was set to {{ $store.state.user.email }}!
-            <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+        <v-snackbar v-model="alertEmailSaved" class="text-left" color="success" :timeout="5000" rounded location="bottom">
+            Your email was set to {{ store.user.email }}!
+            <template #actions>
+                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
-        <v-snackbar v-model="alertFitDevice" class="text-left" :color="fitDeviceDialogAction" :timeout="5000" rounded bottom>
+        <v-snackbar v-model="alertFitDevice" class="text-left" :color="fitDeviceDialogAction" :timeout="5000" rounded location="bottom">
             {{ fitDeviceDialogAction == "success" ? `Device ${fitDeviceId} saved.` : `Device ${fitDeviceId} removed.` }}
-            <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <template #actions>
+                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
-        <v-snackbar v-if="$route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded bottom>
+        <v-snackbar v-if="route.query.new" v-model="alertNew" class="text-left" color="success" :timeout="5000" rounded location="bottom">
             GearWear configuration for "{{ alertGearTitle }}" created!
-            <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <template #actions>
+                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
-        <v-snackbar v-if="$route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded bottom>
+        <v-snackbar v-if="route.query.deleted" v-model="alertDeleted" class="text-left" color="error" :timeout="5000" rounded location="bottom">
             GearWear configuration for "{{ alertGearTitle }}" deleted!
-            <template v-slot:action="{attrs}">
-                <v-icon v-bind="attrs" @click="closeAlert">mdi-close-circle</v-icon>
+            <template #actions>
+                <v-icon @click="closeAlert">mdi-close-circle</v-icon>
             </template>
         </v-snackbar>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import gearwearMixin from "~/mixins/gearwearMixin.js"
-import EmailDialog from "~/components/account/EmailDialog.vue"
-import FitDeviceNameDialog from "~/components/gearwear/FitDeviceNameDialog.vue"
-import GearCard from "~/components/gearwear/GearCard.vue"
 
-export default {
-    authenticated: true,
-    components: {EmailDialog, FitDeviceNameDialog, GearCard},
-    mixins: [userMixin, gearwearMixin],
-    head() {
-        return {
-            title: "Gear"
-        }
-    },
-    data() {
-        const user = this.$store.state.user
-        const now = this.$dayjs()
-        const delayDays = user.preferences.gearwearDelayDays || 2
+useHead({title: "Gear"})
 
-        return {
-            delayDays: delayDays,
-            isLoading: true,
-            hasManyBikes: false,
-            emailDialog: false,
-            alertEmailSaved: false,
-            alertNew: false,
-            alertDeleted: false,
-            alertFitDevice: false,
-            alertGearTitle: "",
-            gearWithConfig: [],
-            gearWithoutConfig: [],
-            gearwearConfigs: {},
-            batteryTracker: null,
-            fitDeviceId: null,
-            fitDeviceName: null,
-            fitDeviceNameDialog: false,
-            fitDeviceDialogAction: "",
-            trackingDay: now.add(delayDays, "days").format("ddd Do")
-        }
-    },
-    computed: {
-        needsPro() {},
-        noGear() {
-            return this.gearWithConfig.length == 0 && this.gearWithoutConfig.length == 0
-        }
-    },
-    async fetch() {
-        try {
-            const gearwearConfigs = {}
+const api = useApi()
+const route = useRoute()
+const store = useMainStore()
+const webError = useWebError()
+const {mdAndUp} = useDisplay()
+const {user, distanceUnits, getGearwearRemaining} = useUser()
+const {getGearType, getGearIcon, getDeviceIdName, getFitDeviceName} = useGearwear()
+const {$dayjs}: any = useNuxtApp()
 
-            // Force trigger a refresh of gear details?
-            const queryRefresh = this.$route.query && this.$route.query.refresh ? "?refresh=1" : ""
+const delayDays = user.value.preferences.gearwearDelayDays || 2
+const isLoading = ref(true)
+const emailDialog = ref(false)
+const alertEmailSaved = ref(false)
+const alertNew = ref(false)
+const alertDeleted = ref(false)
+const alertFitDevice = ref(false)
+const alertGearTitle = ref("")
+const gearWithConfig = ref<any[]>([])
+const gearWithoutConfig = ref<any[]>([])
+const gearwearConfigs = ref<Record<string, any>>({})
+const batteryTracker = ref<any>(null)
+const fitDeviceId = ref<string>(null)
+const fitDeviceName = ref<string>(null)
+const fitDeviceNameDialog = ref(false)
+const fitDeviceDialogAction = ref("")
+const trackingDay = $dayjs().add(delayDays, "days").format("ddd Do")
 
-            // Get GearWear configurations, and populate the gearwearConfigs list.
-            const result = await this.$axios.$get(`/api/gearwear/${this.user.id}${queryRefresh}`)
-            for (let config of result.configs) {
-                gearwearConfigs[config.id] = config
-            }
+const gearwearRemaining = computed(() => getGearwearRemaining(gearwearConfigs.value))
+const noGear = computed(() => gearWithConfig.value.length == 0 && gearWithoutConfig.value.length == 0)
 
-            this.gearwearConfigs = gearwearConfigs
-            this.$store.commit("setGearWear", result.configs)
+/**
+ * Load GearWear configurations and split Strava gear by config status.
+ */
+const loadData = async () => {
+    try {
+        const configs: Record<string, any> = {}
+        const query = route.query && route.query.refresh ? {refresh: 1} : undefined
 
-            // Get list of bikes and shoes with and without GearWear configuration.
-            const bikes = this.$store.state.user.profile.bikes || []
-            const shoes = this.$store.state.user.profile.shoes || []
-            const gearWithConfig = _.concat(bikes, shoes)
-            const gearWithoutConfig = _.remove(gearWithConfig, (g) => !this.gearwearConfigs[g.id])
-
-            this.gearWithConfig = gearWithConfig
-            this.gearWithoutConfig = gearWithoutConfig
-            this.hasManyBikes = bikes.length > 1
-
-            // Battery tracker.
-            if (result.batteryTracker) {
-                this.batteryTracker = result.batteryTracker
-            }
-        } catch (ex) {
-            this.$webError(this, "Gear.fetch", ex)
+        const result: any = await api(`/api/gearwear/${user.value.id}`, {query})
+        for (const config of result.configs) {
+            configs[config.id] = config
         }
 
-        this.isLoading = false
-    },
-    mounted() {
-        if (this.$route.query.new) {
-            this.alertGearTitle = this.getGearName(this.$route.query.new)
-            this.alertNew = true
-        } else if (this.$route.query.deleted) {
-            this.alertGearTitle = this.getGearName(this.$route.query.deleted)
-            this.alertDeleted = true
-        }
-    },
-    methods: {
-        hideEmailDialog(saved) {
-            this.emailDialog = false
-            this.alertEmailSaved = saved
-        },
-        showFitDeviceNameDialog(id) {
-            this.fitDeviceId = id
-            this.fitDeviceName = this.getFitDeviceName(id)
-            this.fitDeviceNameDialog = true
-        },
-        hideFitDeviceNameDialog(action) {
-            if (action == "removal") {
-                this.batteryTracker.devices = this.batteryTracker.devices.filter((d) => d.id != this.fitDeviceId)
-                this.batteryTracker = this.batteryTracker
-            }
+        gearwearConfigs.value = configs
+        store.setGearWear(result.configs)
 
-            this.fitDeviceNameDialog = false
-            this.fitDeviceDialogAction = action || ""
-            this.alertFitDevice = action ? true : false
-        },
-        getGearName(id) {
-            let gear = _.find(this.$store.state.user.profile.bikes, {id: id})
-            if (gear) return gear.name
-            gear = _.find(this.$store.state.user.profile.shoes, {id: id})
-            if (gear) return gear.name
-            return this.getGearType(id).toLowerCase()
-        },
-        getBatteryColor(device) {
-            if (device.status == "unknown") return "accent"
-            if (device.status == "low") return "error"
-            if (device.status == "critical") return "removal"
-            return "success"
-        },
-        closeAlert() {
-            this.alertNew = false
-            this.alertDeleted = false
-            this.alertFitDevice = false
-            this.alertEmailSaved = false
+        const bikes = user.value.profile.bikes || []
+        const shoes = user.value.profile.shoes || []
+        const gearWith = _.concat(bikes, shoes)
+        const gearWithout = _.remove(gearWith, (g: any) => !gearwearConfigs.value[g.id])
+
+        gearWithConfig.value = gearWith
+        gearWithoutConfig.value = gearWithout
+
+        if (result.batteryTracker) {
+            batteryTracker.value = result.batteryTracker
         }
+    } catch (ex) {
+        webError("Gear.fetch", ex)
     }
+
+    isLoading.value = false
 }
+
+const hideEmailDialog = (saved: boolean) => {
+    emailDialog.value = false
+    alertEmailSaved.value = saved
+}
+
+const showFitDeviceNameDialog = (id: string) => {
+    fitDeviceId.value = id
+    fitDeviceName.value = getFitDeviceName(id)
+    fitDeviceNameDialog.value = true
+}
+
+const hideFitDeviceNameDialog = (action: string) => {
+    if (action == "removal") {
+        batteryTracker.value.devices = batteryTracker.value.devices.filter((d: any) => d.id != fitDeviceId.value)
+        batteryTracker.value = batteryTracker.value
+    }
+
+    fitDeviceNameDialog.value = false
+    fitDeviceDialogAction.value = action || ""
+    alertFitDevice.value = action ? true : false
+}
+
+/**
+ * Get a gear name by ID.
+ */
+const getGearName = (id: string) => {
+    let gear = _.find(user.value.profile.bikes, {id: id})
+    if (gear) return gear.name
+    gear = _.find(user.value.profile.shoes, {id: id})
+    if (gear) return gear.name
+    return (id?.substring(0, 1) == "b" ? "Bike" : "Shoes").toLowerCase()
+}
+
+const getBatteryColor = (device: any) => {
+    if (device.status == "unknown") return "accent"
+    if (device.status == "low") return "error"
+    if (device.status == "critical") return "removal"
+    return "success"
+}
+
+const closeAlert = () => {
+    alertNew.value = false
+    alertDeleted.value = false
+    alertFitDevice.value = false
+    alertEmailSaved.value = false
+}
+
+onMounted(() => {
+    loadData()
+
+    if (route.query.new) {
+        alertGearTitle.value = getGearName(route.query.new as string)
+        alertNew.value = true
+    } else if (route.query.deleted) {
+        alertGearTitle.value = getGearName(route.query.deleted as string)
+        alertDeleted.value = true
+    }
+})
 </script>

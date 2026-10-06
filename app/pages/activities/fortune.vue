@@ -1,38 +1,62 @@
 <template>
-    <v-layout column>
+    <div>
         <v-container fluid>
             <h1>Activity fortune</h1>
             <template v-if="!user || user.preferences?.privacyMode">
                 <div>
                     The AI features are disabled when Privacy Mode is enabled. If you wish to test it, please disable the Privacy Mode on your
-                    <n-link to="/account" title="My Account" nuxt>account preferences</n-link>.
+                    <nuxt-link to="/account" title="My Account">account preferences</nuxt-link>.
                 </div>
             </template>
             <template v-else>
                 <div>Try out Strautomator's generated activity names and descriptions, powered by AI!</div>
-                <v-card class="mt-6" outlined>
+                <v-card class="mt-6" variant="outlined">
                     <v-card-text class="pb-2 pb-md-0">
                         <v-container class="ma-0 pa-0" fluid>
                             <v-row no-gutters>
                                 <v-col cols="12" :sm="12" :md="4">
-                                    <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" outlined rounded dense></v-text-field>
+                                    <v-text-field v-model="activityId" label="Activity ID or URL" :loading="loading" variant="outlined" rounded density="compact"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Provider" v-model="selectedAiProvider" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiProviders" :disabled="loading" dense outlined rounded return-object></v-select>
+                                    <v-select
+                                        label="Provider"
+                                        v-model="selectedAiProvider"
+                                        class="ml-md-2 mt-n2 mt-md-0"
+                                        item-value="value"
+                                        item-title="text"
+                                        :items="aiProviders"
+                                        :disabled="loading"
+                                        density="compact"
+                                        variant="outlined"
+                                        rounded
+                                        return-object
+                                    ></v-select>
                                 </v-col>
                                 <v-col cols="12" :sm="12" :md="3">
-                                    <v-select label="Humour" v-model="selectedAiHumour" class="ml-md-2 mt-n2 mt-md-0" item-value="value" item-text="text" :items="aiHumours" :disabled="loading" dense outlined rounded return-object></v-select>
+                                    <v-select
+                                        label="Humour"
+                                        v-model="selectedAiHumour"
+                                        class="ml-md-2 mt-n2 mt-md-0"
+                                        item-value="value"
+                                        item-title="text"
+                                        :items="aiHumours"
+                                        :disabled="loading"
+                                        density="compact"
+                                        variant="outlined"
+                                        rounded
+                                        return-object
+                                    ></v-select>
                                 </v-col>
                                 <v-col class="text-center text-md-right mt-1" cols="12" :sm="12" :md="2">
                                     <v-btn color="primary" class="mt-n4 mt-md-0" @click="getActivity()" :disabled="loading" rounded>
-                                        <v-icon left>mdi-lightbulb</v-icon>
+                                        <v-icon start>mdi-lightbulb</v-icon>
                                         Try it!
                                     </v-btn>
                                 </v-col>
                             </v-row>
                             <v-row v-if="selectedAiHumour.value == 'custom'" no-gutters>
                                 <v-col cols="12" class="pt-0 pb-0">
-                                    <v-text-field v-model="customPrompt" label="Custom prompt" outlined rounded dense></v-text-field>
+                                    <v-text-field v-model="customPrompt" label="Custom prompt" variant="outlined" rounded density="compact"></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -42,8 +66,8 @@
                     </v-card-text>
                 </v-card>
                 <template v-if="activityName">
-                    <v-card class="mt-4" outlined>
-                        <v-card-title class="accent text-center text-md-left nobreak">
+                    <v-card class="mt-4" variant="outlined">
+                        <v-card-title class="bg-accent text-center text-md-left nobreak">
                             {{ activityName }}
                         </v-card-title>
                         <v-card-text>
@@ -53,140 +77,134 @@
                             </div>
                         </v-card-text>
                     </v-card>
-                    <v-alert v-if="!user.isPro" class="mt-2" border="top" color="primary" colored-border>
+                    <v-alert v-if="!user.isPro" class="mt-2" border="top" color="primary" border-color="primary">
                         <p>
                             Activity poems auto generated with AI are available to PRO users only.
-                            <br v-if="$breakpoint.mdAndUp" />
+                            <br v-if="mdAndUp" />
                             Free accounts will still be able to use AI to generate activity names.
                         </p>
-                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded nuxt>
-                            <v-icon left>mdi-credit-card</v-icon>
+                        <v-btn color="primary" to="/billing" title="Subscribe to get a PRO account!" rounded>
+                            <v-icon start>mdi-credit-card</v-icon>
                             Subscribe to PRO
                         </v-btn>
                     </v-alert>
                 </template>
-                <div class="text-caption mt-2" v-if="activity">
+                <div class="text-body-small mt-2" v-if="activity">
                     AI features are available via the "Generate the activity name" and "Generate a poem" automation actions. PRO users also have the option to get activity analysis on their private notes with AI.
                 </div>
             </template>
         </v-container>
-    </v-layout>
+    </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import _ from "lodash"
-import userMixin from "~/mixins/userMixin.js"
-import recipeMixin from "~/mixins/recipeMixin.js"
 
-export default {
-    authenticated: true,
-    mixins: [userMixin, recipeMixin],
-    head() {
-        return {
-            title: "Activity fortune"
+useHead({title: "Activity fortune"})
+
+const api = useApi()
+const store = useMainStore()
+const {mdAndUp} = useDisplay()
+const {user} = useUser()
+
+const aiHumours = _.cloneDeep(store.aiHumours).map((h: string) => ({value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}))
+aiHumours.unshift({value: "", text: "Random"})
+aiHumours.push({value: "custom", text: "Custom prompt"})
+
+const loading = ref(false)
+const activity = ref<any | false>(false)
+const activityName = ref<string>(null)
+const activityDescription = ref<string>(null)
+const activityId = ref("")
+const customPrompt = ref("")
+const selectedAiHumour = ref(aiHumours[0])
+const aiProviders = [
+    {value: "openrouter", text: "Auto"},
+    {value: "anthropic", text: "Anthropic"},
+    {value: "deepseek", text: "DeepSeek"},
+    {value: "gemini", text: "Gemini"},
+    {value: "mistral", text: "Mistral"},
+    {value: "openai", text: "OpenAI"},
+    {value: "spacexai", text: "SpaceXAI"},
+    {value: "zai", text: "Z.ai"}
+]
+const selectedAiProvider = ref<any>(aiProviders[0])
+const syncError = ref<string>(null)
+
+/**
+ * Load the selected activity, or pick a recent processed one.
+ */
+const getActivity = async () => {
+    activityName.value = null
+    activityDescription.value = null
+    activity.value = null
+
+    if (activityId.value.trim() == "") {
+        const activities: any[] = await api(`/api/strava/${user.value.id}/processed-activities`, {query: {limit: 10}})
+
+        if (activities.length > 0) {
+            activityId.value = _.sample(activities).id
+        } else {
+            syncError.value = "No processed activities found, please enter a activity ID or URL."
+            return
         }
-    },
-    data() {
-        const aiHumours = _.cloneDeep(this.$store.state.aiHumours).map((h) => {
-            return {value: h, text: h.charAt(0).toUpperCase() + h.slice(1)}
-        })
-        aiHumours.unshift({value: "", text: "Random"})
-        aiHumours.push({value: "custom", text: "Custom prompt"})
+    } else if (isNaN(activityId.value as any)) {
+        const arrUrl = activityId.value.replace("https://", "").split("/")
 
-        return {
-            loading: false,
-            activity: false,
-            activityName: null,
-            activityDescription: null,
-            activityId: "",
-            customPrompt: "",
-            aiHumours: aiHumours,
-            selectedAiHumour: aiHumours[0],
-            aiProviders: [
-                {value: "openrouter", text: "Auto"},
-                {value: "anthropic", text: "Anthropic"},
-                {value: "deepseek", text: "DeepSeek"},
-                {value: "gemini", text: "Gemini"},
-                {value: "mistral", text: "Mistral"},
-                {value: "openai", text: "OpenAI"},
-                {value: "spacexai", text: "SpaceXAI"},
-                {value: "zai", text: "Z.ai"}
-            ],
-            selectedAiProvider: "openrouter",
-            syncError: null
+        if (arrUrl.length < 3) {
+            syncError.value = "Invalid activity URL."
+            return
         }
-    },
-    methods: {
-        async getActivity() {
-            this.activityName = null
-            this.activityDescription = null
-            this.activity = null
 
-            if (this.activityId.trim() == "") {
-                const activities = await this.$axios.$get(`/api/strava/${this.user.id}/processed-activities?limit=10`)
+        activityId.value = arrUrl[2]
+    }
 
-                if (activities.length > 0) {
-                    this.activityId = _.sample(activities).id
-                } else {
-                    this.syncError = "No processed activities found, please enter a activity ID or URL."
-                    return
-                }
-            } else if (isNaN(this.activityId)) {
-                const arrUrl = this.activityId.replace("https://", "").split("/")
+    if (isNaN(activityId.value as any)) {
+        syncError.value = "Invalid activity ID."
+        return
+    }
 
-                if (arrUrl.length < 3) {
-                    this.syncError = "Invalid activity URL."
-                    return
-                }
+    try {
+        loading.value = true
+        syncError.value = null
+        activity.value = await api(`/api/strava/${user.value.id}/activities/${activityId.value}/details`)
 
-                this.activityId = arrUrl[2]
-            }
-
-            if (isNaN(this.activityId)) {
-                this.syncError = "Invalid activity ID."
-                return
-            }
-
-            try {
-                this.loading = true
-                this.syncError = null
-                this.activity = await this.$axios.$get(`/api/strava/${this.user.id}/activities/${this.activityId}/details`)
-
-                if (this.activity) {
-                    await this.getFortune()
-                } else {
-                    this.syncError = "Activity not available."
-                }
-            } catch (ex) {
-                if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {
-                    this.syncError = "Activity not found."
-                } else {
-                    this.syncError = ex.response?.data?.error ? ex.response.data.error : ex.toString()
-                }
-
-                this.loading = false
-            }
-        },
-        async getFortune() {
-            try {
-                this.loading = true
-                this.syncError = null
-
-                const body = {activity: this.activity, customPrompt: this.selectedAiHumour.value, provider: this.selectedAiProvider.value}
-                if (this.selectedAiHumour.value == "custom") {
-                    body.customPrompt += `:${this.customPrompt}`
-                }
-                const timestamp = Math.round(new Date().valueOf() / 1000)
-                const result = await this.$axios.$post(`/api/ai/${this.user.id}/activity-generate`, body)
-
-                this.activityName = result.name?.response || "Failed!"
-                this.activityDescription = result.description?.response || "Failed!"
-                this.loading = false
-            } catch (ex) {
-                this.syncError = ex.response && ex.response.data.message ? ex.response.data.message : ex.toString()
-                this.loading = false
-            }
+        if (activity.value) {
+            await getFortune()
+        } else {
+            syncError.value = "Activity not available."
         }
+    } catch (ex: any) {
+        if (ex.response?.status == 404 || ex.message?.includes("Not Found")) {
+            syncError.value = "Activity not found."
+        } else {
+            syncError.value = ex.data?.error || ex.response?._data?.error || ex.toString()
+        }
+
+        loading.value = false
+    }
+}
+
+/**
+ * Generate the activity name and description.
+ */
+const getFortune = async () => {
+    try {
+        loading.value = true
+        syncError.value = null
+
+        const body = {activity: activity.value, customPrompt: selectedAiHumour.value.value, provider: selectedAiProvider.value.value}
+        if (selectedAiHumour.value.value == "custom") {
+            body.customPrompt += `:${customPrompt.value}`
+        }
+        const result: any = await api(`/api/ai/${user.value.id}/activity-generate`, {method: "POST", body})
+
+        activityName.value = result.name?.response || "Failed!"
+        activityDescription.value = result.description?.response || "Failed!"
+        loading.value = false
+    } catch (ex: any) {
+        syncError.value = ex.data?.message || ex.response?._data?.message || ex.toString()
+        loading.value = false
     }
 }
 </script>
