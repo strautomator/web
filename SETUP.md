@@ -88,6 +88,8 @@ Strava pushes new activities to your instance through **webhooks**, so your inst
 
 The URL you choose becomes the `app.url` setting. **It must end with a trailing slash**, for example `https://strautomator.example.com/`.
 
+The dev server blocks requests to unknown hostnames. It allows the `app.url` host from `settings.local.json`, `settings.secret.json` or the `SMU_app_url` environment variable, so you don't need to add the domain to any committed file.
+
 ### Option A: Named Cloudflare Tunnel (recommended)
 
 This option gives you a stable URL on your own domain. You don't need to open ports on your router, and you don't need to manage certificates. It's also the default in development mode: when `app.tunnel` is `true`, the app runs the `./tunnel` script automatically at startup.

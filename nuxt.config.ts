@@ -1,4 +1,30 @@
 import colors from "vuetify/util/colors"
+import fs from "node:fs"
+
+/**
+ * Hosts allowed to access the dev server (for example via a tunnel), taken from the
+ * app.url on the SMU_app_url env variable and on the local (gitignored) settings files.
+ */
+const getDevAllowedHosts = (): string[] => {
+    const urls: string[] = [process.env.SMU_app_url]
+
+    for (const file of ["settings.local.json", "settings.secret.json"]) {
+        try {
+            const content = fs.readFileSync(file, "utf8")
+            try {
+                urls.push(JSON.parse(content).app?.url)
+            } catch (ex) {
+                // Settings with comments are not valid JSON, so fallback to a regex.
+                urls.push(content.match(/"app"\s*:\s*\{[^}]*?"url"\s*:\s*"([^"]+)"/)?.[1])
+            }
+        } catch (ex) {
+            // File not found, ignore.
+        }
+    }
+
+    const hosts = urls.filter((url) => !!url).map((url) => URL.parse(url)?.hostname)
+    return [...new Set(hosts.filter((host) => !!host && host != "localhost"))]
+}
 
 // Most of the server side settings are loaded at runtime via setmeup (settings.json,
 // settings.ENV.json and SMU_ environment variables), see server/utils/startup.ts.
@@ -46,6 +72,9 @@ export default defineNuxtConfig({
 
     // The Vite / Vue build options.
     vite: {
+        server: {
+            allowedHosts: getDevAllowedHosts()
+        },
         optimizeDeps: {
             include: ["json-editor-vue", "vanilla-jsoneditor"]
         }
