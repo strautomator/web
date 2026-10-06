@@ -1,3 +1,8 @@
 #!/bin/sh
 
-exec cloudflared tunnel --config .cloudflared/config.yml run
+cloudflared tunnel --config .cloudflared/config.yml run &
+TUNNEL=$!
+trap 'kill $TUNNEL 2>/dev/null' EXIT INT TERM HUP
+
+# Stop the tunnel once stdin is closed (when the parent server process is gone).
+cat > /dev/null

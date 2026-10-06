@@ -34,34 +34,14 @@ export const coreStartup = (): Promise<void> => {
  */
 const run = async (): Promise<void> => {
     try {
-        await startup()
+        // Settings are loaded synchronously at the beginning of the core startup,
+        // so the tunnel can be started right away while the rest is initializing.
+        const coreReady = startup()
+        startTunnel()
+        await coreReady
 
         // Enable logging unhandled exceptions and rejections.
         logger.setOptions({uncaughtExceptions: true, unhandledRejections: true})
-
-        // Execute the tunnel file?
-        if (settings.app.tunnel && !state.tunnel) {
-            state.tunnel = true
-            const tunnel = spawn("./tunnel", {stdio: ["ignore", "pipe", "pipe"]})
-            tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString().trim()))
-
-            // Cloudflared logs to stderr, which must always be consumed, otherwise the tunnel
-            // process blocks once the pipe buffer is full. Only errors are logged.
-            tunnel.stderr.on("data", (data) => {
-                const lines = data.toString().split("\n")
-                for (const line of lines.filter((l) => l.includes(" ERR "))) {
-                    logger.warn("Tunnel", line.trim())
-                }
-            })
-            tunnel.on("error", (err) => logger.error("Tunnel", err))
-            tunnel.on("close", (code) => {
-                state.tunnel = false
-                logger.warn("Tunnel", `Closed with code ${code}`)
-            })
-
-            // Make sure the tunnel does not outlive the server.
-            process.once("exit", () => tunnel.kill())
-        }
 
         // Setup webhooks in the background.
         setupWebhooks()
@@ -69,6 +49,37 @@ const run = async (): Promise<void> => {
         logger.error("Startup", "Failed to start", ex)
         return process.exit(1)
     }
+}
+
+/**
+ * Execute the tunnel file, if enabled on the settings.
+ */
+const startTunnel = (): void => {
+    if (!settings.app.tunnel || state.tunnel) return
+    state.tunnel = true
+
+    // The tunnel script stops when its stdin closes, which happens when the server process (or
+    // the dev server worker thread) exits, so no orphaned cloudflared processes are left behind.
+    const tunnel = spawn("./tunnel", {stdio: ["pipe", "pipe", "pipe"]})
+    tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString().trim()))
+
+    // Cloudflared logs to stderr, which must always be consumed, otherwise the tunnel
+    // process blocks once the pipe buffer is full. Only errors and connections are logged.
+    tunnel.stderr.on("data", (data) => {
+        const lines: string[] = data.toString().split("\n")
+        for (const line of lines) {
+            if (line.includes(" ERR ")) {
+                logger.warn("Tunnel", line.trim())
+            } else if (line.includes("Registered tunnel connection")) {
+                logger.info("Tunnel", line.trim())
+            }
+        }
+    })
+    tunnel.on("error", (err) => logger.error("Tunnel", err))
+    tunnel.on("close", (code) => {
+        state.tunnel = false
+        logger.warn("Tunnel", `Closed with code ${code}`)
+    })
 }
 
 /**
