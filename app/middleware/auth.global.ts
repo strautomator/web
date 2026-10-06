@@ -2,7 +2,7 @@
 
 export default defineNuxtRouteMiddleware((to) => {
     const layout = to.meta.layout || "default"
-    if (layout != "default") {
+    if (layout != "default" || to.matched.length == 0) {
         return
     }
 

@@ -1,12 +1,12 @@
 <template>
-    <NuxtLayout name="landing">
+    <v-app>
         <div class="text-center mt-10">
             <div class="width-wrapper text-center">
                 <img src="/images/logo-round.svg" width="96" height="96" class="strautologo" />
 
                 <div class="mt-8">
-                    <h1 class="text-headline-large">{{ errorDetails.title }}</h1>
-                    <div class="text-headline-medium">{{ errorDetails.message }}</div>
+                    <h1 class="text-h4">{{ errorDetails.title }}</h1>
+                    <div class="text-h5">{{ errorDetails.message }}</div>
                 </div>
                 <div class="mt-8" v-if="showLogin">
                     <div class="mt-4 mb-4">
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </div>
-    </NuxtLayout>
+    </v-app>
 </template>
 
 <script setup lang="ts">

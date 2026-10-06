@@ -1,7 +1,7 @@
 <template>
     <v-app class="text-center">
-        <v-app-bar>
-            <v-toolbar-title class="mr-10 ml-1 flex-grow-0">
+        <v-app-bar :height="smAndDown ? 56 : 64">
+            <v-toolbar-title class="mr-10 ml-1 flex-0-0">
                 <nuxt-link to="/dashboard">
                     <img src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
                     <span class="d-inline-block ml-2 mt-2">Strautomator</span>
@@ -9,11 +9,11 @@
             </v-toolbar-title>
 
             <v-toolbar-items class="d-none d-md-flex">
-                <v-btn to="/automations">Automations</v-btn>
-                <v-btn to="/gear">Gear</v-btn>
-                <v-btn to="/calendar">Calendar</v-btn>
-                <v-btn to="/map">Map</v-btn>
-                <v-btn to="/help">Help</v-btn>
+                <v-btn to="/automations" :active="isSection('/automations')">Automations</v-btn>
+                <v-btn to="/gear" :active="isSection('/gear')">Gear</v-btn>
+                <v-btn to="/calendar" :active="isSection('/calendar')">Calendar</v-btn>
+                <v-btn to="/map" :active="isSection('/map')">Map</v-btn>
+                <v-btn to="/help" :active="isSection('/help')">Help</v-btn>
             </v-toolbar-items>
 
             <v-spacer></v-spacer>
@@ -25,7 +25,7 @@
             </nuxt-link>
             <v-btn color="info" class="ml-1 mr-n3 mr-md-0" title="Logout" @click="logoutDialog = true" variant="text" rounded>
                 <v-icon>mdi-logout</v-icon>
-                <span v-if="!smAndDown" class="d-none d-md-inline text-body-small">Logout</span>
+                <span v-if="!smAndDown" class="d-none d-md-inline text-caption">Logout</span>
             </v-btn>
         </v-app-bar>
 
@@ -47,24 +47,24 @@
             </v-snackbar>
         </v-main>
 
-        <v-bottom-navigation class="d-md-none" color="primary" :model-value="activeNavBtn" grow>
-            <v-btn value="/dashboard" to="/dashboard">
+        <v-bottom-navigation class="d-md-none" color="primary" :active="smAndDown" :model-value="activeNavBtn" grow>
+            <v-btn value="/dashboard" to="/dashboard" :active="isSection('/dashboard')">
                 <v-icon>mdi-home</v-icon>
                 <span>Home</span>
             </v-btn>
-            <v-btn value="/automations" to="/automations">
+            <v-btn value="/automations" to="/automations" :active="isSection('/automations')">
                 <v-icon>mdi-file-tree</v-icon>
                 <span>Automations</span>
             </v-btn>
-            <v-btn value="/gear" to="/gear">
+            <v-btn value="/gear" to="/gear" :active="isSection('/gear')">
                 <v-icon>mdi-cog-refresh</v-icon>
                 <span>Gear</span>
             </v-btn>
-            <v-btn value="/calendar" to="/calendar">
+            <v-btn value="/calendar" to="/calendar" :active="isSection('/calendar')">
                 <v-icon>mdi-calendar</v-icon>
                 <span>Calendar</span>
             </v-btn>
-            <v-btn value="/map" to="/map">
+            <v-btn value="/map" to="/map" :active="isSection('/map')">
                 <v-icon>mdi-map</v-icon>
                 <span>Map</span>
             </v-btn>
@@ -138,6 +138,9 @@ const logoutDialog = ref(false)
 const snackMessage = ref(!!route.query.message)
 
 const activeNavBtn = computed(() => route.path || null)
+
+// Vue Router 3 marked links as active for child routes too (e.g. /automations/edit).
+const isSection = (path: string) => route.path == path || route.path.startsWith(`${path}/`)
 
 const errorDialog = computed({
     get: () => store.hasError,
