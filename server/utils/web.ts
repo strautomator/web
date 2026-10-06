@@ -1,6 +1,6 @@
 // Strautomator Web: Request and response helpers
 
-import {getQuery, getRequestHeader, getRequestHeaders, getRequestIP, getRouterParams, readBody, type RequestEvent} from "nuxt/server"
+import {getQuery, getRequestHeader, getRequestHeaders, getRequestIP, getRouterParam, getRouterParams, readBody, type RequestEvent} from "nuxt/server"
 import _ from "lodash"
 import logger from "anyhow"
 import setmeup from "setmeup"
@@ -59,6 +59,30 @@ export const getClientIP = (event: RequestEvent): string => {
 
     event.context.clientIP = ip
     return ip
+}
+
+/**
+ * Read a required route parameter, throwing an error if missing.
+ * @param event The request event.
+ * @param name The route parameter name.
+ * @param message Optional error message.
+ */
+export const getRequiredParam = (event: RequestEvent, name: string, message?: string): string => {
+    const value = getRouterParam(event, name, {decode: true})
+    if (!value) throw new Error(message || `Missing ${name}`)
+    return value
+}
+
+/**
+ * Validate the URL token passed as a route parameter (used by webhooks), throwing a 404 error if it doesn't match.
+ * @param event The request event.
+ * @param urlToken The expected URL token.
+ */
+export const validateUrlToken = (event: RequestEvent, urlToken: string): void => {
+    const value = getRequiredParam(event, "urlToken", "Missing request params")
+    if (value != urlToken) {
+        throw Object.assign(new Error("Invalid URL token"), {status: 404})
+    }
 }
 
 /**
