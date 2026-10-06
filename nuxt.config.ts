@@ -47,7 +47,22 @@ export default defineNuxtConfig({
             titleTemplate: "Strautomator - %s",
             title: "Strautomator",
             meta: [{charset: "utf-8"}, {name: "viewport", content: "width=device-width, initial-scale=1"}, {name: "description", content: "Turbocharge your Strava activities with automated rules! Strautomator is like IFTTT, but for Strava"}],
-            link: [{rel: "icon", type: "image/x-icon", href: "/favicon.png"}],
+            link: [
+                {rel: "icon", type: "image/x-icon", href: "/favicon.png"},
+                {rel: "preconnect", href: "https://fonts.googleapis.com"},
+                {rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: ""},
+                {rel: "stylesheet", href: "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap"}
+            ],
+            // Vuetify relies on CSS cascade layers, and their order is defined by whichever stylesheet declares them
+            // first. Component styles can load before the main Vuetify styles, so the order must be set upfront.
+            style: [
+                {
+                    key: "vuetify-layers",
+                    tagPriority: "critical",
+                    innerHTML:
+                        "@layer vuetify-core{@layer reset,base}@layer vuetify-components;@layer vuetify-overrides;@layer vuetify-utilities{@layer theme-base,typography,helpers,theme-background,theme-foreground}@layer vuetify-final{@layer transitions,trumps}"
+                }
+            ],
             script: [{src: "https://cdn.paddle.com/paddle/v2/paddle.js", crossorigin: "anonymous"}]
         }
     },
@@ -56,6 +71,13 @@ export default defineNuxtConfig({
     css: ["@mdi/font/css/materialdesignicons.css", "~/assets/styles.scss"],
 
     modules: ["vuetify-nuxt-module"],
+
+    // Keep whitespace between elements like Vue 2 did (e.g. icons followed by text).
+    vue: {
+        compilerOptions: {
+            whitespace: "preserve"
+        }
+    },
 
     // Auto import the Pinia stores.
     imports: {
@@ -113,12 +135,30 @@ export default defineNuxtConfig({
             icons: {
                 defaultSet: "mdi"
             },
+            // Inputs and selection controls were primary colored by default on Vuetify 2.
+            defaults: {
+                VAutocomplete: {color: "primary"},
+                VCheckbox: {color: "primary"},
+                VCheckboxBtn: {color: "primary"},
+                VCombobox: {color: "primary"},
+                VRadio: {color: "primary"},
+                VRadioGroup: {color: "primary"},
+                VRangeSlider: {color: "primary"},
+                VSelect: {color: "primary"},
+                VSlider: {color: "primary"},
+                VSwitch: {color: "primary"},
+                VTextarea: {color: "primary"},
+                VTextField: {color: "primary"}
+            },
             theme: {
                 defaultTheme: "dark",
                 themes: {
                     dark: {
                         dark: true,
                         colors: {
+                            background: "#121212",
+                            surface: "#1e1e1e",
+                            "surface-bright": "#bdbdbd",
                             primary: colors.amber.darken3,
                             secondary: colors.amber.lighten4,
                             accent: colors.grey.darken3,
@@ -127,7 +167,17 @@ export default defineNuxtConfig({
                             warning: colors.amber.base,
                             error: colors.deepOrange.accent4,
                             removal: colors.red.darken3,
-                            success: colors.lightGreen.darken4
+                            success: colors.lightGreen.darken4,
+                            // Text over colored backgrounds was always white on the Vuetify 2 dark theme.
+                            "on-primary": "#ffffff",
+                            "on-secondary": "#ffffff",
+                            "on-accent": "#ffffff",
+                            "on-toolbar": "#ffffff",
+                            "on-info": "#ffffff",
+                            "on-warning": "#ffffff",
+                            "on-error": "#ffffff",
+                            "on-removal": "#ffffff",
+                            "on-success": "#ffffff"
                         }
                     }
                 }
