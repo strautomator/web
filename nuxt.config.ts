@@ -73,8 +73,28 @@ export default defineNuxtConfig({
     // The Vite / Vue build options.
     vite: {
         server: {
-            allowedHosts: getDevAllowedHosts()
+            allowedHosts: getDevAllowedHosts(),
+            // Vite serves the same CSS URL either as CSS or as a JS module depending on the request
+            // headers, so dev responses must never be cached by browsers or proxies (Cloudflare).
+            headers: {"Cache-Control": "no-store"}
         },
+        plugins: [
+            {
+                // Cloudflare revalidates its cached copies with conditional requests, and a 304 from Vite
+                // would keep serving a stale (and possibly wrong) variant through the tunnel.
+                name: "strautomator-dev-tunnel-nocache",
+                apply: "serve",
+                configureServer(server) {
+                    server.middlewares.use((req, _res, next) => {
+                        if (req.headers["cf-ray"]) {
+                            delete req.headers["if-none-match"]
+                            delete req.headers["if-modified-since"]
+                        }
+                        next()
+                    })
+                }
+            }
+        ],
         optimizeDeps: {
             include: ["json-editor-vue", "vanilla-jsoneditor"]
         }

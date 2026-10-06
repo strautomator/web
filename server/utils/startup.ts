@@ -42,10 +42,25 @@ const run = async (): Promise<void> => {
         // Execute the tunnel file?
         if (settings.app.tunnel && !state.tunnel) {
             state.tunnel = true
-            const tunnel = spawn("./tunnel")
-            tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString()))
+            const tunnel = spawn("./tunnel", {stdio: ["ignore", "pipe", "pipe"]})
+            tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString().trim()))
+
+            // Cloudflared logs to stderr, which must always be consumed, otherwise the tunnel
+            // process blocks once the pipe buffer is full. Only errors are logged.
+            tunnel.stderr.on("data", (data) => {
+                const lines = data.toString().split("\n")
+                for (const line of lines.filter((l) => l.includes(" ERR "))) {
+                    logger.warn("Tunnel", line.trim())
+                }
+            })
             tunnel.on("error", (err) => logger.error("Tunnel", err))
-            tunnel.on("close", (code) => logger.warn("Tunnel", `Closed with code ${code}`))
+            tunnel.on("close", (code) => {
+                state.tunnel = false
+                logger.warn("Tunnel", `Closed with code ${code}`)
+            })
+
+            // Make sure the tunnel does not outlive the server.
+            process.once("exit", () => tunnel.kill())
         }
 
         // Setup webhooks in the background.
