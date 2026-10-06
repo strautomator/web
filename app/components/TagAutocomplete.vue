@@ -99,7 +99,7 @@ watch(filteredItems, () => (selectedIndex.value = 0))
 const getInputElement = (): HTMLInputElement | HTMLTextAreaElement | null => root.value?.querySelector("textarea, input") || null
 
 /**
- * Returns the active tag token before the caret, if any.
+ * Returns the active tag token at the caret, if any.
  */
 const getActiveToken = (): ActiveToken | null => {
     const input = getInputElement()
@@ -116,10 +116,20 @@ const getActiveToken = (): ActiveToken | null => {
         const query = text.substring(start + key.length, caret)
         const blocked = props.keys.some((k) => query.includes(k)) || /\s/.test(query)
         if (blocked) continue
-        if (!best || start > best.start) best = {key, start, end: caret, query}
+        if (!best || start > best.start) best = {key, start, end: getTagEnd(text, start + key.length, caret), query}
     }
 
     return best
+}
+
+/**
+ * Returns where the tag ends, so the whole tag is replaced when the caret is inside a braced tag like {distance}.
+ */
+const getTagEnd = (text: string, tagStart: number, caret: number): number => {
+    const excluded = props.keys.map((k) => k.replace(/[.*+?^${}()|[\]\\-]/g, "\\$&")).join("")
+    const tag = text.substring(tagStart).match(new RegExp(`^\\{[^\\s{}${excluded}]*\\}?`))
+    const tagEnd = tag ? tagStart + tag[0].length : -1
+    return tagEnd > caret ? tagEnd : caret
 }
 
 /**
