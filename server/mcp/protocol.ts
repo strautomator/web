@@ -1,13 +1,15 @@
 // Strautomator MCP Streamable HTTP / JSON-RPC
 
-import {users, UserData} from "strautomator-core"
+import {users} from "strautomator-core"
+import type {UserData} from "strautomator-core"
+import {getRequestHeader, type RequestEvent} from "nuxt/server"
 import store from "./store"
 import {callTool, listTools} from "./tools"
-import {JsonRpcRequest, JsonRpcResponse} from "./types"
-import {getMcpConfig, setCorsHeaders, setWwwAuthenticate} from "./utils"
-import express from "express"
+import type {JsonRpcRequest, JsonRpcResponse} from "./types"
+import {emptyResponse, getMcpConfig, jsonResponse, setCorsHeaders, setWwwAuthenticate, withHeaders} from "./utils"
+import {getBody} from "../utils/web"
 import logger from "anyhow"
-const packageVersion = require("../../package.json").version
+import packageJson from "../../package.json"
 
 // Maximum number of JSON-RPC messages accepted in a single batch.
 const maxBatchSize = 20
@@ -23,35 +25,34 @@ const jsonRpcError = (id: JsonRpcRequest["id"], code: number, message: string): 
  * Authenticate the MCP request using the OAuth bearer token issued by this server.
  * Strava tokens are never accepted here.
  */
-const authenticateRequest = async (req: express.Request, res: express.Response): Promise<UserData> => {
-    const header = req.headers.authorization || ""
+const authenticateRequest = async (event: RequestEvent): Promise<{user?: UserData; response?: Response}> => {
+    const header = getRequestHeader(event, "authorization") || ""
     const match = header.match(/^Bearer\s+(.+)$/i)
     if (!match) {
-        setWwwAuthenticate(res)
-        res.status(401).json({error: "invalid_token", error_description: "Missing bearer token"})
-        return null
+        const response = jsonResponse(event, {error: "invalid_token", error_description: "Missing bearer token"}, 401)
+        setWwwAuthenticate(event, response)
+        return {response}
     }
 
     const token = await store.getAccessToken(match[1].trim())
     const config = getMcpConfig()
     if (!token || token.resource.replace(/\/+$/, "") != config.resource.replace(/\/+$/, "")) {
-        setWwwAuthenticate(res, 'error="invalid_token"')
-        res.status(401).json({error: "invalid_token", error_description: "Invalid or expired access token"})
-        return null
+        const response = jsonResponse(event, {error: "invalid_token", error_description: "Invalid or expired access token"}, 401)
+        setWwwAuthenticate(event, response, 'error="invalid_token"')
+        return {response}
     }
 
     const user = await users.getById(token.userId)
     if (!user) {
-        setWwwAuthenticate(res, 'error="invalid_token"')
-        res.status(401).json({error: "invalid_token", error_description: "User not found"})
-        return null
+        const response = jsonResponse(event, {error: "invalid_token", error_description: "User not found"}, 401)
+        setWwwAuthenticate(event, response, 'error="invalid_token"')
+        return {response}
     }
     if (!user.isPro) {
-        res.status(403).json({error: "insufficient_scope", error_description: "The Strautomator MCP server is available to PRO members only"})
-        return null
+        return {response: jsonResponse(event, {error: "insufficient_scope", error_description: "The Strautomator MCP server is available to PRO members only"}, 403)}
     }
 
-    return user
+    return {user}
 }
 
 /**
@@ -74,7 +75,7 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
             result: {
                 protocolVersion,
                 capabilities: {tools: {listChanged: false}},
-                serverInfo: {name: "strautomator", title: "Strautomator", version: packageVersion},
+                serverInfo: {name: "strautomator", title: "Strautomator", version: packageJson.version},
                 instructions:
                     "Strautomator MCP for PRO subscribers. Tools operate on the authenticated athlete and match the website API. Use get_automation_schema before handling automations. Use list_gearwear or get_gearwear for gear IDs and exact component names before toggle_gearwear_component. Never ask the user for Strautomator or Strava tokens."
             }
@@ -116,37 +117,35 @@ const handleRpc = async (user: UserData, message: JsonRpcRequest): Promise<JsonR
 }
 
 /**
- * Handle MCP Streamable HTTP requests (POST /mcp).
+ * Handle MCP Streamable HTTP requests (/mcp).
  */
-export const handleMcp = async (req: express.Request, res: express.Response): Promise<void> => {
-    setCorsHeaders(res, req)
+export const handleMcp = async (event: RequestEvent): Promise<Response> => {
+    setCorsHeaders(event)
 
-    if (req.method == "OPTIONS") {
-        res.status(204).send()
-        return
+    if (event.req.method == "OPTIONS") {
+        return emptyResponse(event, 204)
     }
 
     // Stateless server: only POST carries JSON-RPC payloads.
-    if (req.method == "GET" || req.method == "DELETE") {
-        res.status(405).setHeader("Allow", "POST, OPTIONS").json({error: "method_not_allowed", error_description: "This MCP server is stateless and only accepts POST"})
-        return
+    if (event.req.method != "POST") {
+        return withHeaders(jsonResponse(event, {error: "method_not_allowed", error_description: "This MCP server is stateless and only accepts POST"}, 405), {Allow: "POST, OPTIONS"})
     }
 
-    const user = await authenticateRequest(req, res)
-    if (!user) {
-        return
+    const auth = await authenticateRequest(event)
+    if (!auth.user) {
+        return auth.response
     }
 
+    const user = auth.user
     try {
-        const body = req.body
+        const body = await getBody(event)
         const batch = Array.isArray(body)
         const messages: JsonRpcRequest[] = batch ? body : [body]
         const responses: JsonRpcResponse[] = []
 
         // Each message may call tools that hit Strava and the database, so batches are capped.
         if (messages.length == 0 || messages.length > maxBatchSize) {
-            res.status(400).json(jsonRpcError(null, -32600, `Invalid Request: batches must have 1 to ${maxBatchSize} messages`))
-            return
+            return jsonResponse(event, jsonRpcError(null, -32600, `Invalid Request: batches must have 1 to ${maxBatchSize} messages`), 400)
         }
 
         for (const message of messages) {
@@ -159,14 +158,12 @@ export const handleMcp = async (req: express.Request, res: express.Response): Pr
 
         // Notification-only batches return 202 with no body.
         if (responses.length == 0) {
-            res.status(202).send()
-            return
+            return emptyResponse(event, 202)
         }
 
-        res.setHeader("Content-Type", "application/json")
-        res.json(batch ? responses : responses[0])
+        return jsonResponse(event, batch ? responses : responses[0])
     } catch (ex) {
         logger.error("McpProtocol.handleMcp", user.id, ex)
-        res.status(500).json({jsonrpc: "2.0", id: null, error: {code: -32603, message: "Internal error"}})
+        return jsonResponse(event, {jsonrpc: "2.0", id: null, error: {code: -32603, message: "Internal error"}}, 500)
     }
 }

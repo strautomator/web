@@ -2,7 +2,11 @@
 
 import crypto from "crypto"
 import _ from "lodash"
+import {getRequestHeader, type RequestEvent} from "nuxt/server"
 import type {UserData} from "strautomator-core"
+import {renderJson} from "../utils/web"
+import setmeup from "setmeup"
+const settings = setmeup.settings
 
 // CONFIG
 // --------------------------------------------------------------------------
@@ -11,7 +15,6 @@ import type {UserData} from "strautomator-core"
  * MCP runtime config derived from SetMeUp settings.
  */
 export const getMcpConfig = () => {
-    const settings = require("setmeup").settings
     const mcp = settings.mcp || {}
     const oauth = settings.oauth || {}
     const appUrl = (settings.app.url || "").replace(/\/+$/, "")
@@ -154,7 +157,7 @@ export const escapeHtml = (value: string): string => {
 }
 
 /**
- * First string value from an Express query or body field.
+ * First string value from an h3 query or body field.
  */
 export const firstString = (value: any): string => {
     if (Array.isArray(value)) {
@@ -235,25 +238,68 @@ export const toolError = (message: string) => {
 // --------------------------------------------------------------------------
 
 /**
+ * Apply headers to a Response and return it for chaining.
+ */
+export const withHeaders = (response: Response, headers: Record<string, string | number>): Response => {
+    for (const [name, value] of Object.entries(headers)) {
+        response.headers.set(name, value.toString())
+    }
+    return response
+}
+
+/**
  * Apply CORS headers required by browser-based MCP clients.
  */
-export const setCorsHeaders = (res: any, req?: any): void => {
-    const origin = req?.headers?.origin
-    res.setHeader("Access-Control-Allow-Origin", origin || "*")
-    res.setHeader("Vary", "Origin")
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-    res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, MCP-Protocol-Version, MCP-Session-Id")
-    res.setHeader("Access-Control-Expose-Headers", "WWW-Authenticate, MCP-Protocol-Version, MCP-Session-Id")
+export const setCorsHeaders = (event: RequestEvent, response?: Response): void => {
+    const origin = getRequestHeader(event, "origin")
+    const headers = response?.headers || event.res.headers
+    headers.set("Access-Control-Allow-Origin", origin || "*")
+    headers.set("Vary", "Origin")
+    headers.set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+    headers.set("Access-Control-Allow-Headers", "Authorization, Content-Type, MCP-Protocol-Version, MCP-Session-Id")
+    headers.set("Access-Control-Expose-Headers", "WWW-Authenticate, MCP-Protocol-Version, MCP-Session-Id")
+}
+
+/**
+ * Return a JSON response with MCP CORS headers.
+ */
+export const jsonResponse = (event: RequestEvent, data: any, status?: number): Response => {
+    const response = renderJson(event, data, status)
+    setCorsHeaders(event, response)
+    return response
+}
+
+/**
+ * Return an HTML response, optionally adding MCP CORS headers.
+ */
+export const htmlResponse = (event: RequestEvent, html: string, status?: number, cors: boolean = true): Response => {
+    const response = new Response(html, {status: status || 200, headers: {"Content-Type": "text/html; charset=utf-8"}})
+    if (cors) {
+        setCorsHeaders(event, response)
+    }
+    return response
+}
+
+/**
+ * Return an empty response, optionally adding MCP CORS headers.
+ */
+export const emptyResponse = (event: RequestEvent, status: number = 200, cors: boolean = true): Response => {
+    const response = new Response(null, {status})
+    if (cors) {
+        setCorsHeaders(event, response)
+    }
+    return response
 }
 
 /**
  * RFC 9728 WWW-Authenticate challenge for the MCP resource.
  */
-export const setWwwAuthenticate = (res: any, extra?: string): void => {
+export const setWwwAuthenticate = (event: RequestEvent, response?: Response, extra?: string): void => {
     const config = getMcpConfig()
-    const parts = [`Bearer realm="Strautomator"`, `resource_metadata="${config.issuer}/.well-known/oauth-protected-resource"`, `scope="${config.scope}"`]
+    const parts = [`******"Strautomator"`, `resource_metadata="${config.issuer}/.well-known/oauth-protected-resource"`, `scope="${config.scope}"`]
     if (extra) {
         parts.push(extra)
     }
-    res.setHeader("WWW-Authenticate", parts.join(", "))
+    const headers = response?.headers || event.res.headers
+    headers.set("WWW-Authenticate", parts.join(", "))
 }

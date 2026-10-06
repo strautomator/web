@@ -1,9 +1,9 @@
 // Strautomator MCP persistence (Firestore)
 
 import {database} from "strautomator-core"
-import {McpAuthCode, McpAuthRequest, McpOAuthClient, McpToken} from "./types"
+import type {McpAuthCode, McpAuthRequest, McpOAuthClient, McpToken} from "./types"
 import {getMcpConfig, hashToken, randomToken} from "./utils"
-import dayjs from "../dayjs"
+import dayjs from "../utils/dayjs"
 import _ from "lodash"
 import logger from "anyhow"
 

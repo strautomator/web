@@ -1,4 +1,4 @@
-// Lightweight checks for MCP helpers (run with: npx tsx src/mcp/utils.spec.ts)
+// Lightweight checks for MCP helpers (run with: npx tsx server/mcp/utils.spec.ts)
 
 import {createPkceChallenge, escapeHtml, firstString, hashToken, isValidRedirectUri, sanitizeUser, toBase64Url, verifyPkce} from "./utils"
 
@@ -60,7 +60,7 @@ assert(!sanitized.fitDeviceNames, "FIT device names are stripped")
 assert(sanitized.confirmEmail == "user@example.com", "Email confirmation token is stripped")
 assert(sanitized.garmin.id == "g1", "Garmin profile id is kept")
 
-import {parseActivityId} from "../routes/logic"
+import {parseActivityId} from "../utils/logic"
 import {listTools} from "./tools"
 
 assert(parseActivityId("123456789") == "123456789", "parseActivityId handles numeric string")

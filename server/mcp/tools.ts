@@ -1,9 +1,10 @@
 // Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
-import {announcements, calendar, database, notifications, recipes, strava, users, StravaEstimatedFtp, UserData} from "strautomator-core"
-import {getActivityDebug, getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, toggleGearwearComponent, upsertUserRecipe} from "../routes/logic"
+import {announcements, calendar, database, notifications, recipes, strava, users} from "strautomator-core"
+import type {StravaEstimatedFtp, UserData} from "strautomator-core"
+import {getActivityDebug, getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, toggleGearwearComponent, upsertUserRecipe} from "../utils/logic"
 import {sanitizeUser, toolError, toolResult} from "./utils"
-import dayjs from "../dayjs"
+import dayjs from "../utils/dayjs"
 import logger from "anyhow"
 
 type ToolHandler = (user: UserData, args: any) => Promise<any>
@@ -54,7 +55,7 @@ const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: Strava
 // --------------------------------------------------------------------------
 
 /**
- * MCP tool catalog. Each handler delegates to src/routes/logic.ts or the equivalent core module
+ * MCP tool catalog. Each handler delegates to server/utils/logic.ts or the equivalent core module
  * so behaviour stays aligned with the website API.
  */
 const tools: ToolDef[] = [
