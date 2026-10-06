@@ -1,0 +1,12 @@
+// Vuetify Sass settings, keeping the breakpoints and button text transform from previous versions.
+@use "vuetify/settings" with (
+    $grid-breakpoints: (
+        "xs": 0,
+        "sm": 600px,
+        "md": 960px,
+        "lg": 1280px,
+        "xl": 1920px,
+        "xxl": 2560px
+    ),
+    $button-text-transform: uppercase
+);
