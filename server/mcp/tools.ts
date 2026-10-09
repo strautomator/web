@@ -2,7 +2,7 @@
 
 import {announcements, calendar, database, notifications, recipes, strava, users} from "strautomator-core"
 import type {StravaEstimatedFtp, UserData} from "strautomator-core"
-import {getActivityDebug, getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, toggleGearwearComponent, upsertUserRecipe} from "../utils/logic"
+import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, toggleGearwearComponent, upsertUserRecipe} from "../utils/logic"
 import {sanitizeUser, toolError, toolResult} from "./utils"
 import dayjs from "../utils/dayjs"
 import logger from "anyhow"
@@ -84,7 +84,7 @@ const tools: ToolDef[] = [
     {
         name: "get_processed_activity",
         description:
-            "Get one activity that Strautomator has already processed, including which automations ran and which Strava fields changed. Returns null when Strautomator has no processing record for that activity. Does not accept a Strava URL; use get_activity_debug for a URL or for the live Strava activity.",
+            "Get one activity that Strautomator has already processed, including which automations ran and which Strava fields changed. Returns null when Strautomator has no processing record for that activity. Does not accept a Strava URL and does not fetch the live Strava activity.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Numeric Strava activity ID, as a string. Not a URL."}},
@@ -107,18 +107,6 @@ const tools: ToolDef[] = [
             const processed = await strava.activityProcessing.processActivity(user, {id: parseInt(args.activityId, 10)})
             return processed || {processed: false}
         }
-    },
-    {
-        name: "get_activity_debug",
-        description:
-            "Get debug details for one Strava activity: the live Strava activity, matching Garmin and Wahoo FIT file metadata when available, and the Strautomator processing record (processedActivity) when one exists. garminActivity, wahooActivity and processedActivity are null when there is no match.",
-        inputSchema: {
-            type: "object",
-            properties: {activityId: {type: "string", description: "Numeric Strava activity ID, or a Strava activity URL containing /activities/{id}."}},
-            required: ["activityId"],
-            additionalProperties: false
-        },
-        handler: async (user, args) => getActivityDebug(user, args.activityId || args.id)
     },
     {
         name: "list_automations",

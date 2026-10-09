@@ -80,10 +80,7 @@ assert(parseActivityId(null) == null, "parseActivityId returns null for null")
 assert(parseActivityId(undefined) == null, "parseActivityId returns null for undefined")
 
 const tools = listTools()
-const debugTool = tools.find((t) => t.name == "get_activity_debug")
-assert(!!debugTool, "get_activity_debug tool is registered")
-assert(debugTool?.inputSchema?.properties?.activityId, "get_activity_debug requires activityId property")
-assert(debugTool?.inputSchema?.required?.includes("activityId"), "get_activity_debug has activityId as required")
+assert(!tools.some((t) => t.name == "get_activity_debug"), "get_activity_debug is not an MCP tool")
 
 if (failed > 0) {
     console.error(`${failed} assertion(s) failed`)
