@@ -1,6 +1,6 @@
 // Lightweight checks for MCP helpers (run with: npx tsx server/mcp/utils.spec.ts)
 
-import {createPkceChallenge, escapeHtml, firstString, hashToken, isValidRedirectUri, sanitizeUser, toBase64Url, verifyPkce} from "./utils"
+import {createPkceChallenge, escapeHtml, firstString, hashToken, isValidRedirectUri, sanitizeUser, toBase64Url, toMcpProcessedActivity, verifyPkce} from "./utils"
 
 let failed = 0
 
@@ -79,8 +79,30 @@ assert(parseActivityId("") == null, "parseActivityId returns null for empty stri
 assert(parseActivityId(null) == null, "parseActivityId returns null for null")
 assert(parseActivityId(undefined) == null, "parseActivityId returns null for undefined")
 
+const summary: any = toMcpProcessedActivity({
+    id: 42,
+    name: "Morning ride",
+    distance: 10000,
+    sportType: "Ride",
+    updatedFields: {name: "x"},
+    garminActivity: {id: 1},
+    recipes: {r1: {title: "Commute", conditions: ["sport is Ride"], actions: ["set commute"]}}
+} as any)
+assert(summary.id == 42, "processed activity keeps the id")
+assert(summary.recipes.r1.title == "Commute", "processed activity keeps the automation")
+assert(summary.recipes.r1.conditions[0] == "sport is Ride", "processed activity keeps automation conditions")
+assert(!summary.name && !summary.distance && !summary.sportType && !summary.updatedFields && !summary.garminActivity, "processed activity omits activity metadata")
+assert(toMcpProcessedActivity(null) == null, "missing processed activity stays null")
+assert(toMcpProcessedActivity({id: 7} as any).recipes && Object.keys(toMcpProcessedActivity({id: 7} as any).recipes).length == 0, "processed activity with no automations returns an empty list")
+
 const tools = listTools()
-assert(!tools.some((t) => t.name == "get_activity_debug"), "get_activity_debug is not an MCP tool")
+for (const name of ["get_activity_debug", "list_athlete_records", "estimate_ftp", "get_strava_status"]) {
+    assert(!tools.some((t) => t.name == name), `${name} is not an MCP tool`)
+}
+const listProcessed = tools.find((t) => t.name == "list_processed_activities")
+const getProcessed = tools.find((t) => t.name == "get_processed_activity")
+assert(listProcessed?.description.includes("Activity metadata") && listProcessed.description.includes("recipes"), "list_processed_activities returns only id and automations")
+assert(getProcessed?.description.includes("Activity metadata is omitted") && getProcessed.description.includes("recipes"), "get_processed_activity returns only id and automations")
 
 if (failed > 0) {
     console.error(`${failed} assertion(s) failed`)

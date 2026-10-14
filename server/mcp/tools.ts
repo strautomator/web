@@ -1,10 +1,9 @@
 // Strautomator MCP tools — thin wrappers around the same handlers used by the HTTP API.
 
-import {announcements, calendar, database, notifications, recipes, strava, users} from "strautomator-core"
-import type {StravaEstimatedFtp, UserData} from "strautomator-core"
-import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, saveEstimatedFtp, toggleGearwearComponent, upsertUserRecipe} from "../utils/logic"
-import {sanitizeUser, toolError, toolResult} from "./utils"
-import dayjs from "../utils/dayjs"
+import {announcements, calendar, notifications, recipes, strava, users} from "strautomator-core"
+import type {UserData} from "strautomator-core"
+import {getGearwearById, getGearwearByUser, getProcessedActivities, getPublicUser, getRecipeStats, toggleGearwearComponent, upsertUserRecipe} from "../utils/logic"
+import {sanitizeUser, toMcpProcessedActivity, toolError, toolResult} from "./utils"
 import logger from "anyhow"
 
 type ToolHandler = (user: UserData, args: any) => Promise<any>
@@ -14,41 +13,6 @@ interface ToolDef {
     description: string
     inputSchema: any
     handler: ToolHandler
-}
-
-interface CachedFtpEstimate {
-    id: string
-    estimation: StravaEstimatedFtp
-    dateEstimated: Date
-    dateExpiry: Date
-}
-
-const FTP_ESTIMATE_COLLECTION = "mcp-ftp-estimates"
-const FTP_ESTIMATE_CACHE_DAYS = 7
-
-const getCachedFtpEstimate = async (user: UserData): Promise<{estimation: StravaEstimatedFtp | false; cached: boolean}> => {
-    const cached: CachedFtpEstimate = await database.get(FTP_ESTIMATE_COLLECTION, user.id)
-    if (cached?.estimation && cached.dateExpiry && dayjs(cached.dateExpiry).isAfter(dayjs())) {
-        return {estimation: cached.estimation, cached: true}
-    }
-
-    const estimation = await strava.performance.estimateFtp(user)
-    if (!estimation) {
-        return {estimation: false, cached: false}
-    }
-
-    const dateEstimated = new Date()
-    await database.set(
-        FTP_ESTIMATE_COLLECTION,
-        {
-            id: user.id,
-            estimation,
-            dateEstimated,
-            dateExpiry: dayjs(dateEstimated).add(FTP_ESTIMATE_CACHE_DAYS, "days").toDate()
-        } as CachedFtpEstimate,
-        user.id
-    )
-    return {estimation, cached: false}
 }
 
 // TOOL DEFINITIONS
@@ -69,7 +33,7 @@ const tools: ToolDef[] = [
     {
         name: "list_processed_activities",
         description:
-            "List activities Strautomator has already processed, most recently processed first. Each record includes the activity summary, which automations ran (recipes), which Strava fields changed (updatedFields), and dateProcessed. Times are in seconds. Distance uses the user's km or miles unit. When Garmin or Wahoo is linked, matching FIT metadata may be attached as garminActivity or wahooActivity. This does not fetch activities that Strautomator has not processed.",
+            "List activities Strautomator has already processed, most recently processed first. Each item has the activity id and recipes, the automations that ran, keyed by automation id. Each automation has title, conditions and actions. Activity metadata such as name, sport, distance, time, updated fields and device data is omitted. from and to filter by processing date (dateProcessed), not the activity start date. This does not fetch activities that Strautomator has not processed.",
         inputSchema: {
             type: "object",
             properties: {
@@ -79,24 +43,27 @@ const tools: ToolDef[] = [
             },
             additionalProperties: false
         },
-        handler: async (user, args) => getProcessedActivities(user, {...args, limit: Math.max(Math.min(parseInt(args.limit) || 50, 200), 1)})
+        handler: async (user, args) => {
+            const activities = await getProcessedActivities(user, {...args, limit: Math.max(Math.min(parseInt(args.limit) || 50, 200), 1)}, false)
+            return activities.map((activity) => toMcpProcessedActivity(activity))
+        }
     },
     {
         name: "get_processed_activity",
         description:
-            "Get one activity that Strautomator has already processed, including which automations ran and which Strava fields changed. Returns null when Strautomator has no processing record for that activity. Does not accept a Strava URL and does not fetch the live Strava activity.",
+            "Get one activity that Strautomator has already processed. Returns the activity id and recipes, the automations that ran, keyed by automation id. Each automation has title, conditions and actions. Returns null when Strautomator has no processing record for that activity. Activity metadata is omitted. Does not accept a Strava URL and does not fetch the live Strava activity.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Numeric Strava activity ID, as a string. Not a URL."}},
             required: ["activityId"],
             additionalProperties: false
         },
-        handler: async (user, args) => strava.activityProcessing.getProcessedActivity(user, parseInt(args.activityId, 10))
+        handler: async (user, args) => toMcpProcessedActivity(await strava.activityProcessing.getProcessedActivity(user, parseInt(args.activityId, 10)))
     },
     {
         name: "process_activity",
         description:
-            "Run the user's automations on one Strava activity. Returns the processed activity, including recipes and updatedFields. Returns {processed: false} when the activity was not processed if it did not meet any automation conditions. Use get_strava_status if it returns an error to check if Strava may be having an incident.",
+            "Run the user's automations on one Strava activity. Returns the processed activity, including recipes and updatedFields. Returns {processed: false} when the activity was not processed if it did not meet any automation conditions.",
         inputSchema: {
             type: "object",
             properties: {activityId: {type: "string", description: "Numeric Strava activity ID, as a string. Not a URL."}},
@@ -247,32 +214,6 @@ const tools: ToolDef[] = [
         handler: async (user, args) => toggleGearwearComponent(user, args.gearId?.toString(), args.name?.toString(), args.enabled)
     },
     {
-        name: "list_athlete_records",
-        description:
-            "Get personal records tracked by Strautomator, grouped by Strava sport type such as Ride or Run. Each sport can include distance, movingTime, elevationGain, speedMax, speedAvg, hrMax, hrAvg, wattsMax, wattsAvg and calories. Each record has value, previous, activityId and date. The result also includes id (the user ID) and dateRefreshed.",
-        inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async (user) => strava.athletes.getAthleteRecords(user)
-    },
-    {
-        name: "estimate_ftp",
-        description:
-            "Estimate cycling FTP from recent activities that have power data. A successful estimate is cached for 7 days, and later calls return that cache instead of calculating again. Returns false when there is not enough power data. An estimate includes ftpWatts (suggested FTP), ftpCurrentWatts (FTP currently on Strava), bestWatts, bestActivity, activityCount, activityWattsAvg and recentlyUpdated. Set save to true to write ftpWatts to Strava. Saving happens only for an estimate calculated on this call; a cached estimate is returned as-is and is not written. A successful save returns {ftp: watts}.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                save: {type: "boolean", description: "When true, write the suggested FTP to Strava if this call calculated a new estimate. Ignored when the estimate came from the 7-day cache. Defaults to false."}
-            },
-            additionalProperties: false
-        },
-        handler: async (user, args) => {
-            const {estimation, cached} = await getCachedFtpEstimate(user)
-            if (args.save && !cached) {
-                return estimation ? saveEstimatedFtp(user, 0, estimation) : false
-            }
-            return estimation
-        }
-    },
-    {
         name: "list_calendars",
         description:
             "List metadata for the calendars Strautomator has generated for the user. Returns calendar id, the options used to build it, activityCount, clubEventCount, gearEventCount, and dateCreated, dateUpdated and dateExpiry. Does not return the ICS feed or the events.",
@@ -296,16 +237,6 @@ const tools: ToolDef[] = [
             "List Strautomator announcements currently targeted at this user, such as new features and service updates. Each announcement has id, title, body, dateStart, dateExpiry and optional href, newFeature and affiliate. The read count is omitted.",
         inputSchema: {type: "object", properties: {}, additionalProperties: false},
         handler: async (user) => (await announcements.getActive(user)).map(({readCount, ...announcement}) => announcement)
-    },
-    {
-        name: "get_strava_status",
-        description:
-            "Get the Strava incident status tracked by Strautomator. Returns {incident}. incident is null when no incident is recorded, or a short string describing the current Strava problem. While an incident is set, automations and other writes to Strava may fail.",
-        inputSchema: {type: "object", properties: {}, additionalProperties: false},
-        handler: async () => {
-            const stravaState = await database.appState.get("strava")
-            return {incident: stravaState?.incident || null}
-        }
     }
 ]
 

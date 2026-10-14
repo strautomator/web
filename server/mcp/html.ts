@@ -55,7 +55,7 @@ export const consentPage = (options: {clientName: string; userName: string; redi
         <h2>Authorize MCP access</h2>
         <div class="card">
             <p><strong>${clientName}</strong> wants to access Strautomator as <strong>${userName}</strong>.</p>
-            <p>This lets the client read your processed activities, automations, bikes and shoes, and make changes to some of your Strautomator data.</p>
+            <p>This lets the client see which automations ran on an activity, read your automations, bikes and shoes, and make changes to some of your Strautomator data.</p>
             <p>After authorizing, you'll be sent back to <strong>${redirectTarget}</strong>. Only continue if you recognize it and if you started this request yourself.</p>
             <form method="post" action="/mcp/oauth/authorize">
                 <input type="hidden" name="request_id" value="${escapeHtml(options.requestId)}" />

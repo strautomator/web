@@ -3,7 +3,7 @@
 import crypto from "crypto"
 import _ from "lodash"
 import {getRequestHeader, type RequestEvent} from "nuxt/server"
-import type {UserData} from "strautomator-core"
+import type {StravaProcessedActivity, UserData} from "strautomator-core"
 import {renderJson} from "../utils/web"
 import setmeup from "setmeup"
 const settings = setmeup.settings
@@ -199,6 +199,20 @@ export const sanitizeUser = (user: UserData): any => {
     }
 
     return result
+}
+
+/**
+ * Activity id and the automations that ran. Strava activity metadata is omitted.
+ */
+export const toMcpProcessedActivity = (activity: StravaProcessedActivity | null | undefined) => {
+    if (!activity) return null
+
+    const recipes: NonNullable<StravaProcessedActivity["recipes"]> = {}
+    for (const [id, recipe] of Object.entries(activity.recipes || {})) {
+        recipes[id] = {title: recipe.title, conditions: recipe.conditions, actions: recipe.actions}
+    }
+
+    return {id: activity.id, recipes}
 }
 
 // MCP TOOL PAYLOADS

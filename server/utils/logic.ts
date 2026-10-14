@@ -154,13 +154,17 @@ export const getRecipeStats = async (user: UserData, recipeId?: string): Promise
 
 /**
  * Processed activities returned by GET /api/strava/:userId/processed-activities.
+ * Set matchDevices to false to skip Garmin and Wahoo FIT metadata.
  */
-export const getProcessedActivities = async (user: UserData, query?: {limit?: any; from?: any; to?: any}): Promise<StravaProcessedActivity[]> => {
+export const getProcessedActivities = async (user: UserData, query?: {limit?: any; from?: any; to?: any}, matchDevices = true): Promise<StravaProcessedActivity[]> => {
     const limit: number = query?.limit ? parseInt(query.limit as string) : null
     const dateFrom: Date = query?.from ? dayjs(query.from.toString()).startOf("day").toDate() : null
     const dateTo: Date = query?.to ? dayjs(query.to.toString()).endOf("day").toDate() : null
 
     const activities = await strava.activityProcessing.getProcessedActivities(user, dateFrom, dateTo, limit)
+    if (!matchDevices) {
+        return activities
+    }
 
     // Match the FIT file activities in batches, instead of one query per activity.
     if (user.garmin && activities.length > 0) {
