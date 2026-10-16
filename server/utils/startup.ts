@@ -1,10 +1,10 @@
 // Strautomator Web: Startup routines
 
 import {paypal, startup, strava} from "strautomator-core"
-import {spawn} from "node:child_process"
 import _ from "lodash"
 import logger from "anyhow"
 import setmeup from "setmeup"
+import {startDevTunnel} from "./tunnel"
 const settings = setmeup.settings
 
 /**
@@ -55,30 +55,14 @@ const run = async (): Promise<void> => {
  * Execute the tunnel file, if enabled on the settings.
  */
 const startTunnel = (): void => {
-    if (!settings.app.tunnel || state.tunnel) return
+    if (!settings.app?.tunnel || state.tunnel) return
     state.tunnel = true
 
-    // The tunnel script stops when its stdin closes, which happens when the server process (or
-    // the dev server worker thread) exits, so no orphaned cloudflared processes are left behind.
-    const tunnel = spawn("./tunnel", {stdio: ["pipe", "pipe", "pipe"]})
-    tunnel.stdout.on("data", (data) => logger.info("Tunnel", data.toString().trim()))
+    const tunnel = startDevTunnel()
+    if (!tunnel) return
 
-    // Cloudflared logs to stderr, which must always be consumed, otherwise the tunnel
-    // process blocks once the pipe buffer is full. Only errors and connections are logged.
-    tunnel.stderr.on("data", (data) => {
-        const lines: string[] = data.toString().split("\n")
-        for (const line of lines) {
-            if (line.includes(" ERR ")) {
-                logger.warn("Tunnel", line.trim())
-            } else if (line.includes("Registered tunnel connection")) {
-                logger.info("Tunnel", line.trim())
-            }
-        }
-    })
-    tunnel.on("error", (err) => logger.error("Tunnel", err))
-    tunnel.on("close", (code) => {
+    tunnel.on("close", () => {
         state.tunnel = false
-        logger.warn("Tunnel", `Closed with code ${code}`)
     })
 }
 

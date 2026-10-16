@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "26.417.12021",
+    "version": "26.425.11931",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "license": "AGPL-3.0-only",
@@ -28,25 +28,26 @@
         "json-editor-vue": "^0.19.2",
         "lodash": "^4.18.1",
         "nuxt": "npm:nuxt-nightly@5.0.0-2610061304-449e9ce",
-        "pinia": "^4.0.3",
+        "pinia": "^4.1.0",
+        "setmeup": "^2.0.0",
         "strautomator-core": "github:strautomator/core",
         "vanilla-jsoneditor": "^3.13.0",
-        "vue": "^3.5.43",
+        "vue": "^3.5.44",
         "vue-draggable-plus": "^0.6.1",
         "vue-router": "^5.4.0",
-        "vuetify": "^4.2.4",
+        "vuetify": "^4.2.6",
         "vuetify-nuxt-module": "^1.0.0-rc.6"
     },
     "devDependencies": {
         "@types/lodash": "^4.17.26",
         "@types/node": "^26.6.5",
-        "sass-embedded": "^1.105.1",
+        "sass-embedded": "^1.105.2",
         "tsx": "^4.23.15",
         "typescript": "^7.0.2"
     },
     "peerDependencies": {
         "anyhow": "^3.1.2",
-        "setmeup": "^1.8.2"
+        "setmeup": "^2.0.0"
     },
     "prettier": {
         "trailingComma": "none",

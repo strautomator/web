@@ -1,5 +1,6 @@
 import colors from "vuetify/util/colors"
 import fs from "node:fs"
+import {stopDevTunnel} from "./server/utils/tunnel.ts"
 
 /**
  * Hosts allowed to access the dev server (for example via a tunnel), taken from the
@@ -31,6 +32,18 @@ const getDevAllowedHosts = (): string[] => {
 export default defineNuxtConfig({
     compatibilityDate: "2026-06-01",
     telemetry: false,
+
+    hooks: {
+        ready() {
+            if (process.env.NODE_ENV !== "development") return
+            const stop = () => stopDevTunnel()
+            process.once("SIGINT", stop)
+            process.once("SIGTERM", stop)
+        },
+        close() {
+            if (process.env.NODE_ENV === "development") stopDevTunnel()
+        }
+    },
 
     // Same as the previous setup, strict mode is disabled.
     typescript: {
