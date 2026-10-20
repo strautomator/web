@@ -83,18 +83,13 @@ export default defineNuxtConfig({
     // Global styles.
     css: ["@mdi/font/css/materialdesignicons.css", "~/assets/styles.scss"],
 
-    modules: ["vuetify-nuxt-module"],
+    modules: ["@pinia/nuxt", "vuetify-nuxt-module"],
 
     // Keep whitespace between elements like Vue 2 did (e.g. icons followed by text).
     vue: {
         compilerOptions: {
             whitespace: "preserve"
         }
-    },
-
-    // Auto import the Pinia stores.
-    imports: {
-        dirs: ["stores"]
     },
 
     // Nitro server options.

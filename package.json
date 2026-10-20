@@ -19,6 +19,7 @@
     "dependencies": {
         "@mdi/font": "^7.4.47",
         "@paddle/paddle-node-sdk": "^3.10.0",
+        "@pinia/nuxt": "^1.0.3",
         "axios": "^1.20.0",
         "chart.js": "^4.5.1",
         "chartjs-adapter-dayjs-4": "^1.0.4",
