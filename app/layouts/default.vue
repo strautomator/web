@@ -4,7 +4,7 @@
             <v-toolbar-title class="mr-10 ml-1 flex-0-0">
                 <nuxt-link to="/dashboard">
                     <img src="/images/logo-round.svg" width="48" height="48" class="strautologo float-left" />
-                    <span class="d-inline-block ml-2 mt-2">Strautomator</span>
+                    <span class="app-bar-brand d-inline-block ml-2 mt-2">Strautomator</span>
                 </nuxt-link>
             </v-toolbar-title>
 

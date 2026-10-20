@@ -85,6 +85,7 @@ li.if-then {
 }
 .drag-handle {
     cursor: move;
+    color: #f0f0f0;
 }
 .drag-ghost {
     opacity: 0.1;

@@ -80,7 +80,7 @@
                                             </div>
                                             <div class="mt-3">
                                                 <div class="float-right">
-                                                    <v-switch class="pa-0 ma-0 mr-n2" :model-value="!comp.disabled" @update:model-value="setComponentState(comp)" color="primary"></v-switch>
+                                                    <v-switch class="pa-0 ma-0 mr-n1" :model-value="!comp.disabled" @update:model-value="setComponentState(comp)" color="primary"></v-switch>
                                                 </div>
                                                 <v-btn color="primary" :title="'Reset ' + comp.name + ' to 0 km / hours'" @click.stop="showResetDialog(comp)" :disabled="!canReset(comp)" v-if="!isNew" variant="outlined" size="small" rounded>
                                                     <v-icon start>mdi-refresh</v-icon>

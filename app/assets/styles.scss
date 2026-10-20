@@ -139,6 +139,15 @@
     .v-card > .v-card-text {
         color: rgba(255, 255, 255, 0.7);
     }
+    .v-dialog:not(.v-dialog--fullscreen) > .v-overlay__content > .v-card,
+    .v-dialog:not(.v-dialog--fullscreen) > .v-overlay__content > .v-sheet,
+    .v-dialog:not(.v-dialog--fullscreen) > .v-overlay__content > form > .v-card,
+    .v-dialog:not(.v-dialog--fullscreen) > .v-overlay__content > form > .v-sheet {
+        box-shadow:
+            0 11px 15px -7px rgba(0, 0, 0, 0.2),
+            0 24px 38px 3px rgba(0, 0, 0, 0.14),
+            0 9px 46px 8px rgba(0, 0, 0, 0.12);
+    }
     .v-dialog > .v-overlay__content > .v-card > .v-card-title {
         padding: 16px 24px 10px;
     }
@@ -364,6 +373,11 @@ $site-glow: radial-gradient(ellipse at 20% 0%, rgba(252, 76, 2, 0.28) 0%, rgba(1
 
     .v-toolbar-title a {
         color: rgb(255, 255, 255);
+    }
+
+    .v-toolbar-title .app-bar-brand {
+        position: relative;
+        top: 1px;
     }
 
     .v-toolbar__content {
