@@ -9,6 +9,7 @@
 .output
 .data
 .nyc_output
+.playwright-mcp
 .serverless
 .vuepress/dist
 bower_components/

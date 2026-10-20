@@ -1,6 +1,6 @@
 {
     "name": "strautomator-web",
-    "version": "26.425.11931",
+    "version": "26.432.11448",
     "description": "Strautomator.com website.",
     "author": "Igor Ramadas",
     "license": "AGPL-3.0-only",
@@ -35,7 +35,7 @@
         "vue": "^3.5.44",
         "vue-draggable-plus": "^0.6.1",
         "vue-router": "^5.4.0",
-        "vuetify": "^4.2.6",
+        "vuetify": "^4.3.0",
         "vuetify-nuxt-module": "^1.0.0-rc.6"
     },
     "devDependencies": {
