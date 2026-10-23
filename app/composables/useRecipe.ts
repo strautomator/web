@@ -27,7 +27,11 @@ const buildActivityTags = (): {mainActivityTags: RecipeTag[]; extraActivityTags:
         {value: "cadenceAvg", label: "Avg cadence (RPM)"},
         {value: "cadenceSpm", label: "Avg cadence (SPM)"},
         {value: "elevationGain", label: "Elevation gain"},
+        {value: "elevationLoss", label: "Elevation loss"},
+        {value: "elevationMin", label: "Min elevation"},
         {value: "elevationMax", label: "Max elevation"},
+        {value: "elevationStart", label: "Start elevation"},
+        {value: "elevationEnd", label: "End elevation"},
         {value: "climbingRatio", label: "Climbing ratio"},
         {value: "totalTime", label: "Total time"},
         {value: "movingTime", label: "Moving time"},
@@ -93,7 +97,9 @@ const buildActivityTags = (): {mainActivityTags: RecipeTag[]; extraActivityTags:
     const lapTags: RecipeTag[] = [
         {value: "lapCount", label: "Lap count"},
         {value: "lapDistance", label: "Lap distance"},
-        {value: "lapTime", label: "Lap time"}
+        {value: "lapDistances", label: "Lap distances"},
+        {value: "lapTime", label: "Lap time"},
+        {value: "lapTimes", label: "Lap times"}
     ]
 
     // Activity location tags.
