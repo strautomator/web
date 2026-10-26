@@ -1,5 +1,8 @@
 # Strautomator Web
 
+> [!IMPORTANT]
+> The individual Strautomator repos are being merged into a new monorepo at [ramadasnet/strautomator](https://github.com/ramadasnet/strautomator). This won't affect the development or the future of Strautomator, and I'm doing it purely to simplify the management and deployment of the service. So I kindly ask everyone to avoid using this repo from now on. Best regards - Igor
+
 This is Strautomator's web frontend and API, built with Nuxt (Vue 3 + Nitro), Vuetify and Pinia. It depends on the [Strautomator Core](https://github.com/strautomator/core) to run. Please make sure you read the docs for the Core first before proceeding with the Web setup.
 
 ## Settings
